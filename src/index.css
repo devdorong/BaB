@@ -1,20 +1,58 @@
-* {
-  margin: 0;
-  padding: 0;
-  box-sizing: border-box;
-  outline-style: none;
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+:root {
+  --app-max-w: 720px;
 }
-a {
-  text-decoration: none;
-  color: #000;
+
+html,
+body,
+#root {
+  height: 100%;
 }
-ul,
-li {
-  list-style: none;
+
+.container-app {
+  @apply max-w-[var(--app-max-w)] mx-auto px-4;
 }
-html {
-  overflow-x: hidden;
+
+/* ------------- 테마 변수 ------------- */
+/* Light (기본) */
+:root {
+  --bg: 0 0% 98%;
+  --fg: 222 47% 11%;
+  --surface: 0 0% 100%;
+  --border: 220 13% 91%;
+  --primary: 245 83% 60%; /* 보라 */
+  --primary-fg: 0 0% 100%;
 }
-body {
-  font-size: 16px;
+
+/* Dark */
+.theme-dark {
+  --bg: 222 47% 7%;
+  --fg: 210 40% 96%;
+  --surface: 222 47% 11%;
+  --border: 217 19% 27%;
+  --primary: 245 83% 60%;
+  --primary-fg: 0 0% 100%;
+}
+
+/* Ocean */
+.theme-ocean {
+  --bg: 200 60% 97%;
+  --fg: 210 24% 20%;
+  --surface: 200 50% 99%;
+  --border: 206 15% 85%;
+  --primary: 200 90% 45%; /* 파랑 */
+  --primary-fg: 0 0% 100%;
+}
+
+/* High Contrast */
+.theme-hc {
+  --bg: 0 0% 100%;
+  --fg: 0 0% 0%;
+  --surface: 0 0% 100%;
+  --border: 0 0% 0%;
+  --primary: 62 100% 50%; /* 노랑 */
+  --primary-fg: 0 0% 0%;
 }
