@@ -10,6 +10,7 @@ html,
 body,
 #root {
   height: 100%;
+  font-family: 'NotoSansKR-VariableFont_wght';
 }
 
 .container-app {
@@ -55,4 +56,10 @@ body,
   --border: 0 0% 0%;
   --primary: 62 100% 50%; /* 노랑 */
   --primary-fg: 0 0% 0%;
+}
+
+@font-face {
+  font-family: 'NotoSansKR-VariableFont_wght';
+  font-weight: normal;
+  src: url('./fonts/NotoSansKR-VariableFont_wght.ttf') format('truetype');
 }
