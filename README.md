@@ -14,6 +14,10 @@
 
 # 개발환경
 
+## 폰트패밀리
+
+- Noto Sans Korean
+
 ## 프론트
 
 - React Vite
