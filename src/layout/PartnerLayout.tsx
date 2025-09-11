@@ -1,5 +1,13 @@
+import { Outlet } from 'react-router-dom';
+
 function PartnerLayout() {
-  return <div>PartnerLayout</div>;
+  return (
+    <div>
+      <main>
+        <Outlet />
+      </main>
+    </div>
+  );
 }
 
 export default PartnerLayout;

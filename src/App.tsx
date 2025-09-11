@@ -8,8 +8,25 @@ import AdminPartnersPage from './pages/admin/AdminPartnersPage';
 import AdminReportsPage from './pages/admin/AdminReportsPage';
 import AdminSettingsPage from './pages/admin/AdminSettingsPage';
 import IndexPage from './pages/IndexPage';
+import CommunityDetailPage from './pages/member/communitys/CommunityDetailPage';
+import CommunityPage from './pages/member/communitys/CommunityPage';
+import CommunityWritePage from './pages/member/communitys/CommunityWritePage';
+import EventPage from './pages/member/EventPage';
 import MemberPage from './pages/member/MemberPage';
-import MemberProfile from './pages/member/MemberProfilePage';
+import PostDetailPage from './pages/member/posts/PostDetailPage';
+import PostsListPage from './pages/member/posts/PostsListPage';
+import PostsWritePage from './pages/member/posts/PostsWritePage';
+import BlockPage from './pages/member/profiles/BlockPage';
+import ChatPage from './pages/member/profiles/ChatPage';
+import EditPage from './pages/member/profiles/EditPage';
+import FavoritePage from './pages/member/profiles/FavoritePage';
+import InterestPage from './pages/member/profiles/InterestPage';
+import PointPage from './pages/member/profiles/PointPage';
+import ProfilePage from './pages/member/profiles/ProfilePage';
+import RecentMatchingPage from './pages/member/profiles/RecentMatchingPage';
+import ReviewDetailPage from './pages/member/reviews/ReviewDetailPage';
+import ReviewsPage from './pages/member/reviews/ReviewsPage';
+import SupportPage from './pages/member/SupportPage';
 import MemberLoginPage from './pages/MemberLoginPage';
 import MemberSignupPage from './pages/MemberSignupPage';
 import NotFound from './pages/NotFoundPage';
@@ -20,27 +37,40 @@ import PartnerSettingsPage from './pages/partner/PartnerSettingsPage';
 import RestaurantPage from './pages/partner/RestaurantPage';
 import PartnerLoginPage from './pages/PartnerLoginPage';
 import PartnerSignupPage from './pages/PartnerSignupPage';
-import MemberReviewsPage from './pages/member/MemberReviewsPage';
-import MemberEventPage from './pages/member/MemberEventPage';
-import MemberSupportPage from './pages/member/MemberSupportPage';
-import MemberCommunityPage from './pages/member/MemberCommunityPage';
 function App() {
   return (
     <div>
       <Router>
         <Routes>
           <Route path="/" element={<IndexPage />} />
-          {/* 회원 레이아웃 */}
+          {/* Member */}
           <Route path="/member" element={<MemberLayout />}>
-            <Route path="main" element={<MemberPage />} />
-            <Route path="community" element={<MemberCommunityPage />} />
-            <Route path="reviews" element={<MemberReviewsPage />} />
-            <Route path="events" element={<MemberEventPage />} />
-            <Route path="support" element={<MemberSupportPage />} />
-            <Route path="profile" element={<MemberProfile />} />
+            <Route index element={<MemberPage />} />
+            <Route path="posts" element={<PostsListPage />}>
+              <Route path="write" element={<PostsWritePage />} />
+              <Route path="detail" element={<PostDetailPage />} />
+            </Route>
+            <Route path="community" element={<CommunityPage />}>
+              <Route path="write" element={<CommunityWritePage />} />
+              <Route path="detail" element={<CommunityDetailPage />} />
+            </Route>
+            <Route path="reviews" element={<ReviewsPage />}>
+              <Route path="detail" element={<ReviewDetailPage />} />
+            </Route>
+            <Route path="events" element={<EventPage />} />
+            <Route path="support" element={<SupportPage />} />
+            <Route path="profile" element={<ProfilePage />}>
+              <Route path="edit" element={<EditPage />} />
+              <Route path="interest" element={<InterestPage />} />
+              <Route path="chat" element={<ChatPage />} />
+              <Route path="point" element={<PointPage />} />
+              <Route path="favorite" element={<FavoritePage />} />
+              <Route path="recentmatching" element={<RecentMatchingPage />} />
+              <Route path="block" element={<BlockPage />} />
+            </Route>
           </Route>
 
-          {/* 로그인/회원가입 - 헤더 없는 화면 */}
+          {/* 헤더없는 화면 */}
           <Route element={<BareLayout />}>
             <Route path="member/login" element={<MemberLoginPage />} />
             <Route path="member/signup" element={<MemberSignupPage />} />
@@ -48,16 +78,16 @@ function App() {
             <Route path="partner/sign" element={<PartnerSignupPage />} />
           </Route>
 
-          {/* 파트너 레이아웃 */}
+          {/* Partner */}
           <Route path="/partner" element={<PartnerLayout />}>
-            <Route path="dashboard" element={<DashboardPage />} />
+            <Route index element={<DashboardPage />} />
             <Route path="restaurant" element={<RestaurantPage />} />
             <Route path="menus" element={<MenusPage />} />
             <Route path="orders" element={<OrdersPage />} />
             <Route path="settings" element={<PartnerSettingsPage />} />
           </Route>
 
-          {/* 관리자 레이아웃 */}
+          {/* Admin */}
           <Route path="/admin" element={<AdminLayout />}>
             <Route path="members" element={<AdminMembersPage />} />
             <Route path="partners" element={<AdminPartnersPage />} />
