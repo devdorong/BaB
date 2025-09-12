@@ -1,24 +1,17 @@
-import { useState } from 'react';
+import React from 'react';
+import { NavLink, Route, BrowserRouter as Router, Routes } from 'react-router-dom';
+import IndexPage from './pages/IndexPage';
 
-const Sample = (): JSX.Element => {
-  return <div>샘플입니다.</div>;
-};
-
-const App = (): JSX.Element => {
-  // ts
-  const [count, setCount] = useState(0);
-
-  // tsx
+function App() {
   return (
     <div>
-      <h1>App</h1>
-      <Sample></Sample>
-      <div>Count : {count}</div>
-      <button onClick={() => setCount(count + 1)}>증가</button>
-      <button onClick={() => setCount(count - 1)}>감소</button>
-      <button onClick={() => setCount(0)}>리셋</button>
+      <Router>
+        <Routes>
+          <Route path="/" element={<IndexPage />} />
+        </Routes>
+      </Router>
     </div>
   );
-};
+}
 
 export default App;
