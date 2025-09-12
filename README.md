@@ -49,3 +49,17 @@
 - 2025.08.26 프로젝트 기본 파일 구조 설정
 - 2025.09.03 프로젝트 추가 구성 및 세팅
 - 2025.09.09 피그마 작업 완료, supabase
+
+- 2025.09.12 라우터 구조 세팅
+
+# 문제해결과정
+
+## 1. TS 에서 Emotion 스타일 사용안되는 문제
+
+- TypeScript 에서 Emotion 스타일을 쓰려했으나, 직접 import 해주지않으면 불러와지지 않는 문제가 발생
+- 해결 : ts 전용 styled-componets 를 불러오니 해결되었다...
+
+```bash
+npm install styled-components
+npm install --save-dev @types/styled-components  # TS 쓰는 경우
+```
