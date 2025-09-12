@@ -1,5 +1,9 @@
 function ReviewsPage() {
-  return <div>ReviewsPage</div>;
+  return (
+    <div>
+      <h2>ReviewsPage</h2>
+    </div>
+  );
 }
 
 export default ReviewsPage;

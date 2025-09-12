@@ -1,5 +1,9 @@
 function PostsListPage() {
-  return <div>PostsListPage</div>;
+  return (
+    <div>
+      <h2>PostListPage</h2>
+    </div>
+  );
 }
 
 export default PostsListPage;

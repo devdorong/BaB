@@ -1,5 +1,9 @@
 function CommunityPage() {
-  return <div>CommunityPage</div>;
+  return (
+    <div>
+      <h2>CommunityPage</h2>
+    </div>
+  );
 }
 
 export default CommunityPage;

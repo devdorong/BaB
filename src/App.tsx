@@ -3,6 +3,7 @@ import AdminLayout from './layout/AdminLayout';
 import BareLayout from './layout/BareLayout';
 import MemberLayout from './layout/MemberLayout';
 import PartnerLayout from './layout/PartnerLayout';
+import AdminMatchingPage from './pages/admin/AdminMatchingPage';
 import AdminMembersPage from './pages/admin/AdminMembersPage';
 import AdminPartnersPage from './pages/admin/AdminPartnersPage';
 import AdminReportsPage from './pages/admin/AdminReportsPage';
@@ -32,9 +33,12 @@ import MemberSignupPage from './pages/MemberSignupPage';
 import NotFound from './pages/NotFoundPage';
 import DashboardPage from './pages/partner/DashboardPage';
 import MenusPage from './pages/partner/MenusPage';
+import NotificationPage from './pages/partner/NotificationPage';
 import OrdersPage from './pages/partner/OrdersPage';
-import PartnerSettingsPage from './pages/partner/PartnerSettingsPage';
 import RestaurantPage from './pages/partner/RestaurantPage';
+import ReviewPage from './pages/partner/ReviewPage';
+import SalesPage from './pages/partner/SalesPage';
+import SettingsPage from './pages/partner/SettingsPage';
 import PartnerLoginPage from './pages/PartnerLoginPage';
 import PartnerSignupPage from './pages/PartnerSignupPage';
 function App() {
@@ -46,20 +50,24 @@ function App() {
           {/* Member */}
           <Route path="/member" element={<MemberLayout />}>
             <Route index element={<MemberPage />} />
-            <Route path="posts" element={<PostsListPage />}>
+            <Route path="posts">
+              <Route index element={<PostsListPage />} />
               <Route path="write" element={<PostsWritePage />} />
               <Route path="detail" element={<PostDetailPage />} />
             </Route>
-            <Route path="community" element={<CommunityPage />}>
+            <Route path="community">
+              <Route index element={<CommunityPage />} />
               <Route path="write" element={<CommunityWritePage />} />
               <Route path="detail" element={<CommunityDetailPage />} />
             </Route>
-            <Route path="reviews" element={<ReviewsPage />}>
+            <Route path="reviews">
+              <Route index element={<ReviewsPage />} />
               <Route path="detail" element={<ReviewDetailPage />} />
             </Route>
             <Route path="events" element={<EventPage />} />
             <Route path="support" element={<SupportPage />} />
-            <Route path="profile" element={<ProfilePage />}>
+            <Route path="profile">
+              <Route index element={<ProfilePage />} />
               <Route path="edit" element={<EditPage />} />
               <Route path="interest" element={<InterestPage />} />
               <Route path="chat" element={<ChatPage />} />
@@ -75,7 +83,7 @@ function App() {
             <Route path="member/login" element={<MemberLoginPage />} />
             <Route path="member/signup" element={<MemberSignupPage />} />
             <Route path="partner/login" element={<PartnerLoginPage />} />
-            <Route path="partner/sign" element={<PartnerSignupPage />} />
+            <Route path="partner/signup" element={<PartnerSignupPage />} />
           </Route>
 
           {/* Partner */}
@@ -84,13 +92,17 @@ function App() {
             <Route path="restaurant" element={<RestaurantPage />} />
             <Route path="menus" element={<MenusPage />} />
             <Route path="orders" element={<OrdersPage />} />
-            <Route path="settings" element={<PartnerSettingsPage />} />
+            <Route path="sale" element={<SalesPage />} />
+            <Route path="review" element={<ReviewPage />} />
+            <Route path="notification" element={<NotificationPage />} />
+            <Route path="settings" element={<SettingsPage />} />
           </Route>
 
           {/* Admin */}
           <Route path="/admin" element={<AdminLayout />}>
-            <Route path="members" element={<AdminMembersPage />} />
+            <Route index element={<AdminMembersPage />} />
             <Route path="partners" element={<AdminPartnersPage />} />
+            <Route path="matching" element={<AdminMatchingPage />} />
             <Route path="reports" element={<AdminReportsPage />} />
             <Route path="settings" element={<AdminSettingsPage />} />
           </Route>
