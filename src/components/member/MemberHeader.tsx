@@ -1,6 +1,8 @@
 import { Link } from 'react-router-dom';
-import { ButtonFillMd, ButtonLineMd } from '../../ui/dorong/button';
-import { LogoSm } from '../../ui/dorong/Ui';
+import { ButtonFillMd, ButtonLineMd } from '../../ui/button';
+import { LogoSm } from '../../ui/Ui';
+import { Chat3Line } from '../../ui/Modal';
+import { RiChat3Line } from 'react-icons/ri';
 
 const MemberHeader = () => {
   return (
@@ -11,7 +13,10 @@ const MemberHeader = () => {
         </Link>
         <div className="flex items-center gap-[40px] ">
           <div className="flex items-center gap-[40px]">
-            <Link to={'/member/community'}>커뮤니티</Link>
+            <Link to={'/member/community'}>
+              <Chat3Line color="none" bgColor="none" />
+              커뮤니티
+            </Link>
             <Link to={'/member/reviews'}>맛집리뷰</Link>
             <Link to={'/member/events'}>이벤트</Link>
             <Link to={'/member/support'}>고객센터</Link>

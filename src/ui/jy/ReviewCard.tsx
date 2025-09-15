@@ -1,5 +1,5 @@
 import styled from 'styled-components';
-import { ItalianFood } from './tag';
+import { ItalianFood } from '../tag';
 
 const CardLayout = styled.div`
   display: inline-flex;

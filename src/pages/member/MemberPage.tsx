@@ -1,6 +1,6 @@
 import { useState } from 'react';
-import { ButtonFillLG, ButtonFillMd, ButtonLineLg, ButtonLineMd } from '../../ui/dorong/button';
-import { LogoLg, LogoMd, LogoSm } from '../../ui/dorong/Ui';
+import { ButtonFillLG, ButtonFillMd, ButtonLineLg, ButtonLineMd } from '../../ui/button';
+import { LogoLg, LogoMd, LogoSm } from '../../ui/Ui';
 
 function MemberPage() {
   return (
