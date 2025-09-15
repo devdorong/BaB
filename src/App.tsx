@@ -41,6 +41,10 @@ import SalesPage from './pages/partner/SalesPage';
 import SettingsPage from './pages/partner/SettingsPage';
 import PartnerLoginPage from './pages/PartnerLoginPage';
 import PartnerSignupPage from './pages/PartnerSignupPage';
+import TermsofServicePage from './pages/TermsofServicePage';
+import PersonalPolicyPage from './pages/PersonalPolicyPage';
+import InsratgramPage from './pages/InsratgramPage';
+import KaKaoPage from './pages/KaKaoPage';
 function App() {
   return (
     <div>
@@ -77,6 +81,14 @@ function App() {
               <Route path="block" element={<BlockPage />} />
             </Route>
           </Route>
+
+          {/* 이용약관/개인정보처리방침 */}
+          <Route path="/privacy" element={<TermsofServicePage />} />
+          <Route path="/perpolicy" element={<PersonalPolicyPage />} />
+
+          {/* 소셜 */}
+          <Route path="/instar" element={<InsratgramPage />} />
+          <Route path="/kakao" element={<KaKaoPage />} />
 
           {/* 헤더없는 화면 */}
           <Route element={<BareLayout />}>

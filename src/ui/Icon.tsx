@@ -108,6 +108,8 @@ import {
   RiHistoryLine,
   RiShareForwardLine,
   RiShieldLine,
+  RiInstagramLine,
+  RiKakaoTalkFill,
 } from 'react-icons/ri';
 import styled from 'styled-components';
 
@@ -249,3 +251,5 @@ export const EyeOffLine = createIcon(RiEyeOffLine);
 export const EyeLine = createIcon(RiEyeLine);
 export const GitBranchLine = createIcon(RiGitBranchLine);
 export const Heart3Line = createIcon(RiHeart3Line);
+export const Instagram = createIcon(RiInstagramLine);
+export const KakaoTalk = createIcon(RiKakaoTalkFill);
