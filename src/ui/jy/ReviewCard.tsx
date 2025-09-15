@@ -1,5 +1,12 @@
 import styled from 'styled-components';
-import { ItalianFood } from '../tag';
+import { ItalianFood } from './tag';
+import {
+  RiArrowRightLine,
+  RiHeart3Line,
+  RiMapPinLine,
+  RiShareLine,
+  RiStarFill,
+} from 'react-icons/ri';
 
 const CardLayout = styled.div`
   display: inline-flex;
@@ -29,12 +36,48 @@ const Title = styled.div`
 export const RowCard = () => {
   return (
     <div>
-      <CardLayout>
+      <CardLayout className="flex items-center">
         <CardImage src="public/sample.jpg" />
-        <div style={{ display: 'inline-b' }}>
-          <ItalianFood />
-          {/* <Title>{restaurant.name}</Title> */}
-          <Title>가게제목</Title>
+        <div>
+          {/* 태그 및 타이틀 */}
+          <div className="flex flex-col items-start gap-1">
+            <ItalianFood />
+            {/* <Title>{restaurant.name}</Title> */}
+            <Title>가게제목</Title>
+          </div>
+          {/* 별점 및 위치 거리 */}
+          <div className="flex gap-[20px] pt-[7px]">
+            <div className="flex items-center gap-[5px]">
+              <RiStarFill className="text-[#FACC15] size-[16px]" />
+              <div className="flex gap-[3px] text-babgray-700">
+                <span className="text-[13px]">별점</span>
+                <span className="text-[13px]">리뷰</span>
+                <span className="text-[13px]">개수</span>
+              </div>
+            </div>
+            <div className="flex items-center gap-[5px] text-babgray-700">
+              <RiMapPinLine className="text-[#ff5722] size-[16px]" />
+              <span className="text-[13px]">위치·거리</span>
+            </div>
+          </div>
+          {/* 리뷰 후기 */}
+          <p className="tracking-[-0.32px] text-[16px] pt-[12px] line-clamp-2  text-babgray-700">
+            정말 맛있는 파스타집임! 추천함.정말 맛있는 파스타집임! 추천함.정말 맛있는 파스타집임!
+            추천함.정말 맛있는 파스타집임! 추천함
+          </p>
+          <div className="flex justify-between items-center pt-[15px] text-babgray-700">
+            <div className="flex items-center gap-[12px]">
+              <div className="flex items-center gap-[5px]">
+                <RiHeart3Line className="size-[16px]" />
+                <span className="text-[13px]">찜 개수</span>
+              </div>
+              <div className="flex items-center gap-[5px]">
+                <RiShareLine className="size-[16px]" />
+                <span className="text-[13px]">공유</span>
+              </div>
+            </div>
+            <RiArrowRightLine />
+          </div>
         </div>
       </CardLayout>
     </div>
