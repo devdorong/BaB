@@ -81,10 +81,11 @@ function App() {
               <Route path="block" element={<BlockPage />} />
             </Route>
           </Route>
-
           {/* 이용약관/개인정보처리방침 */}
-          <Route path="/privacy" element={<TermsofServicePage />} />
-          <Route path="/perpolicy" element={<PersonalPolicyPage />} />
+          <Route path="/" element={<MemberLayout />}>
+            <Route path="privacy" element={<TermsofServicePage />} />
+            <Route path="perpolicy" element={<PersonalPolicyPage />} />
+          </Route>
 
           {/* 소셜 */}
           <Route path="/instar" element={<InsratgramPage />} />

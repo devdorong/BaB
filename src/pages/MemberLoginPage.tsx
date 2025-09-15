@@ -1,6 +1,5 @@
-import { RiCheckboxCircleLine, RiLock2Line, RiQuestionLine, RiUserLine } from 'react-icons/ri';
-import { CheckboxCircleLine, Lock2Line, QuestionLine, UserLine } from '../ui/Modal';
-import { LogoLg, LogoMd } from '../ui/Ui';
+import { RiCheckboxCircleLine, RiLock2Line, RiUserLine } from 'react-icons/ri';
+import { LogoLg } from '../ui/Ui';
 import { GoogleIconSvg, KakaoIconSvg } from '../ui/jy/IconSvg';
 
 function MemberLoginPage() {

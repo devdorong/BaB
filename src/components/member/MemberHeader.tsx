@@ -4,11 +4,9 @@ import { LogoSm } from '../../ui/Ui';
 
 import { Chat3Line, CustomerServiceLine, GiftLine, StarLine } from '../../ui/Icon';
 
-import { RiChat3Line } from 'react-icons/ri';
-
 const MemberHeader = () => {
   return (
-    <header className="flex items-center justify-between px-6 shadow-md bg-bg-bg">
+    <header className="flex items-center justify-between px-6 bg-bg-bg z-20 border-b-2">
       <div className="flex justify-between w-[1280px] h-[70px] items-center mx-auto">
         <Link to={'/member'}>
           <LogoSm />

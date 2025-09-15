@@ -18,10 +18,10 @@ const MemberFooter = () => {
           </div>
           <div className="flex gap-4">
             <Link to={`/instar`}>
-              <Instagram color="black" bgColor="#C2C2C2" size={40} />
+              <Instagram color="black" bgColor="#E5E7EB" size={25} />
             </Link>
             <Link to={`/kakao`}>
-              <KakaoTalk color="black" bgColor="#C2C2C2" size={40} />
+              <KakaoTalk color="black" bgColor="#E5E7EB" size={25} />
             </Link>
           </div>
         </div>

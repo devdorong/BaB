@@ -1,9 +1,8 @@
 import { useState } from 'react';
-import { LogoLg, LogoMd } from '../ui/Ui';
-import { useAuth } from '../contexts/AuthContext';
+import { createProfile } from '../lib/propile';
 import { supabase } from '../lib/supabase';
 import type { ProfileInsert } from '../types/bobType';
-import { createProfile } from '../lib/propile';
+import { LogoMd } from '../ui/Ui';
 
 function MemberSignupPage() {
   // ts
