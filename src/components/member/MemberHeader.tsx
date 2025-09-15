@@ -1,7 +1,7 @@
 import { Link } from 'react-router-dom';
 import { ButtonFillMd, ButtonLineMd } from '../../ui/button';
 import { LogoSm } from '../../ui/Ui';
-import { Chat3Line } from '../../ui/Modal';
+import { Chat3Line } from '../../ui/Icon';
 import { RiChat3Line } from 'react-icons/ri';
 
 const MemberHeader = () => {
