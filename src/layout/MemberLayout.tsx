@@ -4,9 +4,9 @@ import MemberFooter from '../components/member/MemberFooter';
 
 function MemberLayout() {
   return (
-    <div>
+    <div className="bg-bg-bg">
       <MemberHeader />
-      <main>
+      <main className=" max-w-[1280px] mx-auto ">
         <Outlet />
       </main>
       <MemberFooter />

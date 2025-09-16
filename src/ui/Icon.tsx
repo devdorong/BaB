@@ -113,26 +113,53 @@ import {
 } from 'react-icons/ri';
 import styled from 'styled-components';
 
-type IconWrapperProps = {
-  bgColor?: string;
-  color?: string;
-  size?: number;
-};
+// type IconWrapperProps = {
+//   bgColor?: string;
+//   color?: string;
+//   size?: number;
+// };
 
+// const IconWrapper = styled.div<IconWrapperProps>`
+//   display: inline-flex;
+//   align-items: center;
+//   justify-content: center;
+//   border-radius: 25px;
+//   padding: 6px;
+//   background-color: ${({ bgColor }) => bgColor || '#FF5722'};
+//   color: ${({ color }) => color || 'white'};
+//   font-size: ${({ size }) => (size ? `${size}px` : '15px')};
+// `;
+
+// const createIcon = (IconComponent: React.ElementType) => {
+//   return ({ bgColor, color, size }: IconWrapperProps) => (
+//     <IconWrapper bgColor={bgColor} color={color} size={size}>
+//       <IconComponent />
+//     </IconWrapper>
+//   );
+// };
+// 1. 타입 정의
+interface IconWrapperProps {
+  $bgColor?: string;
+  $color?: string;
+  $size?: number;
+}
+
+// 2. styled component
 const IconWrapper = styled.div<IconWrapperProps>`
   display: inline-flex;
   align-items: center;
   justify-content: center;
   border-radius: 25px;
   padding: 6px;
-  background-color: ${({ bgColor }) => bgColor || '#FF5722'};
-  color: ${({ color }) => color || 'white'};
-  font-size: ${({ size }) => (size ? `${size}px` : '15px')};
+  background-color: ${({ $bgColor }) => $bgColor || '#FF5722'};
+  color: ${({ $color }) => $color || 'white'};
+  font-size: ${({ $size }) => ($size ? `${$size}px` : '15px')};
 `;
 
+// 3. HOC
 const createIcon = (IconComponent: React.ElementType) => {
-  return ({ bgColor, color, size }: IconWrapperProps) => (
-    <IconWrapper bgColor={bgColor} color={color} size={size}>
+  return ({ bgColor, color, size }: { bgColor?: string; color?: string; size?: number }) => (
+    <IconWrapper $bgColor={bgColor} $color={color} $size={size}>
       <IconComponent />
     </IconWrapper>
   );

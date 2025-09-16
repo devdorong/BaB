@@ -45,9 +45,10 @@ import TermsofServicePage from './pages/TermsofServicePage';
 import PersonalPolicyPage from './pages/PersonalPolicyPage';
 import InsratgramPage from './pages/InsratgramPage';
 import KaKaoPage from './pages/KaKaoPage';
+import { AuthProvider } from './contexts/AuthContext';
 function App() {
   return (
-    <div>
+    <AuthProvider>
       <Router>
         <Routes>
           <Route path="/" element={<IndexPage />} />
@@ -124,7 +125,7 @@ function App() {
           <Route path="*" element={<NotFound />} />
         </Routes>
       </Router>
-    </div>
+    </AuthProvider>
   );
 }
 

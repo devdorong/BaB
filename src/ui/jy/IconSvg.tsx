@@ -1,7 +1,7 @@
 export const GoogleIconSvg = () => {
   return (
     <svg xmlns="http://www.w3.org/2000/svg" width="25" height="25" viewBox="0 0 25 25" fill="none">
-      <g clip-path="url(#clip0_263_10853)">
+      <g clipPath="url(#clip0_263_10853)">
         <path
           d="M25 12.787C25 11.9373 24.9297 11.083 24.7798 10.2471H12.7507V15.0606H19.6392C19.3534 16.613 18.4349 17.9864 17.09 18.859V21.9823H21.1997C23.613 19.8052 25 16.5901 25 12.787Z"
           fill="#4285F4"
@@ -31,7 +31,7 @@ export const GoogleIconSvg = () => {
 export const KakaoIconSvg = () => {
   return (
     <svg xmlns="http://www.w3.org/2000/svg" width="25" height="25" viewBox="0 0 25 25" fill="none">
-      <g clip-path="url(#clip0_263_10859)">
+      <g clipPath="url(#clip0_263_10859)">
         <path
           d="M21.6434 0H3.35658C1.50279 0 0 1.50279 0 3.35658V21.6434C0 23.4972 1.50279 25 3.35658 25H21.6434C23.4972 25 25 23.4972 25 21.6434V3.35658C25 1.50279 23.4972 0 21.6434 0Z"
           fill="#FBE300"
