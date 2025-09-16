@@ -81,7 +81,7 @@ function ProfilePage() {
   };
 
   return (
-    <div className="flex bg-bg-bg w-screen ">
+    <div className="flex bg-bg-bg ">
       {/* 프로필 헤더 링크 */}
       <div className="flex flex-col w-[1280px] m-auto">
         <div className="flex py-[15px]">

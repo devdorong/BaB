@@ -57,7 +57,7 @@ const MemberHeader = () => {
   }, [user?.id]);
 
   return (
-    <header className="flex items-center w-screen justify-between px-6 bg-white z-20 border border-babgray-150">
+    <header className="flex items-center w-full justify-between bg-white z-20 border border-babgray-150">
       <div className="flex justify-between w-[1280px] h-[70px] items-center mx-auto">
         <Link to={'/member'}>
           <LogoSm />
