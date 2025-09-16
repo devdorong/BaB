@@ -1,5 +1,4 @@
 import styled from 'styled-components';
-import { ItalianFood } from './tag';
 import {
   RiArrowRightLine,
   RiHeart3Line,
@@ -7,6 +6,7 @@ import {
   RiShareLine,
   RiStarFill,
 } from 'react-icons/ri';
+import { ItalianFood } from '../tag';
 
 const CardLayout = styled.div`
   display: inline-flex;
