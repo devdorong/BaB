@@ -1,7 +1,7 @@
 function TermsofServicePage() {
   return (
     <div className="w-full font-normal text-lg bg-bg-bg">
-      <div className="w-[1280px] mx-auto p-8 flex flex-col gap-8 ">
+      <div className="w-[1280px] mx-auto py-16 px-10 flex flex-col gap-8 ">
         <div className="font-bold text-4xl">
           <p>BaB 이용약관</p>
         </div>
@@ -20,7 +20,7 @@ function TermsofServicePage() {
               <li>
                 "파트너"라 함은 가맹점, 사업자 등 서비스 내 제휴 형태로 참여하는 자를 말합니다.
               </li>
-              <li>"관리자"라 함은 회원·파트너의 서비스 이용을 관리하는 운영자를 의미합니다.</li>
+              <li>"관리자"라 함은 회원·파트너의 서비스 이용을 관리하는 운영자를 의미합니다.</li>  
               <li>"매칭"이란, 회원 간 혹은 회원과 파트너 간의 식사 동행 연결을 의미합니다.</li>
             </ol>
           </div>

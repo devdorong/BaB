@@ -4,8 +4,8 @@ import logo from '/images/logo_sm.png';
 
 const MemberFooter = () => {
   return (
-    <div className="w-full flex flex-col gap h-[155px] bg-white text-gray-600 border-babgray bottom-0">
-      <div className="w-[1280px] mx-auto">
+    <div className="w-full flex flex-col gap h-[155px] bg-white text-gray-600 border-t-2">
+      <div className="w-[1280px] mx-auto p-8">
         <div className="justify-center flex gap-4 mx-auto">
           <Link to={`/privacy`}>이용약관</Link>
           <Link to={`/perpolicy`}>
