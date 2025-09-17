@@ -83,7 +83,7 @@ const MemberHeader = () => {
           </div>
           {user ? (
             <>
-              <div className="flex items-center justify-center">
+              <div className="flex items-center justify-center text-babgray-800">
                 <Link to={'/member/profile'}>
                   <span>{profileData?.nickname}님</span>
                 </Link>
@@ -93,7 +93,6 @@ const MemberHeader = () => {
                     <div className="justify-start text-white text-xs font-normal ">3</div>
                   </div>
                 </div>
-                <button onClick={signOut}>로그아웃</button>
               </div>
             </>
           ) : (
@@ -115,25 +114,3 @@ const MemberHeader = () => {
 };
 
 export default MemberHeader;
-
-{
-  /* <Link to="/member" className="text-xl font-bold text-bab-500">
-        BaB
-      </Link>
-
-      <nav className="flex gap-6">
-        <Link to="/member/community">커뮤니티</Link>
-        <Link to="/member/reviews">맛집리뷰</Link>
-        <Link to="/member/events">이벤트</Link>
-        <Link to="/member/support">고객센터</Link>
-      </nav>
-
-      <div className="flex gap-4">
-        <Link to="/member/profile" className="text-babgray-700">
-          프로필
-        </Link>
-        <Link to="/member" className="text-bab-500">
-          로그아웃
-        </Link>
-      </div> */
-}

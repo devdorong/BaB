@@ -49,7 +49,12 @@ import { AuthProvider } from './contexts/AuthContext';
 function App() {
   return (
     <AuthProvider>
-      <Router>
+      <Router
+        future={{
+          v7_relativeSplatPath: true,
+          v7_startTransition: true,
+        }}
+      >
         <Routes>
           <Route path="/" element={<IndexPage />} />
           {/* Member */}
