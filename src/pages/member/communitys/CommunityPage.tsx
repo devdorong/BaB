@@ -1,21 +1,73 @@
+import dayjs from 'dayjs';
+import 'dayjs/locale/ko';
+import relativeTime from 'dayjs/plugin/relativeTime';
+import { useEffect, useState } from 'react';
 import { Link } from 'react-router-dom';
-import { ButtonFillMd } from '../../../ui/button';
+import { useAuth } from '../../../contexts/AuthContext';
 import { supabase } from '../../../lib/supabase';
-import type { Database, posts } from '../../../types/bobType';
-import { useState } from 'react';
+import type { Database, ProfileInsert } from '../../../types/bobType';
+import { ButtonFillMd } from '../../../ui/button';
 
-type CommunityCategoriesType = Database['public']['Tables']['posts']['Row']['post_category'];
+type CategoriesType = Database['public']['Tables']['posts']['Row']['post_category'];
+type CategoryTagType = Database['public']['Tables']['posts']['Row']['tag'];
+// type CategoryTagType = Database['public']['Enums']['post_tag_enum'];
 
-const CommunityCategories: CommunityCategoriesType[] = ['자유게시판', '팁과노하우', '맛집추천요청'];
+type PostWithProfile = {
+  id?: number;
+  post_category: 'CategoriesType';
+  profile_id: string;
+  tag: 'CategoryTagType';
+  title: string;
+  content: string;
+  created_at?: string | null;
+  view_count?: number;
+  profiles: { id: string; nickname: string }[];
+};
+
+dayjs.extend(relativeTime);
+dayjs.locale('ko');
 
 function CommunityPage() {
-  const [activeCategory, setActiveCategory] = useState<CommunityCategoriesType>('자유게시판');
+  const { user } = useAuth();
+  const [activeCategory, setActiveCategory] = useState<CategoriesType>('자유게시판');
+  const [posts, setPosts] = useState<PostWithProfile[]>([]);
+  const [profiles, setProfiles] = useState<ProfileInsert[]>([]);
 
-  const getPosts = async (): Promise<any> => {
-    const { data, error } = await supabase.from('posts').select('*');
-    return data || [];
+  const CommunityCategories: CategoriesType[] = ['자유게시판', '맛집추천요청', '팁과노하우'];
+  const CommunityCategoryLabels: Record<CategoriesType, string> = {
+    자유게시판: '자유게시판',
+    팁과노하우: '팁과노하우',
+    맛집추천요청: '맛집 Q&A · 추천요청',
   };
 
+  useEffect(() => {
+    const fetchPosts = async () => {
+      const { data, error } = await supabase
+        .from('posts')
+        // .select(`id,post_category,tag,title,content,created_at,view_count,profiles(id,nickname)`)
+        .select(`*,profiles(id,nickname)`)
+        .order('created_at', { ascending: true });
+
+      if (error) {
+        console.log(error);
+      } else {
+        setPosts(data);
+      }
+    };
+    fetchPosts();
+  }, []);
+
+  // useEffect(() => {
+  //   const fetchProfiles = async () => {
+  //     const { data, error } = await supabase.from('profiles').select('*');
+  //     if (error) {
+  //       console.log(error);
+  //     } else {
+  //       setProfiles(data as ProfileInsert[]);
+  //     }
+  //   };
+  //   fetchProfiles();
+  // }, []);
   return (
     <div className="w-full bg-bg-bg">
       <div className="w-[1280px] mx-auto flex flex-col gap-10 py-8">
@@ -40,12 +92,24 @@ function CommunityPage() {
                 className={`px-4 py-2 cursor-pointer ${activeCategory === item ? 'text-bab border-b-2 border-bab' : ' text-babgray-700'} hover:text-bab transition-colors`}
                 onClick={() => setActiveCategory(item)}
               >
-                {item}
+                {CommunityCategoryLabels[item]}
               </div>
             ))}
           </div>
-          <div>
-            <div>게시글1</div>
+          <div className="flex flex-col gap-6 py-8">
+            <div className="flex flex-col gap-6 py-8">
+              {posts.map(item => (
+                <div key={item.id}>
+                  <div>{item.tag}</div>
+                  <span>{dayjs(item.created_at).fromNow()}</span>
+                  <p>{item.title}</p>
+                  <p>{item.content}</p>
+                </div>
+              ))}
+            </div>
+            {profiles.map(item => (
+              <div>{item.nickname}</div>
+            ))}
             <div>게시글2</div>
             <div>게시글3</div>
             <div>게시글4</div>

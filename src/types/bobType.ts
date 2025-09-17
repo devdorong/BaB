@@ -34,14 +34,14 @@
  */
 
 // 댓글 좋아요 테이블
-export type comment_like = Database['public']['Tables']['comment_likes']['Row'];
-export type comment_likeInsert = Database['public']['Tables']['comment_likes']['Insert'];
-export type comment_likeUpdate = Database['public']['Tables']['comment_likes']['Update'];
+export type Comment_Like = Database['public']['Tables']['comment_likes']['Row'];
+export type Comment_LikeInsert = Database['public']['Tables']['comment_likes']['Insert'];
+export type Comment_LikeUpdate = Database['public']['Tables']['comment_likes']['Update'];
 
 // 댓글 테이블
-export type comment = Database['public']['Tables']['comments']['Row'];
-export type commentInsert = Database['public']['Tables']['comments']['Insert'];
-export type commentUpdate = Database['public']['Tables']['comments']['Update'];
+export type Comment = Database['public']['Tables']['comments']['Row'];
+export type CommentInsert = Database['public']['Tables']['comments']['Insert'];
+export type CommentUpdate = Database['public']['Tables']['comments']['Update'];
 
 // 사용자 정보 테이블
 export type Profile = Database['public']['Tables']['profiles']['Row'];
@@ -49,146 +49,146 @@ export type ProfileInsert = Database['public']['Tables']['profiles']['Insert'];
 export type ProfileUpdate = Database['public']['Tables']['profiles']['Update'];
 
 // 즐겨찾는 식당 테이블
-export type restaurants_favorite = Database['public']['Tables']['restaurants_favorites']['Row'];
-export type restaurants_favoriteInsert =
+export type Restaurants_Favorite = Database['public']['Tables']['restaurants_favorites']['Row'];
+export type Restaurants_FavoriteInsert =
   Database['public']['Tables']['restaurants_favorites']['Insert'];
-export type restaurants_favoriteUpdate =
+export type Restaurants_FavoriteUpdate =
   Database['public']['Tables']['restaurants_favorites']['Update'];
 
 // 1대1문의 테이블
-export type help = Database['public']['Tables']['helps']['Row'];
-export type helpInsert = Database['public']['Tables']['helps']['Insert'];
-export type helpUpdate = Database['public']['Tables']['helps']['Update'];
+export type Help = Database['public']['Tables']['helps']['Row'];
+export type HelpInsert = Database['public']['Tables']['helps']['Insert'];
+export type HelpUpdate = Database['public']['Tables']['helps']['Update'];
 
 // 배너 테이블
-export type banner = Database['public']['Tables']['banners']['Row'];
-export type bannerInsert = Database['public']['Tables']['banners']['Insert'];
-export type bannerUpdate = Database['public']['Tables']['banners']['Update'];
+export type Banner = Database['public']['Tables']['banners']['Row'];
+export type BannerInsert = Database['public']['Tables']['banners']['Insert'];
+export type BannerUpdate = Database['public']['Tables']['banners']['Update'];
 
 // 쿠폰 테이블
-export type coupon = Database['public']['Tables']['coupons']['Row'];
-export type couponInsert = Database['public']['Tables']['coupons']['Insert'];
-export type couponUpdate = Database['public']['Tables']['coupons']['Update'];
+export type Coupon = Database['public']['Tables']['coupons']['Row'];
+export type CouponInsert = Database['public']['Tables']['coupons']['Insert'];
+export type CouponUpdate = Database['public']['Tables']['coupons']['Update'];
 
 // 이벤트 테이블
-export type events = Database['public']['Tables']['events']['Row'];
-export type eventsInsert = Database['public']['Tables']['events']['Insert'];
-export type eventsUpdate = Database['public']['Tables']['events']['Update'];
+export type Events = Database['public']['Tables']['events']['Row'];
+export type EventsInsert = Database['public']['Tables']['events']['Insert'];
+export type EventsUpdate = Database['public']['Tables']['events']['Update'];
 
 // 관심사 테이블
-export type interests = Database['public']['Tables']['interests']['Row'];
-export type interestsInsert = Database['public']['Tables']['interests']['Insert'];
-export type interestsUpdate = Database['public']['Tables']['interests']['Update'];
+export type Interests = Database['public']['Tables']['interests']['Row'];
+export type InterestsInsert = Database['public']['Tables']['interests']['Insert'];
+export type InterestsUpdate = Database['public']['Tables']['interests']['Update'];
 
 // 매칭 참가자 테이블
-export type matching_participants = Database['public']['Tables']['matching_participants']['Row'];
-export type matching_participantsInsert =
+export type Matching_Participants = Database['public']['Tables']['matching_participants']['Row'];
+export type Matching_ParticipantsInsert =
   Database['public']['Tables']['matching_participants']['Insert'];
-export type matching_participantsUpdate =
+export type Matching_ParticipantsUpdate =
   Database['public']['Tables']['matching_participants']['Update'];
 // 매칭 테이블
-export type matchings = Database['public']['Tables']['matchings']['Row'];
-export type matchingsInsert = Database['public']['Tables']['matchings']['Insert'];
-export type matchingsUpdate = Database['public']['Tables']['matchings']['Update'];
+export type Matchings = Database['public']['Tables']['matchings']['Row'];
+export type MatchingsInsert = Database['public']['Tables']['matchings']['Insert'];
+export type MatchingsUpdate = Database['public']['Tables']['matchings']['Update'];
 
 // 메뉴 테이블
-export type menus = Database['public']['Tables']['menus']['Row'];
-export type menusInsert = Database['public']['Tables']['menus']['Insert'];
-export type menusUpdate = Database['public']['Tables']['menus']['Update'];
+export type Menus = Database['public']['Tables']['menus']['Row'];
+export type MenusInsert = Database['public']['Tables']['menus']['Insert'];
+export type MenusUpdate = Database['public']['Tables']['menus']['Update'];
 
 // 알림 테이블
-export type notifications = Database['public']['Tables']['notifications']['Row'];
-export type notificationsInsert = Database['public']['Tables']['notifications']['Insert'];
-export type notificationsUpdate = Database['public']['Tables']['notifications']['Update'];
+export type Notifications = Database['public']['Tables']['notifications']['Row'];
+export type NotificationsInsert = Database['public']['Tables']['notifications']['Insert'];
+export type NotificationsUpdate = Database['public']['Tables']['notifications']['Update'];
 
 // 주문내역 테이블
-export type order_items = Database['public']['Tables']['order_items']['Row'];
-export type order_itemsInsert = Database['public']['Tables']['order_items']['Insert'];
-export type order_itemsUpdate = Database['public']['Tables']['order_items']['Update'];
+export type Order_Items = Database['public']['Tables']['order_items']['Row'];
+export type Order_ItemsInsert = Database['public']['Tables']['order_items']['Insert'];
+export type Order_ItemsUpdate = Database['public']['Tables']['order_items']['Update'];
 
 // 주문상태 테이블
-export type orders = Database['public']['Tables']['orders']['Row'];
-export type ordersInsert = Database['public']['Tables']['orders']['Insert'];
-export type ordersUpdate = Database['public']['Tables']['orders']['Update'];
+export type Orders = Database['public']['Tables']['orders']['Row'];
+export type OrdersInsert = Database['public']['Tables']['orders']['Insert'];
+export type OrdersUpdate = Database['public']['Tables']['orders']['Update'];
 
 // 파트너 상태 테이블 (승인대기, 승인거절 등등..)
-export type partner_applications = Database['public']['Tables']['partner_applications']['Row'];
-export type partner_applicationsInsert =
+export type Partner_Applications = Database['public']['Tables']['partner_applications']['Row'];
+export type Partner_ApplicationsInsert =
   Database['public']['Tables']['partner_applications']['Insert'];
-export type partner_applicationsUpdate =
+export type Partner_ApplicationsUpdate =
   Database['public']['Tables']['partner_applications']['Update'];
 
 // 포인트 테이블
-export type point_changes = Database['public']['Tables']['point_changes']['Row'];
-export type point_changesInsert = Database['public']['Tables']['point_changes']['Insert'];
-export type point_changesUpdate = Database['public']['Tables']['point_changes']['Update'];
+export type Point_Changes = Database['public']['Tables']['point_changes']['Row'];
+export type Point_ChangesInsert = Database['public']['Tables']['point_changes']['Insert'];
+export type Point_ChangesUpdate = Database['public']['Tables']['point_changes']['Update'];
 
 // 포인트 적립 타입 테이블
-export type point_ruless = Database['public']['Tables']['point_ruless']['Row'];
-export type point_rulessInsert = Database['public']['Tables']['point_ruless']['Insert'];
-export type point_rulessUpdate = Database['public']['Tables']['point_ruless']['Update'];
+export type Point_Ruless = Database['public']['Tables']['point_ruless']['Row'];
+export type Point_RulessInsert = Database['public']['Tables']['point_ruless']['Insert'];
+export type Point_RulessUpdate = Database['public']['Tables']['point_ruless']['Update'];
 
 // 게시글 테이블
-export type posts = Database['public']['Tables']['posts']['Row'];
-export type postsInsert = Database['public']['Tables']['posts']['Insert'];
-export type postsUpdate = Database['public']['Tables']['posts']['Update'];
+export type Posts = Database['public']['Tables']['posts']['Row'];
+export type PostsInsert = Database['public']['Tables']['posts']['Insert'];
+export type PostsUpdate = Database['public']['Tables']['posts']['Update'];
 
 // 사용자 차단 테이블
-export type profile_blocks = Database['public']['Tables']['profile_blocks']['Row'];
-export type profile_blocksInsert = Database['public']['Tables']['profile_blocks']['Insert'];
-export type profile_blocksUpdate = Database['public']['Tables']['profile_blocks']['Update'];
+export type Profile_Blocks = Database['public']['Tables']['profile_blocks']['Row'];
+export type Profile_BlocksInsert = Database['public']['Tables']['profile_blocks']['Insert'];
+export type Profile_BlocksUpdate = Database['public']['Tables']['profile_blocks']['Update'];
 
 // 사용자 쿠폰 테이블
-export type profile_coupons = Database['public']['Tables']['profile_coupons']['Row'];
-export type profile_couponsInsert = Database['public']['Tables']['profile_coupons']['Insert'];
-export type profile_couponsUpdate = Database['public']['Tables']['profile_coupons']['Update'];
+export type Profile_Coupons = Database['public']['Tables']['profile_coupons']['Row'];
+export type Profile_CouponsInsert = Database['public']['Tables']['profile_coupons']['Insert'];
+export type Profile_CouponsUpdate = Database['public']['Tables']['profile_coupons']['Update'];
 
 // 사용자 관심사 테이블
-export type profile_interests = Database['public']['Tables']['profile_interests']['Row'];
-export type profile_interestsInsert = Database['public']['Tables']['profile_interests']['Insert'];
-export type profile_interestsUpdate = Database['public']['Tables']['profile_interests']['Update'];
+export type Profile_Interests = Database['public']['Tables']['profile_interests']['Row'];
+export type Profile_InterestsInsert = Database['public']['Tables']['profile_interests']['Insert'];
+export type Profile_InterestsUpdate = Database['public']['Tables']['profile_interests']['Update'];
 
 // 사용자 포인트 테이블
-export type profile_points = Database['public']['Tables']['profile_points']['Row'];
-export type profile_pointsInsert = Database['public']['Tables']['profile_points']['Insert'];
-export type profile_pointsUpdate = Database['public']['Tables']['profile_points']['Update'];
+export type Profile_Points = Database['public']['Tables']['profile_points']['Row'];
+export type Profile_PointsInsert = Database['public']['Tables']['profile_points']['Insert'];
+export type Profile_PointsUpdate = Database['public']['Tables']['profile_points']['Update'];
 
 // 신고 테이블
-export type reports = Database['public']['Tables']['reports']['Row'];
-export type reportsInsert = Database['public']['Tables']['reports']['Insert'];
-export type reportsUpdate = Database['public']['Tables']['reports']['Update'];
+export type Reports = Database['public']['Tables']['reports']['Row'];
+export type ReportsInsert = Database['public']['Tables']['reports']['Insert'];
+export type ReportsUpdate = Database['public']['Tables']['reports']['Update'];
 
 // 가게 관심사 테이블
-export type restaurant_interests = Database['public']['Tables']['restaurant_interests']['Row'];
-export type restaurant_interestsInsert =
+export type Restaurant_Interests = Database['public']['Tables']['restaurant_interests']['Row'];
+export type Restaurant_InterestsInsert =
   Database['public']['Tables']['restaurant_interests']['Insert'];
-export type restaurant_interestsUpdate =
+export type Restaurant_InterestsUpdate =
   Database['public']['Tables']['restaurant_interests']['Update'];
 
 // 가게 테이블
-export type restaurants = Database['public']['Tables']['restaurants']['Row'];
-export type restaurantsInsert = Database['public']['Tables']['restaurants']['Insert'];
-export type restaurantsUpdate = Database['public']['Tables']['restaurants']['Update'];
+export type Restaurants = Database['public']['Tables']['restaurants']['Row'];
+export type RestaurantsInsert = Database['public']['Tables']['restaurants']['Insert'];
+export type RestaurantsUpdate = Database['public']['Tables']['restaurants']['Update'];
 
 // 리뷰 좋아요 테이블
-export type review_likes = Database['public']['Tables']['review_likes']['Row'];
-export type review_likesInsert = Database['public']['Tables']['review_likes']['Insert'];
-export type review_likesUpdate = Database['public']['Tables']['review_likes']['Update'];
+export type Review_Likes = Database['public']['Tables']['review_likes']['Row'];
+export type Review_LikesInsert = Database['public']['Tables']['review_likes']['Insert'];
+export type Review_LikesUpdate = Database['public']['Tables']['review_likes']['Update'];
 
 // 리뷰 사진 테이블
-export type review_photos = Database['public']['Tables']['review_photos']['Row'];
-export type review_photosInsert = Database['public']['Tables']['review_photos']['Insert'];
-export type review_photosUpdate = Database['public']['Tables']['review_photos']['Update'];
+export type Review_Photos = Database['public']['Tables']['review_photos']['Row'];
+export type Review_PhotosInsert = Database['public']['Tables']['review_photos']['Insert'];
+export type Review_PhotosUpdate = Database['public']['Tables']['review_photos']['Update'];
 
 // 리뷰 테이블
-export type reviews = Database['public']['Tables']['reviews']['Row'];
-export type reviewsInsert = Database['public']['Tables']['reviews']['Insert'];
-export type reviewsUpdate = Database['public']['Tables']['reviews']['Update'];
+export type Reviews = Database['public']['Tables']['reviews']['Row'];
+export type ReviewsInsert = Database['public']['Tables']['reviews']['Insert'];
+export type ReviewsUpdate = Database['public']['Tables']['reviews']['Update'];
 
 // 정산 테이블
-export type sales = Database['public']['Tables']['sales']['Row'];
-export type salesInsert = Database['public']['Tables']['sales']['Insert'];
-export type salesUpdate = Database['public']['Tables']['sales']['Update'];
+export type Sales = Database['public']['Tables']['sales']['Row'];
+export type SalesInsert = Database['public']['Tables']['sales']['Insert'];
+export type SalesUpdate = Database['public']['Tables']['sales']['Update'];
 
 export type Json = string | number | boolean | null | { [key: string]: Json | undefined } | Json[];
 
