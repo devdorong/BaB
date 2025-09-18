@@ -14,14 +14,15 @@ type CategoryTagType = Database['public']['Tables']['posts']['Row']['tag'];
 
 type PostWithProfile = {
   id?: number;
-  post_category: 'CategoriesType';
+  post_category: CategoriesType;
   profile_id: string;
-  tag: 'CategoryTagType';
+  tag: CategoryTagType;
   title: string;
   content: string;
   created_at?: string | null;
   view_count?: number;
-  profiles: { id: string; nickname: string }[];
+  profiles: { id: string; nickname: string } | null;
+  comments: { id: number }[];
 };
 
 dayjs.extend(relativeTime);
@@ -37,21 +38,38 @@ function CommunityPage() {
   const CommunityCategoryLabels: Record<CategoriesType, string> = {
     자유게시판: '자유게시판',
     팁과노하우: '팁과노하우',
-    맛집추천요청: '맛집 Q&A · 추천요청',
+    맛집추천요청: 'Q&A',
   };
 
   useEffect(() => {
     const fetchPosts = async () => {
       const { data, error } = await supabase
         .from('posts')
-        // .select(`id,post_category,tag,title,content,created_at,view_count,profiles(id,nickname)`)
-        .select(`*,profiles(id,nickname)`)
-        .order('created_at', { ascending: true });
+        .select(
+          `id,
+    title,
+    content,
+    created_at,
+    post_category,
+    profile_id,
+    tag,
+    view_count,
+    profiles (
+      id,
+      nickname
+    ),comments (
+      id
+    )`,
+        )
+        .returns<PostWithProfile[]>();
+      // .typed<PostWithProfile[]>()
+      // .select(`*,profiles(id,nickname)`)
+      // .order('created_at', { ascending: true });
 
       if (error) {
         console.log(error);
       } else {
-        setPosts(data);
+        setPosts(data as PostWithProfile[]);
       }
     };
     fetchPosts();
@@ -99,11 +117,24 @@ function CommunityPage() {
           <div className="flex flex-col gap-6 py-8">
             <div className="flex flex-col gap-6 py-8">
               {posts.map(item => (
-                <div key={item.id}>
-                  <div>{item.tag}</div>
-                  <span>{dayjs(item.created_at).fromNow()}</span>
-                  <p>{item.title}</p>
-                  <p>{item.content}</p>
+                <div
+                  key={item.id}
+                  className="w-full h-auto flex flex-col gap-4 bg-white shadow-card rounded-xl2 py-4 px-8 "
+                >
+                  <div className="flex justify-between">
+                    <div>{item.tag}</div>
+                    <span>{dayjs(item.created_at).fromNow()}</span>
+                  </div>
+                  <div className="flex flex-col gap-3">
+                    <p className="">{item.title}</p>
+                    <p>{item.content}</p>
+                  </div>
+                  <div>
+                    <p>{item.profiles?.nickname}</p>
+                    <div>
+                      <span>{item.comments?.length}</span>
+                    </div>
+                  </div>
                 </div>
               ))}
             </div>
