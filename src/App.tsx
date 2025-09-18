@@ -47,36 +47,35 @@ import InsratgramPage from './pages/InsratgramPage';
 import KaKaoPage from './pages/KaKaoPage';
 import { AuthProvider } from './contexts/AuthContext';
 import { PointProvider } from './contexts/BabContext';
-import KkoMap from './components/member/KkoMap';
-
 function App() {
   return (
     <AuthProvider>
-      <Router
-        future={{
-          v7_relativeSplatPath: true,
-          v7_startTransition: true,
-        }}
-      >
-        <PointProvider>
-        <Routes>
-          <Route path="/" element={<IndexPage />} />
-          {/* Member */}
-          <Route path="/member" element={<MemberLayout />}>
-            <Route index element={<MemberPage />} />
-            <Route path="posts">
-              <Route index element={<PostsListPage />} />
-              <Route path="write" element={<PostsWritePage />} />
-              <Route path="detail" element={<PostDetailPage />} />
-            </Route>
-            <Route path="community">
-              <Route index element={<CommunityPage />} />
-              <Route path="write" element={<CommunityWritePage />} />
-              <Route path="detail" element={<CommunityDetailPage />} />
-            </Route>
-            <Route path="reviews">
-              <Route index element={<ReviewsPage />} />
-              <Route path="detail" element={<ReviewDetailPage />} />
+      <PointProvider>
+        <Router
+          future={{
+            v7_relativeSplatPath: true,
+            v7_startTransition: true,
+          }}
+        >
+          <Routes>
+            <Route path="/" element={<IndexPage />} />
+            {/* Member */}
+            <Route path="/member" element={<MemberLayout />}>
+              <Route index element={<MemberPage />} />
+              <Route path="posts">
+                <Route index element={<PostsListPage />} />
+                <Route path="write" element={<PostsWritePage />} />
+                <Route path="detail" element={<PostDetailPage />} />
+              </Route>
+              <Route path="community">
+                <Route index element={<CommunityPage />} />
+                <Route path="write" element={<CommunityWritePage />} />
+                <Route path="detail" element={<CommunityDetailPage />} />
+              </Route>
+              <Route path="reviews">
+                <Route index element={<ReviewsPage />} />
+                <Route path="detail" element={<ReviewDetailPage />} />
+              </Route>
               <Route path="events" element={<EventPage />} />
               <Route path="support" element={<SupportPage />} />
               <Route path="profile">
@@ -90,6 +89,7 @@ function App() {
                 <Route path="block" element={<BlockPage />} />
               </Route>
             </Route>
+
             {/* 이용약관/개인정보처리방침 */}
             <Route path="/" element={<MemberLayout />}>
               <Route path="privacy" element={<TermsofServicePage />} />

@@ -1169,8 +1169,8 @@ export type Database = {
         | "invite_friend"
         | "favorite_restaurant"
         | "coupon_redeem"
-      post_category_enum: "자유게시판" | "팁과노하우" | "맛집추천요청"
-      post_tag_enum: "자유" | "맛집추천요청" | "Q&A" | "팁&노하우"
+      post_category_enum: "자유게시판" | "팁과노하우" | "Q&A"
+      post_tag_enum: "자유" | "맛집추천요청" | "Q&A" | "TIP"
       profile_status_enum: "활성" | "정지" | "탈퇴"
       report_status_enum: "대기" | "차단" | "검토완료"
       report_type_enum:
@@ -1339,8 +1339,8 @@ export const Constants = {
         "favorite_restaurant",
         "coupon_redeem",
       ],
-      post_category_enum: ["자유게시판", "팁과노하우", "맛집추천요청"],
-      post_tag_enum: ["자유", "맛집추천요청", "Q&A", "팁&노하우"],
+      post_category_enum: ["자유게시판", "팁과노하우", "Q&A"],
+      post_tag_enum: ["자유", "맛집추천요청", "Q&A", "TIP"],
       profile_status_enum: ["활성", "정지", "탈퇴"],
       report_status_enum: ["대기", "차단", "검토완료"],
       report_type_enum: [
