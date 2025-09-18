@@ -25,11 +25,14 @@ import {
 } from 'react-icons/ri';
 import { Cafe, ChineseFood, GrayTag, Indoor, KFood, OrangeTag } from '../../../ui/tag';
 import { ButtonFillMd } from '../../../ui/button';
+import { usePoint } from '../../../contexts/BabContext';
 
 function ProfilePage() {
   const { user } = useAuth();
   // 네비게이터
   const navigate = useNavigate();
+
+  const { point } = usePoint();
 
   // 로딩
   const [loading, setLoading] = useState<boolean>(true);
@@ -124,7 +127,9 @@ function ProfilePage() {
                 </div>
                 {/* 포인트 */}
                 <div className="text-center py-[23px]">
-                  <div className="text-[22px] font-bold text-yellow-500">포인트금액</div>
+                  <div className="text-[28px] font-bold text-yellow-500">
+                    {point.toLocaleString()}P
+                  </div>
                   <div className="text-[14px] text-babgray-600">포인트</div>
                 </div>
                 {/* 라인 */}

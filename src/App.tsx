@@ -46,85 +46,89 @@ import PersonalPolicyPage from './pages/PersonalPolicyPage';
 import InsratgramPage from './pages/InsratgramPage';
 import KaKaoPage from './pages/KaKaoPage';
 import { AuthProvider } from './contexts/AuthContext';
+import { PointProvider } from './contexts/BabContext';
 function App() {
   return (
     <AuthProvider>
-      <Router>
-        <Routes>
-          <Route path="/" element={<IndexPage />} />
-          {/* Member */}
-          <Route path="/member" element={<MemberLayout />}>
-            <Route index element={<MemberPage />} />
-            <Route path="posts">
-              <Route index element={<PostsListPage />} />
-              <Route path="write" element={<PostsWritePage />} />
-              <Route path="detail" element={<PostDetailPage />} />
+      <PointProvider>
+        <Router>
+          <Routes>
+            <Route path="/" element={<IndexPage />} />
+            {/* Member */}
+            <Route path="/member" element={<MemberLayout />}>
+              <Route index element={<MemberPage />} />
+              <Route path="posts">
+                <Route index element={<PostsListPage />} />
+                <Route path="write" element={<PostsWritePage />} />
+                <Route path="detail" element={<PostDetailPage />} />
+              </Route>
+              <Route path="community">
+                <Route index element={<CommunityPage />} />
+                <Route path="write" element={<CommunityWritePage />} />
+                <Route path="detail" element={<CommunityDetailPage />} />
+              </Route>
+              <Route path="reviews">
+                <Route index element={<ReviewsPage />} />
+                <Route path="detail" element={<ReviewDetailPage />} />
+              </Route>
+              <Route path="events" element={<EventPage />} />
+              <Route path="support" element={<SupportPage />} />
+
+              <Route path="profile">
+                <Route index element={<ProfilePage />} />
+                <Route path="edit" element={<EditPage />} />
+                <Route path="interest" element={<InterestPage />} />
+                <Route path="chat" element={<ChatPage />} />
+                <Route path="point" element={<PointPage />} />
+                <Route path="favorite" element={<FavoritePage />} />
+                <Route path="recentmatching" element={<RecentMatchingPage />} />
+                <Route path="block" element={<BlockPage />} />
+              </Route>
             </Route>
-            <Route path="community">
-              <Route index element={<CommunityPage />} />
-              <Route path="write" element={<CommunityWritePage />} />
-              <Route path="detail" element={<CommunityDetailPage />} />
+            {/* 이용약관/개인정보처리방침 */}
+            <Route path="/" element={<MemberLayout />}>
+              <Route path="privacy" element={<TermsofServicePage />} />
+              <Route path="perpolicy" element={<PersonalPolicyPage />} />
             </Route>
-            <Route path="reviews">
-              <Route index element={<ReviewsPage />} />
-              <Route path="detail" element={<ReviewDetailPage />} />
+
+            {/* 소셜 */}
+            <Route path="/instar" element={<InsratgramPage />} />
+            <Route path="/kakao" element={<KaKaoPage />} />
+
+            {/* 헤더없는 화면 */}
+            <Route element={<BareLayout />}>
+              <Route path="member/login" element={<MemberLoginPage />} />
+              <Route path="member/signup" element={<MemberSignupPage />} />
+              <Route path="partner/login" element={<PartnerLoginPage />} />
+              <Route path="partner/signup" element={<PartnerSignupPage />} />
             </Route>
-            <Route path="events" element={<EventPage />} />
-            <Route path="support" element={<SupportPage />} />
-            <Route path="profile">
-              <Route index element={<ProfilePage />} />
-              <Route path="edit" element={<EditPage />} />
-              <Route path="interest" element={<InterestPage />} />
-              <Route path="chat" element={<ChatPage />} />
-              <Route path="point" element={<PointPage />} />
-              <Route path="favorite" element={<FavoritePage />} />
-              <Route path="recentmatching" element={<RecentMatchingPage />} />
-              <Route path="block" element={<BlockPage />} />
+
+            {/* Partner */}
+            <Route path="/partner" element={<PartnerLayout />}>
+              <Route index element={<DashboardPage />} />
+              <Route path="restaurant" element={<RestaurantPage />} />
+              <Route path="menus" element={<MenusPage />} />
+              <Route path="orders" element={<OrdersPage />} />
+              <Route path="sale" element={<SalesPage />} />
+              <Route path="review" element={<ReviewPage />} />
+              <Route path="notification" element={<NotificationPage />} />
+              <Route path="settings" element={<SettingsPage />} />
             </Route>
-          </Route>
-          {/* 이용약관/개인정보처리방침 */}
-          <Route path="/" element={<MemberLayout />}>
-            <Route path="privacy" element={<TermsofServicePage />} />
-            <Route path="perpolicy" element={<PersonalPolicyPage />} />
-          </Route>
 
-          {/* 소셜 */}
-          <Route path="/instar" element={<InsratgramPage />} />
-          <Route path="/kakao" element={<KaKaoPage />} />
+            {/* Admin */}
+            <Route path="/admin" element={<AdminLayout />}>
+              <Route index element={<AdminMembersPage />} />
+              <Route path="partners" element={<AdminPartnersPage />} />
+              <Route path="matching" element={<AdminMatchingPage />} />
+              <Route path="reports" element={<AdminReportsPage />} />
+              <Route path="settings" element={<AdminSettingsPage />} />
+            </Route>
 
-          {/* 헤더없는 화면 */}
-          <Route element={<BareLayout />}>
-            <Route path="member/login" element={<MemberLoginPage />} />
-            <Route path="member/signup" element={<MemberSignupPage />} />
-            <Route path="partner/login" element={<PartnerLoginPage />} />
-            <Route path="partner/signup" element={<PartnerSignupPage />} />
-          </Route>
-
-          {/* Partner */}
-          <Route path="/partner" element={<PartnerLayout />}>
-            <Route index element={<DashboardPage />} />
-            <Route path="restaurant" element={<RestaurantPage />} />
-            <Route path="menus" element={<MenusPage />} />
-            <Route path="orders" element={<OrdersPage />} />
-            <Route path="sale" element={<SalesPage />} />
-            <Route path="review" element={<ReviewPage />} />
-            <Route path="notification" element={<NotificationPage />} />
-            <Route path="settings" element={<SettingsPage />} />
-          </Route>
-
-          {/* Admin */}
-          <Route path="/admin" element={<AdminLayout />}>
-            <Route index element={<AdminMembersPage />} />
-            <Route path="partners" element={<AdminPartnersPage />} />
-            <Route path="matching" element={<AdminMatchingPage />} />
-            <Route path="reports" element={<AdminReportsPage />} />
-            <Route path="settings" element={<AdminSettingsPage />} />
-          </Route>
-
-          {/* Not Found */}
-          <Route path="*" element={<NotFound />} />
-        </Routes>
-      </Router>
+            {/* Not Found */}
+            <Route path="*" element={<NotFound />} />
+          </Routes>
+        </Router>
+      </PointProvider>
     </AuthProvider>
   );
 }
