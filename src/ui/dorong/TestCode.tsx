@@ -37,7 +37,7 @@ function PostList() {
           )
         `,
         )
-        .order('id', { ascending: false });
+        .returns<PostWithNickname[]>();
 
       if (error) {
         console.error('에러:', error.message);

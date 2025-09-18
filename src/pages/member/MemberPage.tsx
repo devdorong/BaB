@@ -1,17 +1,11 @@
-import { useEffect, useState } from 'react';
 import Banner from '../../components/member/Banner';
+import KkoMap from '../../components/member/KkoMap';
 import MachingIndex from '../../components/member/MachingIndex';
-import PostList from '../../ui/dorong/TestCode';
+import { useKakaoLoader } from '../../hooks/useKakaoLoader';
 
 function MemberPage() {
   //ts
-  // const [isMapLoaded, setIsMaploaded] = useState(false);
-  // useEffect(() => {
-  //   const kakaoMapScript = document.createElement('script');
-  //   kakaoMapScript.async = true;
-  //   kakaoMapScript.src = `//dapi.kakao.com/v2/maps/sdk.js?appkey=${process.env.VITE_KKO_MAP_JS_API_KEY}&autoload=false&libraries=services,clusterer`;
-  // }, []);
-
+  const isMapLoaded = useKakaoLoader();
   //tsx
   return (
     <div className="min-h-[1000px]">
@@ -25,7 +19,11 @@ function MemberPage() {
       </div>
       {/* 내주변 맛집 */}
       <div>
-        <PostList />
+        {isMapLoaded ? (
+          <KkoMap />
+        ) : (
+          <div className="py-10 text-center text-babgray-600">지도를 불러오는 중입니다...</div>
+        )}
       </div>
       {/* 최근 올라온 리뷰 */}
       <div></div>

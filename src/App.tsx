@@ -46,6 +46,7 @@ import PersonalPolicyPage from './pages/PersonalPolicyPage';
 import InsratgramPage from './pages/InsratgramPage';
 import KaKaoPage from './pages/KaKaoPage';
 import { AuthProvider } from './contexts/AuthContext';
+import KkoMap from './components/member/KkoMap';
 function App() {
   return (
     <AuthProvider>
@@ -125,6 +126,8 @@ function App() {
             <Route path="reports" element={<AdminReportsPage />} />
             <Route path="settings" element={<AdminSettingsPage />} />
           </Route>
+          {/* 테스트 */}
+          <Route path="/kakaomaptest" element={<KkoMap />} />
 
           {/* Not Found */}
           <Route path="*" element={<NotFound />} />
