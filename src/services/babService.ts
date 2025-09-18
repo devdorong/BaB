@@ -1,8 +1,7 @@
 import { supabase } from '../lib/supabase';
-import type { profile_points, profile_pointsInsert } from '../types/bobType';
-
+import type { Profile_Points } from '../types/bobType';
 // 포인트 조회
-export const GetPoint = async (): Promise<profile_points | null> => {
+export const GetPoint = async (): Promise<Profile_Points | null> => {
   try {
     const {
       data: { user },
@@ -28,7 +27,7 @@ export const GetPoint = async (): Promise<profile_points | null> => {
 };
 
 // 포인트 생성
-export const createPoint = async (): Promise<profile_points | null> => {
+export const createPoint = async (): Promise<Profile_Points | null> => {
   try {
     // 현재 로그인 한 사용자 정보 가져오기
     const {

@@ -34,11 +34,11 @@ function CommunityPage() {
   const [posts, setPosts] = useState<PostWithProfile[]>([]);
   const [profiles, setProfiles] = useState<ProfileInsert[]>([]);
 
-  const CommunityCategories: CategoriesType[] = ['자유게시판', '맛집추천요청', '팁과노하우'];
+  const CommunityCategories: CategoriesType[] = ['자유게시판', 'Q&A', '팁과노하우'];
   const CommunityCategoryLabels: Record<CategoriesType, string> = {
     자유게시판: '자유게시판',
     팁과노하우: '팁과노하우',
-    맛집추천요청: 'Q&A',
+    'Q&A': 'Q&A',
   };
 
   useEffect(() => {

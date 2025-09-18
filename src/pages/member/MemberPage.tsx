@@ -1,6 +1,6 @@
-import Banner from '../../components/member/Banner';
 import KkoMap from '../../components/member/KkoMap';
 import MachingIndex from '../../components/member/MachingIndex';
+import MainBanner from '../../components/member/MainBanner';
 import { useKakaoLoader } from '../../hooks/useKakaoLoader';
 
 function MemberPage() {
@@ -8,10 +8,10 @@ function MemberPage() {
   const isMapLoaded = useKakaoLoader();
   //tsx
   return (
-    <div className="min-h-[1000px]">
+    <div className="min-h-[2000px]">
       {/* 배너 */}
       <div>
-        <Banner />
+        <MainBanner />
       </div>
       {/* 매칭대기중 */}
       <div>

@@ -1,11 +1,11 @@
 import React, { useEffect, useState } from 'react';
 import { RiCoupon2Line } from 'react-icons/ri';
-import type { coupon } from '../../types/bobType';
 import { supabase } from '../../lib/supabase';
 import { ButtonFillMd, ButtonLineMd } from '../../ui/button';
+import type { Coupon } from '../../types/bobType';
 
 const RewardChange = () => {
-  const [coupons, setCoupons] = useState<coupon[]>([]);
+  const [coupons, setCoupons] = useState<Coupon[]>([]);
   const [loading, setLoading] = useState(true);
 
   useEffect(() => {
