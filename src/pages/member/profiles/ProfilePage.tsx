@@ -1,8 +1,4 @@
-import { Link, Outlet, useNavigate } from 'react-router-dom';
-import { useAuth } from '../../../contexts/AuthContext';
 import { useEffect, useState } from 'react';
-import type { Profile } from '../../../types/bobType';
-import { getProfile } from '../../../lib/propile';
 import {
   RiArrowRightSLine,
   RiBardFill,
@@ -13,22 +9,19 @@ import {
   RiMailLine,
   RiMastercardLine,
   RiPhoneLine,
-  RiUser2Fill,
-  RiUser2Line,
-  RiUser3Fill,
-  RiUser3Line,
-  RiUser4Line,
-  RiUser5Line,
-  RiUser6Line,
   RiUserLine,
   RiVisaLine,
 } from 'react-icons/ri';
-import { Cafe, ChineseFood, GrayTag, Indoor, KFood, OrangeTag } from '../../../ui/tag';
+import { Link, useNavigate } from 'react-router-dom';
+import { useAuth } from '../../../contexts/AuthContext';
+import { getProfile } from '../../../lib/propile';
+import type { Profile } from '../../../types/bobType';
 import { ButtonFillMd } from '../../../ui/button';
+import { Cafe, ChineseFood, GrayTag, Indoor, KFood, OrangeTag } from '../../../ui/tag';
 import { usePoint } from '../../../contexts/BabContext';
 
 function ProfilePage() {
-  const { user } = useAuth();
+  const { user, signOut } = useAuth();
   // 네비게이터
   const navigate = useNavigate();
 
@@ -81,6 +74,12 @@ function ProfilePage() {
 
     const [first, middle, last] = path;
     return `${first}-${middle.slice(0, 2)}**-${last.slice(0, 2)}**`;
+  };
+
+  // 로그아웃 처리
+  const handleLogout = () => {
+    signOut();
+    navigate('/member');
   };
 
   return (
@@ -330,7 +329,10 @@ function ProfilePage() {
                 <div className="text-center justify-start text-babgray-400 text-base font-medium">
                   |
                 </div>
-                <div className="text-center justify-start text-babgray-400 text-base font-medium">
+                <div
+                  onClick={handleLogout}
+                  className="text-center justify-start text-babgray-400 text-base font-medium cursor-pointer"
+                >
                   로그아웃
                 </div>
               </div>
