@@ -51,6 +51,7 @@ function CommunityPage() {
     자유: <BlueTag>자유</BlueTag>,
     'Q&A': <GreenTag>Q&A</GreenTag>,
     TIP: <PurpleTag>TIP</PurpleTag>,
+
   };
 
   const filteredPosts = posts

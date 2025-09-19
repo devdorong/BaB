@@ -63,3 +63,12 @@ body,
   font-weight: normal;
   src: url('./fonts/NotoSansKR-VariableFont_wght.ttf') format('truetype');
 }
+
+/* src/index.css 같은 곳에 */
+.scrollbar-hide::-webkit-scrollbar {
+  display: none;
+}
+.scrollbar-hide {
+  -ms-overflow-style: none; /* IE, Edge */
+  scrollbar-width: none; /* Firefox */
+}

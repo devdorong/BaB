@@ -1,5 +1,6 @@
 import React, { useEffect, useState } from 'react';
 import { RiCoupon2Line } from 'react-icons/ri';
+
 import type { Coupon, Profile_Points } from '../../types/bobType';
 import { supabase } from '../../lib/supabase';
 import { ButtonFillMd, ButtonLineMd } from '../../ui/button';
@@ -9,6 +10,7 @@ import { useAuth } from '../../contexts/AuthContext';
 
 const RewardChange = () => {
   const { user } = useAuth();
+
   const [coupons, setCoupons] = useState<Coupon[]>([]);
   const [loading, setLoading] = useState(true);
   const { subPoint, refreshPoint } = usePoint();

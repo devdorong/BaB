@@ -1,4 +1,5 @@
 import { supabase } from '../lib/supabase';
+
 import type { Point_Changes, Profile_Coupons, Profile_Points } from '../types/bobType';
 
 // 포인트 조회

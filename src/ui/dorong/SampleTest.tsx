@@ -1,11 +1,11 @@
 import { useState } from 'react';
-import type { Database, posts } from '../../types/bobType';
+import type { Database } from '../../types/bobType';
 
 // Supabase enum 타입 정의
 type PostTag = Database['public']['Enums']['post_tag_enum'];
 
 // 샘플 태그 리스트
-const TAGS: PostTag[] = ['자유', '맛집추천요청', 'Q&A', '팁&노하우'];
+const TAGS: PostTag[] = ['자유', '맛집추천요청', 'Q&A'];
 
 export default function TagSelector() {
   const [selectedTags, setSelectedTags] = useState<PostTag[]>([]);
