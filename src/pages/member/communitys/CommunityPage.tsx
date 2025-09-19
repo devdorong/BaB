@@ -34,6 +34,7 @@ function CommunityPage() {
 
   const CommunityCategories: CategoriesType[] = ['자유게시판', 'Q&A', '팁과노하우'];
 
+
   type UiCategory = (typeof UiCategories)[number];
   const UiCategories = ['전체', ...CommunityCategories] as const;
 
@@ -43,6 +44,7 @@ function CommunityPage() {
     자유: '자유게시판',
     'Q&A': 'Q&A',
     TIP: '팁과노하우',
+
   };
 
   const tagComponents: Record<FilteredTag, JSX.Element> = {
