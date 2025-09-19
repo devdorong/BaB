@@ -9,3 +9,7 @@ export const LogoMd = () => {
 export const LogoLg = () => {
   return <img src="/images/logo_lg.png" />;
 };
+
+export const PartnerLogo = () => {
+  return <img src="/images/partner_logo.png" />
+}

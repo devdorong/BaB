@@ -3,7 +3,7 @@ import { useNavigate } from 'react-router-dom';
 function IndexPage() {
   const navigate = useNavigate();
   const handleClickPartner = () => {
-    navigate('/partner');
+    navigate('/partner/login');
   };
   const handleClickMember = () => {
     navigate('/member');

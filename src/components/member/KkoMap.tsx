@@ -51,7 +51,7 @@ const KkoMap = ({ radius = 1000, onFetched }: KkoMapProps) => {
       pos => {
         const { latitude, longitude, accuracy } = pos.coords;
         const first = { lat: latitude, lng: longitude, acc: accuracy ?? 9999 };
-        setCenter({ lat: first.lat, lng: first.lng }); // 초기 렌더
+        setCenter({ lat: first.lat, lng: first.lng });
         setLoading(false);
         bestSample = first;
 
