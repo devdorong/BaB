@@ -1,7 +1,7 @@
 import { useEffect, useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { useAuth } from '../../../contexts/AuthContext';
-import { GetPoint } from '../../../services/babService';
+import { GetPoint, totalChangePoint } from '../../../services/babService';
 import type { Profile } from '../../../types/bobType';
 import { usePoint } from '../../../contexts/BabContext';
 import { RiCoinLine, RiGiftLine } from 'react-icons/ri';
@@ -15,15 +15,26 @@ function PointPage() {
   const { user } = useAuth();
   const navigate = useNavigate();
 
-  const { loading, point, refreshPoint } = usePoint();
+  const { loading, point, refreshPoint, addPoint, subPoint, total } = usePoint();
 
   const [selectedTab, setSelectedTab] = useState<TabType>('reward');
+  const [totalPoint, setTotalPoint] = useState(0);
 
   // 포인트 정보 불러오기
   useEffect(() => {
     if (!user) return;
     refreshPoint();
+    console.log(totalPoint);
   }, [user]);
+
+  // // 포인트 총 사용
+  // useEffect(() => {
+  //   const totalUserPoint = async () => {
+  //     const total = await totalChangePoint();
+  //     setTotalPoint(total);
+  //   };
+  //   totalUserPoint();
+  // }, [point]);
 
   if (loading) return <p>포인트 불러오는 중..</p>;
 
@@ -63,7 +74,9 @@ function PointPage() {
                     <div className="text-[14px] text-babgray-600">총 적립</div>
                   </div>
                   <div>
-                    <div className="text-[22px] font-bold text-babbutton-red">0</div>
+                    <div className="text-[22px] font-bold text-babbutton-red">
+                      - {total.toLocaleString()}
+                    </div>
                     <div className="text-[14px] text-babgray-600">총 사용</div>
                   </div>
                 </div>
