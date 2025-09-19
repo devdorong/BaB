@@ -71,13 +71,15 @@ function MemberSignupPage() {
     if (!nickName.trim()) return alert('닉네임을 입력하세요.');
     if (!birth) return alert('생년월일을 선택하세요.');
 
+    // 회원가입 (user_metadata에 추가 정보 저장)
     const { data, error } = await supabase.auth.signUp({
       email,
       password: pw,
       options: {
-        data: { name, nickName, phone, gender },
+        data: { name, nickName, phone, gender, birth },
       },
     });
+
     if (error) {
       setMsg(`회원가입 오류 : ${error.message}`);
     } else {
@@ -85,14 +87,14 @@ function MemberSignupPage() {
     }
 
     if (data.user?.id) {
-      // 프로필을 추가한다
+      // ✅ profiles row 생성
       const newUser: ProfileInsert = {
         id: data.user.id,
-        nickname: nickName,
-        birth,
         name,
+        nickname: nickName,
         phone,
         gender,
+        birth, // YYYY-MM-DD
       };
       const result = await createProfile(newUser);
       if (result) {

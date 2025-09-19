@@ -4,7 +4,7 @@ import { RiCoupon2Line } from 'react-icons/ri';
 import type { Coupon, Profile_Points } from '../../types/bobType';
 import { supabase } from '../../lib/supabase';
 import { ButtonFillMd, ButtonLineMd } from '../../ui/button';
-import { changePoint, totalChangePoint } from '../../services/babService';
+import { changePoint, totalChangePoint } from '../../services/PointService';
 import { usePoint } from '../../contexts/BabContext';
 import { useAuth } from '../../contexts/AuthContext';
 
@@ -50,7 +50,7 @@ const RewardChange = () => {
         <div>리워드 교환</div>
       </div>
       <div className="flex">
-        <div className="grid grid-cols-3 grid-rows-3 gap-[20px] w-full">
+        <div className="grid grid-cols-3 gap-[20px] w-full">
           {coupons.map(item => (
             <div
               key={item.id}
