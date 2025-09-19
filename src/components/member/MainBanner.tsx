@@ -8,7 +8,6 @@ import { Swiper, SwiperSlide } from 'swiper/react';
 import { supabase } from '../../lib/supabase';
 import type { Banner } from '../../types/bobType';
 import { useNavigate } from 'react-router-dom';
-// import type { Banner } from '../../types/bobType';
 
 const MainBanner = () => {
   const [bannerImgs, setBannerImgs] = useState<Banner[] | null>([]);
