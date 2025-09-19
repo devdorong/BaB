@@ -7,6 +7,7 @@ import { supabase } from '../../../lib/supabase';
 import type { Database } from '../../../types/bobType';
 import { ButtonFillMd } from '../../../ui/button';
 import { BlueTag, GreenTag, PurpleTag } from '../../../ui/tag';
+import { RiChat3Line } from 'react-icons/ri';
 
 type CategoriesType = Database['public']['Tables']['posts']['Row']['post_category'];
 type CategoryTagType = Database['public']['Tables']['posts']['Row']['tag'];
@@ -124,20 +125,23 @@ function CommunityPage() {
                 filteredPosts.map(item => (
                   <div
                     key={item.id}
-                    className="w-full h-auto flex flex-col gap-4 bg-white shadow-card rounded-xl2 py-4 px-8 "
+                    className="w-full h-auto flex flex-col gap-4 bg-white shadow-card rounded-xl2 py-6 px-8 "
                   >
                     <div className="flex justify-between">
-                      {tagComponents[item.tag as FilteredTag] ?? item.tag}
-                      <span>{dayjs(item.created_at).fromNow()}</span>
+                      <div>{tagComponents[item.tag as FilteredTag] ?? item.tag}</div>
+                      <span className="text-babgray-500">{dayjs(item.created_at).fromNow()}</span>
                     </div>
-                    <div className="flex flex-col gap-4">
-                      <p className="">{item.title}</p>
-                      <p>{item.content}</p>
+                    <div className="flex flex-col gap-2">
+                      <p className="font-bold text-xl">{item.title}</p>
+                      <p className="text-babgray-600">{item.content}</p>
                     </div>
-                    <div>
-                      <p>{item.profiles?.nickname}</p>
+                    <div className="flex justify-between text-babgray-600">
+                      <p className="font-semibold">{item.profiles?.nickname}</p>
                       <div>
-                        <span>{item.comments?.length}</span>
+                        <span className="flex items-center gap-1">
+                          <RiChat3Line />
+                          {item.comments?.length}
+                        </span>
                       </div>
                     </div>
                   </div>
