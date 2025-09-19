@@ -8,16 +8,18 @@ import React, {
   useReducer,
   type PropsWithChildren,
 } from 'react';
-import { createPoint, GetPoint } from '../services/babService';
+import { createPoint, GetPoint, totalChangePoint } from '../services/babService';
 
 // 1. 상태관리 및 초기값
 type PointState = {
   point: number;
+  total: number;
   loading: boolean;
 };
 
 const initialState: PointState = {
   point: 0,
+  total: 0,
   loading: false,
 };
 
@@ -25,6 +27,7 @@ const initialState: PointState = {
 enum PointActionType {
   SET_LOADING = 'SET_LOADING',
   SET_POINT = 'SET_POINT',
+  SET_TOTAL = 'SET_TOTAL',
   ADD_POINT = 'ADD_POINT',
   SUB_POINT = 'SUB_POINT',
   RESET = 'RESET',
@@ -32,6 +35,7 @@ enum PointActionType {
 
 type SetLoadingAction = { type: PointActionType.SET_LOADING; payload: boolean };
 type SetPointAction = { type: PointActionType.SET_POINT; payload: number };
+type SetTotalAction = { type: PointActionType.SET_TOTAL; payload: number };
 type AddPointAction = { type: PointActionType.ADD_POINT; payload: number };
 type SubPointAction = { type: PointActionType.SUB_POINT; payload: number };
 type ResetAction = { type: PointActionType.RESET };
@@ -39,6 +43,7 @@ type ResetAction = { type: PointActionType.RESET };
 type PointAction =
   | SetLoadingAction
   | SetPointAction
+  | SetTotalAction
   | AddPointAction
   | SubPointAction
   | ResetAction;
@@ -50,6 +55,8 @@ function reducer(state: PointState, action: PointAction): PointState {
       return { ...state, loading: action.payload };
     case PointActionType.SET_POINT:
       return { ...state, point: action.payload };
+    case PointActionType.SET_TOTAL:
+      return { ...state, total: action.payload };
     case PointActionType.ADD_POINT:
       return { ...state, point: state.point + action.payload };
     case PointActionType.SUB_POINT:
@@ -64,6 +71,7 @@ function reducer(state: PointState, action: PointAction): PointState {
 // 4. Context 생성
 type PointContextValue = {
   point: number;
+  total: number;
   loading: boolean;
   refreshPoint: () => Promise<void>;
   addPoint: (amount: number) => void;
@@ -92,18 +100,25 @@ export const PointProvider = ({ children }: PointProviderProps) => {
       }
       dispatch({ type: PointActionType.SET_POINT, payload: result?.point ?? 0 });
 
+      const used = await totalChangePoint();
+      dispatch({ type: PointActionType.SET_TOTAL, payload: used });
       // 성공 시에도 loading을 false로 설정
       dispatch({ type: PointActionType.SET_LOADING, payload: false });
     } catch (err) {
       console.log(err);
+    } finally {
       dispatch({ type: PointActionType.SET_LOADING, payload: false });
     }
   }, [dispatch]);
   // 포인트 추가
-  const addPoint = (amount: number) => {};
+  const addPoint = (amount: number) => {
+    dispatch({ type: PointActionType.ADD_POINT, payload: amount });
+  };
 
   // 포인트 사용
-  const subPoint = (amount: number) => {};
+  const subPoint = (amount: number) => {
+    dispatch({ type: PointActionType.SUB_POINT, payload: amount });
+  };
 
   // 포인트 초기화
   const reset = () => {
@@ -117,6 +132,7 @@ export const PointProvider = ({ children }: PointProviderProps) => {
 
   const value: PointContextValue = {
     point: state.point,
+    total: state.total,
     loading: state.loading,
     refreshPoint,
     addPoint,
