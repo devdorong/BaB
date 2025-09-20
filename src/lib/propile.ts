@@ -15,20 +15,34 @@ import { supabase } from './supabase';
 // 사용자 프로필 생성
 const createProfile = async (newUserProfile: ProfileInsert): Promise<boolean> => {
   try {
-    const { error, data } = await supabase.from('profiles').insert([{ ...newUserProfile }]);
-    if (error) {
-      console.log(`프로필 추가에 실패  : `, {
-        message: error.message,
-        detail: error.details,
-        hint: error.hint,
-        code: error.code,
-      });
+    // 먼저 존재 여부 확인
+    const { data: existing, error: checkError } = await supabase
+      .from('profiles')
+      .select('id')
+      .eq('id', newUserProfile.id)
+      .maybeSingle();
+
+    if (checkError) {
+      console.log('프로필 조회 실패:', checkError.message);
       return false;
     }
-    console.log(`프로필 생성 성공 : `, data);
+
+    if (existing) {
+      console.log('이미 프로필이 존재합니다:', existing.id);
+      return true; // ✅ 그냥 성공으로 간주
+    }
+
+    // 없으면 새로 생성
+    const { error } = await supabase.from('profiles').insert([{ ...newUserProfile }]);
+    if (error) {
+      console.log('프로필 추가 실패:', error.message);
+      return false;
+    }
+
+    console.log('프로필 생성 성공');
     return true;
-  } catch (error) {
-    console.log(`프로필 생성 오류 : ${error}`);
+  } catch (err) {
+    console.log(`프로필 생성 오류 : ${err}`);
     return false;
   }
 };
@@ -36,7 +50,11 @@ const createProfile = async (newUserProfile: ProfileInsert): Promise<boolean> =>
 // 사용자 프로필 조회
 const getProfile = async (userId: string): Promise<Profile | null> => {
   try {
-    const { error, data } = await supabase.from('profiles').select('*').eq('id', userId).single();
+    const { error, data } = await supabase
+      .from('profiles')
+      .select('*')
+      .eq('id', userId)
+      .maybeSingle();
     if (error) {
       console.log(error.message);
       return null;

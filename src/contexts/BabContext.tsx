@@ -8,7 +8,8 @@ import React, {
   useReducer,
   type PropsWithChildren,
 } from 'react';
-import { createPoint, GetPoint, totalChangePoint } from '../services/babService';
+import { createPoint, GetPoint, totalChangePoint } from '../services/PointService';
+import { useAuth } from './AuthContext';
 
 // 1. 상태관리 및 초기값
 type PointState = {
@@ -89,27 +90,46 @@ interface PointProviderProps {
 export const PointProvider = ({ children }: PointProviderProps) => {
   const [state, dispatch] = useReducer(reducer, initialState);
 
+  const { user } = useAuth();
+
   // 초기로딩 (포인트 가져오기)
   // 함수 참조가 매번 새로 생성되어 무한 루프를 일으키는 문제 발생, useCallback 함수 사용
   const refreshPoint = useCallback(async (): Promise<void> => {
+    if (!user) {
+      console.log('💰 refreshPoint - 유저 없어서 스킵');
+      return;
+    }
+
     dispatch({ type: PointActionType.SET_LOADING, payload: true });
+
     try {
       let result = await GetPoint();
       if (!result) {
         result = await createPoint();
       }
+
       dispatch({ type: PointActionType.SET_POINT, payload: result?.point ?? 0 });
 
       const used = await totalChangePoint();
       dispatch({ type: PointActionType.SET_TOTAL, payload: used });
-      // 성공 시에도 loading을 false로 설정
-      dispatch({ type: PointActionType.SET_LOADING, payload: false });
     } catch (err) {
+      dispatch({ type: PointActionType.SET_POINT, payload: 0 });
+      dispatch({ type: PointActionType.SET_TOTAL, payload: 0 });
       console.log(err);
     } finally {
       dispatch({ type: PointActionType.SET_LOADING, payload: false });
     }
-  }, [dispatch]);
+  }, [user]);
+
+  // 로그인 상태 바뀔 때마다 포인트 갱신
+  useEffect(() => {
+    if (user) {
+      refreshPoint();
+    } else {
+      dispatch({ type: PointActionType.RESET });
+    }
+  }, [user, refreshPoint]);
+
   // 포인트 추가
   const addPoint = (amount: number) => {
     dispatch({ type: PointActionType.ADD_POINT, payload: amount });
@@ -124,11 +144,6 @@ export const PointProvider = ({ children }: PointProviderProps) => {
   const reset = () => {
     dispatch({ type: PointActionType.RESET });
   };
-
-  // 최초 실행 시 데이터 로드
-  useEffect(() => {
-    refreshPoint();
-  }, []);
 
   const value: PointContextValue = {
     point: state.point,
