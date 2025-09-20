@@ -42,6 +42,7 @@
 - antdesign
 - kakao map
 - swiper
+- react-paginate
 
 # 일정
 

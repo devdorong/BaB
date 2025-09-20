@@ -2,26 +2,31 @@ import dayjs from 'dayjs';
 import 'dayjs/locale/ko';
 import relativeTime from 'dayjs/plugin/relativeTime';
 import { useEffect, useState } from 'react';
+import {
+  RiArrowRightDoubleLine,
+  RiArrowRightSLine,
+  RiChat3Line,
+  RiSearchLine,
+} from 'react-icons/ri';
 import { Link } from 'react-router-dom';
 import { supabase } from '../../../lib/supabase';
-import type { Database } from '../../../types/bobType';
+import type { Database, Posts } from '../../../types/bobType';
 import { ButtonFillMd } from '../../../ui/button';
 import { BlueTag, GreenTag, PurpleTag } from '../../../ui/tag';
-import { RiChat3Line } from 'react-icons/ri';
 
 type CategoriesType = Database['public']['Tables']['posts']['Row']['post_category'];
 type CategoryTagType = Database['public']['Tables']['posts']['Row']['tag'];
 
-type PostWithProfile = {
-  id?: number;
-  post_category: CategoriesType;
-  profile_id: string;
-  tag: CategoryTagType;
-  title: string;
-  content: string;
-  created_at?: string | null;
-  view_count?: number;
-  profiles: { id: string; nickname: string } | null;
+type PostWithProfile = Posts & {
+  // id?: number;
+  // post_category: CategoriesType;
+  // profile_id: string;
+  // tag: CategoryTagType;
+  // title: string;
+  // content: string;
+  // created_at?: string | null;
+  // view_count?: number;
+  profiles: { id: string; nickname: string }[];
   comments: { id: number }[];
 };
 
@@ -31,9 +36,26 @@ dayjs.locale('ko');
 function CommunityPage() {
   const [activeCategory, setActiveCategory] = useState<UiCategory>('전체');
   const [posts, setPosts] = useState<PostWithProfile[]>([]);
+  const [search, setSearch] = useState('');
+
+  // 페이지네이션
+  const [currentItems, setCurrentItems] = useState<PostWithProfile[]>([]);
+  const [pageCount, setPageCount] = useState(0);
+  const [itemOffset, setItemOffset] = useState(0);
+  const [currentPage, setCurrentPage] = useState(0);
+  const itemsPerPage = 1;
+  const blockSize = 10;
+  const currentBlock = Math.floor(currentPage / blockSize);
+  const startPage = currentBlock * blockSize;
+  const endPage = Math.min(startPage + blockSize, pageCount);
+
+  const handlePageClick = (e: { selected: number }) => {
+    setCurrentPage(e.selected);
+    const newOffset = (e.selected * itemsPerPage) % posts.length;
+    setItemOffset(newOffset);
+  };
 
   const CommunityCategories: CategoriesType[] = ['자유게시판', 'Q&A', '팁과노하우'];
-
 
   type UiCategory = (typeof UiCategories)[number];
   const UiCategories = ['전체', ...CommunityCategories] as const;
@@ -44,14 +66,12 @@ function CommunityPage() {
     자유: '자유게시판',
     'Q&A': 'Q&A',
     TIP: '팁과노하우',
-
   };
 
   const tagComponents: Record<FilteredTag, JSX.Element> = {
     자유: <BlueTag>자유</BlueTag>,
     'Q&A': <GreenTag>Q&A</GreenTag>,
     TIP: <PurpleTag>TIP</PurpleTag>,
-
   };
 
   const filteredPosts = posts
@@ -62,40 +82,49 @@ function CommunityPage() {
       return activeCategory === '전체' ? true : mapCategory === activeCategory;
     });
 
-  useEffect(() => {
-    const fetchPosts = async () => {
-      const { data, error } = await supabase
-        .from('posts')
-        .select(
-          `id,
-    title,
-    content,
-    created_at,
-    post_category,
-    profile_id,
-    tag,
-    view_count,
+  const fetchPosts = async () => {
+    let postData = supabase.from('posts').select(
+      `id, title, content, created_at, post_category, profile_id, tag, view_count,
     profiles (
       id,
       nickname
     ),comments (
       id
     )`,
-        )
-        .returns<PostWithProfile[]>();
+    );
 
-      if (error) {
-        console.log(error);
-      } else {
-        setPosts(data as PostWithProfile[]);
-      }
-    };
+    // 검색기능
+    if (search && search.trim() !== '') {
+      postData = postData.ilike('title', `%${search.trim()}%`);
+    }
+
+    const { data, error } = await postData;
+
+    if (error) {
+      console.log(error);
+    } else {
+      setPosts(data as unknown as PostWithProfile[]);
+    }
+  };
+
+  useEffect(() => {
+    const endOffset = itemOffset + itemsPerPage;
+    setCurrentItems(filteredPosts.slice(itemOffset, endOffset));
+    setPageCount(Math.ceil(filteredPosts.length / itemsPerPage));
+  }, [itemOffset, itemsPerPage, posts, activeCategory]);
+
+  useEffect(() => {
     fetchPosts();
   }, []);
 
+  useEffect(() => {
+    setItemOffset(0);
+    setCurrentPage(0);
+  }, [activeCategory, search]);
+
   return (
     <div className="w-full bg-bg-bg">
-      <div className="w-[1280px] mx-auto flex flex-col gap-10 py-8">
+      <div className="w-[1280px] mx-auto flex flex-col gap-8 py-8">
         {/* 타이틀 */}
         <div className="flex flex-col gap-1">
           <p className="text-3xl font-bold">커뮤니티</p>
@@ -103,7 +132,25 @@ function CommunityPage() {
         </div>
         {/* 검색폼,버튼 */}
         <div className="flex justify-between items-center">
-          <div>검색창</div>
+          <div
+            onClick={() => document.getElementById('searchInput')?.focus()}
+            className="flex items-center gap-3 bg-white w-[550px] h-[55px] py-3 px-3 border border-s-babgray rounded-3xl"
+          >
+            <RiSearchLine className="text-babgray-300" />
+            <input
+              id="searchInput"
+              className="focus:outline-none w-full"
+              type="text"
+              value={search}
+              onChange={e => setSearch(e.target.value)}
+              onKeyDown={e => {
+                if (e.key === `Enter`) {
+                  fetchPosts();
+                }
+              }}
+              placeholder="키워드로 게시글 검색하기"
+            />
+          </div>
           <Link to={'/member/community/write'}>
             <ButtonFillMd>작성하기</ButtonFillMd>
           </Link>
@@ -122,10 +169,10 @@ function CommunityPage() {
             ))}
           </div>
           {/* 게시글 목록 */}
-          <div className="flex flex-col gap-6 py-8">
+          <div className="flex flex-col gap-6">
             <div className="flex flex-col gap-6 py-8">
-              {filteredPosts.length > 0 ? (
-                filteredPosts.map(item => (
+              {currentItems.length > 0 ? (
+                currentItems.map(item => (
                   <div
                     key={item.id}
                     className="w-full h-auto flex flex-col gap-4 bg-white shadow-card rounded-xl2 py-6 px-8 "
@@ -139,7 +186,7 @@ function CommunityPage() {
                       <p className="text-babgray-600">{item.content}</p>
                     </div>
                     <div className="flex justify-between text-babgray-600">
-                      <p className="font-semibold">{item.profiles?.nickname}</p>
+                      <p className="font-semibold">{item.profiles?.[0]?.nickname ?? '알수없음'}</p>
                       <div>
                         <span className="flex items-center gap-1">
                           <RiChat3Line />
@@ -156,8 +203,58 @@ function CommunityPage() {
           </div>
         </div>
         {/* 페이지네이션 */}
-        <div>
-          <div>페이지네이션</div>
+        <div className="flex items-center justify-center">
+          <div className="flex items-center gap-2">
+            <div className="flex items-center justify-center gap-2">
+              {/* 맨 처음 블록 버튼 */}
+              {currentBlock > 0 && (
+                <button
+                  className="flex justify-center items-center rounded-md hover:bg-bab hover:text-white w-6 h-6"
+                  onClick={() => handlePageClick({ selected: 0 })}
+                >
+                  <RiArrowRightDoubleLine className="transform rotate-180" />
+                </button>
+              )}
+              {currentPage > 0 && (
+                <button
+                  className="flex justify-center items-center rounded-md hover:bg-bab hover:text-white w-6 h-6 "
+                  onClick={() => handlePageClick({ selected: currentPage - 1 })}
+                >
+                  {<RiArrowRightSLine className="transform rotate-180" />}
+                </button>
+              )}
+              {/* 현재 블록 페이지들 */}
+              {Array.from({ length: endPage - startPage }, (_, i) => {
+                const page = startPage + i;
+                return (
+                  <button
+                    key={page}
+                    onClick={() => handlePageClick({ selected: page })}
+                    className={`flex justify-center items-center px-2 ${page === currentPage ? 'font-bold text-bab' : ''} rounded-md hover:bg-bab hover:text-white w-6 h-6`}
+                  >
+                    {page + 1}
+                  </button>
+                );
+              })}
+              {currentPage < pageCount - 1 && (
+                <button
+                  className="flex justify-center items-center rounded-md hover:bg-bab hover:text-white w-6 h-6"
+                  onClick={() => handlePageClick({ selected: currentPage + 1 })}
+                >
+                  {<RiArrowRightSLine />}
+                </button>
+              )}
+              {/* 맨 끝 블록 버튼 */}
+              {currentBlock < Math.floor((pageCount - 1) / blockSize) && (
+                <button
+                  className="flex justify-center items-center rounded-md hover:bg-bab hover:text-white w-6 h-6"
+                  onClick={() => handlePageClick({ selected: pageCount - 1 })}
+                >
+                  {<RiArrowRightDoubleLine />}
+                </button>
+              )}
+            </div>
+          </div>
         </div>
       </div>
     </div>
