@@ -1,4 +1,5 @@
-import React from 'react';
+import React, { Children } from 'react';
+import { ButtonFillLG } from '../ui/button';
 
 interface InputFieldProps {
   label: string;
@@ -9,7 +10,7 @@ interface InputFieldProps {
   required?: boolean;
 }
 
-const InputField: React.FC<InputFieldProps> = ({
+ export const InputField: React.FC<InputFieldProps> = ({
   label,
   value,
   onChange,
@@ -18,7 +19,7 @@ const InputField: React.FC<InputFieldProps> = ({
   required = false,
 }) => {
   return (
-    <div className="flex flex-col items-start gap-[9px] w-[509px] h-[75px]">
+    <div className="flex flex-col items-start gap-[9px] w-full h-[75px]">
       <label className="flex items-center gap-1 text-gray-700 font-medium">
         {label}
         {required && <span className="text-bab-500">*</span>}
@@ -29,10 +30,49 @@ const InputField: React.FC<InputFieldProps> = ({
         onChange={onChange}
         placeholder={placeholder}
         required={required}
-        className="w-full h-[40px] border border-gray-300 rounded px-3 focus:outline-none focus:ring-2 focus:ring-bab-500"
+        className="w-full h-[50px] border border-gray-300 rounded-[20px] px-3 focus:outline-none focus:ring-2 focus:ring-bab-500"
       />
     </div>
   );
 };
+interface InputFieldWithButtonProps {
+  label: string;
+  value: string;
+  onChange: (e: React.ChangeEvent<HTMLInputElement>) => void;
+  placeholder?: string;
+  type?: string;
+  required?: boolean;
+  children?:React.ReactNode
+}
 
-export default InputField;
+ export const InputFieldWithButton: React.FC<InputFieldWithButtonProps> = ({
+  label,
+  value,
+  onChange,
+  placeholder,
+  type = 'text',
+  children,
+  required = false,
+}) => {
+  return (
+    <div className="flex flex-col items-start gap-[9px] w-full h-[75px]">
+      <label className="flex items-center gap-1 text-gray-700 font-medium">
+        {label}
+        {required && <span className="text-bab-500">*</span>}
+      </label>
+      <div className='flex w-full gap-4 '>
+
+      <input
+        type={type}
+        value={value}
+        onChange={onChange}
+        placeholder={placeholder}
+        required={required}
+        className="flex-1 h-[50px] border border-gray-300 rounded-[20px] px-3 focus:outline-none focus:ring-2 focus:ring-bab-500"
+      />
+       <ButtonFillLG style={{minWidth:125}}>{children}</ButtonFillLG>
+      </div>
+    </div>
+  );
+};
+

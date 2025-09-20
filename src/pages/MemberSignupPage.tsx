@@ -1,10 +1,10 @@
 import { useEffect, useState } from 'react';
+import { InputField, InputFieldWithButton } from '../components/InputField';
 import { createProfile } from '../lib/propile';
 import { supabase } from '../lib/supabase';
 import type { ProfileInsert } from '../types/bobType';
-import { LogoLg, LogoMd } from '../ui/Ui';
-import InputField from '../components/InputField';
-
+import { LogoLg } from '../ui/Ui';
+import { RiArrowDownSLine } from 'react-icons/ri';
 function MemberSignupPage() {
   // ts
   // const { signUp } = useAuth();
@@ -104,159 +104,259 @@ function MemberSignupPage() {
         setMsg(`회원가입은 성공, 하지만, 프로필 생성 실패했습니다`);
       }
     }
-    setMsg(`회원가입 성공했습니다. 이메일 인증 링크를 확인해 주세요`);
+  };
+
+  const handleChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+    let value = e.target.value.replace(/\D/g, ''); // 숫자만 남기기
+
+    if (value.length < 4) {
+      // 3자리 이하
+      setPhone(value);
+    } else if (value.length < 8) {
+      // 3-3~4
+      setPhone(`${value.slice(0, 3)}-${value.slice(3)}`);
+    } else {
+      // 3-4-4
+      setPhone(`${value.slice(0, 3)}-${value.slice(3, 7)}-${value.slice(7, 11)}`);
+    }
   };
 
   // tsx
   return (
-    <div className="w-screen h-screen bg-bg-bg flex flex-col justify-center items-center gap-[60px] ">
-      <div className="flex justify-center items-center flex-col gap-[50px]">
-        <LogoLg />
-        <div className="text-center flex flex-col  gap-[12px]">
-          <h2 className="text-black text-3xl font-bold">BaB에 오신 걸 환영합니다!</h2>
-          <p className="text-babgray-600 text-base ">
-            함께 식사할 친구를 찾기 위해 정보를 입력해주세요
-          </p>
+    <div className="w-screen min-h-full bg-bg-bg">
+      <div className="w-[530px] flex flex-col justify-center items-center gap-[60px] mx-auto py-[100px] ">
+        <div className="flex justify-center items-center flex-col gap-[50px] ]">
+          <LogoLg />
+          <div className="text-center flex flex-col  gap-[12px]">
+            <h2 className="text-black text-3xl font-bold">BaB에 오신 걸 환영합니다!</h2>
+            <p className="text-babgray-600 text-base ">
+              함께 식사할 친구를 찾기 위해 정보를 입력해주세요
+            </p>
+          </div>
         </div>
-      </div>
-      <div>
-        <form onSubmit={handleSubmit}>
-          <div className="flex flex-col gap-5">
-            {/* 이름 */}
-            {/* <div className="flex flex-col gap-2">
-              <label>이름</label>
-              <input
+        <div>
+          <form onSubmit={handleSubmit}>
+            <div className="flex flex-col gap-5">
+              <InputField
+                label="이름"
                 type="text"
                 value={name}
                 onChange={e => setName(e.target.value)}
-                required
                 placeholder="이름을 입력해주세요"
+                required
               />
-            </div> */}
-            <InputField
-              label="이름"
-              value={name}
-              onChange={e => setName(e.target.value)}
-              placeholder="이름을 입력해주세요"
-              required
-            />
-            {/* 닉네임 */}
-            <div className="flex flex-col gap-2">
-              <label>닉네임</label>
-              <input
+              {/* 닉네임 */}
+              <InputFieldWithButton
+                label="닉네임"
                 type="text"
                 value={nickName}
                 onChange={e => setNickName(e.target.value)}
-                required
                 placeholder="닉네임을 입력해주세요"
+                required
+                children="중복 체크"
               />
-            </div>
-            {/* 이메일 */}
-            <div className="flex flex-col gap-2">
-              <label>이메일</label>
-              <input
+
+              {/* 이메일 */}
+              <InputFieldWithButton
+                label="이메일"
                 type="email"
                 value={email}
                 onChange={e => setEmail(e.target.value)}
-                required
                 placeholder="이메일을 입력해주세요"
+                required
+                children="인증번호 전송"
               />
-            </div>
-            {/* 비밀번호 */}
-            <div className="flex flex-col gap-2">
-              <label>비밀번호</label>
-              <input
+
+              {/* 비밀번호 */}
+              <InputField
+                label="비밀번호"
                 type="password"
                 value={pw}
                 onChange={e => setPw(e.target.value)}
-                required
                 placeholder="비밀번호를 입력해주세요"
+                required
               />
-            </div>
-            {/* 비밀번호 확인 */}
-            <div className="flex flex-col gap-2">
-              <label>비밀번호 확인</label>
-              <input
+
+              {/* 비밀번호 확인 */}
+              <InputField
+                label="비밀번호 확인"
                 type="password"
                 value={confirmPw}
                 onChange={e => setConfirmPw(e.target.value)}
-                required
                 placeholder="비밀번호를 다시 입력해주세요"
+                required
               />
-            </div>
-            {/* 휴대폰 번호 */}
-            <div className="flex flex-col gap-2">
-              <label>휴대폰 번호</label>
-              <input
+
+              {/* 휴대폰 번호 */}
+              <InputFieldWithButton
+                label="휴대폰 번호"
                 type="text"
                 value={phone}
-                onChange={e => setPhone(e.target.value)}
-                required
+                onChange={handleChange}
                 placeholder="번호를 입력해주세요"
+                required
+                children="인증번호 전송"
               />
-            </div>
-            {/* 생년월일 */}
-            <div className="flex flex-col gap-2">
-              <label>생년월일</label>
-              <div className="flex gap-2">
-                <select value={year} onChange={e => setYear(e.target.value)} required>
-                  <option value="">년도</option>
-                  {years.map(y => (
-                    <option key={y} value={y}>
-                      {y}
-                    </option>
-                  ))}
-                </select>
-                <select value={month} onChange={e => setMonth(e.target.value)} required>
-                  <option value="">월</option>
-                  {months.map(m => (
-                    <option key={m} value={m}>
-                      {m}
-                    </option>
-                  ))}
-                </select>
-                <select value={day} onChange={e => setDay(e.target.value)} required>
-                  <option value="">일</option>
-                  {days.map(d => (
-                    <option key={d} value={d}>
-                      {d}
-                    </option>
-                  ))}
-                </select>
-              </div>
-            </div>
-            {/* 성별 */}
-            <div className="flex flex-col gap-2">
-              <label htmlFor="gender">성별</label>
-              <div>
-                <input
-                  type="radio"
-                  id="male"
-                  name="gender"
-                  value="true"
-                  checked={gender === true}
-                  onChange={() => setGender(true)}
-                />
-                <label htmlFor="male">남성</label>
+
+              {/* 생년월일 */}
+
+              <div className="flex flex-col gap-2">
+                <label className="flex items-center gap-1 text-gray-700 font-medium">
+                  생년월일 <span className="text-bab-500">*</span>
+                </label>
+                <div className="flex gap-2">
+                  {/* 년도 */}
+                  <div className="relative flex-1">
+                    <select
+                      value={year}
+                      onChange={e => setYear(e.target.value)}
+                      required
+                      className="w-full h-[50px] rounded-[20px] border border-gray-300 px-3 pr-10 text-gray-400 focus:outline-none focus:ring-2 focus:ring-bab-500 appearance-none"
+                    >
+                      <option value="">년도</option>
+                      {years.map(y => (
+                        <option key={y} value={y}>
+                          {y}
+                        </option>
+                      ))}
+                    </select>
+                    <div className="pointer-events-none absolute right-3 top-1/2 -translate-y-1/2">
+                      <RiArrowDownSLine color="#C2C2C2" />
+                    </div>
+                  </div>
+
+                  {/* 월 */}
+                  <div className="relative flex-1">
+                    <select
+                      value={month}
+                      onChange={e => setMonth(e.target.value)}
+                      required
+                      className="w-full h-[50px] rounded-[20px] border border-gray-300 px-3 pr-10  text-gray-400 focus:outline-none focus:ring-2 focus:ring-bab-500  appearance-none"
+                    >
+                      <option value="">월</option>
+                      {months.map(m => (
+                        <option key={m} value={m}>
+                          {m}
+                        </option>
+                      ))}
+                    </select>
+                    <div className="pointer-events-none absolute right-3 top-1/2 -translate-y-1/2">
+                      <RiArrowDownSLine color="#C2C2C2" />
+                    </div>
+                  </div>
+
+                  {/* 일 */}
+                  <div className="relative flex-1">
+                    <select
+                      value={day}
+                      onChange={e => setDay(e.target.value)}
+                      required
+                      className="w-full h-[50px] rounded-[20px] border border-gray-300 px-3 pr-10 text-gray-400 focus:outline-none focus:ring-2 focus:ring-bab-500 appearance-none"
+                    >
+                      <option value="">일</option>
+                      {days.map(d => (
+                        <option key={d} value={d}>
+                          {d}
+                        </option>
+                      ))}
+                    </select>
+                    <div className="pointer-events-none absolute right-3 top-1/2 -translate-y-1/2">
+                      <RiArrowDownSLine color="#C2C2C2" />
+                    </div>
+                  </div>
+                </div>
               </div>
 
-              <div>
-                <input
-                  type="radio"
-                  id="female"
-                  name="gender"
-                  value="false"
-                  checked={gender === false}
-                  onChange={() => setGender(false)}
-                />
-                <label htmlFor="female">여성</label>
+              {/* 성별 */}
+              <div className="flex flex-col gap-2">
+                <label className="flex items-center gap-1 text-gray-700 font-medium">
+                  성별 <span className="text-bab-500">*</span>
+                </label>
+                <div className="flex gap-4">
+                  {/* 남성 */}
+                  <label htmlFor="male" className="flex items-center gap-2 cursor-pointer">
+                    <input
+                      type="radio"
+                      id="male"
+                      name="gender"
+                      value="true"
+                      checked={gender === true}
+                      onChange={() => setGender(true)}
+                      className="appearance-none w-5 h-5 border-2 border-[#C2C2C2] rounded-full 
+                   checked:border-[#FF5722] checked:bg-none checked:border-4
+                   focus:outline-none transition-colors"
+                    />
+                    <span className="text-gray-700">남성</span>
+                  </label>
+
+                  {/* 여성 */}
+                  <label htmlFor="female" className="flex items-center gap-2 cursor-pointer">
+                    <input
+                      type="radio"
+                      id="female"
+                      name="gender"
+                      value="false"
+                      checked={gender === false}
+                      onChange={() => setGender(false)}
+                      className="appearance-none w-5 h-5 border-2 border-[#C2C2C2] rounded-full 
+                   checked:border-[#FF5722] checked:bg-none checked:border-4
+                   focus:outline-none transition-colors"
+                    />
+                    <span className="text-gray-700">여성</span>
+                  </label>
+                </div>
+              </div>
+
+              <div className="w-80 flex flex-col gap-3">
+                <p className="text-gray-700 text-sm font-medium">약관 동의</p>
+
+                {/* 이용약관 */}
+                <label className="flex items-center gap-2 cursor-pointer">
+                  <input
+                    type="checkbox"
+                    className="appearance-none w-5 h-5 border-2 border-[#C2C2C2] rounded 
+                 checked:none checked:border-[#FF5722] 
+                 flex-shrink-0 transition-colors"
+                  />
+                  <span className="text-sm">
+                    <span className="text-[#FF5722] font-medium">(필수)</span>{' '}
+                    <span className="text-gray-700">이용약관에 동의합니다</span>
+                  </span>
+                </label>
+
+                {/* 개인정보 */}
+                <label className="flex items-center gap-2 cursor-pointer">
+                  <input
+                    type="checkbox"
+                    className="appearance-none w-5 h-5 border-2 border-[#C2C2C2] rounded 
+                 checked:none checked:border-[#FF5722] 
+                 flex-shrink-0 transition-colors"
+                  />
+                  <span className="text-sm">
+                    <span className="text-[#FF5722] font-medium">(필수)</span>{' '}
+                    <span className="text-gray-700">개인정보 수집 및 이용에 동의합니다</span>
+                  </span>
+                </label>
+
+                {/* 마케팅 */}
+                <label className="flex items-center gap-2 cursor-pointer">
+                  <input
+                    type="checkbox"
+                    className="appearance-none w-5 h-5 border-2 border-[#C2C2C2] rounded 
+                 checked:none checked:border-[#FF5722] 
+                 flex-shrink-0 transition-colors"
+                  />
+                  <span className="text-sm text-gray-700">
+                    <span className="text-gray-500">(선택)</span> 마케팅 정보 수신에 동의합니다
+                  </span>
+                </label>
               </div>
             </div>
-          </div>
 
-          <button type="submit">회원가입</button>
-        </form>
-        {msg && <p>{msg}</p>}
+            <button type="submit">회원가입</button>
+          </form>
+          {msg && <p>{msg}</p>}
+        </div>
       </div>
     </div>
   );
