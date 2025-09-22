@@ -63,6 +63,13 @@ export type Database = {
             foreignKeyName: "comment_likes_profile_id_fkey"
             columns: ["profile_id"]
             isOneToOne: false
+            referencedRelation: "nickname_profiles"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "comment_likes_profile_id_fkey"
+            columns: ["profile_id"]
+            isOneToOne: false
             referencedRelation: "profiles"
             referencedColumns: ["id"]
           },
@@ -106,6 +113,13 @@ export type Database = {
             columns: ["post_id"]
             isOneToOne: false
             referencedRelation: "posts"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "comments_profile_id_fkey"
+            columns: ["profile_id"]
+            isOneToOne: false
+            referencedRelation: "nickname_profiles"
             referencedColumns: ["id"]
           },
           {
@@ -225,6 +239,13 @@ export type Database = {
             foreignKeyName: "help_profile_id_fkey"
             columns: ["profile_id"]
             isOneToOne: false
+            referencedRelation: "nickname_profiles"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "help_profile_id_fkey"
+            columns: ["profile_id"]
+            isOneToOne: false
             referencedRelation: "profiles"
             referencedColumns: ["id"]
           },
@@ -279,6 +300,13 @@ export type Database = {
             foreignKeyName: "matching_participants_profile_id_fkey"
             columns: ["profile_id"]
             isOneToOne: false
+            referencedRelation: "nickname_profiles"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "matching_participants_profile_id_fkey"
+            columns: ["profile_id"]
+            isOneToOne: false
             referencedRelation: "profiles"
             referencedColumns: ["id"]
           },
@@ -319,6 +347,13 @@ export type Database = {
           type?: string
         }
         Relationships: [
+          {
+            foreignKeyName: "matchings_host_profile_id_fkey"
+            columns: ["host_profile_id"]
+            isOneToOne: false
+            referencedRelation: "nickname_profiles"
+            referencedColumns: ["id"]
+          },
           {
             foreignKeyName: "matchings_host_profile_id_fkey"
             columns: ["host_profile_id"]
@@ -406,6 +441,13 @@ export type Database = {
             foreignKeyName: "notifications_profile_id_fkey"
             columns: ["profile_id"]
             isOneToOne: false
+            referencedRelation: "nickname_profiles"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "notifications_profile_id_fkey"
+            columns: ["profile_id"]
+            isOneToOne: false
             referencedRelation: "profiles"
             referencedColumns: ["id"]
           },
@@ -471,6 +513,13 @@ export type Database = {
             foreignKeyName: "orders_profile_id_fkey"
             columns: ["profile_id"]
             isOneToOne: false
+            referencedRelation: "nickname_profiles"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "orders_profile_id_fkey"
+            columns: ["profile_id"]
+            isOneToOne: false
             referencedRelation: "profiles"
             referencedColumns: ["id"]
           },
@@ -499,6 +548,13 @@ export type Database = {
           submitted_at?: string
         }
         Relationships: [
+          {
+            foreignKeyName: "partner_applications_profile_id_fkey"
+            columns: ["profile_id"]
+            isOneToOne: false
+            referencedRelation: "nickname_profiles"
+            referencedColumns: ["id"]
+          },
           {
             foreignKeyName: "partner_applications_profile_id_fkey"
             columns: ["profile_id"]
@@ -535,12 +591,19 @@ export type Database = {
             foreignKeyName: "point_change_profile_id_fkey"
             columns: ["profile_id"]
             isOneToOne: false
+            referencedRelation: "nickname_profiles"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "point_change_profile_id_fkey"
+            columns: ["profile_id"]
+            isOneToOne: false
             referencedRelation: "profiles"
             referencedColumns: ["id"]
           },
         ]
       }
-      point_ruless: {
+      point_rules: {
         Row: {
           change_type: Database["public"]["Enums"]["point_change_enum"]
           default_amount: number
@@ -587,6 +650,13 @@ export type Database = {
           view_count?: number | null
         }
         Relationships: [
+          {
+            foreignKeyName: "posts_profile_id_fkey"
+            columns: ["profile_id"]
+            isOneToOne: false
+            referencedRelation: "nickname_profiles"
+            referencedColumns: ["id"]
+          },
           {
             foreignKeyName: "posts_profile_id_fkey"
             columns: ["profile_id"]
@@ -660,6 +730,13 @@ export type Database = {
             foreignKeyName: "user_coupons_profile_id_fkey"
             columns: ["profile_id"]
             isOneToOne: false
+            referencedRelation: "nickname_profiles"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "user_coupons_profile_id_fkey"
+            columns: ["profile_id"]
+            isOneToOne: false
             referencedRelation: "profiles"
             referencedColumns: ["id"]
           },
@@ -693,6 +770,13 @@ export type Database = {
             foreignKeyName: "user_interests_profile_id_fkey"
             columns: ["profile_id"]
             isOneToOne: false
+            referencedRelation: "nickname_profiles"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "user_interests_profile_id_fkey"
+            columns: ["profile_id"]
+            isOneToOne: false
             referencedRelation: "profiles"
             referencedColumns: ["id"]
           },
@@ -718,6 +802,13 @@ export type Database = {
           updated_at?: string
         }
         Relationships: [
+          {
+            foreignKeyName: "user_points_profile_id_fkey"
+            columns: ["profile_id"]
+            isOneToOne: false
+            referencedRelation: "nickname_profiles"
+            referencedColumns: ["id"]
+          },
           {
             foreignKeyName: "user_points_profile_id_fkey"
             columns: ["profile_id"]
@@ -811,7 +902,21 @@ export type Database = {
             foreignKeyName: "reports_accused_profile_id_fkey"
             columns: ["accused_profile_id"]
             isOneToOne: false
+            referencedRelation: "nickname_profiles"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "reports_accused_profile_id_fkey"
+            columns: ["accused_profile_id"]
+            isOneToOne: false
             referencedRelation: "profiles"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "reports_reporter_id_fkey"
+            columns: ["reporter_id"]
+            isOneToOne: false
+            referencedRelation: "nickname_profiles"
             referencedColumns: ["id"]
           },
           {
@@ -926,6 +1031,13 @@ export type Database = {
             foreignKeyName: "restaurants_profile_id_fkey"
             columns: ["profile_id"]
             isOneToOne: false
+            referencedRelation: "nickname_profiles"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "restaurants_profile_id_fkey"
+            columns: ["profile_id"]
+            isOneToOne: false
             referencedRelation: "profiles"
             referencedColumns: ["id"]
           },
@@ -948,6 +1060,13 @@ export type Database = {
           restaurant_id?: number
         }
         Relationships: [
+          {
+            foreignKeyName: "favorite_restaurants_profile_id_fkey"
+            columns: ["profile_id"]
+            isOneToOne: false
+            referencedRelation: "nickname_profiles"
+            referencedColumns: ["id"]
+          },
           {
             foreignKeyName: "favorite_restaurants_profile_id_fkey"
             columns: ["profile_id"]
@@ -984,6 +1103,13 @@ export type Database = {
           review_id?: number
         }
         Relationships: [
+          {
+            foreignKeyName: "review_likes_profile_id_fkey"
+            columns: ["profile_id"]
+            isOneToOne: false
+            referencedRelation: "nickname_profiles"
+            referencedColumns: ["id"]
+          },
           {
             foreignKeyName: "review_likes_profile_id_fkey"
             columns: ["profile_id"]
@@ -1074,7 +1200,21 @@ export type Database = {
             foreignKeyName: "reviews_partner_id_fkey"
             columns: ["partner_id"]
             isOneToOne: false
+            referencedRelation: "nickname_profiles"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "reviews_partner_id_fkey"
+            columns: ["partner_id"]
+            isOneToOne: false
             referencedRelation: "profiles"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "reviews_profile_id_fkey"
+            columns: ["profile_id"]
+            isOneToOne: false
+            referencedRelation: "nickname_profiles"
             referencedColumns: ["id"]
           },
           {
@@ -1137,7 +1277,21 @@ export type Database = {
       }
     }
     Views: {
-      [_ in never]: never
+      nickname_profiles: {
+        Row: {
+          id: string | null
+          nickname: string | null
+        }
+        Insert: {
+          id?: string | null
+          nickname?: string | null
+        }
+        Update: {
+          id?: string | null
+          nickname?: string | null
+        }
+        Relationships: []
+      }
     }
     Functions: {
       [_ in never]: never

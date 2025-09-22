@@ -47,7 +47,7 @@ const PointRule = () => {
   useEffect(() => {
     const pointrules = async () => {
       try {
-        const { data, error } = await supabase.from('point_ruless').select('*');
+        const { data, error } = await supabase.from('point_rules').select('*');
         console.log(data, error);
         if (error) throw error;
 
