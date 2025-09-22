@@ -1,0 +1,73 @@
+import { RiCloseFill } from 'react-icons/ri';
+import { ButtonFillMd } from '../button';
+
+/**
+ * Modal 컴포넌트 사용 예시:
+ * ```tsx
+ * <Modal
+ *   isOpen={true} // 고정
+ *   onClose={() => setIsOpen(false)} // 고정
+ *   titleText="타이틀"
+ *   contentText="내용"
+ *   submitButtonText="확인버튼"
+ *   closeButtonText="닫기버튼"
+ * />
+ * ```
+ */
+interface ModalProps {
+  isOpen: boolean;
+  onClose: () => void;
+  onSubmit?: () => void;
+  contentText: string;
+  titleText: string;
+  closeButtonBgColor?: string;
+  submitButtonBgColor?: string;
+  closeButtonTextColor?: string;
+  submitButtonTextColor?: string;
+  submitButtonText?: string;
+  closeButtonText?: string;
+}
+
+const Modal: React.FC<ModalProps> = ({
+  isOpen,
+  onClose,
+  onSubmit,
+  titleText,
+  contentText,
+  submitButtonText,
+  closeButtonText,
+  closeButtonBgColor = '#c2c2c2 ',
+  submitButtonBgColor = '#ff5722',
+  closeButtonTextColor = '#ffffff',
+  submitButtonTextColor = '#ffffff',
+}) => {
+  if (!isOpen) return null;
+  return (
+    <div className="fixed inset-0 flex items-center justify-center bg-black bg-opacity-50 z-50">
+      <div className="flex flex-col gap-10 w-[470px] h-[250px] bg-white rounded-[30px] shadow ">
+        <div className="flex items-center justify-between p-8 border-b border-b-babgray ">
+          <p className="font-bold">{titleText}</p>
+          <div>
+            <RiCloseFill onClick={onClose} className="text-babgray-300 cursor-pointer" />
+          </div>
+        </div>
+        <div className="flex justify-center items-center">
+          <p className="font-bold">{contentText}</p>
+        </div>
+        <div className="flex justify-center gap-4 items-center bg-babgray-100 py-[20px] px-[20px] rounded-b-[30px]">
+          <ButtonFillMd onClick={onSubmit} className="w-[200px] ">
+            {submitButtonText}
+          </ButtonFillMd>
+          <ButtonFillMd
+            onClick={onClose}
+            className="w-[200px] !bg-babgray-300 hover:!bg-babgray-500 "
+          >
+            {closeButtonText}
+          </ButtonFillMd>
+        </div>
+      </div>
+    </div>
+  );
+};
+
+export default Modal;
