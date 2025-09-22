@@ -3,7 +3,7 @@ import { useNavigate } from 'react-router-dom';
 import { useAuth } from '../../../contexts/AuthContext';
 import { GetPoint, totalChangePoint } from '../../../services/PointService';
 import type { Profile } from '../../../types/bobType';
-import { usePoint } from '../../../contexts/BabContext';
+import { usePoint } from '../../../contexts/PointContext';
 import { RiCoinLine, RiGiftLine } from 'react-icons/ri';
 import RewardChange from '../../../components/point/RewardChange';
 import PointRule from '../../../components/point/PointRule';
@@ -24,7 +24,6 @@ function PointPage() {
   useEffect(() => {
     if (!user) return;
     refreshPoint();
-    console.log(totalPoint);
   }, [user]);
 
   // // 포인트 총 사용

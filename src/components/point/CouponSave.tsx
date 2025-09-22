@@ -61,7 +61,7 @@ const CouponPage = () => {
         <div>쿠폰함</div>
       </div>
       <div className="flex">
-        <div className="grid grid-cols-3 grid-rows-3 gap-[20px] w-full">
+        <div className="grid grid-cols-3 gap-[20px] w-full">
           {coupons.map(item =>
             item.coupons.map(coupon => (
               <div

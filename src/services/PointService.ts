@@ -1,6 +1,5 @@
 import { supabase } from '../lib/supabase';
-
-import type { Point_Changes, Profile_Coupons, Profile_Points } from '../types/bobType';
+import type { Point_Changes, Profile_Points } from '../types/bobType';
 
 // 포인트 조회
 export const GetPoint = async (): Promise<Profile_Points | null> => {
@@ -53,7 +52,7 @@ export const createPoint = async (): Promise<Profile_Points | null> => {
   }
 };
 
-// 🆕 포인트 조회 또는 생성 (UPSERT 방식) - 중복 생성 방지
+// 포인트 조회 또는 생성 (UPSERT 방식) - 중복 생성 방지
 export const GetOrCreatePoint = async (): Promise<Profile_Points | null> => {
   try {
     const {
@@ -85,7 +84,7 @@ export const GetOrCreatePoint = async (): Promise<Profile_Points | null> => {
     console.log('포인트가 없어서 새로 생성합니다.');
     const { data: newPoint, error: insertError } = await supabase
       .from('profile_points')
-      .insert({ profile_id: user.id, point: 2000 })
+      .insert({ profile_id: user.id })
       .select('*')
       .single();
 
@@ -192,5 +191,69 @@ export const totalChangePoint = async (): Promise<number> => {
   } catch (error) {
     console.log(error);
     return 0;
+  }
+};
+
+// 매일 접속 시 마다 포인트 적립
+export const givePoint = async (): Promise<boolean> => {
+  try {
+    const today = new Date();
+    const start = new Date(today.setHours(0, 0, 0, 0)).toISOString();
+    const end = new Date(today.setHours(23, 59, 59, 999)).toISOString();
+
+    const {
+      data: { user },
+    } = await supabase.auth.getUser();
+    if (!user) {
+      throw new Error('로그인 필요');
+    }
+
+    // 오늘 출석 했는지 확인
+    const { data, error } = await supabase
+      .from('point_changes')
+      .select('id')
+      .eq('profile_id', user.id)
+      .eq('change_type', 'daily_login')
+      .gte('created_at', start) // start보다 크거나 같은 값
+      .lte('created_at', end) // end보다 작거나 같은 값
+      .maybeSingle();
+
+    if (error) throw new Error(`출석 실패 : ${error.message}`);
+
+    if (data) {
+      return false; // 이미 출석체크를 했으므로 포인트 지급하지 않음
+    }
+
+    const amount = 10;
+
+    // 1. 포인트 지급
+    const { error: addPointError } = await supabase
+      .from('point_changes')
+      .insert([{ profile_id: user.id, change_type: 'daily_login', amount }]);
+
+    if (addPointError) throw addPointError;
+
+    // 2. profile_points 존재 확인 및 생성 (필요시)
+    const profilePoint = await GetOrCreatePoint();
+    if (!profilePoint) {
+      throw new Error('profile_points 생성/조회 실패');
+    }
+
+    // 3. 포인트 업데이트 (에러 처리 추가)
+    const { data: updatedPoint, error: updateError } = await supabase
+      .from('profile_points')
+      .update({ point: profilePoint.point + amount })
+      .eq('profile_id', user.id)
+      .select('*')
+      .single();
+
+    if (updateError) {
+      console.error('포인트 업데이트 실패:', updateError);
+      throw updateError;
+    }
+
+    return true;
+  } catch (err) {
+    return false;
   }
 };
