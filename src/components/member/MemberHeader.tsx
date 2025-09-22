@@ -25,6 +25,7 @@ const MemberHeader = () => {
   const [error, setError] = useState<string>('');
   // 사용자 닉네임
   const [nickName, setNickName] = useState<string>('');
+  const isAdmin = profileData?.role === 'admin';
 
   // 사용자 프로필 정보
   const loadProfile = async () => {
@@ -107,6 +108,7 @@ const MemberHeader = () => {
               </div>
             </>
           )}
+          {isAdmin && <Link to={'/admin'}>관리자</Link>}
         </div>
       </div>
     </header>

@@ -4,7 +4,7 @@ import { createProfile } from '../lib/propile';
 import { supabase } from '../lib/supabase';
 import type { ProfileInsert } from '../types/bobType';
 import { LogoLg } from '../ui/Ui';
-import { RiArrowDownSLine } from 'react-icons/ri';
+import { RiArrowDownSLine, RiCheckLine } from 'react-icons/ri';
 import { useNavigate } from 'react-router-dom';
 function MemberSignupPage() {
   // ts
@@ -314,12 +314,15 @@ function MemberSignupPage() {
 
                 {/* 이용약관 */}
                 <label className="flex items-center gap-2 cursor-pointer">
-                  <input
-                    type="checkbox"
-                    className="appearance-none w-5 h-5 border-2 border-[#C2C2C2] rounded 
-                 checked:none checked:border-[#FF5722] 
-                 flex-shrink-0 transition-colors"
-                  />
+                  <span className="relative cursor-pointer">
+                    <input
+                      type="checkbox"
+                      className="peer appearance-none w-5 h-5 border-2 border-[#C2C2C2] rounded 
+                 checked:border-[#FF5722] checked:bg-[#FF5722]
+                 flex-shrink-0 transition-colors cursor-pointer"
+                    />
+                    <RiCheckLine className="absolute text-white text-lg left-[50%] top-[50%] translate-x-[-50%] translate-y-[-60%] hidden peer-checked:block pointer-events-none" />
+                  </span>
                   <span className="text-sm">
                     <span className="text-[#FF5722] font-medium">(필수)</span>{' '}
                     <span className="text-gray-700">이용약관에 동의합니다</span>
@@ -328,12 +331,15 @@ function MemberSignupPage() {
 
                 {/* 개인정보 */}
                 <label className="flex items-center gap-2 cursor-pointer">
-                  <input
-                    type="checkbox"
-                    className="appearance-none w-5 h-5 border-2 border-[#C2C2C2] rounded 
-                 checked:none checked:border-[#FF5722] 
-                 flex-shrink-0 transition-colors"
-                  />
+                  <span className="relative">
+                    <input
+                      type="checkbox"
+                      className="peer appearance-none w-5 h-5 border-2 border-[#C2C2C2] rounded 
+                 checked:border-[#FF5722] checked:bg-[#FF5722]
+                 flex-shrink-0 transition-colors cursor-pointer"
+                    />
+                    <RiCheckLine className="absolute text-white text-lg left-[50%] top-[50%] translate-x-[-50%] translate-y-[-60%] hidden peer-checked:block pointer-events-none" />
+                  </span>
                   <span className="text-sm">
                     <span className="text-[#FF5722] font-medium">(필수)</span>{' '}
                     <span className="text-gray-700">개인정보 수집 및 이용에 동의합니다</span>
@@ -342,12 +348,15 @@ function MemberSignupPage() {
 
                 {/* 마케팅 */}
                 <label className="flex items-center gap-2 cursor-pointer">
-                  <input
-                    type="checkbox"
-                    className="appearance-none w-5 h-5 border-2 border-[#C2C2C2] rounded 
-                 checked:none checked:border-[#FF5722] 
-                 flex-shrink-0 transition-colors"
-                  />
+                  <span className="relative">
+                    <input
+                      type="checkbox"
+                      className="peer appearance-none w-5 h-5 border-2 border-[#C2C2C2] rounded 
+                 checked:border-[#FF5722] checked:bg-[#FF5722]
+                 flex-shrink-0 transition-colors cursor-pointer"
+                    />
+                    <RiCheckLine className="absolute text-white text-lg left-[50%] top-[50%] translate-x-[-50%] translate-y-[-60%] hidden peer-checked:block pointer-events-none" />
+                  </span>
                   <span className="text-sm text-gray-700">
                     <span className="text-gray-500">(선택)</span> 마케팅 정보 수신에 동의합니다
                   </span>

@@ -8,7 +8,7 @@ function MemberPage() {
   const isMapLoaded = useKakaoLoader();
   //tsx
   return (
-    <div className="min-h-[2000px]">
+    <div className="min-h-[2000px] max-w-[1280px] mx-auto">
       {/* 배너 */}
       <div>
         <MainBanner />

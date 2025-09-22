@@ -6,7 +6,7 @@ function MemberLayout() {
   return (
     <div className="bg-bg-bg">
       <MemberHeader />
-      <main className=" max-w-[1280px] mx-auto ">
+      <main className="">
         <Outlet />
       </main>
       <MemberFooter />
