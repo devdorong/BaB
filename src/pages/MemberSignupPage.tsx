@@ -5,6 +5,7 @@ import { supabase } from '../lib/supabase';
 import type { ProfileInsert } from '../types/bobType';
 import { LogoLg } from '../ui/Ui';
 import { RiArrowDownSLine } from 'react-icons/ri';
+import { useNavigate } from 'react-router-dom';
 function MemberSignupPage() {
   // ts
   // const { signUp } = useAuth();
@@ -21,6 +22,7 @@ function MemberSignupPage() {
   const [birth, setBirth] = useState('');
   const [gender, setGender] = useState(true);
   const [msg, setMsg] = useState('');
+  const navigate = useNavigate();
 
   // 현재 년도 기준 리스트
   const currentYear = new Date().getFullYear();
@@ -211,7 +213,7 @@ function MemberSignupPage() {
                       value={year}
                       onChange={e => setYear(e.target.value)}
                       required
-                      className="w-full h-[50px] rounded-[20px] border border-gray-300 px-3 pr-10 text-gray-400 focus:outline-none focus:ring-2 focus:ring-bab-500 appearance-none"
+                      className="w-full h-[50px] rounded-[25px] border border-gray-300 px-3 pr-10 text-gray-400 focus:outline-none focus:ring-2 focus:ring-bab-500 appearance-none"
                     >
                       <option value="">년도</option>
                       {years.map(y => (
@@ -231,7 +233,7 @@ function MemberSignupPage() {
                       value={month}
                       onChange={e => setMonth(e.target.value)}
                       required
-                      className="w-full h-[50px] rounded-[20px] border border-gray-300 px-3 pr-10  text-gray-400 focus:outline-none focus:ring-2 focus:ring-bab-500  appearance-none"
+                      className="w-full h-[50px] rounded-[25px] border border-gray-300 px-3 pr-10  text-gray-400 focus:outline-none focus:ring-2 focus:ring-bab-500  appearance-none"
                     >
                       <option value="">월</option>
                       {months.map(m => (
@@ -251,7 +253,7 @@ function MemberSignupPage() {
                       value={day}
                       onChange={e => setDay(e.target.value)}
                       required
-                      className="w-full h-[50px] rounded-[20px] border border-gray-300 px-3 pr-10 text-gray-400 focus:outline-none focus:ring-2 focus:ring-bab-500 appearance-none"
+                      className="w-full h-[50px] rounded-[25px] border border-gray-300 px-3 pr-10 text-gray-400 focus:outline-none focus:ring-2 focus:ring-bab-500 appearance-none"
                     >
                       <option value="">일</option>
                       {days.map(d => (
@@ -353,8 +355,19 @@ function MemberSignupPage() {
               </div>
             </div>
 
-            <button type="submit">회원가입</button>
+            <button
+              type="submit"
+              className="mt-[30px] text-white font-bold w-full h-[49px] bg-bab-500 rounded-lg "
+            >
+              회원가입
+            </button>
           </form>
+          <div className="text-sm mt-[30px] text-center">
+            <span className="text-babgray-700">이미 계정이 있으신가요?</span>
+            <span onClick={() => navigate('/member/login')} className="text-bab-500 cursor-pointer">
+              로그인하기
+            </span>
+          </div>
           {msg && <p>{msg}</p>}
         </div>
       </div>

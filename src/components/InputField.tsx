@@ -10,7 +10,7 @@ interface InputFieldProps {
   required?: boolean;
 }
 
- export const InputField: React.FC<InputFieldProps> = ({
+export const InputField: React.FC<InputFieldProps> = ({
   label,
   value,
   onChange,
@@ -19,7 +19,7 @@ interface InputFieldProps {
   required = false,
 }) => {
   return (
-    <div className="flex flex-col items-start gap-[9px] w-full h-[75px]">
+    <div className="flex flex-col items-start gap-[9px] w-full h-[83px]">
       <label className="flex items-center gap-1 text-gray-700 font-medium">
         {label}
         {required && <span className="text-bab-500">*</span>}
@@ -30,7 +30,8 @@ interface InputFieldProps {
         onChange={onChange}
         placeholder={placeholder}
         required={required}
-        className="w-full h-[50px] border border-gray-300 rounded-[20px] px-3 focus:outline-none focus:ring-2 focus:ring-bab-500"
+        style={{ height: '50px', boxSizing: 'border-box' }}
+        className="w-full border border-gray-300 rounded-[25px] px-3 focus:outline-none focus:ring-2 focus:ring-bab-500"
       />
     </div>
   );
@@ -42,10 +43,10 @@ interface InputFieldWithButtonProps {
   placeholder?: string;
   type?: string;
   required?: boolean;
-  children?:React.ReactNode
+  children?: React.ReactNode;
 }
 
- export const InputFieldWithButton: React.FC<InputFieldWithButtonProps> = ({
+export const InputFieldWithButton: React.FC<InputFieldWithButtonProps> = ({
   label,
   value,
   onChange,
@@ -55,24 +56,25 @@ interface InputFieldWithButtonProps {
   required = false,
 }) => {
   return (
-    <div className="flex flex-col items-start gap-[9px] w-full h-[75px]">
+    <div className="flex flex-col items-start gap-[9px] w-full h-[83px]">
       <label className="flex items-center gap-1 text-gray-700 font-medium">
         {label}
         {required && <span className="text-bab-500">*</span>}
       </label>
-      <div className='flex w-full gap-4 '>
-
-      <input
-        type={type}
-        value={value}
-        onChange={onChange}
-        placeholder={placeholder}
-        required={required}
-        className="flex-1 h-[50px] border border-gray-300 rounded-[20px] px-3 focus:outline-none focus:ring-2 focus:ring-bab-500"
-      />
-       <ButtonFillLG style={{minWidth:125}}>{children}</ButtonFillLG>
+      <div className="flex w-full gap-4 ">
+        <input
+          type={type}
+          value={value}
+          onChange={onChange}
+          placeholder={placeholder}
+          required={required}
+          style={{ height: '50px', boxSizing: 'border-box' }}
+          className="flex-1 h-[50px] border border-gray-300 rounded-[25px] px-3 focus:outline-none focus:ring-2 focus:ring-bab-500 box-border"
+        />
+        <ButtonFillLG style={{ minWidth: 125 }} type="button">
+          {children}
+        </ButtonFillLG>
       </div>
     </div>
   );
 };
-

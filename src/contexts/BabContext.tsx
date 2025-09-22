@@ -6,9 +6,15 @@ import React, {
   useContext,
   useEffect,
   useReducer,
+  useRef,
   type PropsWithChildren,
 } from 'react';
-import { createPoint, GetPoint, totalChangePoint } from '../services/PointService';
+import {
+  createPoint,
+  GetOrCreatePoint,
+  GetPoint,
+  totalChangePoint,
+} from '../services/PointService';
 import { useAuth } from './AuthContext';
 
 // 1. 상태관리 및 초기값
@@ -91,33 +97,46 @@ export const PointProvider = ({ children }: PointProviderProps) => {
   const [state, dispatch] = useReducer(reducer, initialState);
 
   const { user } = useAuth();
+  const isRefreshing = useRef(false);
 
   // 초기로딩 (포인트 가져오기)
   // 함수 참조가 매번 새로 생성되어 무한 루프를 일으키는 문제 발생, useCallback 함수 사용
   const refreshPoint = useCallback(async (): Promise<void> => {
     if (!user) {
-      console.log('💰 refreshPoint - 유저 없어서 스킵');
       return;
     }
 
+    // 이미 실행 중이면 건너뛰기
+    if (isRefreshing.current) {
+      // console.log('이미 포인트 갱신 중입니다.');
+      return;
+    }
+
+    isRefreshing.current = true;
     dispatch({ type: PointActionType.SET_LOADING, payload: true });
 
     try {
-      let result = await GetPoint();
-      if (!result) {
-        result = await createPoint();
-      }
+      // console.log('포인트 갱신 시작');
 
-      dispatch({ type: PointActionType.SET_POINT, payload: result?.point ?? 0 });
+      // UPSERT 방식으로 한 번에 조회/생성
+      const result = await GetOrCreatePoint();
+
+      if (result) {
+        dispatch({ type: PointActionType.SET_POINT, payload: result.point });
+        // console.log('포인트 설정 완료:', result.point);
+      } else {
+        dispatch({ type: PointActionType.SET_POINT, payload: 0 });
+      }
 
       const used = await totalChangePoint();
       dispatch({ type: PointActionType.SET_TOTAL, payload: used });
     } catch (err) {
+      console.error('포인트 갱신 실패:', err);
       dispatch({ type: PointActionType.SET_POINT, payload: 0 });
       dispatch({ type: PointActionType.SET_TOTAL, payload: 0 });
-      console.log(err);
     } finally {
       dispatch({ type: PointActionType.SET_LOADING, payload: false });
+      isRefreshing.current = false;
     }
   }, [user]);
 
@@ -127,6 +146,7 @@ export const PointProvider = ({ children }: PointProviderProps) => {
       refreshPoint();
     } else {
       dispatch({ type: PointActionType.RESET });
+      isRefreshing.current = false;
     }
   }, [user, refreshPoint]);
 
