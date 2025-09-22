@@ -53,6 +53,67 @@ export const createPoint = async (): Promise<Profile_Points | null> => {
   }
 };
 
+// 🆕 포인트 조회 또는 생성 (UPSERT 방식) - 중복 생성 방지
+export const GetOrCreatePoint = async (): Promise<Profile_Points | null> => {
+  try {
+    const {
+      data: { user },
+    } = await supabase.auth.getUser();
+    if (!user) {
+      throw new Error('로그인 필요');
+    }
+
+    // 먼저 기존 포인트 조회 시도
+    const { data: existingPoint, error: selectError } = await supabase
+      .from('profile_points')
+      .select('*')
+      .eq('profile_id', user.id)
+      .maybeSingle();
+
+    if (selectError) {
+      // console.error('기존 포인트 조회 에러:', selectError);
+      throw selectError;
+    }
+
+    // 이미 포인트가 존재하면 반환
+    if (existingPoint) {
+      // console.log('기존 포인트 반환:', existingPoint.point);
+      return existingPoint;
+    }
+
+    // 포인트가 없으면 생성 (UNIQUE 제약조건으로 중복 방지)
+    console.log('포인트가 없어서 새로 생성합니다.');
+    const { data: newPoint, error: insertError } = await supabase
+      .from('profile_points')
+      .insert({ profile_id: user.id, point: 2000 })
+      .select('*')
+      .single();
+
+    if (insertError) {
+      // UNIQUE 제약조건 위반 시 (동시 생성으로 인한 경합)
+      if (insertError.code === '23505') {
+        console.log('동시 생성 감지, 기존 데이터 재조회');
+        // 다시 조회해서 반환
+        const { data: retryData, error: retryError } = await supabase
+          .from('profile_points')
+          .select('*')
+          .eq('profile_id', user.id)
+          .single();
+
+        if (retryError) throw retryError;
+        return retryData;
+      }
+      throw insertError;
+    }
+
+    console.log('새 포인트 생성 완료:', newPoint.point);
+    return newPoint;
+  } catch (error) {
+    console.error('GetOrCreatePoint 에러:', error);
+    return null;
+  }
+};
+
 // 포인트 교환
 export const changePoint = async (couponId: number, requiredPoint: number) => {
   try {
