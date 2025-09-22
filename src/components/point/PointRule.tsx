@@ -10,6 +10,7 @@ import {
 } from 'react-icons/ri';
 import { useAuth } from '../../contexts/AuthContext';
 import { supabase } from '../../lib/supabase';
+import { usePoint } from '../../contexts/PointContext';
 
 interface PointRulesType {
   change_type: string;
@@ -41,6 +42,7 @@ const ruleLabels: Record<string, { title: string; description: string; icon: JSX
 
 const PointRule = () => {
   const { user } = useAuth();
+  const { point, addPoint } = usePoint();
   const [couponRules, setCouponRules] = useState<PointRulesType[]>([]);
   const [loading, setLoading] = useState<boolean>(true);
 
@@ -48,7 +50,6 @@ const PointRule = () => {
     const pointrules = async () => {
       try {
         const { data, error } = await supabase.from('point_rules').select('*');
-        console.log(data, error);
         if (error) throw error;
 
         setCouponRules(data || []);

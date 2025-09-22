@@ -1,10 +1,9 @@
 import type { Session, User } from '@supabase/supabase-js';
 import { createContext, useContext, useEffect, useRef, useState } from 'react';
-import { supabase } from '../lib/supabase';
-import { createPoint, GetPoint } from '../services/PointService';
-import { usePoint } from './BabContext';
 import { createProfile, getProfile } from '../lib/propile';
+import { supabase } from '../lib/supabase';
 import type { ProfileInsert } from '../types/bobType';
+import { givePoint } from '../services/PointService';
 
 type SignUpPayload = {
   email: string;
@@ -57,20 +56,19 @@ export const AuthProvider = ({ children }: AuthProviderProps) => {
   // 중복 처리 방지를 위한 ref
   const processingUsers = useRef<Set<string>>(new Set());
 
-  useEffect(() => {
-    setLoading(false);
+  // useEffect(() => {
+  //   setLoading(false);
 
-    const timer = setTimeout(() => {
-      setLoading(false);
-    }, 5000);
+  //   const timer = setTimeout(() => {
+  //     setLoading(false);
+  //   }, 5000);
 
-    return () => clearTimeout(timer);
-  }, []);
+  //   return () => clearTimeout(timer);
+  // }, []);
 
   // 로그인 후 처리 (프로필/포인트 생성) - 디버그 로그 추가
   const handlePostLogin = async (user: User) => {
     if (processingUsers.current.has(user.id)) {
-      console.log(`이미 처리중인 사용자 : ${user.id}`);
       return;
     }
 
@@ -101,8 +99,11 @@ export const AuthProvider = ({ children }: AuthProviderProps) => {
           gender: user.user_metadata?.gender ?? true,
           birth: user.user_metadata?.birth ?? '2000-01-01',
         };
-        const createResult = await createProfile(newProfile);
+        await createProfile(newProfile);
       }
+
+      // 출석체크
+      const pointResult = await givePoint();
     } catch (error) {
       console.error('handlePostLogin 오류:', error);
     } finally {
@@ -120,6 +121,10 @@ export const AuthProvider = ({ children }: AuthProviderProps) => {
 
         setSession(data.session ?? null);
         setUser(data.session?.user ?? null);
+
+        if (data.session?.user) {
+          await handlePostLogin(data.session.user);
+        }
       } catch (err) {
         console.error('loadSession 오류:', err);
       } finally {

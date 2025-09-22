@@ -3,12 +3,12 @@ import styled from 'styled-components';
 const KoreanFoodStyled = styled.div`
   display: flex;
   width: auto;
-  padding: 6px 13px;
+  padding: 10px 20px;
   justify-content: center;
   align-items: center;
   gap: 10px;
   flex-shrink: 0;
-  border-radius: 16px;
+  border-radius: 24px;
   background: #fff3e0;
   color: #5d4037;
   text-align: center;
@@ -25,12 +25,12 @@ export const KoreanFood = () => {
 const ChineseFoodStyled = styled.div`
   display: flex;
   width: auto;
-  padding: 6px 13px;
+  padding: 10px 20px;
   justify-content: center;
   align-items: center;
   gap: 10px;
   flex-shrink: 0;
-  border-radius: 16px;
+  border-radius: 24px;
   background: #ffebee;
   color: #b71c1c;
   text-align: center;
@@ -47,12 +47,12 @@ export const ChineseFood = () => {
 const JapaneseFoodStyled = styled.div`
   display: flex;
   width: auto;
-  padding: 6px 13px;
+  padding: 10px 20px;
   justify-content: center;
   align-items: center;
   gap: 10px;
   flex-shrink: 0;
-  border-radius: 16px;
+  border-radius: 24px;
   background: #e8eaf6;
   color: #303f9f;
   text-align: center;
@@ -69,12 +69,12 @@ export const JapaneseFood = () => {
 const ItalianFoodStyled = styled.div`
   display: flex;
   width: auto;
-  padding: 6px 13px;
+  padding: 10px 20px;
   justify-content: center;
   align-items: center;
   gap: 10px;
   flex-shrink: 0;
-  border-radius: 16px;
+  border-radius: 24px;
   background: #f1f8e9;
   color: #33691e;
   text-align: center;
@@ -91,12 +91,12 @@ export const ItalianFood = () => {
 const KFoodStyled = styled.div`
   display: flex;
   width: auto;
-  padding: 6px 13px;
+  padding: 10px 20px;
   justify-content: center;
   align-items: center;
   gap: 10px;
   flex-shrink: 0;
-  border-radius: 16px;
+  border-radius: 24px;
   background: #fffde7;
   color: #827717;
   text-align: center;
@@ -113,12 +113,12 @@ export const KFood = () => {
 const AsianFoodStyled = styled.div`
   display: flex;
   width: auto;
-  padding: 6px 13px;
+  padding: 10px 20px;
   justify-content: center;
   align-items: center;
   gap: 10px;
   flex-shrink: 0;
-  border-radius: 16px;
+  border-radius: 24px;
   background: #f3e5f5;
   color: #6a1b9a;
   text-align: center;
@@ -135,12 +135,12 @@ export const AsianFood = () => {
 const IndianFoodStyled = styled.div`
   display: flex;
   width: auto;
-  padding: 6px 13px;
+  padding: 10px 20px;
   justify-content: center;
   align-items: center;
   gap: 10px;
   flex-shrink: 0;
-  border-radius: 16px;
+  border-radius: 24px;
   background: #dbeafe;
   color: #1e40af;
   text-align: center;
@@ -157,12 +157,12 @@ export const IndianFood = () => {
 const MexicanFoodStyled = styled.div`
   display: flex;
   width: auto;
-  padding: 6px 13px;
+  padding: 10px 20px;
   justify-content: center;
   align-items: center;
   gap: 10px;
   flex-shrink: 0;
-  border-radius: 16px;
+  border-radius: 24px;
   background: #e1f5fe;
   color: #0277bd;
   text-align: center;
@@ -179,12 +179,12 @@ export const MexicanFood = () => {
 const CafeStyled = styled.div`
   display: flex;
   width: auto;
-  padding: 6px 13px;
+  padding: 10px 20px;
   justify-content: center;
   align-items: center;
   gap: 10px;
   flex-shrink: 0;
-  border-radius: 16px;
+  border-radius: 24px;
   background: #efebe9;
   color: #4e342e;
   text-align: center;
@@ -201,12 +201,12 @@ export const Cafe = () => {
 const DessertStyled = styled.div`
   display: flex;
   width: auto;
-  padding: 6px 13px;
+  padding: 10px 20px;
   justify-content: center;
   align-items: center;
   gap: 10px;
   flex-shrink: 0;
-  border-radius: 16px;
+  border-radius: 24px;
   background: #fff8e1;
   color: #6d4c41;
   text-align: center;
@@ -223,12 +223,12 @@ export const Dessert = () => {
 const DrinkStyled = styled.div`
   display: flex;
   width: auto;
-  padding: 6px 13px;
+  padding: 10px 20px;
   justify-content: center;
   align-items: center;
   gap: 10px;
   flex-shrink: 0;
-  border-radius: 16px;
+  border-radius: 24px;
   background: #fce4ec;
   color: #880e4f;
   text-align: center;
@@ -245,12 +245,12 @@ export const Drink = () => {
 const IndoorStyled = styled.div`
   display: flex;
   width: auto;
-  padding: 6px 13px;
+  padding: 10px 20px;
   justify-content: center;
   align-items: center;
   gap: 10px;
   flex-shrink: 0;
-  border-radius: 16px;
+  border-radius: 24px;
   background: #fce4ec;
   color: #ad1457;
   text-align: center;
@@ -267,12 +267,12 @@ export const Indoor = () => {
 const OutdoorStyled = styled.div`
   display: flex;
   width: auto;
-  padding: 6px 13px;
+  padding: 10px 20px;
   justify-content: center;
   align-items: center;
   gap: 10px;
   flex-shrink: 0;
-  border-radius: 16px;
+  border-radius: 24px;
   background: #f9fbe7;
   color: #616161;
   text-align: center;
@@ -289,12 +289,12 @@ export const Outdoor = () => {
 const RoofTopStyled = styled.div`
   display: flex;
   width: auto;
-  padding: 6px 13px;
+  padding: 10px 20px;
   justify-content: center;
   align-items: center;
   gap: 10px;
   flex-shrink: 0;
-  border-radius: 16px;
+  border-radius: 24px;
   background: #e3f2fd;
   color: #1565c0;
   text-align: center;
@@ -311,14 +311,50 @@ export const RoofTop = () => {
 export const GrayTag = styled.div`
   display: flex;
   width: auto;
-  padding: 6px 13px;
+  padding: 10px 20px;
   justify-content: center;
   align-items: center;
   gap: 10px;
   flex-shrink: 0;
-  border-radius: 16px;
+  border-radius: 24px;
   background: #f3f4f6;
   color: #374151;
+  text-align: center;
+  font-size: 13px;
+  font-style: normal;
+  font-weight: 500;
+  line-height: normal;
+`;
+
+export const BlackTag = styled.div`
+  display: flex;
+  width: auto;
+  padding: 10px 20px;
+  justify-content: center;
+  align-items: center;
+  gap: 10px;
+  flex-shrink: 0;
+  border-radius: 24px;
+  background: #292929;
+  color: #fff;
+  text-align: center;
+  font-size: 13px;
+  font-style: normal;
+  font-weight: 500;
+  line-height: normal;
+`;
+
+export const BrandTag = styled.div`
+  display: flex;
+  width: auto;
+  padding: 10px 20px;
+  justify-content: center;
+  align-items: center;
+  gap: 10px;
+  flex-shrink: 0;
+  border-radius: 24px;
+  background: #ff5722;
+  color: #fff;
   text-align: center;
   font-size: 13px;
   font-style: normal;
@@ -329,12 +365,12 @@ export const GrayTag = styled.div`
 export const YellowTag = styled.div`
   display: flex;
   width: auto;
-  padding: 6px 13px;
+  padding: 10px 20px;
   justify-content: center;
   align-items: center;
   gap: 10px;
   flex-shrink: 0;
-  border-radius: 16px;
+  border-radius: 24px;
   background: #fef9c3;
   color: #854d0e;
   text-align: center;
@@ -347,12 +383,12 @@ export const YellowTag = styled.div`
 export const GreenTag = styled.div`
   display: flex;
   width: auto;
-  padding: 6px 13px;
+  padding: 10px 20px;
   justify-content: center;
   align-items: center;
   gap: 10px;
   flex-shrink: 0;
-  border-radius: 16px;
+  border-radius: 24px;
   background: #dcfce7;
   color: #166f4b;
   text-align: center;
@@ -365,12 +401,12 @@ export const GreenTag = styled.div`
 export const RedTag = styled.div`
   display: flex;
   width: auto;
-  padding: 6px 13px;
+  padding: 10px 20px;
   justify-content: center;
   align-items: center;
   gap: 10px;
   flex-shrink: 0;
-  border-radius: 16px;
+  border-radius: 24px;
   background: #fee2e2;
   color: #9f312d;
   text-align: center;
@@ -383,12 +419,12 @@ export const RedTag = styled.div`
 export const OrangeTag = styled.div`
   display: flex;
   width: auto;
-  padding: 6px 13px;
+  padding: 10px 20px;
   justify-content: center;
   align-items: center;
   gap: 10px;
   flex-shrink: 0;
-  border-radius: 16px;
+  border-radius: 24px;
   background: #ffeee8;
   color: #ff5722;
   text-align: center;
@@ -401,12 +437,12 @@ export const OrangeTag = styled.div`
 export const PurpleTag = styled.div`
   display: flex;
   width: auto;
-  padding: 6px 13px;
+  padding: 10px 20px;
   justify-content: center;
   align-items: center;
   gap: 10px;
   flex-shrink: 0;
-  border-radius: 16px;
+  border-radius: 24px;
   background: #f3e8ff;
   color: #9333eb;
   text-align: center;
@@ -419,12 +455,12 @@ export const PurpleTag = styled.div`
 export const PinkTag = styled.div`
   display: flex;
   width: auto;
-  padding: 6px 13px;
+  padding: 10px 20px;
   justify-content: center;
   align-items: center;
   gap: 10px;
   flex-shrink: 0;
-  border-radius: 16px;
+  border-radius: 24px;
   background: #fce7f3;
   color: #db2787;
   text-align: center;
@@ -437,12 +473,12 @@ export const PinkTag = styled.div`
 export const BlueTag = styled.div`
   display: flex;
   width: auto;
-  padding: 6px 13px;
+  padding: 10px 20px;
   justify-content: center;
   align-items: center;
   gap: 10px;
   flex-shrink: 0;
-  border-radius: 16px;
+  border-radius: 24px;
   background: #dbeafe;
   color: #1e40af;
   text-align: center;
@@ -455,12 +491,12 @@ export const BlueTag = styled.div`
 export const BrownTag = styled.div`
   display: flex;
   width: auto;
-  padding: 6px 13px;
+  padding: 10px 20px;
   justify-content: center;
   align-items: center;
   gap: 10px;
   flex-shrink: 0;
-  border-radius: 16px;
+  border-radius: 24px;
   background: #ffedd5;
   color: #9a3412;
   text-align: center;

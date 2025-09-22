@@ -8,10 +8,13 @@ import {
   RiChat3Line,
   RiSearchLine,
 } from 'react-icons/ri';
-import { Link } from 'react-router-dom';
+import { Link, useNavigate } from 'react-router-dom';
+import { useAuth } from '../../../contexts/AuthContext';
+import { getProfile } from '../../../lib/propile';
 import { supabase } from '../../../lib/supabase';
 import type { Database, Posts } from '../../../types/bobType';
 import { ButtonFillMd } from '../../../ui/button';
+import Modal from '../../../ui/sdj/Modal';
 import { BlueTag, GreenTag, PurpleTag } from '../../../ui/tag';
 
 type CategoriesType = Database['public']['Tables']['posts']['Row']['post_category'];
@@ -34,6 +37,10 @@ dayjs.extend(relativeTime);
 dayjs.locale('ko');
 
 function CommunityPage() {
+
+  const navigate = useNavigate();
+  const { signIn, session, user } = useAuth();
+  const [isOpen, setIsOpen] = useState(false);
   const [activeCategory, setActiveCategory] = useState<UiCategory>('전체');
   const [posts, setPosts] = useState<PostWithProfile[]>([]);
   const [search, setSearch] = useState('');
@@ -107,6 +114,19 @@ function CommunityPage() {
     }
   };
 
+  const handleWriteClick = async () => {
+    if (!session || !user) {
+      setIsOpen(true);
+      return;
+    }
+    const login = await getProfile(user?.id);
+    if (login) {
+      navigate(`/member/community/write`);
+    } else {
+      setIsOpen(true);
+    }
+  };
+
   useEffect(() => {
     const endOffset = itemOffset + itemsPerPage;
     setCurrentItems(filteredPosts.slice(itemOffset, endOffset));
@@ -151,9 +171,27 @@ function CommunityPage() {
               placeholder="키워드로 게시글 검색하기"
             />
           </div>
-          <Link to={'/member/community/write'}>
-            <ButtonFillMd>작성하기</ButtonFillMd>
-          </Link>
+          <div>
+            <ButtonFillMd onClick={handleWriteClick}>작성하기</ButtonFillMd>
+            {isOpen ? (
+              <div>
+                <Modal
+                  isOpen={isOpen}
+                  onClose={() => setIsOpen(false)}
+                  onSubmit={() => {
+                    setIsOpen(false);
+                    navigate(`/member/login`);
+                  }}
+                  titleText="로그인 확인"
+                  contentText="로그인이 필요합니다. 로그인 페이지로 이동하시겠습니까?"
+                  submitButtonText="확인"
+                  closeButtonText="취소"
+                />
+              </div>
+            ) : (
+              <Link to={`/community/write`} />
+            )}
+          </div>
         </div>
         <div>
           {/* 카테고리 */}
