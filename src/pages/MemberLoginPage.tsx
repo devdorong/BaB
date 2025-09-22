@@ -1,9 +1,10 @@
-import { RiCheckboxCircleLine, RiLock2Line, RiUserLine } from 'react-icons/ri';
-import { LogoLg } from '../ui/Ui';
-import { GoogleIconSvg, KakaoIconSvg } from '../ui/jy/IconSvg';
-import { useNavigate } from 'react-router-dom';
-import { useAuth } from '../contexts/AuthContext';
 import { useState } from 'react';
+import { RiCheckboxCircleLine, RiLock2Line, RiUserLine } from 'react-icons/ri';
+import { useNavigate } from 'react-router-dom';
+import KakaoLoginButton from '../components/KakaoLoginButton';
+import { useAuth } from '../contexts/AuthContext';
+import { LogoLg } from '../ui/Ui';
+import { GoogleIconSvg } from '../ui/jy/IconSvg';
 
 function MemberLoginPage() {
   const navigate = useNavigate();
@@ -58,15 +59,21 @@ function MemberLoginPage() {
             </div>
 
             {/* 로그인 상태유지 */}
-            <div className="w-96 inline-flex items-center gap-1 pt-[25px]">
-              <RiCheckboxCircleLine className="text-babgray-600 justify-center" />
-              <div className="flex justify-center items-center gap-[5px]">
-                <div className="justify-start text-babgray-900 text-base font-normal">
-                  로그인 상태 유지
-                </div>
-                <div className="w-2.5 h-2.5 bg-color-grayscale-g600 justify-center" />
-              </div>
-            </div>
+
+            <label className="inline-flex items-center gap-1 pt-[25px] cursor-pointer">
+              <input
+                type="checkbox"
+                className="peer hidden" // 기본 체크박스 숨김
+              />
+              <RiCheckboxCircleLine
+                className="text-xl text-babgray-600 
+               peer-checked:text-white peer-checked:bg-[#FF5722] 
+               rounded-full transition-colors"
+              />
+              <span className="justify-start text-babgray-900 text-base font-normal">
+                로그인 상태 유지
+              </span>
+            </label>
             {/* 로그인 버튼 */}
             <div className="py-[28px]">
               <button
@@ -101,9 +108,14 @@ function MemberLoginPage() {
           <div className="flex w-[40px] h-[40px] justify-center items-center pw-[8px] py-[8px] bg-white rounded-[20px]">
             <GoogleIconSvg />
           </div>
-          <div className="flex w-[40px] h-[40px] justify-center items-center pw-[8px] py-[8px] bg-[#FBE300] rounded-[20px]">
-            <KakaoIconSvg />
+          {/* SNS 로그인 영역 */}
+          <div style={{ display: 'flex', alignItems: 'center', margin: 'var(--space-6)' }}>
+            <div style={{ flex: 1, height: 1, backgroundColor: 'var(--gray-300)' }}></div>
+            <span style={{ padding: '0 var(--space-4)', fontSize: '14px' }}>또는</span>
+            <div style={{ flex: 1, height: 1, backgroundColor: 'var(--gray-300)' }}></div>
           </div>
+          {/* 카카오 로그인 버튼 : 오류 메시지는 사용자도 볼 수 있어야 함.*/}
+          <KakaoLoginButton onError={error => setMsg(`카카오 로그인 오류 : ${error}`)} />
         </div>
       </div>
     </div>

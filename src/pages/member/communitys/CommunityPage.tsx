@@ -13,7 +13,6 @@ import { supabase } from '../../../lib/supabase';
 import type { Database, Posts } from '../../../types/bobType';
 import { ButtonFillMd } from '../../../ui/button';
 import { BlueTag, GreenTag, PurpleTag } from '../../../ui/tag';
-import { useAuth } from '../../../contexts/AuthContext';
 
 type CategoriesType = Database['public']['Tables']['posts']['Row']['post_category'];
 type CategoryTagType = Database['public']['Tables']['posts']['Row']['tag'];
@@ -27,7 +26,7 @@ type PostWithProfile = Posts & {
   // content: string;
   // created_at?: string | null;
   // view_count?: number;
-  profiles: { id: string; nickname: string } | null;
+  profiles: { id: string; nickname: string }[];
   comments: { id: number }[];
 };
 
@@ -35,7 +34,6 @@ dayjs.extend(relativeTime);
 dayjs.locale('ko');
 
 function CommunityPage() {
-  const { signIn } = useAuth();
   const [activeCategory, setActiveCategory] = useState<UiCategory>('전체');
   const [posts, setPosts] = useState<PostWithProfile[]>([]);
   const [search, setSearch] = useState('');
@@ -88,7 +86,8 @@ function CommunityPage() {
     let postData = supabase.from('posts').select(
       `id, title, content, created_at, post_category, profile_id, tag, view_count,
     profiles (
-      id,nickname
+      id,
+      nickname
     ),comments (
       id
     )`,
@@ -100,7 +99,6 @@ function CommunityPage() {
     }
 
     const { data, error } = await postData;
-    console.log(data);
 
     if (error) {
       console.log(error);
@@ -188,7 +186,7 @@ function CommunityPage() {
                       <p className="text-babgray-600">{item.content}</p>
                     </div>
                     <div className="flex justify-between text-babgray-600">
-                      <p className="font-semibold">{item.profiles?.nickname ?? '알수없음'}</p>
+                      <p className="font-semibold">{item.profiles?.[0]?.nickname ?? '알수없음'}</p>
                       <div>
                         <span className="flex items-center gap-1">
                           <RiChat3Line />
@@ -232,7 +230,7 @@ function CommunityPage() {
                   <button
                     key={page}
                     onClick={() => handlePageClick({ selected: page })}
-                    className={`flex justify-center items-center px-2 ${page === currentPage ? 'font-bold text-bab' : 'font-semibold'} rounded-md hover:bg-bab hover:text-white w-6 h-6`}
+                    className={`flex justify-center items-center px-2 ${page === currentPage ? 'font-bold text-bab' : ''} rounded-md hover:bg-bab hover:text-white w-6 h-6`}
                   >
                     {page + 1}
                   </button>

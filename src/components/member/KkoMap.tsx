@@ -325,7 +325,7 @@ const KkoMap = ({ radius = 1000, onFetched }: KkoMapProps) => {
             // className="scrollbar-hide snap-y snap-mandatory"
             style={{ display: 'flex', flexDirection: 'column', gap: '13px', overflowY: 'auto' }}
           >
-            {places.slice(0, 10).map(p => (
+            {places.map(p => (
               <button
                 key={p.id}
                 className={`flex w-[474px] h-[110px]  min-h-[110px] max-h-[110px] items-center gap-3 p-3 rounded-xl border text-left hover:shadow-sm ${
