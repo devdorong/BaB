@@ -46,7 +46,7 @@ import PersonalPolicyPage from './pages/PersonalPolicyPage';
 import InsratgramPage from './pages/InsratgramPage';
 import KaKaoPage from './pages/KaKaoPage';
 import { AuthProvider } from './contexts/AuthContext';
-import { PointProvider } from './contexts/BabContext';
+import { PointProvider } from './contexts/PointContext';
 function App() {
   return (
     <AuthProvider>

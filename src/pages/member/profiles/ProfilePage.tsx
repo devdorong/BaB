@@ -18,7 +18,7 @@ import { getProfile } from '../../../lib/propile';
 import type { Profile } from '../../../types/bobType';
 import { ButtonFillMd } from '../../../ui/button';
 import { Cafe, ChineseFood, GrayTag, Indoor, KFood, OrangeTag } from '../../../ui/tag';
-import { usePoint } from '../../../contexts/BabContext';
+import { usePoint } from '../../../contexts/PointContext';
 
 function ProfilePage() {
   const { user, signOut } = useAuth();

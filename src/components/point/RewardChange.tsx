@@ -5,7 +5,7 @@ import type { Coupon, Profile_Points } from '../../types/bobType';
 import { supabase } from '../../lib/supabase';
 import { ButtonFillMd, ButtonLineMd } from '../../ui/button';
 import { changePoint, totalChangePoint } from '../../services/PointService';
-import { usePoint } from '../../contexts/BabContext';
+import { usePoint } from '../../contexts/PointContext';
 import { useAuth } from '../../contexts/AuthContext';
 
 const RewardChange = () => {

@@ -36,8 +36,8 @@ const Title = styled.div`
 export const RowCard = () => {
   return (
     <div>
-      <CardLayout className="flex items-center">
-        <CardImage src="public/sample.jpg" />
+      <CardLayout className="flex items-center overflow-hidden">
+        <CardImage src="/sample.jpg" className="overflow-hidden" />
         <div>
           {/* 태그 및 타이틀 */}
           <div className="flex flex-col items-start gap-1">

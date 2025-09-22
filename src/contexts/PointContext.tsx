@@ -13,6 +13,7 @@ import {
   createPoint,
   GetOrCreatePoint,
   GetPoint,
+  givePoint,
   totalChangePoint,
 } from '../services/PointService';
 import { useAuth } from './AuthContext';
@@ -143,7 +144,11 @@ export const PointProvider = ({ children }: PointProviderProps) => {
   // 로그인 상태 바뀔 때마다 포인트 갱신
   useEffect(() => {
     if (user) {
-      refreshPoint();
+      (async () => {
+        // 매일 출석 포인트 적립 후 최신 값 반영
+        await givePoint();
+        await refreshPoint();
+      })(); // 함수 즉시 실행
     } else {
       dispatch({ type: PointActionType.RESET });
       isRefreshing.current = false;
