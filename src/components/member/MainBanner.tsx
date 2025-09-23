@@ -51,7 +51,7 @@ const MainBanner = () => {
 
   return (
     <div className="relative">
-      <div className="w-[1280px] h-[320px] ">
+      <div className="w-[1280px] h-[320px]" onClick={()=>navigate("/member/events")} >
         <Swiper
           modules={[Autoplay]}
           spaceBetween={30}
