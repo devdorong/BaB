@@ -14,6 +14,7 @@ import {
   GetOrCreatePoint,
   GetPoint,
   givePoint,
+  totalAddPoint,
   totalChangePoint,
 } from '../services/PointService';
 import { useAuth } from './AuthContext';
@@ -22,12 +23,14 @@ import { useAuth } from './AuthContext';
 type PointState = {
   point: number;
   total: number;
+  totaladd: number;
   loading: boolean;
 };
 
 const initialState: PointState = {
   point: 0,
   total: 0,
+  totaladd: 0,
   loading: false,
 };
 
@@ -36,6 +39,7 @@ enum PointActionType {
   SET_LOADING = 'SET_LOADING',
   SET_POINT = 'SET_POINT',
   SET_TOTAL = 'SET_TOTAL',
+  SET_TOTAL_ADD = 'SET_TOTAL_ADD',
   ADD_POINT = 'ADD_POINT',
   SUB_POINT = 'SUB_POINT',
   RESET = 'RESET',
@@ -44,6 +48,7 @@ enum PointActionType {
 type SetLoadingAction = { type: PointActionType.SET_LOADING; payload: boolean };
 type SetPointAction = { type: PointActionType.SET_POINT; payload: number };
 type SetTotalAction = { type: PointActionType.SET_TOTAL; payload: number };
+type SetTotalAddAction = { type: PointActionType.SET_TOTAL_ADD; payload: number };
 type AddPointAction = { type: PointActionType.ADD_POINT; payload: number };
 type SubPointAction = { type: PointActionType.SUB_POINT; payload: number };
 type ResetAction = { type: PointActionType.RESET };
@@ -52,6 +57,7 @@ type PointAction =
   | SetLoadingAction
   | SetPointAction
   | SetTotalAction
+  | SetTotalAddAction
   | AddPointAction
   | SubPointAction
   | ResetAction;
@@ -65,6 +71,8 @@ function reducer(state: PointState, action: PointAction): PointState {
       return { ...state, point: action.payload };
     case PointActionType.SET_TOTAL:
       return { ...state, total: action.payload };
+    case PointActionType.SET_TOTAL_ADD:
+      return { ...state, totaladd: action.payload };
     case PointActionType.ADD_POINT:
       return { ...state, point: state.point + action.payload };
     case PointActionType.SUB_POINT:
@@ -80,6 +88,7 @@ function reducer(state: PointState, action: PointAction): PointState {
 type PointContextValue = {
   point: number;
   total: number;
+  totaladd: number;
   loading: boolean;
   refreshPoint: () => Promise<void>;
   addPoint: (amount: number) => void;
@@ -131,10 +140,13 @@ export const PointProvider = ({ children }: PointProviderProps) => {
 
       const used = await totalChangePoint();
       dispatch({ type: PointActionType.SET_TOTAL, payload: used });
+      const addused = await totalAddPoint();
+      dispatch({ type: PointActionType.SET_TOTAL_ADD, payload: addused });
     } catch (err) {
       console.error('포인트 갱신 실패:', err);
       dispatch({ type: PointActionType.SET_POINT, payload: 0 });
       dispatch({ type: PointActionType.SET_TOTAL, payload: 0 });
+      dispatch({ type: PointActionType.SET_TOTAL_ADD, payload: 0 });
     } finally {
       dispatch({ type: PointActionType.SET_LOADING, payload: false });
       isRefreshing.current = false;
@@ -173,6 +185,7 @@ export const PointProvider = ({ children }: PointProviderProps) => {
   const value: PointContextValue = {
     point: state.point,
     total: state.total,
+    totaladd: state.totaladd,
     loading: state.loading,
     refreshPoint,
     addPoint,

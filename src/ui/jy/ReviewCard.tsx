@@ -33,10 +33,14 @@ const Title = styled.div`
   line-height: normal;
 `;
 
-export const RowCard = () => {
+interface Props {
+  onClick?: () => void;
+}
+
+export const RowCard = ({ onClick }: Props) => {
   return (
-    <div>
-      <CardLayout className="flex items-center overflow-hidden">
+    <div onClick={onClick}>
+      <CardLayout className="rounded-2xl overflow-hidden border border-black/5 transition hover:shadow-lg hover:-translate-y-0.5 cursor-pointer">
         <CardImage src="/sample.jpg" className="overflow-hidden" />
         <div>
           {/* 태그 및 타이틀 */}
