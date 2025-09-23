@@ -6,7 +6,7 @@ function MemberLayout() {
   return (
     <div className="bg-bg-bg">
       <MemberHeader />
-      <main className="">
+      <main>
         <Outlet />
       </main>
       <MemberFooter />

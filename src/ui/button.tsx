@@ -83,3 +83,48 @@ export const ButtonFillLG = styled.button`
   font-weight: 700;
   line-height: normal;
 `;
+
+export const GrayButtonFillSm = styled.button`
+  display: inline-flex;
+  height: 30px;
+  width: 60px;
+  padding: 8px 6px;
+  justify-content: center;
+  align-items: center;
+  gap: 10px;
+  flex-shrink: 0;
+  border-radius: 8px;
+  background: #fff;
+  border: 1px solid #dbdbdb;
+  &:hover {
+    background: #f5f5f5;
+  }
+  cursor: pointer;
+  color: #8f8f8f;
+  font-size: 16px;
+  font-style: normal;
+  font-weight: 700;
+  line-height: normal;
+`;
+
+export const ButtonFillSm = styled.button`
+  display: inline-flex;
+  height: 30px;
+  width: 60px;
+  padding: 8px 6px;
+  justify-content: center;
+  align-items: center;
+  gap: 10px;
+  flex-shrink: 0;
+  border-radius: 8px;
+  background: #ff5722;
+  &:hover {
+    background: #bb2d00;
+  }
+  cursor: pointer;
+  color: #fff;
+  font-size: 16px;
+  font-style: normal;
+  font-weight: 700;
+  line-height: normal;
+`;

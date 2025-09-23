@@ -1,10 +1,58 @@
 import { RiAddLine, RiSearchLine } from 'react-icons/ri';
 import { useNavigate } from 'react-router-dom';
+import MatchCard from '../MatchCard';
 
 const MachingIndex = () => {
   const navigate = useNavigate();
+  const demo = [
+    {
+      tags: [
+        { label: '양식', bgClass: 'bg-lime-50', textClass: 'text-lime-800' },
+        { label: '실내', bgClass: 'bg-rose-100', textClass: 'text-pink-700' },
+      ],
+      title: '이태원 스테이크 맛집 같이 가실 분!',
+      description: '맛있는 스테이크 먹으면서 즐거운 대화 나누실 분~',
+      distanceKm: 1.2,
+      area: '장관동',
+      timeAgo: '30분 전',
+    },
+    {
+      tags: [
+        { label: '양식', bgClass: 'bg-lime-50', textClass: 'text-lime-800' },
+        { label: '실내', bgClass: 'bg-rose-100', textClass: 'text-pink-700' },
+      ],
+      title: '이태원 스테이크 맛집 같이 가실 분!',
+      description: '맛있는 스테이크 먹으면서 즐거운 대화 나누실 분~',
+      distanceKm: 1.2,
+      area: '장관동',
+      timeAgo: '30분 전',
+    },
+    {
+      tags: [
+        { label: '양식', bgClass: 'bg-lime-50', textClass: 'text-lime-800' },
+        { label: '실내', bgClass: 'bg-rose-100', textClass: 'text-pink-700' },
+      ],
+      title: '이태원 스테이크 맛집 같이 가실 분!',
+      description: '맛있는 스테이크 먹으면서 즐거운 대화 나누실 분~',
+      distanceKm: 1.2,
+      area: '장관동',
+      timeAgo: '30분 전',
+    },
+    {
+      tags: [
+        { label: '양식', bgClass: 'bg-lime-50', textClass: 'text-lime-800' },
+        { label: '실내', bgClass: 'bg-rose-100', textClass: 'text-pink-700' },
+      ],
+      title: '이태원 스테이크 맛집 같이 가실 분!',
+      description: '맛있는 스테이크 먹으면서 즐거운 대화 나누실 분~',
+      distanceKm: 1.2,
+      area: '장관동',
+      timeAgo: '30분 전',
+    },
+    // 필요 시 더 추가
+  ];
   return (
-    <div>
+    <div className="">
       {/* 상단 */}
       <div className="flex justify-between mt-[120px]">
         {/* 왼쪽 */}
@@ -22,7 +70,10 @@ const MachingIndex = () => {
             />{' '}
             <RiSearchLine className="text-babgray-300 w-5 h-5 mr-2" />
           </div>
-          <button onClick={()=>navigate("/member/posts/write")} className="flex items-center px-8 py-4 bg-bab-500 text-white font-bold rounded-[8px] ">
+          <button
+            onClick={() => navigate('/member/posts/write')}
+            className="flex items-center px-8 py-4 bg-bab-500 text-white font-bold rounded-[8px] "
+          >
             <i>
               <RiAddLine />
             </i>
@@ -31,7 +82,17 @@ const MachingIndex = () => {
         </div>
       </div>
       {/* 중단 */}
-      <div></div>
+      <div className="pt-[30px] pb-[50px]">
+        <ul
+          className=" grid gap-6 list-none p-0 m-0
+    [grid-template-columns:repeat(auto-fill,615px)]
+    justify-center"
+        >
+          {demo.map((item, index) => (
+            <MatchCard key={index} {...item} />
+          ))}
+        </ul>
+      </div>
       {/* 하단 */}
       <div></div>
     </div>
