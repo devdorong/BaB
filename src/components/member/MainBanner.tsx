@@ -36,9 +36,9 @@ const MainBanner = () => {
         <div className="w-[1280px] h-[320px] rounded-[20px] bg-gray-200 animate-pulse mb-[50px] flex items-center justify-center ">
           <span className="text-gray-500">배너 로딩 중...</span>
         </div>
-        <div className="absolute left-[50%] z-[100] translate-x-[-50%] translate-y-[-50%]">
+        <div className="absolute left-[50%] z-[100] translate-x-[-50%] translate-y-[-75%]">
           <button
-            onClick={() => navigate('/member/posts')}
+            onClick={() => navigate('/member/matching')}
             className="flex flex-col items-center justify-center gap-[20px] w-[200px] h-[200px] bg-gradient-to-br from-bab-400 to-bab-600 text-white rounded-[50%] border-[5px] border-bab-300"
           >
             <RiRestaurantFill size={48} />
@@ -78,7 +78,7 @@ const MainBanner = () => {
       </div>
       <div className="absolute left-[50%] z-[100] translate-x-[-50%] translate-y-[-50%]">
         <button
-          onClick={() => navigate('/member/posts')}
+          onClick={() => navigate('/member/matching')}
           className="flex flex-col items-center justify-center gap-[20px] w-[200px] h-[200px] bg-gradient-to-br from-bab-400 to-bab-600 text-white rounded-[50%] border-[5px] border-bab-300"
         >
           <RiRestaurantFill size={48} />

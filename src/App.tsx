@@ -14,9 +14,9 @@ import CommunityPage from './pages/member/communitys/CommunityPage';
 import CommunityWritePage from './pages/member/communitys/CommunityWritePage';
 import EventPage from './pages/member/EventPage';
 import MemberPage from './pages/member/MemberPage';
-import PostDetailPage from './pages/member/posts/PostDetailPage';
-import PostsListPage from './pages/member/posts/PostsListPage';
-import PostsWritePage from './pages/member/posts/PostsWritePage';
+import PostDetailPage from './pages/member/matchings/MatchingDetailPage';
+import PostsListPage from './pages/member/matchings/MatchingListPage';
+import PostsWritePage from './pages/member/matchings/MatchingWritePage';
 import BlockPage from './pages/member/profiles/BlockPage';
 import ChatPage from './pages/member/profiles/ChatPage';
 import EditPage from './pages/member/profiles/EditPage';
@@ -48,6 +48,9 @@ import KaKaoPage from './pages/KaKaoPage';
 import { AuthProvider } from './contexts/AuthContext';
 import { PointProvider } from './contexts/PointContext';
 import MyReviewPage from './pages/member/profiles/MyReviewPage';
+import MatchingListPage from './pages/member/matchings/MatchingListPage';
+import MatchingWritePage from './pages/member/matchings/MatchingWritePage';
+import MatchingDetailPage from './pages/member/matchings/MatchingDetailPage';
 function App() {
   return (
     <AuthProvider>
@@ -63,10 +66,10 @@ function App() {
             {/* Member */}
             <Route path="/member" element={<MemberLayout />}>
               <Route index element={<MemberPage />} />
-              <Route path="posts">
-                <Route index element={<PostsListPage />} />
-                <Route path="write" element={<PostsWritePage />} />
-                <Route path="detail" element={<PostDetailPage />} />
+              <Route path="matching">
+                <Route index element={<MatchingListPage />} />
+                <Route path="write" element={<MatchingWritePage />} />
+                <Route path="detail" element={<MatchingDetailPage />} />
               </Route>
               <Route path="community">
                 <Route index element={<CommunityPage />} />

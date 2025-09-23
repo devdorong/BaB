@@ -1,28 +1,29 @@
 import { RiAddLine, RiSearchLine } from 'react-icons/ri';
 import { useNavigate } from 'react-router-dom';
 import MatchCard from '../MatchCard';
+import { ButtonLineMd } from '../../ui/button';
 
 const MachingIndex = () => {
   const navigate = useNavigate();
   const demo = [
     {
       tags: [
-        { label: '양식', bgClass: 'bg-lime-50', textClass: 'text-lime-800' },
+        { label: '디저트', bgClass: 'bg-babbutton-brown_back', textClass: 'babbutton-brown_back' },
         { label: '실내', bgClass: 'bg-rose-100', textClass: 'text-pink-700' },
       ],
-      title: '이태원 스테이크 맛집 같이 가실 분!',
-      description: '맛있는 스테이크 먹으면서 즐거운 대화 나누실 분~',
+      title: '맛있는 도넛 먹으러 같이 가실 분!',
+      description: '달달한 도넛 하나에 커피 한잔 하실분 계신가요~',
       distanceKm: 1.2,
-      area: '장관동',
-      timeAgo: '30분 전',
+      area: '동성로',
+      timeAgo: '5분 전',
     },
     {
       tags: [
         { label: '양식', bgClass: 'bg-lime-50', textClass: 'text-lime-800' },
         { label: '실내', bgClass: 'bg-rose-100', textClass: 'text-pink-700' },
       ],
-      title: '이태원 스테이크 맛집 같이 가실 분!',
-      description: '맛있는 스테이크 먹으면서 즐거운 대화 나누실 분~',
+      title: '동성로에 있는 밥장인 가실분!',
+      description: '뜨끈한 돼지찌개 한사바리 하러가실분',
       distanceKm: 1.2,
       area: '장관동',
       timeAgo: '30분 전',
@@ -94,7 +95,14 @@ const MachingIndex = () => {
         </ul>
       </div>
       {/* 하단 */}
-      <div></div>
+      <div className="flex justify-center pb-[50px]">
+        <ButtonLineMd
+          onClick={() => navigate('/member/matching')}
+          style={{ borderRadius: '20px', padding: '20px 30px' }}
+        >
+          더보기
+        </ButtonLineMd>
+      </div>
     </div>
   );
 };

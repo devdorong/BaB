@@ -31,10 +31,9 @@ export default function RestaurantCard({
   onClick,
 }: Props) {
   return (
-    
     <div
       onClick={onClick}
-      className="w-[312px] bg-white rounded-2xl overflow-hidden shadow-[0_4px_4px_rgba(0,0,0,0.02)] border border-black/5 transition hover:shadow-lg hover:-translate-y-0.5 cursor-pointer"
+      className="w-[312px] bg-white rounded-2xl overflow-hidden shadow-[0_4px_4px_rgba(0,0,0,0.02)] border border-black/5 cursor-pointer"
     >
       {/* 이미지 */}
       <div className="relative">
@@ -75,7 +74,7 @@ export default function RestaurantCard({
 
         {/* 하단 액션 */}
         <div className="flex justify-between items-center pt-4 text-babgray-700">
-          <div className="flex items-center gap-3">
+          <div className="flex items-center gap-3 ">
             <div className="flex items-center gap-1">
               <RiHeart3Line className="size-4" />
               <span className="text-[13px]">{likeCount}</span>
