@@ -5,6 +5,8 @@ import KakaoLoginButton from '../components/KakaoLoginButton';
 import { useAuth } from '../contexts/AuthContext';
 import { LogoLg } from '../ui/Ui';
 import { GoogleIconSvg } from '../ui/jy/IconSvg';
+import { supabase } from '../lib/supabase';
+import GoogleLoginButton from '../components/GoogleLoginButton';
 
 function MemberLoginPage() {
   const navigate = useNavigate();
@@ -15,11 +17,30 @@ function MemberLoginPage() {
   const handleSubmit = async (e: React.FormEvent<HTMLFormElement>) => {
     e.preventDefault();
     const { error } = await signIn(email, pw);
-    if (error) {
-      setMsg(`로그인 오류 : ${error}`);
-    } else {
+    if (!error) {
       setMsg('로그인 성공');
       navigate('/member');
+      return;
+    }
+    try {
+      const { data: exists, error: rpcError } = await supabase.rpc('check_email_exists', {
+        p_email: email,
+      });
+
+      if (rpcError) {
+        setMsg('로그인 오류 : 이메일 또는 비밀번호가 올바르지 않습니다.');
+        return;
+      }
+
+      if (exists === true) {
+        setMsg('로그인 오류 : 비밀번호가 일치하지 않습니다.');
+      } else if (exists === false) {
+        setMsg('로그인 오류 : 해당 이메일이 존재하지 않습니다.');
+      } else {
+        setMsg('로그인 오류 : 이메일 또는 비밀번호가 올바르지 않습니다.');
+      }
+    } catch {
+      setMsg('로그인 오류 : 잠시 후 다시 시도해주세요.');
     }
   };
 
@@ -75,19 +96,35 @@ function MemberLoginPage() {
               </span>
             </label>
             {/* 로그인 버튼 */}
-            <div className="py-[28px]">
+            <div className="py-[28px] relative">
               <button
                 type="submit"
                 className="px-[15px] w-[450px] h-[50px] self-stretch bg-bab-500 rounded-lg inline-flex justify-center items-center hover:bg-[#BB2D00]"
               >
                 <div className="justify-start text-white text-base font-semibold">로그인</div>
               </button>
+              {/* 메시지 출력 */}
+              {msg && (
+                <p
+                  style={{
+                    textAlign: 'center',
+                    marginTop: '16px',
+                    padding: '12px',
+                    borderRadius: '8px',
+                    backgroundColor: msg.includes('성공') ? '#ecfdf5' : '#fef2f2',
+                    color: msg.includes('성공') ? '#059669' : '#dc2626',
+                    border: `1px solid ${msg.includes('성공') ? '#059669' : '#dc2626'}`,
+                  }}
+                >
+                  {msg}
+                </p>
+              )}
             </div>
           </div>
         </form>
 
         {/* 아이디/비밀번호 찾기/회원가입 */}
-        <div className="flex gap-2 justify-center pb-[28px]">
+        <div className="flex gap-2 justify-center ">
           <div className="text-center justify-start text-babgray-500 text-base font-medium">
             아이디 찾기
           </div>
@@ -103,17 +140,18 @@ function MemberLoginPage() {
             회원가입
           </div>
         </div>
+        {/* SNS 로그인 영역 */}
+        <div style={{ display: 'flex', alignItems: 'center', margin: '24px' }}>
+          <div style={{ flex: 1, height: 1, backgroundColor: '#d1d5db' }}></div>
+          <span style={{ padding: '0 16px', fontSize: '14px' }}>또는</span>
+          <div style={{ flex: 1, height: 1, backgroundColor: '#d1d5db' }}></div>
+        </div>
         {/* 소셜 로그인 아이콘 */}
-        <div className="flex gap-[24px] justify-center">
-          <div className="flex w-[40px] h-[40px] justify-center items-center pw-[8px] py-[8px] bg-white rounded-[20px]">
+        <div className="flex gap-[24px] justify-center flex-col items-center">
+          {/* <div className="flex w-[40px] h-[40px] justify-center items-center pw-[8px] py-[8px] bg-white rounded-[20px]">
             <GoogleIconSvg />
-          </div>
-          {/* SNS 로그인 영역 */}
-          <div style={{ display: 'flex', alignItems: 'center', margin: 'var(--space-6)' }}>
-            <div style={{ flex: 1, height: 1, backgroundColor: 'var(--gray-300)' }}></div>
-            <span style={{ padding: '0 var(--space-4)', fontSize: '14px' }}>또는</span>
-            <div style={{ flex: 1, height: 1, backgroundColor: 'var(--gray-300)' }}></div>
-          </div>
+          </div> */}
+          <GoogleLoginButton />
           {/* 카카오 로그인 버튼 : 오류 메시지는 사용자도 볼 수 있어야 함.*/}
           <KakaoLoginButton onError={error => setMsg(`카카오 로그인 오류 : ${error}`)} />
         </div>

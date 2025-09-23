@@ -1,7 +1,11 @@
 import { Link, useNavigate } from 'react-router-dom';
-import { ButtonFillMd, ButtonLineMd } from '../../ui/button';
+import { ButtonFillMd, ButtonFillSm, ButtonLineMd, GrayButtonFillSm } from '../../ui/button';
 import { LogoSm } from '../../ui/Ui';
 
+import { useEffect, useState } from 'react';
+import { useAuth } from '../../contexts/AuthContext';
+import { getProfile } from '../../lib/propile';
+import type { Profile } from '../../types/bobType';
 import {
   Chat3Line,
   CustomerServiceLine,
@@ -9,10 +13,6 @@ import {
   Notification2Line,
   StarLine,
 } from '../../ui/Icon';
-import { useAuth } from '../../contexts/AuthContext';
-import { useEffect, useState } from 'react';
-import type { Profile } from '../../types/bobType';
-import { getProfile } from '../../lib/propile';
 
 const MemberHeader = () => {
   const navigate = useNavigate();
@@ -26,6 +26,7 @@ const MemberHeader = () => {
   // 사용자 닉네임
   const [nickName, setNickName] = useState<string>('');
   const isAdmin = profileData?.role === 'admin';
+  const isPartner = profileData?.role === 'partner';
 
   // 사용자 프로필 정보
   const loadProfile = async () => {
@@ -93,6 +94,28 @@ const MemberHeader = () => {
                   <div className="w-5 h-5 p-1 left-[60%] bottom-[60%] absolute bg-bab-500 rounded-[10px] inline-flex justify-center items-center">
                     <div className="justify-start text-white text-xs font-normal ">3</div>
                   </div>
+                  {isAdmin && (
+                    <GrayButtonFillSm
+                      style={{
+                        position: 'absolute',
+                        left: '50px',
+                        fontSize: '13px',
+                      }}
+                    >
+                      <Link to={'/admin'}>관리자</Link>
+                    </GrayButtonFillSm>
+                  )}
+                  {isPartner && (
+                    <ButtonFillSm
+                      style={{
+                        position: 'absolute',
+                        left: '50px',
+                        fontSize: '13px',
+                      }}
+                    >
+                      <Link to={'/partner'}>파트너</Link>
+                    </ButtonFillSm>
+                  )}
                 </div>
               </div>
             </>
@@ -108,7 +131,6 @@ const MemberHeader = () => {
               </div>
             </>
           )}
-          {isAdmin && <Link to={'/admin'}>관리자</Link>}
         </div>
       </div>
     </header>

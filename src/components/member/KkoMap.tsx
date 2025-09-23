@@ -239,7 +239,7 @@ const KkoMap = ({ radius = 1000, onFetched }: KkoMapProps) => {
   }
 
   return (
-    <div className="h-[558px] mt-[56px]">
+    <div className="h-[558px] max-w-[1280px] mx-auto py-[60px]">
       <h2 className="text-3xl font-bold mb-[27px]">내 주변 맛집 추천</h2>
       <div className="flex justify-between">
         {/* 지도 영역 */}
@@ -322,8 +322,14 @@ const KkoMap = ({ radius = 1000, onFetched }: KkoMapProps) => {
             height={356}
             loader={<></>}
             endMessage={<></>}
-            // className="scrollbar-hide snap-y snap-mandatory"
-            style={{ display: 'flex', flexDirection: 'column', gap: '13px', overflowY: 'auto' }}
+            // className="snap-y snap-mandatory"
+            style={{
+              display: 'flex',
+              flexDirection: 'column',
+              gap: '13px',
+              overflowY: 'auto',
+              overflowX: 'hidden',
+            }}
           >
             {places.map(p => (
               <button

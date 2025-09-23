@@ -1,20 +1,21 @@
-import { Link } from 'react-router-dom';
+import { Link, useNavigate } from 'react-router-dom';
 import { Instagram, KakaoTalk } from '../../ui/Icon';
 import logo from '/images/logo_sm.png';
 
 const MemberFooter = () => {
+  const nvigate = useNavigate();
   return (
-    <div className="w-full flex flex-col gap h-[155px] bg-white text-gray-600 border-t-2">
+    <footer className="w-full flex flex-col gap h-[155px] bg-white text-gray-600 border-t-2">
       <div className="w-[1280px] mx-auto p-8">
-        <div className="justify-center flex gap-4 mx-auto">
-          <Link to={`/privacy`}>이용약관</Link>
-          <Link to={`/perpolicy`}>
-            <strong>개인정보처리방침</strong>
-          </Link>
-        </div>
         <div className="flex justify-between">
           <div>
-            <img src={logo} alt="logo" />
+            <img src={logo} alt="logo" onClick={() => nvigate('/')} className="cursor-pointer" />
+          </div>
+          <div className="justify-center flex gap-4 mx-auto">
+            <Link to={`/privacy`}>이용약관</Link>
+            <Link to={`/perpolicy`}>
+              <strong>개인정보처리방침</strong>
+            </Link>
           </div>
           <div className="flex gap-4">
             <Link to={`/instar`}>
@@ -32,7 +33,7 @@ const MemberFooter = () => {
           <p>© 2025 BaB.All rights reserved.</p>
         </div>
       </div>
-    </div>
+    </footer>
   );
 };
 
