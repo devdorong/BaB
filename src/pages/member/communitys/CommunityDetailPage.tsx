@@ -1,7 +1,11 @@
 import { RiAlarmWarningLine, RiChat3Line, RiEyeLine, RiHeart3Line } from 'react-icons/ri';
 import { BlueTag } from '../../../ui/tag';
+import { Navigate, useNavigate } from 'react-router-dom';
+import ReportsModal from '../../../ui/sdj/ReportsModal';
 
 function CommunityDetailPage() {
+  const navigate = useNavigate();
+
   return (
     <div>
       <p>게시글</p>
@@ -56,7 +60,7 @@ function CommunityDetailPage() {
             {/* 이 게시글 좋아요 수 */}
             <div>23</div>
           </div>
-          <div>
+          <div onClick={() => navigate(`${(<ReportsModal />)}`)}>
             <RiAlarmWarningLine />
             <p>게시글 신고</p>
           </div>
