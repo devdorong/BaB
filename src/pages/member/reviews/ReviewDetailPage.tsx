@@ -13,11 +13,15 @@ import { ItalianFood } from '../../../ui/tag';
 import { useNavigate } from 'react-router-dom';
 import { useState } from 'react';
 import { ButtonFillLG, ButtonLineLg } from '../../../ui/button';
+import InfoSection from '../../../components/member/InfoSection';
+import WriteReview from '../../../components/member/WriteReview';
 
 type TabKey = 'review' | 'info';
 
 function ReviewDetailPage() {
   const navigate = useNavigate();
+  const [writeOpen, setWriteOpen] = useState(false);
+
   const goBack = () => {
     if (window.history && window.history.length > 1) navigate(-1);
     else navigate('/'); // 히스토리 없을 때 대체 경로
@@ -25,14 +29,14 @@ function ReviewDetailPage() {
 
   const [tab, setTab] = useState<TabKey>('review');
 
-  const base = 'group relative px-4 py-3 text-[15px] font-semibold transition-colors outline-none';
+  const base = 'group relative px-4 py-2 pb-3 transition-colors outline-none';
   const active = 'text-bab-500';
   const inactive = 'text-babgray-900 hover:text-bab-500 focus-visible:text-bab-500';
 
   const underlineClass = (isActive: boolean) =>
     [
       'pointer-events-none absolute left-1/2 -translate-x-1/2 bottom-0',
-      'h-[3px] w-full max-w-[112px] rounded-full transition-opacity',
+      'h-[1px] w-full max-w-[112px] rounded-full transition-opacity',
       isActive ? 'bg-bab-500 opacity-100' : 'opacity-0',
       // 포커스일 때만 나타남 (호버는 아님)
       'group-focus-visible:opacity-100 group-focus-visible:bg-bab-500',
@@ -96,7 +100,10 @@ function ReviewDetailPage() {
 
             {/* 액션 버튼들 */}
             <div className="mt-4 flex flex-wrap gap-5">
-              <ButtonFillLG style={{ fontWeight: 500, borderRadius: '24px' }}>
+              <ButtonFillLG
+                style={{ fontWeight: 500, borderRadius: '24px' }}
+                onClick={() => setWriteOpen(true)}
+              >
                 리뷰 작성하기
               </ButtonFillLG>
               <ButtonLineLg style={{ fontWeight: 500, borderRadius: '24px' }}>
@@ -109,7 +116,7 @@ function ReviewDetailPage() {
 
         {/* 카테고리 */}
         <nav
-          className="mt-6 flex items-center gap-6 border-b border-babgray-150"
+          className="mt-6 flex items-center gap-3 border-b border-babgray-150"
           role="tablist"
           aria-label="상세 탭"
         >
@@ -120,7 +127,10 @@ function ReviewDetailPage() {
             onClick={() => setTab('review')}
             className={`${base} ${tab === 'review' ? active : inactive}`}
           >
-            리뷰
+            <div className="flex gap-2">
+              리뷰
+              <div>526</div>
+            </div>
             <span className={underlineClass(tab === 'review')} />
           </button>
 
@@ -136,13 +146,24 @@ function ReviewDetailPage() {
           </button>
         </nav>
 
-        {/* 리뷰 리스트 */}
-        <section className="mt-4 space-y-4">
-          {[1, 2, 3].map(i => (
-            <ReviewItem key={i} />
-          ))}
-        </section>
+        {/* 탭 콘텐츠 */}
+        {tab === 'review' ? (
+          <section className="mt-10 space-y-4">
+            {[1, 2, 3].map(i => (
+              <ReviewItem key={i} />
+            ))}
+          </section>
+        ) : (
+          <InfoSection />
+        )}
       </div>
+      <WriteReview
+        open={writeOpen}
+        onClose={() => setWriteOpen(false)}
+        onSubmit={data => {
+          console.log('리뷰 제출', data);
+        }}
+      />
     </div>
   );
 }
