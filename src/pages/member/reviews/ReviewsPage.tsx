@@ -1,12 +1,13 @@
 import { useEffect, useState } from 'react';
 import { RiArrowRightDoubleLine, RiArrowRightSLine, RiSearchLine } from 'react-icons/ri';
 import { useAuth } from '../../../contexts/AuthContext';
-import { Link } from 'react-router-dom';
+import { Link, useNavigate } from 'react-router-dom';
 import { ButtonFillMd } from '../../../ui/button';
 import { BlackTag, BrandTag, GrayTag } from '../../../ui/tag';
 import { RowCard } from '../../../ui/jy/ReviewCard';
 
 function ReviewsPage() {
+  const navigate = useNavigate();
   const [search, setSearch] = useState('');
   return (
     <div className="w-full bg-bg-bg">
@@ -49,7 +50,7 @@ function ReviewsPage() {
             <GrayTag>분식</GrayTag>
             <GrayTag>아시안</GrayTag>
             <GrayTag>인도</GrayTag>
-            <GrayTag>멕시코</GrayTag>
+            <GrayTag>멕시칸</GrayTag>
           </div>
           <div className="flex justify-start gap-[8px]">
             <BlackTag>최신순</BlackTag>
@@ -57,7 +58,10 @@ function ReviewsPage() {
             <GrayTag>리뷰순</GrayTag>
           </div>
         </div>
-        <div className="grid grid-cols-2 gap-[34px]">
+        <div
+          onClick={() => navigate('/member/reviews/detail')}
+          className="grid grid-cols-2 gap-[34px]"
+        >
           {[...Array(6)].map((_, index) => (
             <RowCard key={index} />
           ))}

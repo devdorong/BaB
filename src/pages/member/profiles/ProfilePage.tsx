@@ -299,6 +299,13 @@ function ProfilePage() {
                     <RiArrowRightSLine />
                   </Link>
                   <Link
+                    to={'/member/profile/myreviews'}
+                    className="flex text-babgray-900 justify-between items-center border border-babgray-150 rounded-[12px] bg-bg-bg p-[20px]"
+                  >
+                    내가 쓴 리뷰
+                    <RiArrowRightSLine />
+                  </Link>
+                  <Link
                     to={'/member/profile/favorite'}
                     className="flex text-babgray-900 justify-between items-center border border-babgray-150 rounded-[12px] bg-bg-bg p-[20px]"
                   >
