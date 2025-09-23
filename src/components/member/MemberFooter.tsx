@@ -1,8 +1,10 @@
-import { Link } from 'react-router-dom';
+import { Link, useNavigate } from 'react-router-dom';
 import { Instagram, KakaoTalk } from '../../ui/Icon';
 import logo from '/images/logo_sm.png';
 
 const MemberFooter = () => {
+  const navigate = useNavigate();
+
   return (
     <div className="w-full flex flex-col gap h-[155px] bg-white text-gray-600 border-t-2">
       <div className="w-[1280px] mx-auto p-8">
@@ -13,7 +15,7 @@ const MemberFooter = () => {
           </Link>
         </div>
         <div className="flex justify-between">
-          <div>
+          <div onClick={() => navigate('/')} className="cursor-pointer">
             <img src={logo} alt="logo" />
           </div>
           <div className="flex gap-4">
