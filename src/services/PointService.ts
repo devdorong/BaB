@@ -194,6 +194,30 @@ export const totalChangePoint = async (): Promise<number> => {
   }
 };
 
+// 총 적립 포인트
+export const totalAddPoint = async (): Promise<number> => {
+  try {
+    const {
+      data: { user },
+    } = await supabase.auth.getUser();
+    if (!user) {
+      throw new Error('로그인 필요');
+    }
+    const { data, error } = await supabase
+      .from('point_changes')
+      .select('*')
+      .eq('profile_id', user.id)
+      .eq('change_type', 'daily_login');
+    if (error) throw error;
+
+    // 합계 계산
+    return data?.reduce((sum, row: Point_Changes) => sum + row.amount, 0) ?? 0;
+  } catch (err) {
+    console.log(err);
+    return 0;
+  }
+};
+
 // 매일 접속 시 마다 포인트 적립
 export const givePoint = async (): Promise<boolean> => {
   try {

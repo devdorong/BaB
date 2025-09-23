@@ -29,7 +29,7 @@ type PostWithProfile = Posts & {
   // content: string;
   // created_at?: string | null;
   // view_count?: number;
-  profiles: { id: string; nickname: string }[];
+  profiles: { id: string; nickname: string } | null;
   comments: { id: number }[];
 };
 
@@ -37,7 +37,6 @@ dayjs.extend(relativeTime);
 dayjs.locale('ko');
 
 function CommunityPage() {
-
   const navigate = useNavigate();
   const { signIn, session, user } = useAuth();
   const [isOpen, setIsOpen] = useState(false);
@@ -224,7 +223,7 @@ function CommunityPage() {
                       <p className="text-babgray-600">{item.content}</p>
                     </div>
                     <div className="flex justify-between text-babgray-600">
-                      <p className="font-semibold">{item.profiles?.[0]?.nickname ?? '알수없음'}</p>
+                      <p className="font-semibold">{item.profiles?.nickname ?? '알수없음'}</p>
                       <div>
                         <span className="flex items-center gap-1">
                           <RiChat3Line />

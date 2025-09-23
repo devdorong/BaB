@@ -47,6 +47,7 @@ import InsratgramPage from './pages/InsratgramPage';
 import KaKaoPage from './pages/KaKaoPage';
 import { AuthProvider } from './contexts/AuthContext';
 import { PointProvider } from './contexts/PointContext';
+import MyReviewPage from './pages/member/profiles/MyReviewPage';
 function App() {
   return (
     <AuthProvider>
@@ -84,6 +85,7 @@ function App() {
                 <Route path="interest" element={<InterestPage />} />
                 <Route path="chat" element={<ChatPage />} />
                 <Route path="point" element={<PointPage />} />
+                <Route path="myreviews" element={<MyReviewPage />} />
                 <Route path="favorite" element={<FavoritePage />} />
                 <Route path="recentmatching" element={<RecentMatchingPage />} />
                 <Route path="block" element={<BlockPage />} />
