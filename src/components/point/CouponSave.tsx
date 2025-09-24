@@ -72,9 +72,6 @@ const CouponPage = () => {
                   <div className="bg-bab-200 p-[12px] items-center rounded-[8px]">
                     <RiCoupon2Line className="w-[16px] h-[16px] text-bab-500" />
                   </div>
-                  <div className="text-bab-500 font-bold">
-                    {coupon.required_points?.toLocaleString()}P
-                  </div>
                 </div>
                 <div className="flex flex-col gap-[8px]">
                   <div className="text-babgray-900">{coupon.name}</div>

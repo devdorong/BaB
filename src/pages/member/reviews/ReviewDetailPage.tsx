@@ -31,7 +31,7 @@ function ReviewDetailPage() {
 
   const base = 'group relative px-4 py-2 pb-3 transition-colors outline-none';
   const active = 'text-bab-500';
-  const inactive = 'text-babgray-900 hover:text-bab-500 focus-visible:text-bab-500';
+  const inactive = 'text-babgray-600 hover:text-bab-500 focus-visible:text-bab-500';
 
   const underlineClass = (isActive: boolean) =>
     [
