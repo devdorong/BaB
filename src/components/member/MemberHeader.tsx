@@ -66,21 +66,21 @@ const MemberHeader = () => {
         </Link>
         <div className="flex items-center gap-[40px] ">
           <div className="flex items-center gap-[40px] text-babgray-800">
-            <Link to={'/member/community'} className="flex items-center">
+            <Link to={'/member/community'} className="flex items-center gap-[16px]">
               <Chat3Line color="none" bgColor="none" size={16} />
-              커뮤니티
+              <p>커뮤니티</p>
             </Link>
-            <Link to={'/member/reviews'} className="flex items-center">
+            <Link to={'/member/reviews'} className="flex items-center gap-[16px]">
               <StarLine color="none" bgColor="none" size={16} />
-              맛집리뷰
+              <p>맛집리뷰</p>
             </Link>
-            <Link to={'/member/events'} className="flex items-center">
+            <Link to={'/member/events'} className="flex items-center gap-[16px]">
               <GiftLine color="none" bgColor="none" size={16} />
-              이벤트
+              <p>이벤트</p>
             </Link>
-            <Link to={'/member/support'} className="flex items-center">
+            <Link to={'/member/support'} className="flex items-center gap-[16px]">
               <CustomerServiceLine color="none" bgColor="none" size={16} />
-              고객센터
+              <p>고객센터</p>
             </Link>
           </div>
           {user ? (

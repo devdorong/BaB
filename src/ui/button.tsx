@@ -21,7 +21,7 @@ export const ButtonLineMd = styled.button`
   color: #ff5722;
   font-size: 16px;
   font-style: normal;
-  font-weight: 700;
+  font-weight: 500;
   line-height: normal;
 `;
 export const ButtonFillMd = styled.button`
@@ -41,7 +41,7 @@ export const ButtonFillMd = styled.button`
   color: #fff;
   font-size: 16px;
   font-style: normal;
-  font-weight: 700;
+  font-weight: 500;
   line-height: normal;
 `;
 export const ButtonLineLg = styled.button`
@@ -61,7 +61,7 @@ export const ButtonLineLg = styled.button`
   color: #ff5722;
   font-size: 16px;
   font-style: normal;
-  font-weight: 700;
+  font-weight: 500;
   line-height: normal;
 `;
 export const ButtonFillLG = styled.button`
@@ -80,7 +80,7 @@ export const ButtonFillLG = styled.button`
   color: #fff;
   font-size: 16px;
   font-style: normal;
-  font-weight: 700;
+  font-weight: 500;
   line-height: normal;
 `;
 
@@ -103,7 +103,7 @@ export const GrayButtonFillSm = styled.button`
   color: #8f8f8f;
   font-size: 16px;
   font-style: normal;
-  font-weight: 700;
+  font-weight: 500;
   line-height: normal;
 `;
 
@@ -125,6 +125,6 @@ export const ButtonFillSm = styled.button`
   color: #fff;
   font-size: 16px;
   font-style: normal;
-  font-weight: 700;
+  font-weight: 500;
   line-height: normal;
 `;
