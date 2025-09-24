@@ -40,7 +40,7 @@ interface Props {
 export const RowCard = ({ onClick }: Props) => {
   return (
     <div onClick={onClick}>
-      <CardLayout className="rounded-2xl overflow-hidden border border-black/5 transition hover:shadow-lg hover:-translate-y-0.5 cursor-pointer">
+      <CardLayout className="rounded-2xl overflow-hidden border border-black/5 cursor-pointer">
         <CardImage src="/sample.jpg" className="overflow-hidden" />
         <div>
           {/* 태그 및 타이틀 */}
