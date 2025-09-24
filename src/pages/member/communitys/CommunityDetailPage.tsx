@@ -153,7 +153,7 @@ function CommunityDetailPage() {
               {/* 답글 내용 */}
               <p className="text-color-grayscale-g700 text-base">반가워요!</p>
             </div>
-            <div className="flex justify-between items-center">
+            <div className="flex justify-between items-center text-sm">
               <div className="flex gap-5 text-color-grayscale-g700">
                 <div className="flex items-center gap-1 cursor-pointer">
                   {/* 눌렀을때 색바뀌면서 활성화 되며 개수 증가, 한번더 누르면 원상복구 후 좋아요 개수 감소 */}
