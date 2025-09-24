@@ -36,9 +36,9 @@ const Modal: React.FC<ModalProps> = ({
   contentText,
   submitButtonText,
   closeButtonText,
-  closeButtonBgColor = '#c2c2c2 ',
+  closeButtonBgColor = '#c2c2c2',
   submitButtonBgColor = '#ff5722',
-  closeButtonTextColor = '#ffffff',
+  closeButtonTextColor = '#5C5C5C',
   submitButtonTextColor = '#ffffff',
 }) => {
   if (!isOpen) return null;
@@ -55,13 +55,10 @@ const Modal: React.FC<ModalProps> = ({
           <p className="font-bold">{contentText}</p>
         </div>
         <div className="flex justify-center gap-4 items-center bg-babgray-100 py-[20px] px-[20px] rounded-b-[30px]">
-          <ButtonFillMd onClick={onSubmit} className="w-[200px] ">
+          <ButtonFillMd onClick={onSubmit} style={{ background: submitButtonBgColor, flex: 1 }}>
             {submitButtonText}
           </ButtonFillMd>
-          <ButtonFillMd
-            onClick={onClose}
-            className="w-[200px] !bg-babgray-300 hover:!bg-babgray-500 "
-          >
+          <ButtonFillMd onClick={onClose} className="w-[200px]  !text-babgray-700 !bg-babgray-200">
             {closeButtonText}
           </ButtonFillMd>
         </div>

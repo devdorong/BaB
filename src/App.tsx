@@ -1,27 +1,36 @@
+import type { Session } from '@supabase/supabase-js';
+import { useEffect } from 'react';
 import { Route, BrowserRouter as Router, Routes } from 'react-router-dom';
+import { AuthProvider } from './contexts/AuthContext';
+import { PointProvider } from './contexts/PointContext';
 import AdminLayout from './layout/AdminLayout';
 import BareLayout from './layout/BareLayout';
 import MemberLayout from './layout/MemberLayout';
 import PartnerLayout from './layout/PartnerLayout';
+import { createProfile } from './lib/propile';
+import { supabase } from './lib/supabase';
 import AdminMatchingPage from './pages/admin/AdminMatchingPage';
 import AdminMembersPage from './pages/admin/AdminMembersPage';
 import AdminPartnersPage from './pages/admin/AdminPartnersPage';
 import AdminReportsPage from './pages/admin/AdminReportsPage';
 import AdminSettingsPage from './pages/admin/AdminSettingsPage';
 import IndexPage from './pages/IndexPage';
+import InsratgramPage from './pages/InsratgramPage';
+import KaKaoPage from './pages/KaKaoPage';
 import CommunityDetailPage from './pages/member/communitys/CommunityDetailPage';
 import CommunityPage from './pages/member/communitys/CommunityPage';
 import CommunityWritePage from './pages/member/communitys/CommunityWritePage';
 import EventPage from './pages/member/EventPage';
+import MatchingDetailPage from './pages/member/matchings/MatchingDetailPage';
+import MatchingListPage from './pages/member/matchings/MatchingListPage';
+import MatchingWritePage from './pages/member/matchings/MatchingWritePage';
 import MemberPage from './pages/member/MemberPage';
-import PostDetailPage from './pages/member/matchings/MatchingDetailPage';
-import PostsListPage from './pages/member/matchings/MatchingListPage';
-import PostsWritePage from './pages/member/matchings/MatchingWritePage';
 import BlockPage from './pages/member/profiles/BlockPage';
 import ChatPage from './pages/member/profiles/ChatPage';
 import EditPage from './pages/member/profiles/EditPage';
 import FavoritePage from './pages/member/profiles/FavoritePage';
 import InterestPage from './pages/member/profiles/InterestPage';
+import MyReviewPage from './pages/member/profiles/MyReviewPage';
 import PointPage from './pages/member/profiles/PointPage';
 import ProfilePage from './pages/member/profiles/ProfilePage';
 import RecentMatchingPage from './pages/member/profiles/RecentMatchingPage';
@@ -41,24 +50,11 @@ import SalesPage from './pages/partner/SalesPage';
 import SettingsPage from './pages/partner/SettingsPage';
 import PartnerLoginPage from './pages/PartnerLoginPage';
 import PartnerSignupPage from './pages/PartnerSignupPage';
-import TermsofServicePage from './pages/TermsofServicePage';
 import PersonalPolicyPage from './pages/PersonalPolicyPage';
-import InsratgramPage from './pages/InsratgramPage';
-import KaKaoPage from './pages/KaKaoPage';
-import { AuthProvider } from './contexts/AuthContext';
-import { PointProvider } from './contexts/PointContext';
-import MyReviewPage from './pages/member/profiles/MyReviewPage';
-import MatchingListPage from './pages/member/matchings/MatchingListPage';
-import MatchingWritePage from './pages/member/matchings/MatchingWritePage';
-import MatchingDetailPage from './pages/member/matchings/MatchingDetailPage';
-import { useEffect } from 'react';
-import type { Session } from '@supabase/supabase-js';
-import type { ProfileInsert } from './types/bobType';
-import { createProfile } from './lib/propile';
+import TermsofServicePage from './pages/TermsofServicePage';
 import { GetOrCreatePoint } from './services/PointService';
-import { supabase } from './lib/supabase';
+import type { ProfileInsert } from './types/bobType';
 function App() {
-
   // 인증 메일 확인후, 프로필 생성
   useEffect(() => {
     const handleAuthChange = async (event: string, session: Session | null) => {

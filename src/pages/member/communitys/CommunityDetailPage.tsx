@@ -13,7 +13,6 @@ import { useState } from 'react';
 import { ButtonFillMd, ButtonFillSm } from '../../../ui/button';
 
 function CommunityDetailPage() {
-  const navigate = useNavigate();
   const [reports, setReports] = useState(false);
 
   return (
@@ -76,7 +75,7 @@ function CommunityDetailPage() {
             <RiAlarmWarningLine />
             <p>게시글 신고</p>
           </div>
-          {reports && <ReportsModal />}
+          {reports && <ReportsModal setReports={setReports} />}
         </div>
       </div>
       {/* 댓글 영역 */}
