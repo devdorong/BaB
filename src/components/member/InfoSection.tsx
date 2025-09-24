@@ -1,8 +1,6 @@
-import React, { useMemo, useState } from 'react';
 import { RiMapPinLine, RiPhoneLine, RiTimeLine } from 'react-icons/ri';
-import { Map } from 'react-kakao-maps-sdk';
-import KkoMapDetail from '../../ui/jy/kakaomapdummy';
 import { useKakaoLoader } from '../../hooks/useKakaoLoader';
+import KkoMapDetail from '../../ui/jy/Kakaomapdummy';
 
 function InfoSection() {
   const isMapLoaded = useKakaoLoader();

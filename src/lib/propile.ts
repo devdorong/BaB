@@ -15,6 +15,15 @@ import { supabase } from './supabase';
 // 사용자 프로필 생성
 const createProfile = async (newUserProfile: ProfileInsert): Promise<boolean> => {
   try {
+    // 현재 사용자 세션 확인
+    const {
+      data: { session },
+    } = await supabase.auth.getSession();
+    if (!session) {
+      console.log('사용자 세션이 없습니다.');
+      return false;
+    }
+
     // 먼저 존재 여부 확인
     const { data: existing, error: checkError } = await supabase
       .from('profiles')
@@ -29,11 +38,12 @@ const createProfile = async (newUserProfile: ProfileInsert): Promise<boolean> =>
 
     if (existing) {
       console.log('이미 프로필이 존재합니다:', existing.id);
-      return true; // ✅ 그냥 성공으로 간주
+      return true;
     }
 
     // 없으면 새로 생성
     const { error } = await supabase.from('profiles').insert([{ ...newUserProfile }]);
+
     if (error) {
       console.log('프로필 추가 실패:', error.message);
       return false;

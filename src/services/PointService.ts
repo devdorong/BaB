@@ -58,6 +58,7 @@ export const GetOrCreatePoint = async (): Promise<Profile_Points | null> => {
     const {
       data: { user },
     } = await supabase.auth.getUser();
+
     if (!user) {
       throw new Error('로그인 필요');
     }
@@ -70,21 +71,24 @@ export const GetOrCreatePoint = async (): Promise<Profile_Points | null> => {
       .maybeSingle();
 
     if (selectError) {
-      // console.error('기존 포인트 조회 에러:', selectError);
+      console.error('기존 포인트 조회 에러:', selectError);
       throw selectError;
     }
 
     // 이미 포인트가 존재하면 반환
     if (existingPoint) {
-      // console.log('기존 포인트 반환:', existingPoint.point);
+      console.log('기존 포인트 반환:', existingPoint.point);
       return existingPoint;
     }
 
-    // 포인트가 없으면 생성 (UNIQUE 제약조건으로 중복 방지)
+    // 포인트가 없으면 생성 (기본 포인트 2000으로 명시적 설정)
     console.log('포인트가 없어서 새로 생성합니다.');
     const { data: newPoint, error: insertError } = await supabase
       .from('profile_points')
-      .insert({ profile_id: user.id })
+      .insert({
+        profile_id: user.id,
+        point: 2000, // 기본값 명시적 설정
+      })
       .select('*')
       .single();
 
@@ -218,13 +222,73 @@ export const totalAddPoint = async (): Promise<number> => {
   }
 };
 
-// 매일 접속 시 마다 포인트 적립
+// // 매일 접속 시 마다 포인트 적립
+// export const givePoint = async (): Promise<boolean> => {
+//   try {
+//     const today = new Date();
+//     const start = new Date(today.setHours(0, 0, 0, 0)).toISOString();
+//     const end = new Date(today.setHours(23, 59, 59, 999)).toISOString();
+
+//     const {
+//       data: { user },
+//     } = await supabase.auth.getUser();
+//     if (!user) {
+//       throw new Error('로그인 필요');
+//     }
+
+//     // 오늘 출석 했는지 확인
+//     const { data, error } = await supabase
+//       .from('point_changes')
+//       .select('id')
+//       .eq('profile_id', user.id)
+//       .eq('change_type', 'daily_login')
+//       .gte('created_at', start) // start보다 크거나 같은 값
+//       .lte('created_at', end) // end보다 작거나 같은 값
+//       .maybeSingle();
+
+//     if (error) throw new Error(`출석 실패 : ${error.message}`);
+
+//     if (data) {
+//       return false; // 이미 출석체크를 했으므로 포인트 지급하지 않음
+//     }
+
+//     const amount = 10;
+
+//     // 1. 포인트 지급
+//     const { error: addPointError } = await supabase
+//       .from('point_changes')
+//       .insert([{ profile_id: user.id, change_type: 'daily_login', amount }]);
+
+//     if (addPointError) throw addPointError;
+
+//     // 2. profile_points 존재 확인 및 생성 (필요시)
+//     const profilePoint = await GetOrCreatePoint();
+//     if (!profilePoint) {
+//       throw new Error('profile_points 생성/조회 실패');
+//     }
+
+//     // 3. 포인트 업데이트 (에러 처리 추가)
+//     const { data: updatedPoint, error: updateError } = await supabase
+//       .from('profile_points')
+//       .update({ point: profilePoint.point + amount })
+//       .eq('profile_id', user.id)
+//       .select('*')
+//       .single();
+
+//     if (updateError) {
+//       console.error('포인트 업데이트 실패:', updateError);
+//       throw updateError;
+//     }
+
+//     return true;
+//   } catch (err) {
+//     return false;
+//   }
+// };
+
+// 매일 접속 시 마다 포인트 적립 (Auth 기반 신규 가입자 체크)
 export const givePoint = async (): Promise<boolean> => {
   try {
-    const today = new Date();
-    const start = new Date(today.setHours(0, 0, 0, 0)).toISOString();
-    const end = new Date(today.setHours(23, 59, 59, 999)).toISOString();
-
     const {
       data: { user },
     } = await supabase.auth.getUser();
@@ -232,19 +296,36 @@ export const givePoint = async (): Promise<boolean> => {
       throw new Error('로그인 필요');
     }
 
+    // Authentication의 created_at으로 신규 가입자 확인
+    if (user.created_at) {
+      const signupDate = new Date(user.created_at).toDateString();
+      const today = new Date().toDateString();
+
+      if (signupDate === today) {
+        console.log('신규 가입자는 다음날부터 출석체크 가능합니다.');
+        return false; // 신규 가입자는 출석체크 불가
+      }
+    }
+
+    // 기존 출석체크 로직
+    const todayDate = new Date();
+    const start = new Date(todayDate.setHours(0, 0, 0, 0)).toISOString();
+    const end = new Date(todayDate.setHours(23, 59, 59, 999)).toISOString();
+
     // 오늘 출석 했는지 확인
     const { data, error } = await supabase
       .from('point_changes')
       .select('id')
       .eq('profile_id', user.id)
       .eq('change_type', 'daily_login')
-      .gte('created_at', start) // start보다 크거나 같은 값
-      .lte('created_at', end) // end보다 작거나 같은 값
+      .gte('created_at', start)
+      .lte('created_at', end)
       .maybeSingle();
 
     if (error) throw new Error(`출석 실패 : ${error.message}`);
 
     if (data) {
+      console.log('오늘 이미 출석체크를 완료했습니다.');
       return false; // 이미 출석체크를 했으므로 포인트 지급하지 않음
     }
 
@@ -263,7 +344,7 @@ export const givePoint = async (): Promise<boolean> => {
       throw new Error('profile_points 생성/조회 실패');
     }
 
-    // 3. 포인트 업데이트 (에러 처리 추가)
+    // 3. 포인트 업데이트
     const { data: updatedPoint, error: updateError } = await supabase
       .from('profile_points')
       .update({ point: profilePoint.point + amount })
@@ -276,8 +357,10 @@ export const givePoint = async (): Promise<boolean> => {
       throw updateError;
     }
 
+    console.log('출석체크 완료: 10포인트 적립');
     return true;
   } catch (err) {
+    console.error('출석체크 중 오류:', err);
     return false;
   }
 };

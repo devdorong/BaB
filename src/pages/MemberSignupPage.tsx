@@ -73,38 +73,37 @@ function MemberSignupPage() {
     if (!nickName.trim()) return alert('닉네임을 입력하세요.');
     if (!birth) return alert('생년월일을 선택하세요.');
 
-    // 회원가입 (user_metadata에 추가 정보 저장)
-    const { data, error } = await supabase.auth.signUp({
-      email,
-      password: pw,
-      options: {
-        data: { name, nickName, phone, gender, birth },
-      },
-    });
+    try {
+      // 1. 회원가입만 먼저 진행 (프로필 생성은 이메일 인증 후)
+      const { data, error } = await supabase.auth.signUp({
+        email,
+        password: pw,
+        options: {
+          data: {
+            name,
+            nickName,
+            phone,
+            gender,
+            birth,
+            // 프로필 생성에 필요한 정보를 user_metadata에 저장
+            needsProfileCreation: true,
+          },
+        },
+      });
 
-    if (error) {
-      setMsg(`회원가입 오류 : ${error.message}`);
-    } else {
-      setMsg('회원가입에 성공했습니다. 이메일 인증 링크를 확인해주세요.');
-    }
-
-    if (data.user?.id) {
-      // ✅ profiles row 생성
-      const newUser: ProfileInsert = {
-        id: data.user.id,
-        name,
-        nickname: nickName,
-        phone,
-        gender,
-        birth, // YYYY-MM-DD
-      };
-      const result = await createProfile(newUser);
-      if (result) {
-        // 프로필 추가가 성공한 경우
-        setMsg('회원가입 및 프로필 생성 성공했습니다. 이메일 인증 링크를 확인해 주세요');
-      } else {
-        setMsg(`회원가입은 성공, 하지만, 프로필 생성 실패했습니다`);
+      if (error) {
+        setMsg(`회원가입 오류 : ${error.message}`);
+        return;
       }
+
+      // 2. 회원가입 성공 메시지만 표시
+      setMsg('회원가입에 성공했습니다. 이메일 인증 링크를 확인해주세요.');
+
+      // 3. 프로필 생성은 이메일 인증 완료 후 로그인 시 처리
+      // (별도 컴포넌트나 useEffect에서 처리)
+    } catch (err) {
+      console.error('회원가입 처리 중 오류:', err);
+      setMsg('회원가입 처리 중 오류가 발생했습니다.');
     }
   };
 
