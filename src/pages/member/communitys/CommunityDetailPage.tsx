@@ -99,93 +99,101 @@ function CommunityDetailPage() {
           {/* 댓글등록 클릭시 작성될 내용 */}
           <textarea
             placeholder="댓글을 작성해주세요"
-            className="w-full h-24 px-4 py-3.5 rounded-3xl outline outline-1 outline-offset-[-1px] outline-color-grayscale-g-150 text-babgray-500 text-base resize-none focus:outline-none focus:ring-1 focus:ring-bab-500"
+            className="w-full h-24 px-4 py-3.5 rounded-3xl outline outline-1 outline-offset-[-1px] outline-babgray text-babgray-800 resize-none focus:outline-none focus:ring-1 focus:ring-bab"
           />
           {/* textarea 에 작성된 글자수 제한,실시간 연동 500자 제한*/}
-          <p className="self-stretch text-right text-color-grayscale-g500 text-xs">0/500</p>
+          <p className="self-stretch text-right text-babgray-500 text-xs">0/500</p>
         </div>
-        {/* 기본버전 */}
-        <div className="flex flex-col gap-2 border-t border-테두리 pt-5">
-          <div className="flex justify-between items-start">
-            {/* 댓글작성자 닉네임 */}
-            <span className="text-color-grayscale-g800 text-base font-bold">도로롱</span>
-            {/* 댓글 작성시간 */}
-            <span className="text-color-grayscale-g700 text-base">1시간 전</span>
-          </div>
-          {/* 등록한 댓글 내용 */}
-          <p className="text-color-grayscale-g700 text-base leading-relaxed">
-            고기 구이 맛집이라면 저도 참여하고 싶어요. 어떤 곳을 생각하고 계신가요? 계신가요?
-            계신가요? 계신가요? 계신가요? 계신가요? 계신가요? 계신가요?
-          </p>
-          <div className="flex justify-between items-center text-sm">
-            <div className="flex gap-5 text-color-grayscale-g700">
-              {/* 눌렀을때 색바뀌면서 활성화 되며 개수 증가, 한번더 누르면 원상복구 후 좋아요 개수 감소 */}
-              <div className="flex items-center gap-1 cursor-pointer">
-                <RiHeart3Line />
-                <p>5</p>
-              </div>
-              {/* 눌렀을때 답글버전으로 변경 */}
-              <div className="flex items-center gap-1 cursor-pointer">
-                <RiShareForwardLine />
-                <p>답글</p>
-              </div>
+        <div>
+          {/* 기본버전 */}
+          <div className="flex flex-col gap-4 border-y border-y-babgray py-5 text-babgray-700">
+            <div className="flex justify-between items-start">
+              {/* 댓글작성자 닉네임 */}
+              <span className="text-babgray-800 font-bold">도로롱</span>
+              {/* 댓글 작성시간 */}
+              <span className="text-babgray-700">1시간 전</span>
             </div>
-            {/* 눌렀을때 reports 모달 */}
-            <div className="flex items-center gap-1 text-babbutton-red cursor-pointer">
-              <RiAlarmWarningLine />
-              <p>신고하기</p>
-            </div>
-          </div>
-        </div>
-        {/* 답글버튼 눌렀을때 버전 */}
-        <div className="flex flex-col gap-2 border-t border-테두리 pt-5">
-          <div className="flex justify-between items-start">
-            {/* 답글 작성자 닉네임 */}
-            <p className="text-color-grayscale-g800 text-base font-bold">도롱</p>
-            {/* 답글 작성 시간 */}
-            <p className="text-color-grayscale-g700 text-base">2시간 전</p>
-          </div>
-          {/* 답글을 달 댓글 내용 */}
-          <p className="text-color-grayscale-g700 text-base">
-            저도 강남역 근처 맛집 탐방 좋아해요! 함께 할 수 있을까요?
-          </p>
-          {/* 답글 내용 */}
-          <textarea className="w-full h-20 px-4 py-3.5 rounded-3xl outline outline-1 outline-offset-[-1px] outline-color-grayscale-g-150 text-babgray-500 resize-none" />
-          <div className="flex justify-end pt-2">
-            {/* 등록하기 버튼 */}
-            <ButtonFillSm style={{ width: 'auto', fontWeight: 400 }}>등록하기</ButtonFillSm>
-          </div>
-        </div>
-        {/* 답글 달렸을때 버전 */}
-        <div className="flex flex-col gap-2 pl-5 border-b border-테두리 pt-5">
-          <div className="flex items-center gap-2 text-sm text-babgray-500">
-            <RiCornerDownRightFill className="text-color-grayscale-g600" />
-            {/* 답글 단 회원의 닉네임 */}
-            <p className="text-color-grayscale-g800 text-base font-bold">도현</p>
-            {/* 답글 단 시간 */}
-            <p className="text-color-grayscale-g700 text-base">50분 전</p>
-          </div>
-          <div>
-            {/* 답글 내용 */}
-            <p className="text-color-grayscale-g700 text-base">반가워요!</p>
-          </div>
-          <div className="flex justify-between items-center text-sm">
-            <div className="flex gap-5 text-color-grayscale-g700">
-              <div className="flex items-center gap-1 cursor-pointer">
+            {/* 등록한 댓글 내용 */}
+            <p className="text-babgray-700">
+              고기 구이 맛집이라면 저도 참여하고 싶어요. 어떤 곳을 생각하고 계신가요? 계신가요?
+              계신가요? 계신가요? 계신가요? 계신가요? 계신가요? 계신가요?
+            </p>
+            <div className="flex justify-between items-center text-sm">
+              <div className="flex gap-5 text-babgray-700">
                 {/* 눌렀을때 색바뀌면서 활성화 되며 개수 증가, 한번더 누르면 원상복구 후 좋아요 개수 감소 */}
-                <RiHeart3Line />
-                <p>5</p>
+                <div className="flex items-center gap-1 cursor-pointer">
+                  <RiHeart3Line />
+                  <p>5</p>
+                </div>
+                {/* 눌렀을때 답글버전으로 변경 */}
+                <div className="flex items-center gap-1 cursor-pointer">
+                  <RiShareForwardLine />
+                  <p>답글</p>
+                </div>
               </div>
-              {/* 눌렀을때 답글버전으로 변경 */}
-              <div className="flex items-center gap-1 cursor-pointer">
-                <RiShareForwardLine />
-                <p>답글</p>
+              {/* 눌렀을때 reports 모달 */}
+              <div className="flex items-center gap-1 text-babbutton-red cursor-pointer">
+                <RiAlarmWarningLine />
+                <p>신고하기</p>
               </div>
             </div>
-            {/* 눌렀을때 reports 모달 */}
-            <div className="flex items-center gap-1 text-babbutton-red cursor-pointer">
-              <RiAlarmWarningLine />
-              <p>신고하기</p>
+          </div>
+          {/* 답글 달렸을때 버전 */}
+          <div className="flex flex-col gap-4 border-y border-y-babgray py-5 text-babgray-700">
+            <div className="flex justify-between items-center gap-2 text-babgray-500">
+              <div className="flex items-center gap-2">
+                <RiCornerDownRightFill className="text-babgray-600" />
+                {/* 답글 단 회원의 닉네임 */}
+                <p className="text-babgray-800 font-bold">도현</p>
+              </div>
+              {/* 답글 단 시간 */}
+              <p className="text-babgray-700">50분 전</p>
+            </div>
+            <div>
+              {/* 답글 내용 */}
+              <p className="text-color-grayscale-g700 text-base">반가워요!</p>
+            </div>
+            <div className="flex justify-between items-center">
+              <div className="flex gap-5 text-color-grayscale-g700">
+                <div className="flex items-center gap-1 cursor-pointer">
+                  {/* 눌렀을때 색바뀌면서 활성화 되며 개수 증가, 한번더 누르면 원상복구 후 좋아요 개수 감소 */}
+                  <RiHeart3Line />
+                  <p>5</p>
+                </div>
+                {/* 눌렀을때 답글버전으로 변경 */}
+                <div className="flex items-center gap-1 cursor-pointer">
+                  <RiShareForwardLine />
+                  <p>답글</p>
+                </div>
+              </div>
+              {/* 눌렀을때 reports 모달 */}
+              <div className="flex items-center gap-1 text-babbutton-red cursor-pointer">
+                <RiAlarmWarningLine />
+                <p>신고하기</p>
+              </div>
+            </div>
+          </div>
+          {/* 답글버튼 눌렀을때 버전 */}
+          <div className="flex flex-col gap-4 border-y border-y-babgray py-5 text-babgray-700">
+            <div className="flex justify-between items-center">
+              {/* 답글 작성자 닉네임 */}
+              <p className="font-bold">도롱</p>
+              {/* 답글 작성 시간 */}
+              <p>2시간 전</p>
+            </div>
+            {/* 답글을 달 댓글 내용 */}
+            <p>저도 강남역 근처 맛집 탐방 좋아해요! 함께 할 수 있을까요?</p>
+            {/* 답글 내용 */}
+            <div className="flex flex-col gap-3">
+              <textarea
+                className="w-full h-24 px-4 py-3.5 rounded-3xl outline outline-1 outline-offset-[-1px] outline-babgray text-babgray-800 resize-none focus:outline-none focus:ring-1 focus:ring-bab"
+                placeholder="답글을 입력해주세요"
+              />
+              <p className="self-stretch text-right text-babgray-500 text-xs">0/500</p>
+            </div>
+            <div className="flex justify-end">
+              {/* 등록하기 버튼 */}
+              <ButtonFillSm style={{ width: 'auto', fontWeight: 400 }}>등록하기</ButtonFillSm>
             </div>
           </div>
         </div>
