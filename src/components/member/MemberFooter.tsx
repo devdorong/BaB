@@ -9,7 +9,6 @@ const MemberFooter = () => {
     <footer className="w-full flex flex-col gap h-[155px] bg-white text-gray-600 border-t-2">
       <div className="w-[1280px] mx-auto p-8">
         <div className="flex justify-between">
-
           <div>
             <img src={logo} alt="logo" onClick={() => navigate('/')} className="cursor-pointer" />
           </div>
@@ -18,14 +17,13 @@ const MemberFooter = () => {
             <Link to={`/perpolicy`}>
               <strong>개인정보처리방침</strong>
             </Link>
-
           </div>
           <div className="flex gap-4">
             <Link to={`/instar`}>
-              <Instagram color="black" bgColor="#E5E7EB" size={25} />
+              <Instagram color="black" bgColor="#E5E7EB" size={25} padding={8} />
             </Link>
             <Link to={`/kakao`}>
-              <KakaoTalk color="black" bgColor="#E5E7EB" size={25} />
+              <KakaoTalk color="black" bgColor="#E5E7EB" size={25} padding={8} />
             </Link>
           </div>
         </div>

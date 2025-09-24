@@ -110,6 +110,7 @@ import {
   RiShieldLine,
   RiInstagramLine,
   RiKakaoTalkFill,
+  RiMailLine,
 } from 'react-icons/ri';
 import styled from 'styled-components';
 
@@ -142,6 +143,7 @@ interface IconWrapperProps {
   $bgColor?: string;
   $color?: string;
   $size?: number;
+  $padding?: number;
 }
 
 // 2. styled component
@@ -149,8 +151,8 @@ const IconWrapper = styled.div<IconWrapperProps>`
   display: inline-flex;
   align-items: center;
   justify-content: center;
-  border-radius: 25px;
-  padding: 6px;
+  border-radius: 50%;
+  padding: ${({ $padding }) => `${$padding}px` || '6px'};
   background-color: ${({ $bgColor }) => $bgColor || '#FF5722'};
   color: ${({ $color }) => $color || 'white'};
   font-size: ${({ $size }) => ($size ? `${$size}px` : '15px')};
@@ -158,8 +160,18 @@ const IconWrapper = styled.div<IconWrapperProps>`
 
 // 3. HOC
 const createIcon = (IconComponent: React.ElementType) => {
-  return ({ bgColor, color, size }: { bgColor?: string; color?: string; size?: number }) => (
-    <IconWrapper $bgColor={bgColor} $color={color} $size={size}>
+  return ({
+    bgColor,
+    color,
+    size,
+    padding,
+  }: {
+    bgColor?: string;
+    color?: string;
+    size?: number;
+    padding?: number;
+  }) => (
+    <IconWrapper $bgColor={bgColor} $color={color} $size={size} $padding={padding}>
       <IconComponent />
     </IconWrapper>
   );
@@ -280,3 +292,4 @@ export const GitBranchLine = createIcon(RiGitBranchLine);
 export const Heart3Line = createIcon(RiHeart3Line);
 export const Instagram = createIcon(RiInstagramLine);
 export const KakaoTalk = createIcon(RiKakaoTalkFill);
+export const MailLine = createIcon(RiMailLine);

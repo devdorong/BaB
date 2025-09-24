@@ -1,7 +1,7 @@
 import { RiAddLine, RiSearchLine } from 'react-icons/ri';
 import { useNavigate } from 'react-router-dom';
 import MatchCard from '../MatchCard';
-import { ButtonLineMd } from '../../ui/button';
+import { ButtonFillLG, ButtonLineMd } from '../../ui/button';
 
 const MachingIndex = () => {
   const navigate = useNavigate();
@@ -104,15 +104,12 @@ const MachingIndex = () => {
             />{' '}
             <RiSearchLine className="text-babgray-300 w-5 h-5 mr-2" />
           </div>
-          <button
-            onClick={() => navigate('/member/posts/write')}
-            className="flex items-center px-8 py-4 bg-bab-500 text-white font-bold rounded-[8px] gap-2 "
-          >
+          <ButtonFillLG onClick={() => navigate('/member/posts/write')}>
             <i>
               <RiAddLine size={24} />
             </i>
             <span>매칭 등록하기</span>
-          </button>
+          </ButtonFillLG>
         </div>
       </div>
       {/* 중단 */}
