@@ -211,8 +211,10 @@ function CommunityPage() {
               {currentItems.length > 0 ? (
                 currentItems.map(item => (
                   <div
+                    // 디테일 페이지 :id 이동 추가
+                    onClick={() => navigate(`/member/community/detail`)}
                     key={item.id}
-                    className="w-full h-auto flex flex-col gap-4 bg-white shadow-card rounded-xl2 py-6 px-8 "
+                    className="w-full h-auto flex flex-col gap-4 bg-white shadow-card rounded-xl2 py-6 px-8 cursor-pointer"
                   >
                     <div className="flex justify-between">
                       <div>{tagComponents[item.tag as FilteredTag] ?? item.tag}</div>
@@ -228,6 +230,8 @@ function CommunityPage() {
                         <span className="flex items-center gap-1">
                           <RiChat3Line />
                           {item.comments?.length}
+                          {/* 뷰어추가 */}
+                          {/* 좋아요수 추가 */}
                         </span>
                       </div>
                     </div>
