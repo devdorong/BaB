@@ -1,6 +1,3 @@
-import { RiCloseFill } from 'react-icons/ri';
-import { ButtonFillMd } from '../button';
-
 /**
  * Modal 컴포넌트 사용 예시:
  * ```tsx
@@ -14,6 +11,8 @@ import { ButtonFillMd } from '../button';
  * />
  * ```
  */
+import { RiCloseFill } from 'react-icons/ri';
+import { ButtonFillMd } from '../button';
 interface ModalProps {
   isOpen: boolean;
   onClose: () => void;
