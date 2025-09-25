@@ -20,7 +20,7 @@ function ChatPage() {
                 <div className=" flex flex-col border-r border-gray-200 bg-white">
                   {/* 검색창 */}
                   <div className="p-4 border-b border-gray-200">
-                    <div className="flex items-center gap-[5px] w-full p-3 rounded-3xl border border-gray-300 text-sm text-gray-400 focus:outline-none focus:ring-2 focus:ring-orange-400">
+                    <div className="flex items-center gap-[5px] w-full p-[12px] rounded-3xl border border-gray-300 text-sm text-gray-400 focus:outline-none focus:ring-2 focus:ring-orange-400">
                       <RiSearchLine />
                       <input type="text" placeholder="대화 검색..." />
                     </div>
