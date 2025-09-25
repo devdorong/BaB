@@ -172,10 +172,11 @@ const KkoMapDetail = ({ radius = 1000, onFetched }: KkoMapProps) => {
   return (
     <div className="flex justify-between">
       {/* 지도 영역 */}
-      <div className=" w-full rounded-2xl overflow-hidden">
+      <div className=" w-full max-h-[356px] rounded-2xl overflow-hidden">
         <Map
           center={center}
           level={1}
+          // className="h-full w-full"
           style={{ height: '356px' }}
           onCreate={handleOnCreate}
           onCenterChanged={map => {
