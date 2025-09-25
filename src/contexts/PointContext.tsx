@@ -165,7 +165,7 @@ export const PointProvider = ({ children }: PointProviderProps) => {
       dispatch({ type: PointActionType.RESET });
       isRefreshing.current = false;
     }
-  }, [user, refreshPoint]);
+  }, [user]);
 
   // 포인트 추가
   const addPoint = (amount: number) => {

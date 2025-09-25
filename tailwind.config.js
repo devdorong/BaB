@@ -54,6 +54,8 @@ module.exports = {
           purple_back: '#F3E8FF',
           brown: '#7C2D12',
           brown_back: '#FFEDD5',
+          black: '#374151',
+          black_back: '#F3F4F6',
         },
         babcategory: {
           koreanbg: '#FFF3E0',

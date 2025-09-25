@@ -505,3 +505,30 @@ export const BrownTag = styled.div`
   font-weight: 500;
   line-height: normal;
 `;
+
+interface TagButtonProps {
+  $active?: boolean;
+}
+
+export const TagButton = styled.div<TagButtonProps>`
+  display: flex;
+  width: auto;
+  padding: 10px 20px;
+  justify-content: center;
+  align-items: center;
+  gap: 10px;
+  flex-shrink: 0;
+  border-radius: 24px;
+  cursor: pointer;
+
+  background: ${({ $active }) => ($active ? '#FF5722' : '#F3F4F6')};
+  color: ${({ $active }) => ($active ? '#fff' : '#374151')};
+
+  text-align: center;
+  font-size: 13px;
+  font-style: normal;
+  font-weight: 500;
+  line-height: normal;
+
+  transition: all 0.2s ease;
+`;
