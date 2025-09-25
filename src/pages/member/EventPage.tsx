@@ -1,5 +1,8 @@
 import { RiArrowRightSLine, RiFireFill, RiShareLine } from 'react-icons/ri';
 import TagBadge from '../../ui/TagBadge';
+import { supabase } from '../../lib/supabase';
+import type { Events } from '../../types/bobType';
+import { useEffect, useState } from 'react';
 
 const sampleEvent = [
   {
@@ -8,7 +11,7 @@ const sampleEvent = [
     desc: '첫 주문 시 최대 5,000원 할인 쿠폰 증정!',
     subtitle:
       'BaB에 새로 가입한 회원분들을 위한 특별한 혜택! 첫 번째 매칭이 성공하면 다음 식사에서 사용할 수 있는 5,000원 할인 쿠폰을 드려요.',
-    date: '2025-09-15 ~ 2025-09-25',
+    date: '2025-09-25 ~ 2025-09-31',
     hot: true,
     tag: '진행중',
     tagColor: 'bg-babbutton-green_back',
@@ -23,12 +26,12 @@ const sampleEvent = [
     desc: '2인 세트 발렌타인 디저트 기획전!',
     subtitle:
       '2월 14일 밸런타인 데이를 기념해서 커플 매칭 이벤트를 진행합니다. 로맨틱한 분위기의 레스토랑에서 특별한 만남을 가져보세요!',
-    date: '2025-09-15 ~ 2025-09-25',
+    date: '2025-02-07 ~ 2025-02-14',
     hot: true,
-    tag: '진행중',
+    tag: '종료',
     tagColor: 'bg-babbutton-green_back',
     tagText: 'text-babbutton-green',
-    state: '참여하기',
+    state: '종료된 이벤트',
     buttoncolor: 'bg-bab-500',
     buttonText: 'text-white',
   },
@@ -95,6 +98,27 @@ const sampleEvent = [
 ];
 
 function EventPage() {
+  const [events, setEvents] = useState<Events[]>([]);
+  const eventData = async (): Promise<Events[]> => {
+    const { data, error } = await supabase
+      .from('events')
+      .select('*')
+      .order('created_at', { ascending: false });
+    if (error) {
+      console.log('이벤트 불러오기 에러', error.message);
+    }
+    return data || [];
+  };
+
+  useEffect(() => {
+    const fetchData = async () => {
+      const result = await eventData();
+      setEvents(result);
+      console.log(result.length);
+    };
+    fetchData();
+  }, []);
+
   return (
     <div className="max-w-[1280px] mx-auto py-[40px] flex flex-col gap-[30px]">
       {/* 상단 제목 */}

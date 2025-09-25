@@ -102,8 +102,17 @@ export const AuthProvider = ({ children }: AuthProviderProps) => {
         await createProfile(newProfile);
       }
 
-      // 출석체크
-      const pointResult = await givePoint();
+      // // 출석체크
+      // const pointResult = await givePoint();
+
+      // ✅ 오늘 출석 안 했을 때만 givePoint 호출
+      const alreadyChecked = sessionStorage.getItem(`dailyLogin:${user.id}`);
+      if (!alreadyChecked) {
+        const pointResult = await givePoint();
+        if (pointResult) {
+          sessionStorage.setItem(`dailyLogin:${user.id}`, 'true');
+        }
+      }
     } catch (error) {
       console.error('handlePostLogin 오류:', error);
     } finally {

@@ -320,7 +320,7 @@ export const givePoint = async (): Promise<boolean> => {
       .eq('change_type', 'daily_login')
       .gte('created_at', start)
       .lte('created_at', end)
-      .maybeSingle();
+      .limit(1);
 
     if (error) throw new Error(`출석 실패 : ${error.message}`);
 
@@ -360,7 +360,7 @@ export const givePoint = async (): Promise<boolean> => {
     console.log('출석체크 완료: 10포인트 적립');
     return true;
   } catch (err) {
-    console.error('출석체크 중 오류:', err);
+    console.log('출석체크 중 오류:', err);
     return false;
   }
 };

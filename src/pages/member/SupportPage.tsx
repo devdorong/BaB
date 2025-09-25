@@ -76,6 +76,7 @@ function SupportPage() {
     },
   ];
   // 카테고리 목업
+
   const categories = ['전체', '이용방법', '결제/환불', '기타'];
 
   const [activeTag, setActiveTag] = useState('전체');
@@ -141,7 +142,7 @@ function SupportPage() {
             {categories.map(cat => (
               <TagButton
                 key={cat}
-                active={activeTag === cat}
+                $active={activeTag === cat}
                 onClick={() => {
                   setActiveTag(cat);
                   setOpenIndex(null); // 카테고리 바뀔 때 열림 초기화

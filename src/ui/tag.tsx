@@ -507,7 +507,7 @@ export const BrownTag = styled.div`
 `;
 
 interface TagButtonProps {
-  active?: boolean;
+  $active?: boolean;
 }
 
 export const TagButton = styled.div<TagButtonProps>`
@@ -521,8 +521,8 @@ export const TagButton = styled.div<TagButtonProps>`
   border-radius: 24px;
   cursor: pointer;
 
-  background: ${({ active }) => (active ? '#FF5722' : '#F3F4F6')};
-  color: ${({ active }) => (active ? '#fff' : '#374151')};
+  background: ${({ $active }) => ($active ? '#FF5722' : '#F3F4F6')};
+  color: ${({ $active }) => ($active ? '#fff' : '#374151')};
 
   text-align: center;
   font-size: 13px;
