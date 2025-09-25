@@ -104,7 +104,7 @@ const MachingIndex = () => {
             />{' '}
             <RiSearchLine className="text-babgray-300 w-5 h-5 mr-2" />
           </div>
-          <ButtonFillLG onClick={() => navigate('/member/posts/write')}>
+          <ButtonFillLG onClick={() => navigate('/member/matching/write')}>
             <i>
               <RiAddLine size={24} />
             </i>

@@ -1,6 +1,14 @@
+import { useState } from 'react';
 import { ButtonFillMd } from '../button';
+import Modal from './Modal';
 
-const ReportsModal = () => {
+type ReportsModalProps = {
+  setReports: React.Dispatch<React.SetStateAction<boolean>>;
+};
+
+const ReportsModal = ({ setReports }: ReportsModalProps) => {
+  const [isOpen, setIsOpen] = useState(false);
+
   return (
     <div className="fixed inset-0 flex items-center justify-center bg-black bg-opacity-50 z-50">
       <div className="flex flex-col items-center justify-center gap-10 px-8 py-8 bg-white rounded-[30px] shadow-[0_4px_4px_0_rgba(0,0,0,0.02)] overflow-hidden">
@@ -44,13 +52,31 @@ const ReportsModal = () => {
             <p className="mt-2 text-right text-babgray-500 text-xs font-medium">0/500 자</p>
           </div>
           <div className="w-full inline-flex items-center gap-4">
+            {/* 취소 버튼 클릭시 확인모달 */}
             <ButtonFillMd
               style={{ backgroundColor: '#e5e7eb', color: '#5C5C5C' }}
-              className="flex-1"
+              className="flex-1 hover:!bg-gray-300"
+              onClick={()=>setReports(false)}
             >
               취소
             </ButtonFillMd>
-            <ButtonFillMd className="flex-1">신고하기</ButtonFillMd>
+            {/* 누르면 신고 제출 확인 모달 */}
+            <ButtonFillMd
+              className="flex-1 !bg-babbutton-red hover:!bg-bab-700"
+              onClick={() => setIsOpen(true)}
+            >
+              신고하기
+            </ButtonFillMd>
+            {/* 모달의 신고하기 눌렀을때 완료모달 */}
+            <Modal
+              isOpen={isOpen}
+              onClose={() => setIsOpen(false)}
+              titleText="신고하기"
+              contentText="작성된 내용으로 신고 하시겠습니까?"
+              submitButtonText="신고하기"
+              closeButtonText="닫기"
+              submitButtonBgColor="#ef4444"
+            />
           </div>
         </div>
       </div>
