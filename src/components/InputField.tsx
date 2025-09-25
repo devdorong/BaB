@@ -36,6 +36,7 @@ export const InputField: React.FC<InputFieldProps> = ({
     </div>
   );
 };
+
 interface InputFieldWithButtonProps {
   label: string;
   value: string;
@@ -44,6 +45,7 @@ interface InputFieldWithButtonProps {
   type?: string;
   required?: boolean;
   children?: React.ReactNode;
+  onButtonClick?: () => void;
 }
 
 export const InputFieldWithButton: React.FC<InputFieldWithButtonProps> = ({
@@ -54,6 +56,7 @@ export const InputFieldWithButton: React.FC<InputFieldWithButtonProps> = ({
   type = 'text',
   children,
   required = false,
+  onButtonClick,
 }) => {
   return (
     <div className="flex flex-col items-start gap-[9px] w-full h-[83px]">
@@ -71,7 +74,7 @@ export const InputFieldWithButton: React.FC<InputFieldWithButtonProps> = ({
           style={{ height: '50px', boxSizing: 'border-box' }}
           className="flex-1 h-[50px] border border-gray-300 rounded-[25px] px-3 focus:outline-none focus:ring-2 focus:ring-bab-500 box-border"
         />
-        <ButtonFillLG style={{ minWidth: 125 }} type="button">
+        <ButtonFillLG style={{ minWidth: 125 }} type="button" onClick={onButtonClick}>
           {children}
         </ButtonFillLG>
       </div>

@@ -13,12 +13,13 @@
  */
 import { RiCloseFill } from 'react-icons/ri';
 import { ButtonFillMd } from '../button';
+import type React from 'react';
 interface ModalProps {
   isOpen: boolean;
   onClose: () => void;
   onSubmit?: () => void;
-  contentText: string;
-  titleText: string;
+  contentText?: React.ReactNode;
+  titleText?: string;
   closeButtonBgColor?: string;
   submitButtonBgColor?: string;
   closeButtonTextColor?: string;
@@ -43,7 +44,7 @@ const Modal: React.FC<ModalProps> = ({
   if (!isOpen) return null;
   return (
     <div className="fixed inset-0 flex items-center justify-center bg-black bg-opacity-50 z-50">
-      <div className="flex flex-col gap-10 w-[470px] h-[250px] bg-white rounded-[30px] shadow ">
+      <div className="flex flex-col gap-10 w-[470px] min-h-[250px] bg-white rounded-[30px] shadow ">
         <div className="flex items-center justify-between p-8 border-b border-b-babgray ">
           <p className="font-bold">{titleText}</p>
           <div>

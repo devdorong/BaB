@@ -75,20 +75,26 @@ function PartnerLoginPage() {
             </div>
 
             {/* 로그인 상태유지 */}
-            <div className="w-96 inline-flex items-center gap-1 pt-[25px]">
-              <RiCheckboxCircleLine className="text-babgray-600 justify-center" />
-              <div className="flex justify-center items-center gap-[5px]">
-                <div className="justify-start text-babgray-900 text-base font-normal">
-                  로그인 상태 유지
-                </div>
-                <div className="w-2.5 h-2.5 bg-color-grayscale-g600 justify-center" />
-              </div>
-            </div>
+
+            <label className="inline-flex items-center gap-1 pt-[25px] cursor-pointer">
+              <input
+                type="checkbox"
+                className="peer hidden" // 기본 체크박스 숨김
+              />
+              <RiCheckboxCircleLine
+                className="text-xl text-babgray-600 
+               peer-checked:text-white peer-checked:bg-babgray-600 
+               rounded-full transition-colors"
+              />
+              <span className="justify-start text-babgray-900 text-base font-normal">
+                로그인 상태 유지
+              </span>
+            </label>
             {/* 로그인 버튼 */}
             <div className="py-[28px]">
               <button
                 type="submit"
-                className="px-[15px] w-[450px] h-[50px] self-stretch bg-babgray-800 rounded-lg inline-flex justify-center items-center hover:bg-[#BB2D00]"
+                className="px-[15px] w-[450px] h-[50px] self-stretch bg-babgray-800 rounded-lg inline-flex justify-center items-center hover:bg-babgray-600"
               >
                 <div className="justify-start text-white text-base font-semibold">로그인</div>
               </button>

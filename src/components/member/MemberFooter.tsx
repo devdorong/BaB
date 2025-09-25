@@ -22,7 +22,7 @@ const MemberFooter = () => {
             <Link to={`/instar`}>
               <Instagram color="black" bgColor="#E5E7EB" size={25} padding={8} />
             </Link>
-            <Link to={`/kakao`}>
+            <Link to={`https://open.kakao.com/o/g833oUTh`}>
               <KakaoTalk color="black" bgColor="#E5E7EB" size={25} padding={8} />
             </Link>
           </div>

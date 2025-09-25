@@ -6,6 +6,7 @@ import {
   RiStarFill,
 } from 'react-icons/ri';
 import { ItalianFood } from '../tag';
+import TagBadge from '../TagBadge';
 
 type Props = {
   imageUrl: string; // /public 에 넣었으면 "/sample.jpg"
@@ -45,7 +46,9 @@ export default function RestaurantCard({
         {/* 태그 & 타이틀 */}
         <div className="flex flex-col gap-1">
           <span className="flex">
-            <ItalianFood />
+            <TagBadge bgColor="bg-babcategory-italianbg" textColor="text-babcategory-italiantext">
+              양식
+            </TagBadge>
           </span>
           <h3 className="text-[20px] md:text-[22px] font-semibold tracking-tight text-black line-clamp-1">
             {name}

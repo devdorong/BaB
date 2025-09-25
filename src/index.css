@@ -2,6 +2,13 @@
 @tailwind components;
 @tailwind utilities;
 
+* {
+  margin: 0;
+  padding: 0;
+  box-sizing: border-box;
+  outline-style: none;
+}
+
 :root {
   --app-max-w: 720px;
 }
