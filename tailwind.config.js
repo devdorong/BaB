@@ -52,10 +52,12 @@ module.exports = {
           green_back: '#DCFCE7',
           purple: '#A855F7',
           purple_back: '#F3E8FF',
-          brown: '#7C2D12',
+          brown: '#C2481F',
           brown_back: '#FFEDD5',
           black: '#374151',
           black_back: '#F3F4F6',
+          yellow: '854D0E',
+          yellow_back: 'FEF9C3',
         },
         babcategory: {
           koreanbg: '#FFF3E0',

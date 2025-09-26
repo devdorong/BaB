@@ -11,11 +11,12 @@ import {
 } from 'react-icons/ri';
 import { RestaurantFill, UserFill, UserLine } from '../ui/Icon';
 import { Link } from 'react-router-dom';
+import PartnerBoardHeader from './PartnerBoardHeader';
 
 const PartnerHeader = () => {
   return (
     <div>
-      <div className="w-64 h-screen flex fixed flex-col justify-between border-r border-babgray bg-white text-babgray-700">
+      <div className="w-64 h-screen z-50 flex fixed flex-col justify-between border-r border-babgray bg-white text-babgray-700">
         <div className="flex flex-col">
           <div className="px-6 py-8 border-b border-babgray flex items-center gap-3">
             <div className="w-8 h-8 flex items-center justify-center bg-bab rounded-md">
@@ -80,8 +81,13 @@ const PartnerHeader = () => {
         </div>
         <div className="p-4 border-t border-babgray flex items-center justify-between">
           <div className="flex items-center gap-3">
-            <div className="w-8 h-8 flex items-center justify-center bg-gray-200 rounded-full">
+            <div className="w-8 h-8 relative flex items-center justify-center bg-gray-200 rounded-full">
               <UserLine size={20} bgColor="#e5e7eb" color="#1f2937" />
+              <Link to={'/partner/notification'}>
+                <div className="absolute -right-1.5 -top-1.5 flex w-4 justify-center items-center rounded-full bg-bab text-white text-xs">
+                  3
+                </div>
+              </Link>
             </div>
             <div className="flex flex-col">
               {/* 파트너 매장 이름 */}
@@ -91,31 +97,6 @@ const PartnerHeader = () => {
             </div>
           </div>
           <RiMoreFill className="text-gray-600 w-4 h-4 cursor-pointer" />
-        </div>
-      </div>
-      <div className="pl-[272px] flex w-full items-center justify-between p-5 border-b border-b-babgray">
-        <div className="flex flex-col gap-2">
-          {/* 헤더메뉴 클릭시 보여주는 이름 */}
-          <p className="text-3xl font-bold">대시보드</p>
-          {/* ()에 파트너의 이름 들어가도록 */}
-          <p className="text-babgray-700">
-            안녕하세요, (도로롱)님! 오늘 레스토랑 현황을 확인해보세요.
-          </p>
-        </div>
-        <div className="flex justify-center items-center gap-6">
-          {/* 해당 알림 페이지로 이동 */}{' '}
-          <Link to={'/partner/notification'}>
-            <div className="relative flex justify-center items-center cursor-pointer">
-              <RiNotification2Line className="flex text-2xl" />
-              <div className="absolute -right-2 -top-3 flex w-4 justify-center items-center rounded-full bg-bab text-white text-xs">
-                3
-              </div>
-            </div>
-          </Link>
-          {/* 파트너 프로필사진 출력 */}
-          <div className="cursor-pointer">
-            <UserFill size={15} padding={10} />
-          </div>
         </div>
       </div>
     </div>
