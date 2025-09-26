@@ -1,5 +1,5 @@
 import React from 'react';
-import MenuCard from '../../ui/jy/menucard';
+import MenuCard from '../../ui/jy/Menucard';
 
 // 카테고리(= tag) 정의
 export const CATEGORYS = ['피자', '사이드', '음료'] as const;
