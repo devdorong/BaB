@@ -5,7 +5,7 @@ function PartnerLayout() {
   return (
     <div>
       <PartnerHeader />
-      <main>
+      <main className="flex ml-[256px] px-[32px] py-[32px] bg-bg-bg">
         <Outlet />
       </main>
     </div>
