@@ -2,6 +2,7 @@
 import React from 'react';
 import { RiEdit2Line, RiDeleteBin2Line } from 'react-icons/ri';
 import TagBadge from '../TagBadge';
+import type { MenuItem } from '../../components/partner/MenusList';
 
 type Props = {
   title: string;
@@ -10,7 +11,7 @@ type Props = {
   tag?: string; // 예: "메인 요리"
   imageUrl?: string | null;
   enabled: boolean;
-  onToggle?: (next: boolean) => void;
+  onToggle?: (newToggle: boolean) => void;
   onEdit?: () => void;
   onDelete?: () => void;
 };
@@ -78,7 +79,7 @@ export default function MenuCard({
 
         {/* 설명 */}
         {description && (
-          <p className="mt-1 text-[13px] text-gray-600 line-clamp-2">{description}</p>
+          <p className="h-[40px] mt-1 text-[13px] text-gray-600 line-clamp-2">{description}</p>
         )}
 
         {/* 가격 + 태그 */}
