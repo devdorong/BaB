@@ -2,7 +2,7 @@ import { RiAlarmWarningLine, RiCalendarLine, RiMapPinLine } from 'react-icons/ri
 import { ButtonFillMd, ButtonLineMd } from '../../../ui/button';
 import { useNavigate } from 'react-router-dom';
 
-const MatchingWritePage = () => {
+const MatchingDetailEditPage = () => {
   const navigate = useNavigate();
 
   return (
@@ -19,7 +19,7 @@ const MatchingWritePage = () => {
             <p className="text-bab">*</p>
           </div>
           <div className="flex flex-col gap-1">
-            {/* 게시글 제목 */}
+            {/* 원본 게시글 제목 */}
             <input
               type="text"
               maxLength={50}
@@ -33,16 +33,22 @@ const MatchingWritePage = () => {
         {/* 상세 설명 */}
         <div className="flex flex-col gap-3.5">
           <p>상세 설명</p>
-          {/* 게시글 내용 */}
+          {/* 원본 게시글 내용 */}
           <textarea
             maxLength={500}
             placeholder="함께 식사하고 싶은 이유나 추가 정보를 입력해주세요"
             className="h-24 px-4 py-3.5 rounded-3xl outline outline-1 outline-offset-[-1px] outline-babgray resize-none focus:outline-bab"
-          />
+          >
+            안녕하세요! 이태원에 정말 맛있는 스테이크 맛집을 발견했는데, 혼자 가기엔 너무 아쉬워서
+            함께 가실 분들을 찾고있어요. 이 식당은 미디움 레어로 구워주는 스테이크가 정말 일품이고,
+            와인 페어링도 훌륭해요. 분위기도 좋아서 즐거운 대화를 나누며 식사하기에 완벽한 곳입니다.
+            20-30대 직장인분들 환영하며, 맛있는 음식과 함께 좋은 인연도 만들어가요! 참여하고 싶으신
+            분들은 댓글이나 채팅으로 연락 주세요.
+          </textarea>
           <p className="flex justify-end text-babgray-500 text-xs">0/500</p>
         </div>
 
-        {/* 날짜 + 시간 */}
+        {/* 원본 날짜 + 시간 */}
         <div className="flex justify-between gap-3.5">
           <div className="flex flex-col gap-3.5">
             <div className="flex gap-1">
@@ -50,8 +56,8 @@ const MatchingWritePage = () => {
               <p className="text-bab">*</p>
             </div>
             <div className="w-[330px] flex items-center justify-between px-4 py-3.5 rounded-3xl outline outline-1 outline-offset-[-1px] outline-babgray">
-              {/* 선택한 날짜만 삽입 */}
-              <div className="flex text-babgray-800 font-semibold">연도-월-일</div>
+              {/* 원본 날짜 불러오기 */}
+              <div className="flex text-babgray-800 font-semibold">2025-12-25</div>
               <RiCalendarLine />
             </div>
           </div>
@@ -62,8 +68,8 @@ const MatchingWritePage = () => {
               <p className="text-bab">*</p>
             </div>
             <div className="w-[330px] flex items-center justify-between px-4 py-3.5 rounded-3xl outline outline-1 outline-offset-[-1px] outline-babgray">
-              {/* 선택한 시간 삽입 */}
-              <div className="flex text-babgray-800 font-semibold">00 : 00</div>
+              {/* 원본 시간 불러오기 */}
+              <div className="flex text-babgray-800 font-semibold">19 : 00</div>
               <RiCalendarLine />
             </div>
           </div>
@@ -72,7 +78,7 @@ const MatchingWritePage = () => {
         {/* 희망 인원수 */}
         <div className="flex flex-col items-start gap-4">
           <p>희망 인원수 (본인 포함)</p>
-          {/* 선택한 인원수 만큼의 방 만들기 */}
+          {/* 원본 선택 상태 불러오기 이후 선택한 인원수 만큼의 방 만들기 */}
           <div className="flex items-center gap-3">
             <div className="bg-bab px-3.5 py-2 rounded-lg flex justify-center items-center">
               <p className="text-white font-medium">2명</p>
@@ -121,13 +127,20 @@ const MatchingWritePage = () => {
 
         {/* 버튼 영역 */}
         <div className="flex p-6 border-t justify-center items-center gap-6">
+          {/* 삭제하기 눌렀을때 확인모달 */}
+          <ButtonFillMd
+            className="flex-1 !bg-babbutton-red"
+            onClick={() => navigate('/member/matching')}
+          >
+            삭제하기
+          </ButtonFillMd>
           {/* 취소하기 눌렀을때 취소확인 모달 */}
           <ButtonLineMd className="flex-1" onClick={() => navigate('/member')}>
             취소
           </ButtonLineMd>
-          {/* 등록하기 눌렀을때 확인모달 */}
+          {/* 수정하기 눌렀을때 확인모달 */}
           <ButtonFillMd className="flex-1" onClick={() => navigate('/member/matching/detail')}>
-            등록하기
+            수정하기
           </ButtonFillMd>
         </div>
       </div>
@@ -135,4 +148,4 @@ const MatchingWritePage = () => {
   );
 };
 
-export default MatchingWritePage;
+export default MatchingDetailEditPage;

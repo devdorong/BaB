@@ -1,6 +1,5 @@
 /**
  * Modal 컴포넌트 사용 예시:
- * ```tsx
  * <Modal
  *   isOpen={true} // 고정
  *   onClose={() => setIsOpen(false)} // 고정
@@ -9,7 +8,6 @@
  *   submitButtonText="확인버튼"
  *   closeButtonText="닫기버튼"
  * />
- * ```
  */
 import { RiCloseFill } from 'react-icons/ri';
 import { ButtonFillMd } from '../button';
