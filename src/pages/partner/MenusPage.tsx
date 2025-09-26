@@ -1,5 +1,6 @@
 import MenuCategory from '../../components/partner/MenuCategory';
 import MenusList from '../../components/partner/MenusList';
+import PartnerBoardHeader from '../../components/PartnerBoardHeader';
 
 function MenusPage() {
   return (

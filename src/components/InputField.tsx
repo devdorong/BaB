@@ -81,3 +81,40 @@ export const InputFieldWithButton: React.FC<InputFieldWithButtonProps> = ({
     </div>
   );
 };
+
+interface TextAreaProps {
+  label: string;
+  value: string;
+  onChange: (e: React.ChangeEvent<HTMLTextAreaElement>) => void;
+  placeholder?: string;
+  maxLength?: number;
+  required?: boolean;
+}
+
+export const TextAreaCustom: React.FC<TextAreaProps> = ({
+  label,
+  value,
+  onChange,
+  placeholder,
+  maxLength,
+  required = false,
+}) => {
+  return (
+    <div className="flex flex-col items-start gap-[9px] w-full ">
+      <label className="flex items-center gap-1 text-gray-700 font-medium">
+        {label}
+        {required && <span className="text-bab-500">*</span>}
+      </label>
+
+      <textarea
+        value={value}
+        onChange={onChange}
+        placeholder={placeholder}
+        required={required}
+        rows={7}
+        maxLength={maxLength}
+        className="w-full border resize-none h-[140px] p-[16px] border-gray-300 rounded-[25px]  focus:ring-2 focus:ring-bab-500"
+      />
+    </div>
+  );
+};

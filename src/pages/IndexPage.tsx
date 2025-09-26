@@ -1,13 +1,59 @@
 import { useNavigate } from 'react-router-dom';
+import { useAuth } from '../contexts/AuthContext';
+import { useEffect, useState } from 'react';
+import type { Profile } from '../types/bobType';
+import { getProfile } from '../lib/propile';
 
 function IndexPage() {
   const navigate = useNavigate();
+  const { user } = useAuth();
+  // 로딩
+  const [loading, setLoading] = useState<boolean>(true);
+  // 사용자 프로필
+  const [profileData, setProfileData] = useState<Profile | null>(null);
+  // 에러메세지
+  const [error, setError] = useState<string>('');
+  const isPartner = profileData?.role === 'partner';
+  const isAdmin = profileData?.role === 'admin';
+
+  // 사용자 프로필 정보
+  const loadProfile = async () => {
+    if (!user?.id) {
+      setError('사용자정보 없음');
+      setLoading(false);
+      return;
+    }
+    try {
+      // 사용자 정보 가져오기
+      const tempData = await getProfile(user?.id);
+      if (!tempData) {
+        // null의 경우
+        setError('사용자 프로필 정보 찾을 수 없음');
+        return;
+      }
+      setProfileData(tempData);
+    } catch (error) {
+      setError('프로필 호출 오류');
+    } finally {
+      setLoading(false);
+    }
+  };
+
+  // id로 닉네임을 받아옴
+  useEffect(() => {
+    loadProfile();
+  }, [user?.id]);
   const handleClickPartner = () => {
-    navigate('/partner/login');
+    if (isPartner || isAdmin) {
+      navigate('/partner');
+    } else {
+      navigate('/partner/login');
+    }
   };
   const handleClickMember = () => {
     navigate('/member');
   };
+
   return (
     <div className="flex w-screen h-screen overflow-hidden">
       <div className="flex w-fit relative group overflow-hidden">

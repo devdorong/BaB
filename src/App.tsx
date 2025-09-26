@@ -106,6 +106,9 @@ function App() {
 
     return () => subscription.unsubscribe();
   }, []);
+
+  
+
   return (
     <AuthProvider>
       <PointProvider>
