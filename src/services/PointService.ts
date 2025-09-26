@@ -324,7 +324,7 @@ export const givePoint = async (): Promise<boolean> => {
 
     if (error) throw new Error(`출석 실패 : ${error.message}`);
 
-    if (data) {
+    if (data.length > 0) {
       console.log('오늘 이미 출석체크를 완료했습니다.');
       return false; // 이미 출석체크를 했으므로 포인트 지급하지 않음
     }

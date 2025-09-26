@@ -30,7 +30,7 @@ export default function MatchCard({
   const navigate = useNavigate();
   return (
     <li
-      className="w-[615px] px-7 py-5 bg-white rounded-3xl shadow-[0_4px_4px_rgba(0,0,0,0.02)]
+      className="w-full px-7 py-5 bg-white rounded-3xl shadow-[0_4px_4px_rgba(0,0,0,0.02)]
     flex flex-col gap-3 overflow-hidden cursor-pointer"
       // 추후 수정 해야됨 파람즈로 몇번쨰 매칭글로 이동할껀지
       onClick={() => navigate('/member/matching/detail')}

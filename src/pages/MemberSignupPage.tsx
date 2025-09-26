@@ -107,7 +107,7 @@ function MemberSignupPage() {
     }
   };
 
-  const handleChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+  const handlePhoneChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     let value = e.target.value.replace(/\D/g, ''); // 숫자만 남기기
 
     if (value.length < 4) {
@@ -193,7 +193,7 @@ function MemberSignupPage() {
                 label="휴대폰 번호"
                 type="text"
                 value={phone}
-                onChange={handleChange}
+                onChange={handlePhoneChange}
                 placeholder="번호를 입력해주세요"
                 required
                 children="인증번호 전송"

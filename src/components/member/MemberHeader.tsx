@@ -85,7 +85,7 @@ const MemberHeader = () => {
           </div>
           {user ? (
             <>
-              <div className="flex items-center justify-center text-babgray-800">
+              <div className="flex items-center justify-center gap-2 text-babgray-800">
                 <Link to={'/member/profile'}>
                   <span>{profileData?.nickname}님</span>
                 </Link>

@@ -7,6 +7,7 @@ import {
   RiStarFill,
 } from 'react-icons/ri';
 import { ItalianFood } from '../tag';
+import TagBadge from '../TagBadge';
 
 const CardLayout = styled.div`
   display: inline-flex;
@@ -45,7 +46,7 @@ export const RowCard = ({ onClick }: Props) => {
         <div>
           {/* 태그 및 타이틀 */}
           <div className="flex flex-col items-start gap-1">
-            <ItalianFood />
+            <TagBadge bgColor='bg-babcategory-italianbg' textColor='text-babcategory-italiantext'>양식</TagBadge>
             {/* <Title>{restaurant.name}</Title> */}
             <Title>가게제목</Title>
           </div>
