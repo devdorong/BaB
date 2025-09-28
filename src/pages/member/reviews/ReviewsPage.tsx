@@ -21,9 +21,6 @@ function ReviewsPage() {
       ? mockReviews
       : mockReviews.filter(r => r.category === selectedCategory);
 
-  useEffect(() => {
-    console.log(filtered);
-  }, []);
   return (
     <div className="w-full bg-bg-bg">
       <div className="w-[1280px] mx-auto flex flex-col gap-8 py-8">
