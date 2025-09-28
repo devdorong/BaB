@@ -5,10 +5,25 @@ import { Link, useNavigate } from 'react-router-dom';
 import { ButtonFillMd } from '../../../ui/button';
 import { BlackTag, BrandTag, GrayTag } from '../../../ui/tag';
 import { RowCard } from '../../../ui/jy/ReviewCard';
+import { mockReviews } from '../../../types/review';
+import { ReviewCard } from '../../../ui/dorong/ReviewMockCard';
+
+const categories = ['전체', '한식', '중식', '일식', '양식', '분식', '아시안', '인도', '멕시칸'];
 
 function ReviewsPage() {
   const navigate = useNavigate();
   const [search, setSearch] = useState('');
+  const [selectedCategory, setSelectedCategory] = useState('전체');
+
+  // 카테고리 필터 적용
+  const filtered =
+    selectedCategory === '전체'
+      ? mockReviews
+      : mockReviews.filter(r => r.category === selectedCategory);
+
+  useEffect(() => {
+    console.log(filtered);
+  }, []);
   return (
     <div className="w-full bg-bg-bg">
       <div className="w-[1280px] mx-auto flex flex-col gap-8 py-8">
@@ -42,15 +57,19 @@ function ReviewsPage() {
             </div>
           </div>
           <div className="flex gap-[8px] justify-start ">
-            <BrandTag>전체</BrandTag>
-            <GrayTag>한식</GrayTag>
-            <GrayTag>중식</GrayTag>
-            <GrayTag>일식</GrayTag>
-            <GrayTag>양식</GrayTag>
-            <GrayTag>분식</GrayTag>
-            <GrayTag>아시안</GrayTag>
-            <GrayTag>인도</GrayTag>
-            <GrayTag>멕시칸</GrayTag>
+            {categories.map(cat => (
+              <button
+                key={cat}
+                onClick={() => setSelectedCategory(cat)}
+                className={`px-4 py-2 rounded-full ${
+                  selectedCategory === cat
+                    ? 'bg-bab-500 text-white'
+                    : 'bg-babgray-100 text-babgray-700'
+                }`}
+              >
+                {cat}
+              </button>
+            ))}
           </div>
           <div className="flex justify-start gap-[8px]">
             <BlackTag>최신순</BlackTag>
@@ -62,8 +81,22 @@ function ReviewsPage() {
           onClick={() => navigate('/member/reviews/detail')}
           className="grid grid-cols-2 gap-[34px]"
         >
-          {[...Array(6)].map((_, index) => (
+          {/* {[...Array(6)].map((_, index) => (
             <RowCard key={index} />
+          ))} */}
+          {filtered.map(r => (
+            <ReviewCard
+              key={r.id}
+              name={r.name}
+              category={r.category}
+              img={r.img}
+              review={r.review}
+              rating={r.rating}
+              distance={r.distance}
+              tagBg={r.tagBg}
+              tagText={r.tagText}
+              onClick={() => console.log(`${r.name} 클릭됨`)}
+            />
           ))}
         </div>
         <div></div>
