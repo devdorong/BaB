@@ -10,6 +10,7 @@ import {
 import TagBadge from '../../ui/TagBadge';
 import { useState } from 'react';
 import NotificationList from '../../components/partner/NotificationList';
+import PartnerBoardHeader from '../../components/PartnerBoardHeader';
 
 const tabs = [
   { id: 'all', label: '전체', count: 6 },
@@ -60,78 +61,86 @@ function NotificationPage() {
   const [active, setActive] = useState('all');
 
   return (
-    <div className="w-full px-8 py-8 flex flex-col text-babgray-800 gap-10">
-      {/* 읽지않은 알림 / 주문 알림 / 새로운 리뷰 / 시스템 알림 */}
-      <div className="flex gap-6">
-        <div className="flex-1 px-6 py-6 bg-white rounded-lg shadow-[0px_4px_4px_rgba(0,0,0,0.02)] border outline-babgray flex justify-between items-center">
-          <div className="flex flex-col gap-2">
-            <p className="text-babgray-600">읽지 않은 알림</p>
-            <p className="text-2xl font-semibold">6개</p>
+    <>
+      <PartnerBoardHeader
+        title="알림"
+        subtitle="레스토랑 운영과 관련된 중요한 알림을 확인하세요."
+      />
+      <div className="w-full flex flex-col text-babgray-800 gap-10">
+        {/* 읽지않은 알림 / 주문 알림 / 새로운 리뷰 / 시스템 알림 */}
+        <div className="flex gap-6">
+          <div className="flex-1 px-6 py-6 bg-white rounded-lg shadow-[0px_4px_4px_rgba(0,0,0,0.02)] border outline-babgray flex justify-between items-center">
+            <div className="flex flex-col gap-2">
+              <p className="text-babgray-600">읽지 않은 알림</p>
+              <p className="text-2xl font-semibold">6개</p>
+            </div>
+            <div className="w-12 h-12 p-3.5 bg-babbutton-red rounded-lg flex items-center justify-center">
+              <RiNotification3Fill className="w-[20px] h-[20px] text-white" />
+            </div>
           </div>
-          <div className="w-12 h-12 p-3.5 bg-babbutton-red rounded-lg flex items-center justify-center">
-            <RiNotification3Fill className="w-[20px] h-[20px] text-white" />
+          <div className="flex-1 px-6 py-6 bg-white rounded-lg shadow-[0px_4px_4px_rgba(0,0,0,0.02)] border outline-babgray flex justify-between items-center">
+            <div className="flex flex-col gap-2">
+              <p className="text-babgray-600">오늘 주문 알림</p>
+              <p className="text-2xl font-semibold">24개</p>
+            </div>
+            <div className="w-12 h-12 p-3.5 bg-bab rounded-lg flex items-center justify-center">
+              <ShoppingCartFill size={20} />
+            </div>
+          </div>
+          <div className="flex-1 px-6 py-6 bg-white rounded-lg shadow-[0px_4px_4px_rgba(0,0,0,0.02)] border outline-babgray flex justify-between items-center">
+            <div className="flex flex-col gap-2">
+              <p className="text-babgray-600">새로운 리뷰</p>
+              {/* 새로운 리뷰 출력 (고객리뷰 탭의 하루? 최근일주일? 동안의 등록글 카운팅 출력) */}
+              <p className="text-2xl font-semibold">8개</p>
+            </div>
+            <div className="w-12 h-12 p-3.5 bg-yellow-400 rounded-lg flex items-center justify-center">
+              <StarFill bgColor="none" size={20} />
+            </div>
+          </div>
+          <div className="flex-1 px-6 py-6 bg-white rounded-lg shadow-[0px_4px_4px_rgba(0,0,0,0.02)] border outline-babgray flex justify-between items-center">
+            <div className="flex flex-col gap-2">
+              <p className="text-babgray-600">시스템 알림</p>
+              <p className="text-2xl font-semibold">3개</p>
+            </div>
+            <div className="w-12 h-12 p-3.5 bg-babbutton-blue rounded-lg flex items-center justify-center">
+              <Settings5Fill bgColor="#3b82f6" size={20} />
+            </div>
           </div>
         </div>
-        <div className="flex-1 px-6 py-6 bg-white rounded-lg shadow-[0px_4px_4px_rgba(0,0,0,0.02)] border outline-babgray flex justify-between items-center">
-          <div className="flex flex-col gap-2">
-            <p className="text-babgray-600">오늘 주문 알림</p>
-            <p className="text-2xl font-semibold">24개</p>
-          </div>
-          <div className="w-12 h-12 p-3.5 bg-bab rounded-lg flex items-center justify-center">
-            <ShoppingCartFill size={20} />
-          </div>
-        </div>
-        <div className="flex-1 px-6 py-6 bg-white rounded-lg shadow-[0px_4px_4px_rgba(0,0,0,0.02)] border outline-babgray flex justify-between items-center">
-          <div className="flex flex-col gap-2">
-            <p className="text-babgray-600">새로운 리뷰</p>
-            {/* 새로운 리뷰 출력 (고객리뷰 탭의 하루? 최근일주일? 동안의 등록글 카운팅 출력) */}
-            <p className="text-2xl font-semibold">8개</p>
-          </div>
-          <div className="w-12 h-12 p-3.5 bg-yellow-400 rounded-lg flex items-center justify-center">
-            <StarFill bgColor="none" size={20} />
-          </div>
-        </div>
-        <div className="flex-1 px-6 py-6 bg-white rounded-lg shadow-[0px_4px_4px_rgba(0,0,0,0.02)] border outline-babgray flex justify-between items-center">
-          <div className="flex flex-col gap-2">
-            <p className="text-babgray-600">시스템 알림</p>
-            <p className="text-2xl font-semibold">3개</p>
-          </div>
-          <div className="w-12 h-12 p-3.5 bg-babbutton-blue rounded-lg flex items-center justify-center">
-            <Settings5Fill bgColor="#3b82f6" size={20} />
-          </div>
-        </div>
-      </div>
-      {/* 카테고리 (전체/주문/리뷰/시스템) */}
-      <div className="px-6 py-5 border border-babgray bg-white rounded-lg shadow-[0px_4px_4px_rgba(0,0,0,0.02)] flex flex-col gap-5">
-        <div className="inline-flex w-fit items-center gap-2 rounded-lg bg-babgray-100 px-1 py-1">
-          {tabs.map(tab => {
-            const isActive = active === tab.id;
-            return (
-              <button
-                key={tab.id}
-                onClick={() => setActive(tab.id)}
-                className={[
-                  'flex items-center gap-2 rounded-md px-3 py-2 text-sm font-medium transition',
-                  isActive ? 'bg-white text-[#FF5722]' : 'text-gray-600 hover:text-gray-800',
-                ].join(' ')}
-              >
-                <span>{tab.label}</span>
-                <span
-                  className={['text-xs', isActive ? ' text-[#FF5722]' : ' text-gray-600'].join(' ')}
+        {/* 카테고리 (전체/주문/리뷰/시스템) */}
+        <div className="px-6 py-5 border border-babgray bg-white rounded-lg shadow-[0px_4px_4px_rgba(0,0,0,0.02)] flex flex-col gap-5">
+          <div className="inline-flex w-fit items-center gap-2 rounded-lg bg-babgray-100 px-1 py-1">
+            {tabs.map(tab => {
+              const isActive = active === tab.id;
+              return (
+                <button
+                  key={tab.id}
+                  onClick={() => setActive(tab.id)}
+                  className={[
+                    'flex items-center gap-2 rounded-md px-3 py-2 text-sm font-medium transition',
+                    isActive ? 'bg-white text-[#FF5722]' : 'text-gray-600 hover:text-gray-800',
+                  ].join(' ')}
                 >
-                  {tab.count}
-                </span>
-              </button>
-            );
-          })}
+                  <span>{tab.label}</span>
+                  <span
+                    className={['text-xs', isActive ? ' text-[#FF5722]' : ' text-gray-600'].join(
+                      ' ',
+                    )}
+                  >
+                    {tab.count}
+                  </span>
+                </button>
+              );
+            })}
+          </div>
+        </div>
+
+        {/* 알림 */}
+        <div>
+          <NotificationList />
         </div>
       </div>
-
-      {/* 알림 */}
-      <div>
-        <NotificationList />
-      </div>
-    </div>
+    </>
   );
 }
 

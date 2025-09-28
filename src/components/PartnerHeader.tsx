@@ -1,3 +1,4 @@
+import { useEffect, useRef, useState } from 'react';
 import {
   RiDashboardLine,
   RiFileListLine,
@@ -9,11 +10,35 @@ import {
   RiStoreLine,
   RiUserSettingsLine,
 } from 'react-icons/ri';
-import { RestaurantFill, UserFill, UserLine } from '../ui/Icon';
-import { Link } from 'react-router-dom';
-import PartnerBoardHeader from './PartnerBoardHeader';
+import { Link, useNavigate } from 'react-router-dom';
+import { RestaurantFill, UserLine } from '../ui/Icon';
+import { useAuth } from '../contexts/AuthContext';
 
 const PartnerHeader = () => {
+  const navigate = useNavigate();
+  const [open, setOpen] = useState(false);
+  const menuRef = useRef<HTMLDivElement>(null);
+  const { signOut } = useAuth();
+
+  useEffect(() => {
+    const handleClickOutside = (e: MouseEvent) => {
+      if (menuRef.current && !menuRef.current.contains(e.target as Node)) {
+        setOpen(false);
+      }
+    };
+    document.addEventListener('mousedown', handleClickOutside);
+    return () => document.removeEventListener('mousedown', handleClickOutside);
+  }, []);
+
+  const handleLogout = () => {
+    if (confirm('로그아웃 하시겠습니까?')) {
+      alert('로그아웃 되었습니다.');
+      signOut();
+      navigate('/');
+    }
+    setOpen(false);
+  };
+
   return (
     <div>
       <div className="w-64 h-screen z-50 flex fixed flex-col justify-between border-r border-babgray bg-white text-babgray-700">
@@ -79,7 +104,7 @@ const PartnerHeader = () => {
             </Link>
           </div>
         </div>
-        <div className="p-4 border-t border-babgray flex items-center justify-between">
+        <div className="p-4 border-t border-babgray flex items-center justify-between ">
           <div className="flex items-center gap-3">
             <div className="w-8 h-8 relative flex items-center justify-center bg-gray-200 rounded-full">
               <UserLine size={20} bgColor="#e5e7eb" color="#1f2937" />
@@ -96,7 +121,25 @@ const PartnerHeader = () => {
               <p className="text-gray-600 text-xs">ehfhfhd12</p>
             </div>
           </div>
-          <RiMoreFill className="text-gray-600 w-4 h-4 cursor-pointer" />
+          <div className="relative">
+            <RiMoreFill
+              className="text-gray-600 w-4 h-4 cursor-pointer"
+              onClick={() => setOpen(!open)}
+            />
+            {open && (
+              <div
+                ref={menuRef}
+                className="absolute left-4 bottom-4 bg-white border border-gray-200 rounded-md shadow-md py-2 w-32 z-50"
+              >
+                <button
+                  onClick={handleLogout}
+                  className="w-full px-4 py-2 text-left text-sm text-gray-700 hover:bg-gray-100"
+                >
+                  로그아웃
+                </button>
+              </div>
+            )}
+          </div>
         </div>
       </div>
     </div>

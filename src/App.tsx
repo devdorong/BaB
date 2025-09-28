@@ -55,6 +55,7 @@ import TermsofServicePage from './pages/TermsofServicePage';
 import { GetOrCreatePoint } from './services/PointService';
 import type { ProfileInsert } from './types/bobType';
 import MatchingDetailEditPage from './pages/member/matchings/MatchingDetailEditPage';
+import ProtectedRoute from './components/ProtectedRoute';
 function App() {
   // 인증 메일 확인후, 프로필 생성
   useEffect(() => {
@@ -106,8 +107,6 @@ function App() {
 
     return () => subscription.unsubscribe();
   }, []);
-
-  
 
   return (
     <AuthProvider>
@@ -172,7 +171,15 @@ function App() {
             </Route>
 
             {/* Partner */}
-            <Route path="/partner" element={<PartnerLayout />}>
+            <Route
+              path="/partner"
+              element={
+                <ProtectedRoute allowedRoles={['partner', 'admin']}>
+                  {' '}
+                  <PartnerLayout />
+                </ProtectedRoute>
+              }
+            >
               <Route index element={<DashboardPage />} />
               <Route path="restaurant" element={<RestaurantPage />} />
               <Route path="menus" element={<MenusPage />} />
@@ -184,7 +191,14 @@ function App() {
             </Route>
 
             {/* Admin */}
-            <Route path="/admin" element={<AdminLayout />}>
+            <Route
+              path="/admin"
+              element={
+                <ProtectedRoute allowedRoles={['admin']}>
+                  <AdminLayout />
+                </ProtectedRoute>
+              }
+            >
               <Route index element={<AdminMembersPage />} />
               <Route path="partners" element={<AdminPartnersPage />} />
               <Route path="matching" element={<AdminMatchingPage />} />
