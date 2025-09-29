@@ -88,8 +88,6 @@ function ProfilePage() {
       <div className="flex flex-col w-[1280px] m-auto">
         <div className="flex py-[15px]">
           <div className="text-babgray-600 text-[17px]">프로필</div>
-          <div className="text-babgray-600 px-[5px] text-[17px]">{'>'}</div>
-          <div className="text-bab-500 text-[17px]">프로필 정보</div>
         </div>
         <div className="mt-[20px] mb-[60px]">
           <div className="flex gap-[40px] items-start">

@@ -11,13 +11,16 @@ import TagBadge from '../../ui/TagBadge';
 import { useState } from 'react';
 import NotificationList from '../../components/partner/NotificationList';
 import PartnerBoardHeader from '../../components/PartnerBoardHeader';
+import NotificationSetting from '../../components/partner/NotificationSetting';
 
-const tabs = [
-  { id: 'all', label: '전체', count: 6 },
-  { id: 'order', label: '주문', count: 2 },
-  { id: 'review', label: '리뷰', count: 1 },
-  { id: 'system', label: '시스템', count: 2 },
+export const tabs = [
+  { label: '전체', count: 5 },
+  { label: '주문', count: 1 },
+  { label: '리뷰', count: 2 },
+  { label: '시스템', count: 2 },
 ];
+
+export type TabId = (typeof tabs)[number]['label'];
 
 export type Notification = {
   id: number;
@@ -49,6 +52,20 @@ export const notifications: Notification[] = [
     message: '내일부터 새로운 기능이 추가됩니다.',
     time: '1시간 전',
   },
+  {
+    id: 4,
+    type: '시스템',
+    title: '업데이트 알림',
+    message: '내일부터 새로운 기능이 추가됩니다.',
+    time: '1시간 전',
+  },
+  {
+    id: 5,
+    type: '리뷰',
+    title: '새 리뷰가 등록되었습니다',
+    message: '홍길동님이 매장 리뷰를 작성했습니다.',
+    time: '2시간 전',
+  },
 ];
 
 export const badgeColors: Record<Notification['type'], string> = {
@@ -57,8 +74,21 @@ export const badgeColors: Record<Notification['type'], string> = {
   시스템: 'bg-blue-100 text-blue-700',
 };
 
+export const borderColors: Record<Notification['type'], string> = {
+  주문: 'border border-bab-500 border-l-bab-500 text-bab-500 ',
+  리뷰: 'border border-yellow-400 border-l-yellow-400 text-yellow-400 ',
+  시스템: 'border border-babbutton-blue border-l-babbutton-blue text-babbutton-blue ',
+};
+
+export const IconColors: Record<Notification['type'], string> = {
+  주문: 'bg-bab-500',
+  리뷰: 'bg-yellow-400',
+  시스템: 'bg-babbutton-blue',
+};
+
 function NotificationPage() {
   const [active, setActive] = useState('all');
+  const [selectedTypeCategories, setSelectedTypeCategories] = useState<TabId>('전체');
 
   return (
     <>
@@ -66,7 +96,7 @@ function NotificationPage() {
         title="알림"
         subtitle="레스토랑 운영과 관련된 중요한 알림을 확인하세요."
       />
-      <div className="w-full flex flex-col text-babgray-800 gap-10">
+      <div className="w-full flex flex-col text-babgray-800 gap-5">
         {/* 읽지않은 알림 / 주문 알림 / 새로운 리뷰 / 시스템 알림 */}
         <div className="flex gap-6">
           <div className="flex-1 px-6 py-6 bg-white rounded-lg shadow-[0px_4px_4px_rgba(0,0,0,0.02)] border outline-babgray flex justify-between items-center">
@@ -111,21 +141,19 @@ function NotificationPage() {
         <div className="px-6 py-5 border border-babgray bg-white rounded-lg shadow-[0px_4px_4px_rgba(0,0,0,0.02)] flex flex-col gap-5">
           <div className="inline-flex w-fit items-center gap-2 rounded-lg bg-babgray-100 px-1 py-1">
             {tabs.map(tab => {
-              const isActive = active === tab.id;
+              const active = selectedTypeCategories === tab.label;
               return (
                 <button
-                  key={tab.id}
-                  onClick={() => setActive(tab.id)}
+                  key={tab.label}
+                  onClick={() => setSelectedTypeCategories(tab.label)}
                   className={[
                     'flex items-center gap-2 rounded-md px-3 py-2 text-sm font-medium transition',
-                    isActive ? 'bg-white text-[#FF5722]' : 'text-gray-600 hover:text-gray-800',
+                    active ? 'bg-white text-[#FF5722]' : 'text-gray-600 hover:text-gray-800',
                   ].join(' ')}
                 >
                   <span>{tab.label}</span>
                   <span
-                    className={['text-xs', isActive ? ' text-[#FF5722]' : ' text-gray-600'].join(
-                      ' ',
-                    )}
+                    className={['text-xs', active ? ' text-[#FF5722]' : ' text-gray-600'].join(' ')}
                   >
                     {tab.count}
                   </span>
@@ -137,7 +165,12 @@ function NotificationPage() {
 
         {/* 알림 */}
         <div>
-          <NotificationList />
+          <NotificationList selectedTypeCategories={selectedTypeCategories} />
+        </div>
+
+        {/* 알림설정 */}
+        <div>
+          <NotificationSetting />
         </div>
       </div>
     </>

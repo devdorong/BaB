@@ -218,7 +218,9 @@ function CommunityPage() {
                   >
                     <div className="flex justify-between">
                       <div>{tagComponents[item.tag as FilteredTag] ?? item.tag}</div>
-                      <span className="text-babgray-500">{dayjs(item.created_at).fromNow()}</span>
+                      <span className="text-babgray-500 text-[14px]">
+                        {dayjs(item.created_at).fromNow()}
+                      </span>
                     </div>
                     <div className="flex flex-col gap-2">
                       <p className="font-bold text-xl">{item.title}</p>

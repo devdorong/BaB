@@ -1,6 +1,7 @@
 import React, { useMemo, useState } from 'react';
 import { dororongpizza, type Category, type CategoryTab } from './MenusList';
 import PartnerBoardHeader from '../PartnerBoardHeader';
+import { ButtonFillLG, ButtonFillMd } from '../../ui/button';
 
 type MenuCategorysProps = {
   categories: readonly CategoryTab[];
@@ -11,10 +12,7 @@ type MenuCategorysProps = {
 function MenuCategory({ categories, value, onChange }: MenuCategorysProps) {
   return (
     <>
-      <PartnerBoardHeader
-        title="메뉴 관리"
-        subtitle="레스토랑 메뉴를 추가, 수정, 삭제할 수 있습니다."
-      />
+     
       <div className={['w-full rounded-lg border border-gray-150 bg-white', 'p-5'].join(' ')}>
         <div className="flex items-center gap-2 overflow-x-auto scrollbar-none">
           {categories.map(tag => {

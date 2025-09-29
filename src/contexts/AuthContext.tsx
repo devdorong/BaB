@@ -94,7 +94,7 @@ export const AuthProvider = ({ children }: AuthProviderProps) => {
         const newProfile: ProfileInsert = {
           id: user.id,
           name: user.user_metadata?.name ?? '',
-          nickname: nickName,
+          nickname: user.user_metadata.nickName ?? '',
           phone: user.user_metadata?.phone ?? '',
           gender: user.user_metadata?.gender ?? true,
           birth: user.user_metadata?.birth ?? '2000-01-01',

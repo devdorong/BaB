@@ -2,11 +2,13 @@ import { useState } from 'react';
 import { RiCalendarLine, RiHistoryLine, RiStarFill, RiStarLine } from 'react-icons/ri';
 import YetMatchingRecordItem from '../../../components/member/YetMatchingRecordItem';
 import RecentMatchingRecordItem from '../../../components/member/RecentMatchingRecordItem';
+import { useNavigate } from 'react-router-dom';
 
 type TabKey = 'recent' | 'yet';
 
 function RecentMatchingPage() {
   const [tab, setTab] = useState<TabKey>('yet');
+  const navigate = useNavigate();
 
   const base = 'group relative px-4 py-2 pb-3 transition-colors outline-none';
   const active = 'text-bab-500';
@@ -26,7 +28,12 @@ function RecentMatchingPage() {
       {/* 프로필 헤더 링크 */}
       <div className="flex flex-col w-[1280px] m-auto">
         <div className="flex py-[15px]">
-          <div className="text-babgray-600 text-[17px]">프로필</div>
+          <div
+            onClick={() => navigate('/member/profile')}
+            className="cursor-pointer hover:text-babgray-900 text-babgray-600 text-[17px]"
+          >
+            프로필
+          </div>
           <div className="text-babgray-600 px-[5px] text-[17px]">{'>'}</div>
           <div className="text-bab-500 text-[17px]">최근 매칭 기록</div>
         </div>

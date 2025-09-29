@@ -15,7 +15,7 @@ function PointPage() {
   const { user } = useAuth();
   const navigate = useNavigate();
 
-  const { loading, point, refreshPoint, addPoint, subPoint, total } = usePoint();
+  const { loading, point, refreshPoint, addPoint, subPoint, total, totaladd } = usePoint();
 
   const [selectedTab, setSelectedTab] = useState<TabType>('reward');
   const [totalPoint, setTotalPoint] = useState(0);
@@ -26,15 +26,6 @@ function PointPage() {
     refreshPoint();
   }, [user]);
 
-  // // 포인트 총 사용
-  // useEffect(() => {
-  //   const totalUserPoint = async () => {
-  //     const total = await totalChangePoint();
-  //     setTotalPoint(total);
-  //   };
-  //   totalUserPoint();
-  // }, [point]);
-
   if (loading) return <p>포인트 불러오는 중..</p>;
 
   return (
@@ -43,7 +34,12 @@ function PointPage() {
         {/* 프로필 헤더 링크 */}
         <div className="flex flex-col w-[1280px] m-auto">
           <div className="flex py-[15px]">
-            <div className="text-babgray-600 text-[17px]">프로필</div>
+            <div
+              onClick={() => navigate('/member/profile')}
+              className="text-babgray-600 text-[17px] cursor-pointer hover:text-babgray-900"
+            >
+              프로필
+            </div>
             <div className="text-babgray-600 px-[5px] text-[17px]">{'>'}</div>
             <div className="text-bab-500 text-[17px]">포인트</div>
           </div>
@@ -70,12 +66,14 @@ function PointPage() {
                   {/* 리뷰, 찜, 매칭, 평점 */}
                   <div className="flex w-[172px] pt-[23px] text-center justify-between items-center ">
                     <div>
-                      <div className="text-[22px] font-bold text-babbutton-green">+ 0</div>
+                      <div className="text-[22px] font-bold text-babbutton-green">
+                        +{totaladd.toLocaleString()}
+                      </div>
                       <div className="text-[14px] text-babgray-600">총 적립</div>
                     </div>
                     <div>
                       <div className="text-[22px] font-bold text-babbutton-red">
-                        - {total.toLocaleString()}
+                        -{total.toLocaleString()}
                       </div>
                       <div className="text-[14px] text-babgray-600">총 사용</div>
                     </div>
