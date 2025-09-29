@@ -43,11 +43,14 @@ const PartnerHeader = () => {
     <div>
       <div className="w-64 h-screen z-50 flex fixed flex-col justify-between border-r border-babgray bg-white text-babgray-700">
         <div className="flex flex-col">
-          <div className="px-6 py-8 border-b border-babgray flex items-center gap-3">
+          <div
+            className="px-6 py-8 border-b border-babgray flex items-center gap-3 cursor-pointer"
+            onClick={() => navigate('/partner')}
+          >
             <div className="w-8 h-8 flex items-center justify-center bg-bab rounded-md">
               <RestaurantFill bgColor="#ff5722" />
             </div>
-            <div className="flex flex-col cursor-pointer" onClick={() => navigate('/partner')}>
+            <div className="flex flex-col ">
               <p className="text-black text-lg font-bold">레스토랑허브</p>
               <p className="text-babgray-500 text-xs">파트너 대시보드</p>
             </div>
