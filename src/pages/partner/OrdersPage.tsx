@@ -1,3 +1,6 @@
+import PartnerBoardHeader from '../../components/PartnerBoardHeader';
+import OrderCard from '../../ui/dorong/OrderCard';
+
 type OrderStatus = '대기중' | '조리중' | '준비중' | '완료';
 
 interface Order {
@@ -184,7 +187,24 @@ export const mockOrders: Order[] = [
 ];
 
 function OrdersPage() {
-  return <div>OrdersPage</div>;
+  return (
+    <>
+      <PartnerBoardHeader title="주문 내역" subtitle="실시간 주문을 관리하세요." />
+      <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+        {mockOrders.map(item => (
+          <OrderCard
+            key={item.id}
+            customerName={item.customerName}
+            customerPhone={item.customerPhone}
+            id={item.id}
+            status={item.status}
+            time={item.time}
+            type={item.type}
+          />
+        ))}
+      </div>
+    </>
+  );
 }
 
 export default OrdersPage;

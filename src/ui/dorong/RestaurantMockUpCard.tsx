@@ -70,7 +70,7 @@ export default function RestaurantMockUpCard({
           <div className="flex items-center gap-1 text-babgray-700">
             <RiMapPinLine className="size-4 text-[#FF5722]" />
             <span className="text-[13px]">
-              {location} · {distanceKm}km
+              {location} · {distanceKm}m
             </span>
           </div>
         </div>

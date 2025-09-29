@@ -2,12 +2,15 @@ import { RiErrorWarningLine } from 'react-icons/ri';
 import { GrayTag } from '../../../ui/tag';
 import { ButtonFillMd, ButtonLineMd } from '../../../ui/button';
 import { useNavigate } from 'react-router-dom';
+import { useState } from 'react';
 
 function CommunityWritePage() {
   const navigate = useNavigate();
+  const [title, setTitle] = useState('');
+  const [content, setContent] = useState('');
 
   return (
-    <div className="flex flex-col gap-4 w-[750px] mx-auto py-24">
+    <div className="flex flex-col gap-4 w-[750px] mx-auto py-8">
       <p className="font-bold text-3xl">게시글 작성</p>
       <div className="flex flex-col gap-6 p-8 bg-white shadow-sm rounded-2xl text-babgray-800">
         <div className="flex flex-col gap-2">
@@ -29,17 +32,23 @@ function CommunityWritePage() {
           <input
             type="text"
             className="w-full h-[42px] py-3 px-3 border border-babgray rounded-3xl focus:outline-none"
+            maxLength={100}
+            onChange={e => setTitle(e.target.value)}
           />
           {/* input 글자수에따라 실시간 변경,최대 100자 제한 */}
-          <div className="flex justify-end text-babgray-500">0/100</div>
+          <div className="flex justify-end text-babgray-500">{title.length}/100</div>
         </div>
         <div className="flex flex-col gap-2">
           <p className="flex gap-1 font-semibold">
             내용 <p className="text-bab">*</p>
           </p>
           {/* textarea 글자수에따라 실시간 변경,최대 500자 제한 */}
-          <textarea className="w-full h-[100px] py-2 px-3 border border-babgray rounded-3xl focus:outline-none" />
-          <div className="flex justify-end text-babgray-500">0/500</div>
+          <textarea
+            className="w-full h-[100px] py-2 px-3 border border-babgray rounded-3xl focus:outline-none resize-none"
+            maxLength={500}
+            onChange={e => setContent(e.target.value)}
+          />
+          <div className="flex justify-end text-babgray-500">{content.length}/500</div>
         </div>
         <div className="flex flex-col gap-1 bg-bab-100 p-4 rounded-lg text-bab ">
           <div className="flex gap-2 items-center">

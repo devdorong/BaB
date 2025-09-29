@@ -92,7 +92,6 @@ function ReviewsPage() {
               distance={r.distance}
               tagBg={r.tagBg}
               tagText={r.tagText}
-              onClick={() => console.log(`${r.name} 클릭됨`)}
             />
           ))}
         </div>

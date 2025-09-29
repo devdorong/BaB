@@ -89,7 +89,7 @@ function EventPage() {
   };
 
   return (
-    <div className="max-w-[1280px] mx-auto py-[40px] flex flex-col gap-[30px]">
+    <div className="max-w-[1280px] mx-auto py-8 flex flex-col gap-[30px]">
       {/* 상단 제목 */}
       <div>
         <h2 className="text-[32px] font-bold">이벤트</h2>

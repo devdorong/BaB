@@ -56,8 +56,8 @@ module.exports = {
           brown_back: '#FFEDD5',
           black: '#374151',
           black_back: '#F3F4F6',
-          yellow: '854D0E',
-          yellow_back: 'FEF9C3',
+          yellow: '#FACC15',
+          yellow_back: '#FEF9C3',
         },
         babcategory: {
           koreanbg: '#FFF3E0',

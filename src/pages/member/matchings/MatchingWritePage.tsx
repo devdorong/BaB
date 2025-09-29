@@ -1,9 +1,12 @@
 import { RiAlarmWarningLine, RiCalendarLine, RiMapPinLine } from 'react-icons/ri';
 import { ButtonFillMd, ButtonLineMd } from '../../../ui/button';
 import { useNavigate } from 'react-router-dom';
+import { useState } from 'react';
 
 const MatchingWritePage = () => {
   const navigate = useNavigate();
+  const [title, setTitle] = useState('');
+  const [content, setContent] = useState('');
 
   return (
     <div className="w-[750px] h-auto py-8 flex flex-col gap-10 mx-auto">
@@ -24,9 +27,10 @@ const MatchingWritePage = () => {
               type="text"
               maxLength={50}
               placeholder="매칭 게시글 제목을 입력해주세요"
+              onChange={e => setTitle(e.target.value)}
               className="px-4 py-3.5 rounded-3xl outline outline-1 outline-offset-[-1px] outline-babgray focus:outline-bab"
             />
-            <p className="flex justify-end text-babgray-500 text-xs">0/50</p>
+            <p className="flex justify-end text-babgray-500 text-xs">{title.length}/50</p>
           </div>
         </div>
 
@@ -37,9 +41,10 @@ const MatchingWritePage = () => {
           <textarea
             maxLength={500}
             placeholder="함께 식사하고 싶은 이유나 추가 정보를 입력해주세요"
+            onChange={e => setContent(e.target.value)}
             className="h-24 px-4 py-3.5 rounded-3xl outline outline-1 outline-offset-[-1px] outline-babgray resize-none focus:outline-bab"
           />
-          <p className="flex justify-end text-babgray-500 text-xs">0/500</p>
+          <p className="flex justify-end text-babgray-500 text-xs">{content.length}/500</p>
         </div>
 
         {/* 날짜 + 시간 */}
