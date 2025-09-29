@@ -285,7 +285,7 @@ const KkoMap = ({ radius = 1000, onFetched }: KkoMapProps) => {
                   </div>
                   {selected.distance !== undefined && (
                     <div className="text-xs text-babgray-500 mt-1">
-                      약 {(selected.distance / 1000).toFixed(1)} km
+                      약 {selected.distance / 1} m
                     </div>
                   )}
                   {selected.phone && <div className="text-xs mt-1">{selected.phone}</div>}
@@ -350,7 +350,7 @@ const KkoMap = ({ radius = 1000, onFetched }: KkoMapProps) => {
                   </div>
                   {p.distance !== undefined && (
                     <div className="flex items-center gap-[3px] text-xs text-babgray-500 mt-0.5">
-                      <RiMapPinLine color="#FF5722" /> {(p.distance / 1000).toFixed(1)} km
+                      <RiMapPinLine color="#FF5722" /> {p.distance / 1} m
                     </div>
                   )}
                 </div>

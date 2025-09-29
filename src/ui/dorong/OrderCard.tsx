@@ -29,16 +29,16 @@ const getStatusColors = (status: '대기중' | '조리중' | '준비중' | '완�
 const OrderCard = ({ id, type, time, customerName, customerPhone, status }: Order) => {
   const { bgColor, textColor } = getStatusColors(status);
   return (
-    <div className="rounded-[8px]">
+    <div className="px-6 py-7 bg-white rounded-lg shadow-[0px_4px_4px_0px_rgba(0,0,0,0.02)] border border-babgray-150  inline-flex flex-col justify-start items-start gap-5 w-full">
       {/* 상단 */}
-      <div className="flex justify-between p-[26px]">
+      <div className="flex justify-between items-start w-full">
         <div className="flex items-center gap-3">
-          <div className="w-10 h-10 rounded-lg bg-babbutton-brown_back">
-            <RiRestaurantLine size={16} color="#7C2D12" />
+          <div className="w-10 h-10 flex items-center justify-center rounded-lg bg-babbutton-brown_back">
+            <RiRestaurantLine size={16} className="text-babbutton-brown" />
           </div>
-          <div>
+          <div className="flex flex-col">
             <span className="font-bold text-[16px] text-babgray-900">{id}</span>
-            <span className="font-medium text-[16px] text-babgray-600">
+            <span className="font-medium text-[14px] text-babgray-600">
               {type}·{time}
             </span>
           </div>
@@ -47,25 +47,25 @@ const OrderCard = ({ id, type, time, customerName, customerPhone, status }: Orde
           {status}
         </TagBadge>
       </div>
+
       {/* 중단 */}
-      <div>
-        <div>
-          <span>고객 정보</span>
-          <div>
-            <span>{customerName}</span>
-            <span>{customerPhone}</span>
-          </div>
+      <div className="flex flex-col gap-3 w-full">
+        <span className="text-babgray-800 text-base font-bold">고객 정보</span>
+        <div className="flex flex-col gap-1">
+          <span className="text-babgray-700 text-sm">{customerName}</span>
+          <span className="text-babgray-700 text-sm">{customerPhone}</span>
         </div>
       </div>
-      {/* 버튼하단 */}
-      <div>
-        <button>
-          <RiCheckLine />
+
+      {/* 버튼 하단 */}
+      <div className="flex flex-col gap-2 w-full">
+        <button className="flex items-center justify-center gap-2 px-4 py-2 bg-bab text-white rounded-lg text-sm font-bold">
+          <RiCheckLine className="w-4 h-4" />
           <span>상태 변경</span>
         </button>
-        <button>
-          <RiEye2Line />
-          <span>상태 보기</span>
+        <button className="flex items-center justify-center gap-2 px-4 py-2 bg-babgray-100 text-babgray-700 rounded-lg text-sm font-bold">
+          <RiEye2Line className="w-4 h-4" />
+          <span>상세 보기</span>
         </button>
       </div>
     </div>

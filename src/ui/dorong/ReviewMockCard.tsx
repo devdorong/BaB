@@ -87,7 +87,7 @@ export const ReviewCard = ({
           </div>
 
           {/* 리뷰 요약 */}
-          <p className="tracking-[-0.32px] text-[15px] pt-2 line-clamp-2 text-babgray-700">
+          <p className="tracking-[-0.32px] text-[15px] pt-2 line-clamp-2 min-h-[53px] text-babgray-700">
             {review}
           </p>
 

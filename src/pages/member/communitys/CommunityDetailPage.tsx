@@ -16,7 +16,7 @@ function CommunityDetailPage() {
   const [reports, setReports] = useState(false);
 
   return (
-    <div className="w-[746px] h-full flex flex-col gap-10 py-[100px] mx-auto">
+    <div className="w-[746px] h-full flex flex-col gap-10 py-8 mx-auto">
       <p className="font-bold text-3xl text-babgray-900">게시글</p>
       {/* 게시글 영역 */}
       <div className="flex flex-col p-7 gap-6 bg-white rounded-2xl shadow-[0px_4px_4px_rgba(0,0,0,0.02)]">
@@ -24,7 +24,7 @@ function CommunityDetailPage() {
           {/* write page 에서 선택한 카테고리 적용 */}
           <BlueTag>자유 게시판</BlueTag>
           {/* dayjs사용 시간변화 적용 */}
-          <p className="font-medium text-babgray-500">2시간 전</p>
+          <p className="font-medium text-[12px] text-babgray-500">2시간 전</p>
         </div>
         {/* write page title 받아오기 */}
         <div>
@@ -98,7 +98,7 @@ function CommunityDetailPage() {
           {/* 댓글등록 클릭시 작성될 내용 */}
           <textarea
             placeholder="댓글을 작성해주세요"
-            className="w-full h-24 px-4 py-3.5 rounded-3xl outline outline-1 outline-offset-[-1px] outline-babgray text-babgray-800 resize-none focus:outline-none focus:ring-1 focus:ring-bab"
+            className="w-full h-24 px-4 py-3.5 rounded-xl outline outline-1 outline-offset-[-1px] outline-babgray text-babgray-800 resize-none focus:outline-none focus:ring-1 focus:ring-bab"
           />
           {/* textarea 에 작성된 글자수 제한,실시간 연동 500자 제한*/}
           <p className="self-stretch text-right text-babgray-500 text-xs">0/500</p>
@@ -110,7 +110,7 @@ function CommunityDetailPage() {
               {/* 댓글작성자 닉네임 */}
               <span className="text-babgray-800 font-bold">도로롱</span>
               {/* 댓글 작성시간 */}
-              <span className="text-babgray-700">1시간 전</span>
+              <span className="text-babgray-700 text-[12px]">1시간 전</span>
             </div>
             {/* 등록한 댓글 내용 */}
             <p className="text-babgray-700">
@@ -146,7 +146,7 @@ function CommunityDetailPage() {
                 <p className="text-babgray-800 font-bold">도현</p>
               </div>
               {/* 답글 단 시간 */}
-              <p className="text-babgray-700">50분 전</p>
+              <p className="text-babgray-700 text-[12px]">50분 전</p>
             </div>
             <div>
               {/* 답글 내용 */}
@@ -178,21 +178,21 @@ function CommunityDetailPage() {
               {/* 답글 작성자 닉네임 */}
               <p className="font-bold">도롱</p>
               {/* 답글 작성 시간 */}
-              <p>2시간 전</p>
+              <p className="text-[12px]">2시간 전</p>
             </div>
             {/* 답글을 달 댓글 내용 */}
             <p>저도 강남역 근처 맛집 탐방 좋아해요! 함께 할 수 있을까요?</p>
             {/* 답글 내용 */}
             <div className="flex flex-col gap-3">
               <textarea
-                className="w-full h-24 px-4 py-3.5 rounded-3xl outline outline-1 outline-offset-[-1px] outline-babgray text-babgray-800 resize-none focus:outline-none focus:ring-1 focus:ring-bab"
+                className="w-full h-24 px-4 py-3.5 rounded-xl outline outline-1 outline-offset-[-1px] outline-babgray text-babgray-800 resize-none focus:outline-none focus:ring-1 focus:ring-bab"
                 placeholder="답글을 입력해주세요"
               />
-              <p className="self-stretch text-right text-babgray-500 text-xs">0/500</p>
+              {/* <p className="self-stretch text-right text-babgray-500 text-xs">0/500</p> */}
             </div>
             <div className="flex justify-end">
               {/* 등록하기 버튼 */}
-              <ButtonFillSm style={{ width: 'auto', fontWeight: 400 }}>등록하기</ButtonFillSm>
+              <ButtonFillMd style={{ width: 'auto', fontWeight: 400 }}>등록하기</ButtonFillMd>
             </div>
           </div>
         </div>

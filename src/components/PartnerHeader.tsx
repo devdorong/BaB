@@ -10,7 +10,7 @@ import {
   RiStoreLine,
   RiUserSettingsLine,
 } from 'react-icons/ri';
-import { Link, useNavigate } from 'react-router-dom';
+import { Link, NavLink, useNavigate } from 'react-router-dom';
 import { RestaurantFill, UserLine } from '../ui/Icon';
 import { useAuth } from '../contexts/AuthContext';
 
@@ -47,61 +47,204 @@ const PartnerHeader = () => {
             <div className="w-8 h-8 flex items-center justify-center bg-bab rounded-md">
               <RestaurantFill bgColor="#ff5722" />
             </div>
-            <div className="flex flex-col">
+            <div className="flex flex-col cursor-pointer" onClick={() => navigate('/partner')}>
               <p className="text-black text-lg font-bold">레스토랑허브</p>
               <p className="text-babgray-500 text-xs">파트너 대시보드</p>
             </div>
           </div>
           {/* 각 영역 눌렀을때 해당하는 헤더블록 나오도록 */}
           <div className="flex flex-col p-4 gap-2">
-            <Link to={'/partner'}>
-              <div className="flex items-center gap-3 px-3 py-2.5 rounded-md bg-bab-100 border-r-2 cursor-pointer border-bab">
-                <RiDashboardLine className="text-bab w-4 h-4" />
-                <p className="text-bab">대시보드</p>
-              </div>
-            </Link>
-            <Link to={'/partner/restaurant'}>
-              <div className="flex items-center gap-3 px-3 py-2.5 rounded-md hover:bg-gray-100 cursor-pointer">
-                <RiStoreLine className="text-babgray-700 w-4 h-4" />
-                <p className="text-babgray-700 text-base">매장 정보 관리</p>
-              </div>
-            </Link>
-            <Link to={'/partner/menus'}>
-              <div className="flex items-center gap-3 px-3 py-2.5 rounded-md hover:bg-gray-100 cursor-pointer">
-                <RiRestaurantFill className="text-babgray-700 w-4 h-4" />
-                <p className="text-babgray-700 text-base">메뉴 관리</p>
-              </div>
-            </Link>
-            <Link to={'/partner/orders'}>
-              <div className="flex items-center gap-3 px-3 py-2.5 rounded-md hover:bg-gray-100 cursor-pointer">
-                <RiFileListLine className="text-babgray-700 w-4 h-4" />
-                <p className="text-babgray-700 text-base">주문내역</p>
-              </div>
-            </Link>
-            <Link to={'/partner/sale'}>
-              <div className="flex items-center gap-3 px-3 py-2.5 rounded-md hover:bg-gray-100 cursor-pointer">
-                <RiMoneyDollarCircleLine className="text-babgray-700 w-4 h-4" />
-                <p className="text-babgray-700 text-base">매출 & 정산</p>
-              </div>
-            </Link>
-            <Link to={'/partner/review'}>
-              <div className="flex items-center gap-3 px-3 py-2.5 rounded-md hover:bg-gray-100 cursor-pointer">
-                <RiStarLine className="text-babgray-700 w-4 h-4" />
-                <p className="text-babgray-700 text-base">고객 리뷰</p>
-              </div>
-            </Link>
-            <Link to={'/partner/notification'}>
-              <div className="flex items-center gap-3 px-3 py-2.5 rounded-md hover:bg-gray-100 cursor-pointer">
-                <RiNotification2Line className="text-babgray-700 w-4 h-4" />
-                <p className="text-babgray-700 text-base">알림</p>
-              </div>
-            </Link>
-            <Link to={'/partner/settings'}>
-              <div className="flex items-center gap-3 px-3 py-2.5 rounded-md hover:bg-gray-100 cursor-pointer">
-                <RiUserSettingsLine className="text-babgray-700 w-4 h-4" />
-                <p className="text-babgray-700 text-base">계정 & 보안</p>
-              </div>
-            </Link>
+            <NavLink
+              to="/partner"
+              end
+              className={({ isActive }) =>
+                `flex items-center gap-3 px-3 py-2.5 rounded-md cursor-pointer transition-all duration-200 ease-in-out ${
+                  isActive
+                    ? 'bg-bab-100 border-r-2 border-bab text-bab'
+                    : 'hover:bg-gray-100 text-babgray-700'
+                }`
+              }
+            >
+              {({ isActive }) => (
+                <>
+                  <RiDashboardLine
+                    className={`w-4 h-4 transition-colors duration-200 ${isActive ? 'text-bab' : 'text-babgray-700'}`}
+                  />
+                  <p
+                    className={`transition-colors duration-200 ${isActive ? 'text-bab font-medium' : 'text-babgray-700 text-base'}`}
+                  >
+                    대시보드
+                  </p>
+                </>
+              )}
+            </NavLink>
+            <NavLink
+              to="/partner/restaurant"
+              className={({ isActive }) =>
+                `flex items-center gap-3 px-3 py-2.5 rounded-md cursor-pointer transition-all duration-200 ease-in-out ${
+                  isActive
+                    ? 'bg-bab-100 border-r-2 border-bab text-bab'
+                    : 'hover:bg-gray-100 text-babgray-700'
+                }`
+              }
+            >
+              {({ isActive }) => (
+                <>
+                  <RiStoreLine
+                    className={`w-4 h-4 transition-colors duration-200 ${isActive ? 'text-bab' : 'text-babgray-700'}`}
+                  />
+                  <p
+                    className={`transition-colors duration-200 ${isActive ? 'text-bab font-medium' : 'text-babgray-700 text-base'}`}
+                  >
+                    매장 정보 관리
+                  </p>
+                </>
+              )}
+            </NavLink>
+
+            <NavLink
+              to="/partner/menus"
+              className={({ isActive }) =>
+                `flex items-center gap-3 px-3 py-2.5 rounded-md cursor-pointer transition-all duration-200 ease-in-out ${
+                  isActive
+                    ? 'bg-bab-100 border-r-2 border-bab text-bab'
+                    : 'hover:bg-gray-100 text-babgray-700'
+                }`
+              }
+            >
+              {({ isActive }) => (
+                <>
+                  <RiRestaurantFill
+                    className={`w-4 h-4 transition-colors duration-200 ${isActive ? 'text-bab' : 'text-babgray-700'}`}
+                  />
+                  <p
+                    className={`transition-colors duration-200 ${isActive ? 'text-bab font-medium' : 'text-babgray-700 text-base'}`}
+                  >
+                    메뉴 관리
+                  </p>
+                </>
+              )}
+            </NavLink>
+
+            <NavLink
+              to="/partner/orders"
+              className={({ isActive }) =>
+                `flex items-center gap-3 px-3 py-2.5 rounded-md cursor-pointer transition-all duration-200 ease-in-out ${
+                  isActive
+                    ? 'bg-bab-100 border-r-2 border-bab text-bab'
+                    : 'hover:bg-gray-100 text-babgray-700'
+                }`
+              }
+            >
+              {({ isActive }) => (
+                <>
+                  <RiFileListLine
+                    className={`w-4 h-4 transition-colors duration-200 ${isActive ? 'text-bab' : 'text-babgray-700'}`}
+                  />
+                  <p
+                    className={`transition-colors duration-200 ${isActive ? 'text-bab font-medium' : 'text-babgray-700 text-base'}`}
+                  >
+                    주문내역
+                  </p>
+                </>
+              )}
+            </NavLink>
+
+            <NavLink
+              to="/partner/sale"
+              className={({ isActive }) =>
+                `flex items-center gap-3 px-3 py-2.5 rounded-md cursor-pointer transition-all duration-200 ease-in-out ${
+                  isActive
+                    ? 'bg-bab-100 border-r-2 border-bab text-bab'
+                    : 'hover:bg-gray-100 text-babgray-700'
+                }`
+              }
+            >
+              {({ isActive }) => (
+                <>
+                  <RiMoneyDollarCircleLine
+                    className={`w-4 h-4 transition-colors duration-200 ${isActive ? 'text-bab' : 'text-babgray-700'}`}
+                  />
+                  <p
+                    className={`transition-colors duration-200 ${isActive ? 'text-bab font-medium' : 'text-babgray-700 text-base'}`}
+                  >
+                    매출 & 정산
+                  </p>
+                </>
+              )}
+            </NavLink>
+
+            <NavLink
+              to="/partner/review"
+              className={({ isActive }) =>
+                `flex items-center gap-3 px-3 py-2.5 rounded-md cursor-pointer transition-all duration-200 ease-in-out ${
+                  isActive
+                    ? 'bg-bab-100 border-r-2 border-bab text-bab'
+                    : 'hover:bg-gray-100 text-babgray-700'
+                }`
+              }
+            >
+              {({ isActive }) => (
+                <>
+                  <RiStarLine
+                    className={`w-4 h-4 transition-colors duration-200 ${isActive ? 'text-bab' : 'text-babgray-700'}`}
+                  />
+                  <p
+                    className={`transition-colors duration-200 ${isActive ? 'text-bab font-medium' : 'text-babgray-700 text-base'}`}
+                  >
+                    고객 리뷰
+                  </p>
+                </>
+              )}
+            </NavLink>
+
+            <NavLink
+              to="/partner/notification"
+              className={({ isActive }) =>
+                `flex items-center gap-3 px-3 py-2.5 rounded-md cursor-pointer transition-all duration-200 ease-in-out ${
+                  isActive
+                    ? 'bg-bab-100 border-r-2 border-bab text-bab'
+                    : 'hover:bg-gray-100 text-babgray-700'
+                }`
+              }
+            >
+              {({ isActive }) => (
+                <>
+                  <RiNotification2Line
+                    className={`w-4 h-4 transition-colors duration-200 ${isActive ? 'text-bab' : 'text-babgray-700'}`}
+                  />
+                  <p
+                    className={`transition-colors duration-200 ${isActive ? 'text-bab font-medium' : 'text-babgray-700 text-base'}`}
+                  >
+                    알림
+                  </p>
+                </>
+              )}
+            </NavLink>
+
+            <NavLink
+              to="/partner/settings"
+              className={({ isActive }) =>
+                `flex items-center gap-3 px-3 py-2.5 rounded-md cursor-pointer transition-all duration-200 ease-in-out ${
+                  isActive
+                    ? 'bg-bab-100 border-r-2 border-bab text-bab'
+                    : 'hover:bg-gray-100 text-babgray-700'
+                }`
+              }
+            >
+              {({ isActive }) => (
+                <>
+                  <RiUserSettingsLine
+                    className={`w-4 h-4 transition-colors duration-200 ${isActive ? 'text-bab' : 'text-babgray-700'}`}
+                  />
+                  <p
+                    className={`transition-colors duration-200 ${isActive ? 'text-bab font-medium' : 'text-babgray-700 text-base'}`}
+                  >
+                    계정 & 보안
+                  </p>
+                </>
+              )}
+            </NavLink>
           </div>
         </div>
         <div className="p-4 border-t border-babgray flex items-center justify-between ">
@@ -136,6 +279,12 @@ const PartnerHeader = () => {
                   className="w-full px-4 py-2 text-left text-sm text-gray-700 hover:bg-gray-100"
                 >
                   로그아웃
+                </button>
+                <button
+                  onClick={() => navigate('/')}
+                  className="w-full px-4 py-2 text-left text-sm text-gray-700 hover:bg-gray-100"
+                >
+                  메인페이지로
                 </button>
               </div>
             )}

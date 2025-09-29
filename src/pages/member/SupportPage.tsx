@@ -4,6 +4,7 @@ import { Chat3Line, MailLine, PhoneLine } from '../../ui/Icon';
 import { TagButton } from '../../ui/tag';
 import TagBadge from '../../ui/TagBadge';
 import { useState } from 'react';
+import SupportModal from '../../ui/dorong/SupportModal';
 
 function SupportPage() {
   // 목업데이터
@@ -81,17 +82,17 @@ function SupportPage() {
 
   const [activeTag, setActiveTag] = useState('전체');
   const [openIndex, setOpenIndex] = useState<number | null>(null);
+  const [openModal, setOpenModal] = useState(false);
 
   const toggleFaq = (index: number) => {
     setOpenIndex(prev => (prev === index ? null : index));
   };
 
-  // ✅ 선택된 카테고리에 맞는 FAQ만 필터링
   const filteredFaqs =
     activeTag === '전체' ? samplesupport : samplesupport.filter(faq => faq.tagLabel === activeTag);
 
   return (
-    <div className="max-w-[1280px] mx-auto py-[50px] flex flex-col gap-[35px]">
+    <div className="max-w-[1280px] mx-auto py-8 flex flex-col gap-[35px]">
       {/* 상단 */}
       <div>
         <div className="pb-[36px]">
@@ -134,7 +135,10 @@ function SupportPage() {
           <div className="flex justify-between">
             <h3 className="font-bold text-[27px]">자주 묻는 질문</h3>
             {/* 클릭시 모달열리게 수정하기 */}
-            <ButtonFillMd>1:1 문의하기</ButtonFillMd>
+            <div onClick={() => setOpenModal(true)}>
+              <ButtonFillMd>1:1 문의하기</ButtonFillMd>
+            </div>
+            {openModal && <SupportModal setOpenModal={setOpenModal} />}
           </div>
 
           {/* 태그 필터 */}
