@@ -35,10 +35,10 @@ const AddMenuModal = ({ open, onClose, onSubmit }: AddMenuProps) => {
 
   // 관심사
   const interests: Interest[] = [
-    { id: 1, name: '매운맛' },
-    { id: 2, name: '치즈' },
-    { id: 3, name: '단짠' },
-  ]; // ✅ 실제로는 Supabase에서 불러와야 함
+    { id: 1, name: '양식' },
+    { id: 2, name: '실내' },
+    { id: 3, name: '술' },
+  ]; // Supabase에서 불러와야 함
 
   const toggleInterest = (id: number) => {
     setSelectedInterests(prev => (prev.includes(id) ? prev.filter(v => v !== id) : [...prev, id]));
@@ -82,6 +82,8 @@ const AddMenuModal = ({ open, onClose, onSubmit }: AddMenuProps) => {
     }
   }, [open]);
 
+  if (!open) return null;
+
   return (
     <div>
       <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/50">
@@ -95,19 +97,27 @@ const AddMenuModal = ({ open, onClose, onSubmit }: AddMenuProps) => {
           {/* 사진 등록 */}
           <div>
             <label className="block text-sm font-medium text-gray-700 mb-2">사진 등록</label>
-            <div className="relative w-full h-64 border-2 border-dashed border-gray-300 rounded-lg flex items-center justify-center text-gray-400 cursor-pointer hover:border-[#FF5722] hover:text-[#FF5722] transition">
+            <div
+              onClick={() => {
+                if (file) {
+                  removeFile();
+                } else {
+                  fileInputRef.current?.click();
+                }
+              }}
+              className="relative w-full h-64 border-2 border-dashed border-gray-300 rounded-lg flex items-center justify-center text-gray-400 cursor-pointer hover:border-[#FF5722] hover:text-[#FF5722] transition"
+            >
               {file ? (
                 <div className="w-full h-full relative rounded-xl overflow-hidden ">
                   <img
                     src={URL.createObjectURL(file)}
                     alt=""
                     className="w-full h-full object-cover"
-                    onClick={removeFile}
                     onLoad={e => URL.revokeObjectURL((e.target as HTMLImageElement).src)}
                   />
                 </div>
               ) : (
-                <div onClick={() => fileInputRef.current?.click()}>이미지 업로드</div>
+                <div>이미지 업로드</div>
               )}
             </div>
           </div>
@@ -158,7 +168,7 @@ const AddMenuModal = ({ open, onClose, onSubmit }: AddMenuProps) => {
                         : 'bg-gray-100 text-gray-700 border-gray-200 hover:bg-gray-200',
                     ].join(' ')}
                   >
-                    #{item.name}
+                    {item.name}
                   </button>
                 );
               })}
@@ -187,7 +197,10 @@ const AddMenuModal = ({ open, onClose, onSubmit }: AddMenuProps) => {
 
           {/* 버튼 */}
           <div className="flex justify-end gap-3 pt-3 border-t border-gray-200">
-            <button className="px-4 py-2 rounded-lg bg-gray-200 text-gray-700 hover:bg-gray-300 transition">
+            <button
+              onClick={onClose}
+              className="px-4 py-2 rounded-lg bg-gray-200 text-gray-700 hover:bg-gray-300 transition"
+            >
               취소
             </button>
             <button className="px-4 py-2 rounded-lg bg-[#FF5722] text-white hover:bg-[#e14a1c] transition">

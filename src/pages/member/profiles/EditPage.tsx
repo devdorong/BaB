@@ -1,10 +1,25 @@
 import { RiImageLine } from 'react-icons/ri';
 import { ButtonFillMd } from '../../../ui/button';
-import { useState } from 'react';
+import { useEffect, useState } from 'react';
+import { useNavigate } from 'react-router-dom';
+import { useAuth } from '../../../contexts/AuthContext';
+import { getProfile, updateProfile } from '../../../lib/propile';
+import type { Profile } from '../../../types/bobType';
 
 function EditPage() {
-  const [nickname, setNickname] = useState('스팸두개');
-  const [intro, setIntro] = useState('스팸이 제일 쪼아용');
+  const navigate = useNavigate();
+  const { user } = useAuth();
+
+  // 로딩
+  const [loading, setLoading] = useState<boolean>(true);
+  // 사용자 프로필
+  const [profileData, setProfileData] = useState<Profile | null>(null);
+  // 에러메세지
+  const [error, setError] = useState<string>('');
+  // 사용자 닉네임
+  const [nickName, setNickName] = useState<string>('');
+
+  const [intro, setIntro] = useState('');
   const nickMax = 20;
   const introMax = 150;
 
@@ -12,14 +27,71 @@ function EditPage() {
   const [curPw, setCurPw] = useState('');
   const [newPw, setNewPw] = useState('');
   const [newPw2, setNewPw2] = useState('');
+
+  // 사용자 프로필 정보
+  const loadProfile = async () => {
+    if (!user?.id) {
+      setError('사용자정보 없음');
+      setLoading(false);
+      return;
+    }
+    try {
+      // 사용자 정보 가져오기
+      const tempData = await getProfile(user?.id);
+      if (!tempData) {
+        // null의 경우
+        setError('사용자 프로필 정보 찾을 수 없음');
+        return;
+      }
+      // 사용자 정보 유효함
+      setNickName(tempData.nickname || '');
+      setIntro(tempData.comment || '');
+      setProfileData(tempData);
+    } catch (error) {
+      setError('프로필 호출 오류');
+    } finally {
+      setLoading(false);
+    }
+  };
+
+  // id로 닉네임을 받아옴
+  useEffect(() => {
+    loadProfile();
+  }, [user?.id]);
+
+  // 저장(수정하기)
+  const handleSaveProfile = async () => {
+    if (!user?.id) return;
+
+    try {
+      const success = await updateProfile(
+        {
+          nickname: nickName,
+          comment: intro,
+        },
+        user.id,
+      );
+      if (!success) {
+        console.log('프로필 업데이트 실패');
+      }
+      console.log('프로필 업데이트 성공');
+      navigate('/member/profile');
+    } catch (err) {
+      console.log(err);
+    }
+  };
+
   return (
     <div className="flex bg-bg-bg ">
       {/* 프로필 헤더 링크 */}
       <div className="flex flex-col w-[1280px] m-auto">
         <div className="flex py-[15px]">
-          <div className="text-babgray-600 text-[17px]">프로필</div>
-          <div className="text-babgray-600 px-[5px] text-[17px]">{'>'}</div>
-          <div className="text-babgray-600 text-[17px]">프로필 정보</div>
+          <div
+            onClick={() => navigate('/member/profile')}
+            className="cursor-pointer hover:text-babgray-900 text-babgray-600 text-[17px]"
+          >
+            프로필
+          </div>
           <div className="text-babgray-600 px-[5px] text-[17px]">{'>'}</div>
           <div className="text-bab-500 text-[17px]">편집</div>
         </div>
@@ -72,14 +144,14 @@ function EditPage() {
                     <div className="w-full h-[45px] px-3.5 py-3 bg-white rounded-3xl outline outline-1 outline-offset-[-1px] outline-babgray-300 inline-flex items-center">
                       <input
                         type="text"
-                        value={nickname}
-                        onChange={e => setNickname(e.target.value.slice(0, nickMax))}
+                        value={nickName}
+                        onChange={e => setNickName(e.target.value.slice(0, nickMax))}
                         className="flex text-babgray-700 outline-none text-[16px] placeholder:text-babgray-400"
                         placeholder="닉네임을 입력하세요"
                       />
                     </div>
                     <div className="text-[12px] text-babgray-400">
-                      {nickname.length}/{nickMax}
+                      {nickName.length}/{nickMax}
                     </div>
                   </label>
 
@@ -108,20 +180,20 @@ function EditPage() {
                   {/* 아이디 */}
                   <div className="flex flex-col gap-[50px]">
                     <div className="flex justify-between">
-                      <div className="text-babgray-700">아이디</div>
-                      <div className="text-babgray-800">twospams@gmail.com</div>
+                      <div className="text-babgray-700">이름</div>
+                      <div className="text-babgray-800">{profileData?.name}</div>
                     </div>
 
                     {/* 이메일 */}
                     <div className="flex justify-between">
                       <div className="text-babgray-700">이메일</div>
-                      <div className="text-babgray-800">twospams@gmail.com</div>
+                      <div className="text-babgray-800">{user?.email}</div>
                     </div>
 
                     {/* 전화번호 */}
                     <div className="flex justify-between">
                       <div className="text-babgray-700">전화번호</div>
-                      <div className="text-babgray-800">010-**2*-**22</div>
+                      <div className="text-babgray-800">{profileData?.phone}</div>
                     </div>
 
                     {/* 현재 비밀번호 */}
@@ -173,10 +245,7 @@ function EditPage() {
               <div className="bottom-0 pt-2">
                 <button
                   className="w-full h-[46px] rounded-full bg-bab-500 text-white font-semibold shadow-[0_4px_4px_rgba(0,0,0,0.02)]"
-                  onClick={() => {
-                    // TODO: 저장 로직
-                    console.log({ nickname, intro, curPw, newPw, newPw2 });
-                  }}
+                  onClick={handleSaveProfile}
                 >
                   저장
                 </button>

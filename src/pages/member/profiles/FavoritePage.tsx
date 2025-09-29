@@ -1,13 +1,20 @@
+import { useNavigate } from 'react-router-dom';
 import { RowCard } from '../../../ui/jy/ReviewCard';
 import { BrandTag, GrayTag } from '../../../ui/tag';
 
 function FavoritePage() {
+  const navigate = useNavigate();
   return (
     <div id="root" className="flex flex-col min-h-screen">
       <div className="w-[1280px] mx-auto">
         {/* 프로필 헤더 링크 */}
         <div className="flex py-[15px]">
-          <div className="text-babgray-600 text-[17px]">프로필</div>
+          <div
+            onClick={() => navigate('/member/profile')}
+            className=" cursor-pointer hover:text-babgray-900 text-babgray-600 text-[17px]"
+          >
+            프로필
+          </div>
           <div className="text-babgray-600 px-[5px] text-[17px]">{'>'}</div>
           <div className="text-bab-500 text-[17px]">즐겨찾는 식당</div>
         </div>

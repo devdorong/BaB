@@ -1,3 +1,4 @@
+import { useContext, useState } from 'react';
 import {
   RiCalendarLine,
   RiErrorWarningLine,
@@ -6,6 +7,9 @@ import {
   RiUserForbidLine,
   RiUserUnfollowLine,
 } from 'react-icons/ri';
+import { useNavigate } from 'react-router-dom';
+import OkCancelModal from '../../../components/member/OkCancelModal';
+import { UserForbidLine } from '../../../ui/Icon';
 
 const blockedUsers = [
   { id: 1, name: '도로롱', date: '2025-09-24' },
@@ -15,12 +19,41 @@ const blockedUsers = [
 ];
 
 function BlockPage() {
+  const navigate = useNavigate();
+  const [viewModal, setViewModal] = useState(false);
+
+  const handleViewModal = () => {
+    setViewModal(true);
+  };
+
+  const modalText = () => {
+    return (
+      <div className="w-full  bg-white border-none rounded-[16px] flex flex-col items-center gap-[13px] ">
+        <UserForbidLine bgColor="#FFEDD5" color="#ff5722" size={20} padding={14} />
+        <span>차단 해제</span>
+        <div className="flex flex-col items-center">
+          <span className="text-babgray-600 text-[14px] font-normal ">
+            도로롱님의 차단을 해제하시겠습니까?
+          </span>
+          <span className="text-babgray-600 text-[14px] font-normal">
+            차단 해제 후 해당 사용자가 다시 메시지를 보낼 수 있습니다.
+          </span>
+        </div>
+      </div>
+    );
+  };
+
   return (
     <div id="root" className="min-h-screen bg-bg-bg ">
       {/* 프로필 헤더 링크 */}
       <div className="flex flex-col w-[1280px] m-auto">
         <div className="flex py-[15px]">
-          <div className="text-babgray-600 text-[17px]">프로필</div>
+          <div
+            onClick={() => navigate('/member/profile')}
+            className="text-babgray-600 text-[17px] cursor-pointer hover:text-babgray-900"
+          >
+            프로필
+          </div>
           <div className="text-babgray-600 px-[5px] text-[17px]">{'>'}</div>
           <div className="text-bab-500 text-[17px]">차단</div>
         </div>
@@ -90,7 +123,10 @@ function BlockPage() {
                       </div>
 
                       {/* 차단 해제 버튼 */}
-                      <button className="flex items-center gap-2 px-4 py-2 bg-gray-100 text-gray-700 rounded-lg hover:bg-gray-200 transition">
+                      <button
+                        onClick={handleViewModal}
+                        className="flex items-center gap-2 px-4 py-2 bg-gray-100 text-gray-700 rounded-lg hover:bg-gray-200 transition"
+                      >
                         <RiUserUnfollowLine className="w-4 h-4" />
                         <span className="text-sm font-medium">차단 해제</span>
                       </button>
@@ -102,6 +138,20 @@ function BlockPage() {
           </div>
         </div>
       </div>
+      {viewModal && (
+        <div className="w-full">
+          <OkCancelModal
+            isOpen={viewModal}
+            onClose={() => setViewModal(false)}
+            onSubmit={() => {
+              setViewModal(false);
+            }}
+            contentText={modalText()}
+            submitButtonText="해제"
+            closeButtonText="취소"
+          />
+        </div>
+      )}
     </div>
   );
 }

@@ -1,6 +1,7 @@
 import React from 'react';
 import { BrandTag, GrayTag } from '../../../ui/tag';
 import RestaurantCard from '../../../ui/jy/RestaurantCard';
+import { useNavigate } from 'react-router-dom';
 
 const dummy = Array.from({ length: 10 }).map((_, i) => ({
   imageUrl: '/sample.jpg',
@@ -15,12 +16,18 @@ const dummy = Array.from({ length: 10 }).map((_, i) => ({
 }));
 
 function MyReviewPage() {
+  const navigate = useNavigate();
   return (
     <div id="root" className="flex flex-col min-h-screen">
       <div className="w-[1280px] mx-auto">
         {/* 프로필 헤더 링크 */}
         <div className="flex py-[15px]">
-          <div className="text-babgray-600 text-[17px]">프로필</div>
+          <div
+            onClick={() => navigate('/member/profile')}
+            className="text-babgray-600 text-[17px] cursor-pointer hover:text-babgray-900"
+          >
+            프로필
+          </div>
           <div className="text-babgray-600 px-[5px] text-[17px]">{'>'}</div>
           <div className="text-bab-500 text-[17px]">내가 쓴 리뷰</div>
         </div>

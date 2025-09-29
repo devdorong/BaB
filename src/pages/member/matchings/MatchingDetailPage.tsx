@@ -40,7 +40,7 @@ const MatchingDetailPage = () => {
                       </TagBadge>
                     </div>
                     {/* 글 작성 시간 */}
-                    <div className="text-[13px] text-babgray-500">30분 전</div>
+                    <div className="text-[14px] text-babgray-500">30분 전</div>
                   </div>
                   {/* 제목 */}
                   <div className="text-[32px] font-bold">게시글 제목</div>
@@ -232,7 +232,7 @@ const MatchingDetailPage = () => {
                     className="w-full"
                     style={{ fontWeight: 600, borderRadius: '12px' }}
                   >
-                    모집 종료
+                    모집종료
                   </ButtonFillLG>
 
                   {/* 글 수정하기 버튼 */}
@@ -242,7 +242,7 @@ const MatchingDetailPage = () => {
                     style={{ fontWeight: 600, borderRadius: '12px' }}
                   >
                     <div className="flex gap-[5px] justify-center items-center">
-                      글 수정하기
+                      수정하기
                       <RiEditLine className="w-4 h-4 shrink-0  relative top-[1px]" />
                     </div>
                   </ButtonLineLg>
@@ -253,7 +253,7 @@ const MatchingDetailPage = () => {
                     style={{ fontWeight: 600, borderRadius: '12px' }}
                   >
                     <div className="inline-flex items-center justify-center gap-1.5 font-semibold rounded-[12px] leading-none">
-                      글 삭제하기
+                      삭제하기
                       <RiCloseFill className="w-4 h-4 shrink-0  relative top-[1px]" />
                     </div>
                   </ButtonLineLg>

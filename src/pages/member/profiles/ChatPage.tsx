@@ -1,13 +1,20 @@
 import { RiSearchLine } from 'react-icons/ri';
 import { ButtonFillMd } from '../../../ui/button';
+import { useNavigate } from 'react-router-dom';
 
 function ChatPage() {
+  const navigate = useNavigate();
   return (
     <div className="flex bg-bg-bg ">
       {/* 프로필 헤더 링크 */}
       <div className="flex flex-col w-[1280px] m-auto">
         <div className="flex py-[15px]">
-          <div className="text-babgray-600 text-[17px]">프로필</div>
+          <div
+            onClick={() => navigate('/member/profile')}
+            className=" cursor-pointer hover:text-babgray-900 text-babgray-600 text-[17px]"
+          >
+            프로필
+          </div>
           <div className="text-babgray-600 px-[5px] text-[17px]">{'>'}</div>
           <div className="text-bab-500 text-[17px]">채팅</div>
         </div>
