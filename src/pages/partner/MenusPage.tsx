@@ -20,7 +20,7 @@ function MenusPage() {
   // 선택된 탭에 맞는 필터링
   const filtered = useMemo(() => {
     if (selected === '전체') {
-      return dororongpizza;
+      return menuToggle;
     }
     return menuToggle.filter(item => item.tag === selected);
   }, [selected, menuToggle]);

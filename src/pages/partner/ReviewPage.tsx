@@ -91,8 +91,8 @@ function ReviewPage() {
         {/* 하단 */}
         <div className="w-full flex flex-col gap-6">
           {[...Array(3)].map((_, index) => (
-            <>
-              <div className="self-stretch w-full px-6 pt-7 pb-2 bg-white rounded-lg shadow-[0px_4px_4px_0px_rgba(0,0,0,0.02)] border border-babgray-150 inline-flex flex-col justify-start items-start gap-2.5">
+            <div key={index} className="w-full flex flex-col gap-6">
+              <div className="self-stretch w-full px-6 py-6 bg-white rounded-lg shadow-[0px_4px_4px_0px_rgba(0,0,0,0.02)] border border-babgray-150 inline-flex flex-col justify-start items-start gap-2.5">
                 <div className="w-full flex flex-col justify-start items-start gap-4">
                   <div className="self-stretch flex flex-col justify-start items-start gap-5">
                     <div className="w-full flex flex-col justify-start items-start gap-5">
@@ -142,7 +142,7 @@ function ReviewPage() {
                       </div>
                     </div>
                   </div>
-                  <div className="self-stretch pl-2 py-4 border-t border-babgray-100 inline-flex justify-between items-center">
+                  <div className="self-stretch pl-2 pt-4 border-t border-babgray-100 inline-flex justify-between items-center">
                     <div className="w-4 h-4 relative overflow-hidden text-babgray-300">
                       <RiHeartLine />
                     </div>
@@ -167,10 +167,7 @@ function ReviewPage() {
                   </div>
                 </div>
               </div>
-              <div
-                data-속성-1="false"
-                className="self-stretch px-6 pt-7 pb-2 bg-white rounded-lg shadow-[0px_4px_4px_0px_rgba(0,0,0,0.02)]  inline-flex flex-col justify-start items-start gap-2.5"
-              >
+              <div className="self-stretch px-6 py-6 bg-white rounded-lg shadow-[0px_4px_4px_0px_rgba(0,0,0,0.02)]  inline-flex flex-col justify-start items-start gap-2.5">
                 <div className="w-full flex flex-col justify-start items-start gap-4">
                   <div className="self-stretch flex flex-col justify-start items-start gap-5">
                     <div className="w-full flex flex-col justify-start items-start gap-5">
@@ -207,7 +204,7 @@ function ReviewPage() {
                       </div>
                     </div>
                   </div>
-                  <div className="self-stretch pl-2 py-4 border-t border-babgray-100 inline-flex justify-between items-center">
+                  <div className="self-stretch pl-2 pt-4 border-t border-babgray-100 inline-flex justify-between items-center">
                     <div className="w-4 h-4 relative overflow-hidden text-babgray-300">
                       <RiHeartLine />
                     </div>
@@ -232,7 +229,7 @@ function ReviewPage() {
                   </div>
                 </div>
               </div>
-            </>
+            </div>
           ))}
         </div>
       </div>
