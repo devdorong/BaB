@@ -13,12 +13,22 @@ import {
 import { Link, NavLink, useNavigate } from 'react-router-dom';
 import { RestaurantFill, UserLine } from '../ui/Icon';
 import { useAuth } from '../contexts/AuthContext';
+import type { Profile } from '../types/bobType';
+import { getProfile } from '../lib/propile';
 
 const PartnerHeader = () => {
   const navigate = useNavigate();
   const [open, setOpen] = useState(false);
   const menuRef = useRef<HTMLDivElement>(null);
-  const { signOut } = useAuth();
+  const { user, signOut } = useAuth();
+  // 로딩
+  const [loading, setLoading] = useState<boolean>(true);
+  // 사용자 프로필
+  const [profileData, setProfileData] = useState<Profile | null>(null);
+  // 에러메세지
+  const [error, setError] = useState<string>('');
+  // 사용자 닉네임
+  const [nickName, setNickName] = useState<string>('');
 
   useEffect(() => {
     const handleClickOutside = (e: MouseEvent) => {
@@ -38,6 +48,35 @@ const PartnerHeader = () => {
     }
     setOpen(false);
   };
+
+  const loadProfile = async () => {
+    if (!user?.id) {
+      setError('사용자정보 없음');
+      setLoading(false);
+      return;
+    }
+    try {
+      // 사용자 정보 가져오기
+      const tempData = await getProfile(user?.id);
+      if (!tempData) {
+        // null의 경우
+        setError('사용자 프로필 정보 찾을 수 없음');
+        return;
+      }
+      // 사용자 정보 유효함
+      setNickName(tempData.nickname || '');
+      setProfileData(tempData);
+    } catch (error) {
+      setError('프로필 호출 오류');
+    } finally {
+      setLoading(false);
+    }
+  };
+
+  // id로 닉네임을 받아옴
+  useEffect(() => {
+    loadProfile();
+  }, [user?.id]);
 
   return (
     <div>
@@ -261,10 +300,10 @@ const PartnerHeader = () => {
               </Link>
             </div>
             <div className="flex flex-col">
-              {/* 파트너 매장 이름 */}
+              {/* 파트너 매장 이름 지금은 임시로.. 닉네임출력 */}
               <p className="text-black text-sm">도로롱의 피자가게</p>
               {/* 파트너 id */}
-              <p className="text-gray-600 text-xs">ehfhfhd12</p>
+              <p className="text-gray-600 text-xs">{user?.email}</p>
             </div>
           </div>
           <div className="relative">

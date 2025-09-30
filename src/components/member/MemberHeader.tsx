@@ -72,7 +72,7 @@ const MemberHeader = () => {
             </Link>
             <Link to={'/member/reviews'} className="flex items-center gap-[16px]">
               <StarLine color="none" bgColor="none" size={16} />
-              <p>맛집리뷰</p>
+              <p>맛집추천</p>
             </Link>
             <Link to={'/member/events'} className="flex items-center gap-[16px]">
               <GiftLine color="none" bgColor="none" size={16} />
