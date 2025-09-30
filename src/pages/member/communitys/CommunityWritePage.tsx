@@ -3,11 +3,55 @@ import { GrayTag } from '../../../ui/tag';
 import { ButtonFillMd, ButtonLineMd } from '../../../ui/button';
 import { useNavigate } from 'react-router-dom';
 import { useState } from 'react';
+import type { Database, PostsInsert } from '../../../types/bobType';
+import { supabase } from '../../../lib/supabase';
+import { useAuth } from '../../../contexts/AuthContext';
+
+type CategoriesType = Database['public']['Tables']['posts']['Row']['post_category'];
+type TagType = Database['public']['Tables']['posts']['Insert']['tag'];
+type TagFilterType = Exclude<TagType, '맛집추천요청'>;
 
 function CommunityWritePage() {
+  const { user } = useAuth();
   const navigate = useNavigate();
   const [title, setTitle] = useState('');
   const [content, setContent] = useState('');
+  const [tag, setTag] = useState<TagFilterType>('자유');
+  const [activeCategory, setActiveCategory] = useState<CategoriesType>('자유게시판');
+
+  const newPost: PostsInsert = {
+    post_category: activeCategory,
+    profile_id: user!.id,
+    tag: tag,
+    title: title,
+    content: content,
+  };
+
+  const handleSubmit = async () => {
+    try {
+      const { data: user, error: userError } = await supabase.auth.getUser();
+      if (userError || !user) {
+        // 로그인이 필요합니다 모달 띄우기
+        alert('로그인이 필요합니다.');
+        return;
+      }
+
+      const { data, error } = await supabase.from('posts').insert([newPost]).select('*');
+
+      if (error) {
+        // 모달 띄우기
+        alert('등록에 실패했습니다');
+      } else {
+        // 모달 띄우기
+        alert('등록되었습니다!');
+      }
+    } catch (error) {
+      // 모달 띄우기
+      alert('예상치 못한 오류 발생');
+    }
+  };
+
+  const categories: CategoriesType[] = ['자유게시판', 'Q&A', '팁과노하우'];
 
   return (
     <div className="flex flex-col gap-4 w-[750px] mx-auto py-8">
@@ -19,9 +63,17 @@ function CommunityWritePage() {
           </p>
           {/* 카테고리 태그 불러오기 */}
           <div className="flex gap-4">
-            <GrayTag>자유 게시판</GrayTag>
-            <GrayTag>Q&A</GrayTag>
-            <GrayTag>팁·노하우</GrayTag>
+            {categories.map(item => (
+              <button
+                key={item}
+                className={`flex p-2 rounded-full cursor-pointer ${activeCategory === item ? 'text-white bg-bab' : 'bg-bg-bg text-babgray-700'} focus:bg-bab transition-colors`}
+                onClick={() => {
+                  setActiveCategory(item);
+                }}
+              >
+                {item}
+              </button>
+            ))}
           </div>
         </div>
         <div className="flex flex-col gap-2">
@@ -31,6 +83,7 @@ function CommunityWritePage() {
           {/* 게시글 제목작성 input */}
           <input
             type="text"
+            value={title}
             className="w-full h-[42px] py-3 px-3 border border-babgray rounded-3xl focus:outline-none"
             maxLength={100}
             onChange={e => setTitle(e.target.value)}
@@ -44,6 +97,7 @@ function CommunityWritePage() {
           </p>
           {/* textarea 글자수에따라 실시간 변경,최대 500자 제한 */}
           <textarea
+            value={content}
             className="w-full h-[100px] py-2 px-3 border border-babgray rounded-3xl focus:outline-none resize-none"
             maxLength={500}
             onChange={e => setContent(e.target.value)}
@@ -68,7 +122,7 @@ function CommunityWritePage() {
           </ButtonLineMd>
           {/* 등록하기 클릭시 커뮤니티페이지 detail:id 로 이동 */}
           {/* 카테고리 선택안했거나 제목,내용 중 하나라도 false라면 모달창 띄움 */}
-          <ButtonFillMd onClick={() => navigate('/member/community/detail')} className="w-[320px]">
+          <ButtonFillMd onClick={handleSubmit} className="w-[320px]">
             매칭 등록하기
           </ButtonFillMd>
         </div>
