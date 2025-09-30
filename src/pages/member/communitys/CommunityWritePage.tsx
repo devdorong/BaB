@@ -58,9 +58,9 @@ function CommunityWritePage() {
       <p className="font-bold text-3xl">게시글 작성</p>
       <div className="flex flex-col gap-6 p-8 bg-white shadow-sm rounded-2xl text-babgray-800">
         <div className="flex flex-col gap-2">
-          <p className="flex gap-1 font-semibold">
+          <span className="flex gap-1 font-semibold">
             카테고리 <p className="text-bab">*</p>
-          </p>
+          </span>
           {/* 카테고리 태그 불러오기 */}
           <div className="flex gap-4">
             {categories.map(item => (
@@ -77,9 +77,9 @@ function CommunityWritePage() {
           </div>
         </div>
         <div className="flex flex-col gap-2">
-          <p className="flex gap-1 font-semibold">
+          <span className="flex gap-1 font-semibold">
             제목 <p className="text-bab">*</p>
-          </p>
+          </span>
           {/* 게시글 제목작성 input */}
           <input
             type="text"
@@ -92,9 +92,9 @@ function CommunityWritePage() {
           <div className="flex justify-end text-babgray-500">{title.length}/100</div>
         </div>
         <div className="flex flex-col gap-2">
-          <p className="flex gap-1 font-semibold">
+          <span className="flex gap-1 font-semibold">
             내용 <p className="text-bab">*</p>
-          </p>
+          </span>
           {/* textarea 글자수에따라 실시간 변경,최대 500자 제한 */}
           <textarea
             value={content}
