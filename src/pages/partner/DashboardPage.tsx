@@ -3,13 +3,52 @@ import { MoneyDollarCircleFill, StarFill, TimeLine, UserLine } from '../../ui/Ic
 import TagBadge from '../../ui/TagBadge';
 import PartnerBoardHeader from '../../components/PartnerBoardHeader';
 import { ButtonFillLG } from '../../ui/button';
+import { useAuth } from '../../contexts/AuthContext';
+import { useEffect, useState } from 'react';
+import type { Profile } from '../../types/bobType';
+import { getProfile } from '../../lib/propile';
 
 function DashboardPage() {
+  const { user } = useAuth();
+  const [loading, setLoading] = useState(true);
+  const [profileData, setProfileData] = useState<Profile | null>(null);
+  const [error, setError] = useState('');
+  const [nickname, setNickname] = useState('');
+
+  const loadProfile = async () => {
+    if (!user?.id) {
+      setError('사용자정보 없음');
+      setLoading(false);
+      return;
+    }
+    try {
+      // 사용자 정보 가져오기
+      const tempData = await getProfile(user?.id);
+      if (!tempData) {
+        // null의 경우
+        setError('사용자 프로필 정보 찾을 수 없음');
+        return;
+      }
+      // 사용자 정보 유효함
+      setNickname(tempData.nickname || '');
+      setProfileData(tempData);
+    } catch (error) {
+      setError('프로필 호출 오류');
+    } finally {
+      setLoading(false);
+    }
+  };
+
+  // id로 닉네임을 받아옴
+  useEffect(() => {
+    loadProfile();
+  }, [user?.id]);
+
   return (
     <>
       <PartnerBoardHeader
         title="대시보드"
-        subtitle="안녕하세요, (도로롱)님! 오늘 레스토랑 현황을 확인해보세요."
+        subtitle={`안녕하세요, ${profileData?.nickname}님! 오늘 레스토랑 현황을 확인해보세요.`}
       />
       <div className="w-full  flex flex-col text-babgray-800 gap-10">
         {/* 오늘의 매출, 대기 중인 주문, 새로운 리뷰 */}
