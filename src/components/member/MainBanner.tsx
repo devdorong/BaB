@@ -51,7 +51,10 @@ const MainBanner = () => {
 
   return (
     <div className="relative">
-      <div className="w-[1280px] h-[320px]" onClick={()=>navigate("/member/events")} >
+      <div
+        className="w-[1280px] h-[320px] rounded-b-[20px] overflow-hidden"
+        onClick={() => navigate('/member/events')}
+      >
         <Swiper
           modules={[Autoplay]}
           spaceBetween={30}
@@ -76,7 +79,7 @@ const MainBanner = () => {
           ))}
         </Swiper>
       </div>
-      <div className="absolute left-[50%] z-[100] translate-x-[-50%] translate-y-[-50%]">
+      <div className="absolute left-[50%] z-[100] translate-x-[-50%] translate-y-[-50%] border-[10px] rounded-[50%] border-bg-bg">
         <button
           onClick={() => navigate('/member/matching')}
           className="flex flex-col items-center justify-center gap-[20px] w-[200px] h-[200px] bg-gradient-to-br from-bab-400 to-bab-600 text-white rounded-[50%] border-[5px] border-bab-300"
