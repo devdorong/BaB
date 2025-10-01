@@ -29,7 +29,7 @@ const ProtectedRoute = ({ children, allowedRoles }: ProtectedRouteProps) => {
 
   // 로그인 안 되어있으면 로그인 페이지로
   if (!user) {
-    return <Navigate to="/member/login" replace />;
+    return <Navigate to="/partner/login" replace />;
   }
 
   // role 검사

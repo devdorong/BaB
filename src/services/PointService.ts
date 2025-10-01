@@ -77,7 +77,7 @@ export const GetOrCreatePoint = async (): Promise<Profile_Points | null> => {
 
     // 이미 포인트가 존재하면 반환
     if (existingPoint) {
-      console.log('기존 포인트 반환:', existingPoint.point);
+      // console.log('기존 포인트 반환:', existingPoint.point);
       return existingPoint;
     }
 
@@ -325,7 +325,7 @@ export const givePoint = async (): Promise<boolean> => {
     if (error) throw new Error(`출석 실패 : ${error.message}`);
 
     if (data.length > 0) {
-      console.log('오늘 이미 출석체크를 완료했습니다.');
+      // console.log('오늘 이미 출석체크를 완료했습니다.');
       return false; // 이미 출석체크를 했으므로 포인트 지급하지 않음
     }
 
