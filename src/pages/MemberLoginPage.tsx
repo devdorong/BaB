@@ -151,7 +151,10 @@ function MemberLoginPage() {
           {/* <div className="flex w-[40px] h-[40px] justify-center items-center pw-[8px] py-[8px] bg-white rounded-[20px]">
             <GoogleIconSvg />
           </div> */}
-          <GoogleLoginButton />
+          <GoogleLoginButton
+            onError={error => setMsg(`구글 로그인 오류 : ${error}`)}
+            onSuccess={message => setMsg(message)}
+          />
           {/* 카카오 로그인 버튼 : 오류 메시지는 사용자도 볼 수 있어야 함.*/}
           <KakaoLoginButton onError={error => setMsg(`카카오 로그인 오류 : ${error}`)} />
         </div>
