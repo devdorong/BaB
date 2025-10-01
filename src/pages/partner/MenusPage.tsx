@@ -38,21 +38,23 @@ function MenusPage() {
         subtitle="레스토랑 메뉴를 추가, 수정, 삭제할 수 있습니다."
         button={<ButtonFillLG onClick={() => setWriteOpen(true)}>새 메뉴 추가</ButtonFillLG>}
       />
-      <div className="flex flex-col gap-[25px]">
-        <div>
-          <MenuCategory categories={CATEGORY_TABS} value={selected} onChange={setSelected} />
-        </div>
-        <div>
-          <MenusList filtered={filtered} onToggle={handleMenuToggle} />
-        </div>
+      <div id="root" className="flex flex-col min-h-screen">
+        <div className="flex flex-col gap-[25px]">
+          <div>
+            <MenuCategory categories={CATEGORY_TABS} value={selected} onChange={setSelected} />
+          </div>
+          <div>
+            <MenusList filtered={filtered} onToggle={handleMenuToggle} />
+          </div>
 
-        <AddMenuModal
-          open={writeOpen}
-          onClose={() => setWriteOpen(false)}
-          onSubmit={data => {
-            console.log('새 메뉴 추가 제출', data);
-          }}
-        />
+          <AddMenuModal
+            open={writeOpen}
+            onClose={() => setWriteOpen(false)}
+            onSubmit={data => {
+              console.log('새 메뉴 추가 제출', data);
+            }}
+          />
+        </div>
       </div>
     </>
   );

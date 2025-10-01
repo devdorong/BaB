@@ -12,38 +12,39 @@ type TagType = Database['public']['Tables']['posts']['Insert']['tag'];
 type TagFilterType = Exclude<TagType, '맛집추천요청'>;
 
 function CommunityWritePage() {
-  const { user } = useAuth();
   const navigate = useNavigate();
   const [title, setTitle] = useState('');
   const [content, setContent] = useState('');
   const [tag, setTag] = useState<TagFilterType>('자유');
   const [activeCategory, setActiveCategory] = useState<CategoriesType>('자유게시판');
 
-  const newPost: PostsInsert = {
-    post_category: activeCategory,
-    profile_id: user!.id,
-    tag: tag,
-    title: title,
-    content: content,
-  };
-
   const handleSubmit = async () => {
     try {
-      const { data: user, error: userError } = await supabase.auth.getUser();
-      if (userError || !user) {
+      const { data: userData, error: userError } = await supabase.auth.getUser();
+      if (userError || !userData) {
         // 로그인이 필요합니다 모달 띄우기
         alert('로그인이 필요합니다.');
         return;
       }
+
+      const newPost: PostsInsert = {
+        post_category: activeCategory,
+        profile_id: userData.user.id,
+        tag: tag,
+        title: title,
+        content: content,
+      };
 
       const { data, error } = await supabase.from('posts').insert([newPost]).select('*');
 
       if (error) {
         // 모달 띄우기
         alert('등록에 실패했습니다');
+        navigate(-1);
       } else {
         // 모달 띄우기
         alert('등록되었습니다!');
+        navigate('/member/community/detail');
       }
     } catch (error) {
       // 모달 띄우기

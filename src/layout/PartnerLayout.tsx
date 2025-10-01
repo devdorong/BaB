@@ -5,7 +5,7 @@ function PartnerLayout() {
   return (
     <div className="relative">
       <PartnerHeader />
-      <main className="ml-[256px] px-[32px] bg-bg-bg py-[141px]">
+      <main className="ml-[256px] px-[32px] bg-bg-bg py-[141px] min-h-screen">
         <Outlet />
       </main>
     </div>

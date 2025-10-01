@@ -1,6 +1,6 @@
 import { useState } from 'react';
 import { RiCheckboxCircleLine, RiLock2Line, RiUserLine } from 'react-icons/ri';
-import { useNavigate } from 'react-router-dom';
+import { Link, useNavigate } from 'react-router-dom';
 import KakaoLoginButton from '../components/KakaoLoginButton';
 import { useAuth } from '../contexts/AuthContext';
 import { LogoLg } from '../ui/Ui';
@@ -47,7 +47,9 @@ function MemberLoginPage() {
   return (
     <div className="flex flex-col items-center bg-bg-bg h-screen justify-center">
       <div className="pb-[52px]">
-        <LogoLg />
+        <Link to={'/member'} className="cursor-pointer">
+          <LogoLg />
+        </Link>
       </div>
       <div className="flex flex-col">
         <form onSubmit={handleSubmit}>
