@@ -1,18 +1,81 @@
 import { RiEditLine, RiImageLine, RiLock2Line } from 'react-icons/ri';
 import { ButtonFillMd, GrayButtonFillSm } from '../../ui/button';
 import { UserFill } from '../../ui/Icon';
-import { useState } from 'react';
+import { useEffect, useState } from 'react';
 import PartnerBoardHeader from '../../components/PartnerBoardHeader';
+import { useAuth } from '../../contexts/AuthContext';
+import type { Profile } from '../../types/bobType';
+import { getProfile } from '../../lib/propile';
 
 function SettingsPage() {
   const [settings, setSettings] = useState({
     sms: false,
     newLogin: false,
   });
+  const [userId, setUserId] = useState('');
 
   const handleToggle = (key: keyof typeof settings) => {
     setSettings(prev => ({ ...prev, [key]: !prev[key] }));
   };
+
+  function getEmailLocalPart(email: string): string {
+    if (!email) return '';
+    const atIndex = email.indexOf('@');
+    if (atIndex === -1) return ''; // @ 없는 경우
+    return email.substring(0, atIndex);
+  }
+
+  //=================== 프로필 불러오기
+
+  const { user, signOut } = useAuth();
+  // 로딩
+  const [loading, setLoading] = useState<boolean>(true);
+  // 사용자 프로필
+  const [profileData, setProfileData] = useState<Profile | null>(null);
+  // 에러메세지
+  const [error, setError] = useState<string>('');
+  // 사용자 닉네임
+  const [nickName, setNickName] = useState<string>('');
+  const loadProfile = async () => {
+    if (!user?.id) {
+      setError('사용자정보 없음');
+      setLoading(false);
+      return;
+    }
+    try {
+      // 사용자 정보 가져오기
+      const tempData = await getProfile(user?.id);
+      if (!tempData) {
+        // null의 경우
+        setError('사용자 프로필 정보 찾을 수 없음');
+        return;
+      }
+      // 사용자 정보 유효함
+      setNickName(tempData.nickname || '');
+      setProfileData(tempData);
+    } catch (error) {
+      setError('프로필 호출 오류');
+    } finally {
+      setLoading(false);
+    }
+  };
+  useEffect(() => {
+    if (user?.email) {
+      const localPart = getEmailLocalPart(user.email);
+      setUserId(localPart); // 기본 닉네임 세팅
+    }
+  }, [user?.email]);
+
+  // id로 닉네임을 받아옴
+  useEffect(() => {
+    loadProfile();
+  }, [user?.id]);
+
+  // ===========
+
+  useEffect(() => {
+    console.log(user?.app_metadata.provider);
+  }, []);
 
   return (
     <>
@@ -23,11 +86,11 @@ function SettingsPage() {
             {/* 파트너 프로필 이미지 사진 */}
             <div className="flex flex-col gap-2.5 justify-between items-center">
               <UserFill size={20} bgColor="#FF5722" padding={30} />
-              <div className="flex flex-col items-center">
+              <div className="flex flex-col  items-center">
                 {/* 파트너 닉네임 */}
-                <div className="text-black font-bold">도롱</div>
+                <div className="text-black font-bold">{profileData?.nickname}</div>
                 {/* 파트너 아이디 */}
-                <div>ehfhd123</div>
+                {/* <div>{userId}</div> */}
               </div>
             </div>
             {/* 클릭시 사진등록 후 바로 변경 */}
@@ -42,28 +105,28 @@ function SettingsPage() {
             <div className="w-full flex justify-between items-center">
               <div className="flex flex-col w-[50%] gap-4">
                 <div className="flex flex-col items-start gap-1">
-                  <div className='font-semibold'>이름</div>
+                  <div className="font-semibold">이름</div>
                   {/* 파트너 이름 */}
-                  <div className="">도현</div>
+                  <div className="">{profileData?.name}</div>
                 </div>
 
                 <div className="flex flex-col items-start gap-1">
-                  <div className='font-semibold'>전화번호</div>
+                  <div className="font-semibold">전화번호</div>
                   {/* 파트너 전화번호 */}
-                  <div className="">010-1234-5678</div>
+                  <div className="">{profileData?.phone}</div>
                 </div>
               </div>
 
               <div className="flex flex-col w-[50%] gap-4">
                 <div className="flex flex-col items-start gap-1">
-                  <div className='font-semibold'>이메일</div>
+                  <div className="font-semibold">이메일</div>
                   {/* 파트너 이메일 */}
-                  <div className="">ehfhd123@naver.com</div>
+                  <div className="">{user?.email}</div>
                 </div>
 
                 <div className="flex flex-col gap-4">
                   <div className="flex flex-col items-start gap-1">
-                    <div className='font-semibold'>사업장등록번호</div>
+                    <div className="font-semibold">사업장등록번호</div>
                     <div className="">123-45-67890</div>
                   </div>
                 </div>
@@ -118,13 +181,21 @@ function SettingsPage() {
               <div className="flex flex-col justify-start gap-2">
                 <div className="font-semibold">카카오 이메일</div>
                 {/* 파트너 카카오 이메일 */}
-                <div className="">ehfhd123@kakao.com</div>
+                <div className="">
+                  {user?.app_metadata?.provider === 'kakao'
+                    ? user.email
+                    : '등록된 카카오 이메일이 없습니다.'}
+                </div>
               </div>
 
               <div className="flex flex-col justify-start gap-2">
                 <div className="font-semibold">구글 이메일</div>
                 {/* 파트너 구글 이메일 */}
-                <div className="">등록된 구글 이메일이 없습니다.</div>
+                <div className="">
+                  {user?.app_metadata?.provider === 'google'
+                    ? user.email
+                    : '등록된 구글 이메일이 없습니다.'}
+                </div>
               </div>
             </div>
           </div>

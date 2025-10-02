@@ -7,6 +7,9 @@ import { GoogleIconSvg, KakaoIconSvg } from '../ui/jy/IconSvg';
 import type { Profile } from '../types/bobType';
 import { getProfile } from '../lib/propile';
 import { supabase } from '../lib/supabase';
+import GoogleLoginButton from '../components/GoogleLoginButton';
+import GoogleLoginSmallButton from '../components/GoogleLoginSmallButton';
+import KakaoLoginSmallButton from '../components/KakaoLoginSmallButton';
 
 function PartnerLoginPage() {
   const navigate = useNavigate();
@@ -121,12 +124,12 @@ function PartnerLoginPage() {
         </div>
         {/* 소셜 로그인 아이콘 */}
         <div className="flex gap-[24px] justify-center">
-          <div className="flex w-[40px] h-[40px] justify-center items-center pw-[8px] py-[8px] bg-white rounded-[20px]">
-            <GoogleIconSvg />
-          </div>
-          <div className="flex w-[40px] h-[40px] justify-center items-center pw-[8px] py-[8px] bg-[#FBE300] rounded-[20px]">
-            <KakaoIconSvg />
-          </div>
+          <GoogleLoginSmallButton
+            onError={error => setMsg(`구글 로그인 오류 : ${error}`)}
+            onSuccess={message => setMsg(message)}
+          />
+
+          <KakaoLoginSmallButton onError={error => setMsg(`카카오 로그인 오류 : ${error}`)} />
         </div>
       </div>
     </div>

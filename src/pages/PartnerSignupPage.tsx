@@ -2,11 +2,13 @@ import { useState } from 'react';
 import { InputField, InputFieldWithButton, TextAreaCustom } from '../components/InputField';
 import { useDaumPostcodePopup } from 'react-daum-postcode';
 import { RiArrowDownSLine, RiCheckLine } from 'react-icons/ri';
+import { useNavigate } from 'react-router-dom';
 
 const categorys = ['한식', '양식', '일식', '중식', '아시안', '인도', '멕시칸'];
 
 function PartnerSignupPage() {
-  const [id, setId] = useState('');
+  const navigate = useNavigate();
+  const [nickname, setNickname] = useState('');
   const [pw, setPw] = useState('');
   const [email, setEmail] = useState('');
   const [businessNumber, setBusinessNumber] = useState('');
@@ -141,6 +143,11 @@ function PartnerSignupPage() {
     setAgreements(prev => ({ ...prev, [key]: !prev[key] }));
   };
 
+  const handleButtonClick = () => {
+    alert('신청이 완료되었습니다. 관리자 확인후 승인됩니다.(2~3일 소요)');
+    navigate('/partner/login');
+  };
+
   return (
     <div className="w-full py-24 bg-gray-50 flex flex-col items-center">
       <div className="bg-white rounded-2xl shadow-sm w-[1185px] px-12 py-10 flex flex-col gap-14">
@@ -159,13 +166,13 @@ function PartnerSignupPage() {
               <hr className="border-babgray-150" />
 
               <div className="flex gap-7">
-                {/* 아이디 */}
+                {/* 닉네임 */}
                 <InputField
-                  label="아이디"
+                  label="닉네임"
                   type="text"
-                  value={id}
-                  onChange={e => setId(e.target.value)}
-                  placeholder="아이디을 입력해주세요"
+                  value={nickname}
+                  onChange={e => setNickname(e.target.value)}
+                  placeholder="닉네임을 입력해주세요"
                   required
                 />
 
@@ -188,7 +195,7 @@ function PartnerSignupPage() {
                 onChange={e => setEmail(e.target.value)}
                 placeholder="이메일을 입력해주세요"
                 required
-                children="인증번호 전송"
+                children="중복 확인"
               />
 
               {/* 사업자등록번호 + 업체명 */}
@@ -479,10 +486,19 @@ function PartnerSignupPage() {
           </div>
           {/* 버튼 */}
           <div className="flex gap-4">
-            <button className="flex-1 h-14 border border-babgray-300 rounded-lg font-bold text-babgray-600">
+            <button
+              type="button"
+              className="flex-1 h-14 border border-babgray-300 rounded-lg font-bold text-babgray-600"
+            >
               임시저장
             </button>
-            <button className="flex-1 h-14 bg-bab text-white rounded-lg font-bold">신청하기</button>
+            <button
+              type="button"
+              onClick={handleButtonClick}
+              className="flex-1 h-14 bg-bab text-white rounded-lg font-bold"
+            >
+              신청하기
+            </button>
           </div>
         </form>
       </div>

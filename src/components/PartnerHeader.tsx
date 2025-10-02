@@ -29,6 +29,7 @@ const PartnerHeader = () => {
   const [error, setError] = useState<string>('');
   // 사용자 닉네임
   const [nickName, setNickName] = useState<string>('');
+  
 
   useEffect(() => {
     const handleClickOutside = (e: MouseEvent) => {

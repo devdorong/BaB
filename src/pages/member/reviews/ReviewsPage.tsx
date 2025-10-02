@@ -76,7 +76,7 @@ function ReviewsPage() {
             ))}
           </div>
           <div className="flex justify-start gap-[8px]">
-            <BlackTag>최신순</BlackTag>
+            <BlackTag>거리순</BlackTag>
             <GrayTag>별점순</GrayTag>
             <GrayTag>리뷰순</GrayTag>
           </div>

@@ -20,7 +20,8 @@ function SalesPage() {
         subtitle="매출 현황과 정산 내역을 확인하세요."
         button={
           <>
-            <ButtonFillLG>버튼</ButtonFillLG>
+
+            <ButtonFillLG>정산하기</ButtonFillLG>
           </>
         }
       />

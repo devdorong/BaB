@@ -27,6 +27,7 @@ function EditPage() {
   const [curPw, setCurPw] = useState('');
   const [newPw, setNewPw] = useState('');
   const [newPw2, setNewPw2] = useState('');
+  const [isUpdating, setIsUpdating] = useState(false);
 
   // 사용자 프로필 정보
   const loadProfile = async () => {
@@ -61,8 +62,9 @@ function EditPage() {
 
   // 저장(수정하기)
   const handleSaveProfile = async () => {
-    if (!user?.id) return;
+    if (!user?.id || isUpdating) return;
 
+    setIsUpdating(true);
     try {
       const success = await updateProfile(
         {
@@ -73,11 +75,14 @@ function EditPage() {
       );
       if (!success) {
         console.log('프로필 업데이트 실패');
+        return;
       }
       console.log('프로필 업데이트 성공');
       navigate('/member/profile');
     } catch (err) {
       console.log(err);
+    } finally {
+      setIsUpdating(false);
     }
   };
 
@@ -129,7 +134,7 @@ function EditPage() {
             {/* 오른쪽 프로필카드 */}
             <div className="flex flex-col w-full gap-[25px]">
               {/* 기본 정보 */}
-              <section className="inline-flex w-full px-[35px] py-[25px] flex-col justify-center bg-white rounded-[16px] shadow-[0_4px_4px_rgba(0,0,0,0.02)]">
+              <div className="inline-flex w-full px-[35px] py-[25px] flex-col justify-center bg-white rounded-[16px] shadow-[0_4px_4px_rgba(0,0,0,0.02)]">
                 <div className="flex justify-between items-center">
                   <h2 className="text-babgray-900 text-[18px] font-bold">기본 정보</h2>
                 </div>
@@ -170,10 +175,10 @@ function EditPage() {
                     </div>
                   </label>
                 </div>
-              </section>
+              </div>
 
               {/* 계정 정보 */}
-              <section className="w-full px-[35px] py-[25px] pb-[40px] bg-white rounded-[16px] shadow-[0_4px_4px_rgba(0,0,0,0.02)]">
+              <div className="w-full px-[35px] py-[25px] pb-[40px] bg-white rounded-[16px] shadow-[0_4px_4px_rgba(0,0,0,0.02)]">
                 <h2 className="text-babgray-900 text-[18px] font-bold pb-[20px]">계정 정보</h2>
 
                 <div className="mt-6 grid grid-cols-1 gap-[20px] items-center">
@@ -239,11 +244,12 @@ function EditPage() {
                     </div>
                   </div>
                 </div>
-              </section>
+              </div>
 
               {/* 하단 저장 버튼 */}
-              <div className="bottom-0 pt-2">
+              <div className="pt-2">
                 <button
+                  type="button"
                   className="w-full h-[46px] rounded-full bg-bab-500 text-white font-semibold shadow-[0_4px_4px_rgba(0,0,0,0.02)]"
                   onClick={handleSaveProfile}
                 >

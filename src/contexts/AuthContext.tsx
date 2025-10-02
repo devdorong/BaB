@@ -31,6 +31,8 @@ type AuthContextType = {
   unlinkKakaoAccount: () => Promise<{ error?: string; success?: boolean; message?: string }>;
   // 이메일 중복 확인 함수
   checkEmailExists: (email: string) => Promise<{ exists: boolean; error?: string }>;
+  // 구글 로그인 함수
+  signInWithGoogle: () => Promise<{ error?: string }>;
 
   // 회원 로그아웃 함수
   signOut: () => Promise<void>;
@@ -284,6 +286,23 @@ export const AuthProvider = ({ children }: AuthProviderProps) => {
     }
   };
 
+  // 구글 로그인 함수
+  const signInWithGoogle: AuthContextType['signInWithGoogle'] = async () => {
+    const { data, error } = await supabase.auth.signInWithOAuth({
+      provider: 'google',
+      options: {
+        // 로그인 실행후 이동옵션
+        redirectTo: `${window.location.origin}`,
+      },
+    });
+    // 오류발생시 체크 해보자.
+    if (error) {
+      return { error: error.message };
+    }
+    console.log('구글 로그인 성공 : ', data);
+    return {};
+  };
+
   // 로그아웃
   const signOut: AuthContextType['signOut'] = async () => {
     await supabase.auth.signOut();
@@ -300,6 +319,7 @@ export const AuthProvider = ({ children }: AuthProviderProps) => {
     loading,
     checkEmailExists,
     signInWithKakao,
+    signInWithGoogle,
     unlinkKakaoAccount,
   };
   return (
