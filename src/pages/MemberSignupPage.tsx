@@ -165,7 +165,7 @@ function MemberSignupPage() {
                 onChange={e => setEmail(e.target.value)}
                 placeholder="이메일을 입력해주세요"
                 required
-                children="인증번호 전송"
+                children="중복 체크"
               />
 
               {/* 비밀번호 */}
