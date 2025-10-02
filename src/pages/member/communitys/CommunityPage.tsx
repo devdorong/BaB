@@ -49,7 +49,7 @@ function CommunityPage() {
   const [pageCount, setPageCount] = useState(0);
   const [itemOffset, setItemOffset] = useState(0);
   const [currentPage, setCurrentPage] = useState(0);
-  const itemsPerPage = 1;
+  const itemsPerPage = 4;
   const blockSize = 10;
   const currentBlock = Math.floor(currentPage / blockSize);
   const startPage = currentBlock * blockSize;
