@@ -122,10 +122,104 @@ function DashboardPage() {
               <p className="font-bold">42,000원</p>
               {/* 주문내역 탭의 상태 */}
               <div>
-                <TagBadge>조리 중</TagBadge>
+                <TagBadge bgColor="bg-babbutton-blue_back" textColor="text-babbutton-blue">
+                  조리중
+                </TagBadge>
               </div>
               {/* 주문한 시간 */}
               <p>오후 2:30</p>
+            </div>
+            <div className="grid grid-cols-6 py-4 items-center">
+              {/* 주문번호 */}
+              <p>#ORD-002</p>
+              {/* 주문한 고객의 이름,프로필사진 */}
+              <div className="flex items-center gap-2 ">
+                <div className="flex items-center justify-center w-6 h-6 bg-babgray rounded-full">
+                  <UserLine bgColor="#e5e7eb" color="#42424" size={15} />
+                </div>
+                <p>이민호</p>
+              </div>
+              {/* 고객이 주문한 메뉴 */}
+              <p>비프버거, 감자튀김, 콜라</p>
+              {/* 고객이 주문한 메뉴 가격의 합 */}
+              <p className="font-bold ">23,000원</p>
+              {/* 주문내역 탭의 상태 */}
+              <div>
+                <TagBadge bgColor="bg-babbutton-brown_back" textColor="text-babbutton-brown">
+                  완료
+                </TagBadge>
+              </div>
+              {/* 주문한 시간 */}
+              <p>오후 2:25</p>
+            </div>
+            <div className="grid grid-cols-6 py-4 items-center">
+              {/* 주문번호 */}
+              <p>#ORD-003</p>
+              {/* 주문한 고객의 이름,프로필사진 */}
+              <div className="flex items-center gap-2 ">
+                <div className="flex items-center justify-center w-6 h-6 bg-babgray rounded-full">
+                  <UserLine bgColor="#e5e7eb" color="#42424" size={15} />
+                </div>
+                <p>박지은</p>
+              </div>
+              {/* 고객이 주문한 메뉴 */}
+              <p>마르게리타 피자</p>
+              {/* 고객이 주문한 메뉴 가격의 합 */}
+              <p className="font-bold ">26,000원</p>
+              {/* 주문내역 탭의 상태 */}
+              <div>
+                <TagBadge bgColor="bg-babbutton-purple_back" textColor="text-babbutton-purple">
+                  주문 접수
+                </TagBadge>
+              </div>
+              {/* 주문한 시간 */}
+              <p>오후 2:20</p>
+            </div>
+            <div className="grid grid-cols-6 py-4 items-center">
+              {/* 주문번호 */}
+              <p>#ORD-004</p>
+              {/* 주문한 고객의 이름,프로필사진 */}
+              <div className="flex items-center gap-2">
+                <div className="flex items-center justify-center w-6 h-6 bg-babgray rounded-full">
+                  <UserLine bgColor="#e5e7eb" color="#42424" size={15} />
+                </div>
+                <p>최동원</p>
+              </div>
+              {/* 고객이 주문한 메뉴 */}
+              <p>치킨 알프레도, 갈릭브레드</p>
+              {/* 고객이 주문한 메뉴 가격의 합 */}
+              <p className="font-bold ">35,000원</p>
+              {/* 주문내역 탭의 상태 */}
+              <div>
+                <TagBadge bgColor="bg-babbutton-green_back" textColor="text-babbutton-green">
+                  배송 완료
+                </TagBadge>
+              </div>
+              {/* 주문한 시간 */}
+              <p>오후 11:25</p>
+            </div>
+            <div className="grid grid-cols-6 py-4 items-center">
+              {/* 주문번호 */}
+              <p>#ORD-005</p>
+              {/* 주문한 고객의 이름,프로필사진 */}
+              <div className="flex items-center gap-2 ">
+                <div className="flex items-center justify-center w-6 h-6 bg-babgray rounded-full">
+                  <UserLine bgColor="#e5e7eb" color="#42424" size={15} />
+                </div>
+                <p>정수미</p>
+              </div>
+              {/* 고객이 주문한 메뉴 */}
+              <p>그릭샐러드, 레모네이드</p>
+              {/* 고객이 주문한 메뉴 가격의 합 */}
+              <p className="font-bold ">19,000원</p>
+              {/* 주문내역 탭의 상태 */}
+              <div>
+                <TagBadge bgColor="bg-babbutton-blue_back" textColor="text-babbutton-blue">
+                  조리 중
+                </TagBadge>
+              </div>
+              {/* 주문한 시간 */}
+              <p>오전 9:08</p>
             </div>
           </div>
         </div>
@@ -137,7 +231,9 @@ function DashboardPage() {
               <p className="text-babgray-600">최근 7일간의 매출 성과</p>
             </div>
             {/* 차트활용 한 주 동안의 매출 그래프 */}
-            <div className="flex justify-center items-center">차트</div>
+            <div className="flex justify-center items-center">
+              <img src="public/chart1.png" alt="통계그래프" />
+            </div>
             <div className="flex items-center text-babgray-500">
               <p>총계 :</p>
               {/* 한 주 동안의 매출 내역 합계 */}
@@ -150,7 +246,10 @@ function DashboardPage() {
               <p className="text-babgray-600">이번주 가장 많이 주문된 요리</p>
             </div>
             {/* 한 주 동안의 주문내역의 메뉴이름 내림차순 정렬 */}
-            <div className="flex-1 flex items-center justify-center">차트</div>
+            <div className="flex-1 flex items-center justify-center">
+              {' '}
+              <img src="public/chart2.png" alt="통계그래프" />
+            </div>
             <div className="flex items-center text-babgray-500">
               <p>총 주문 :</p>
               {/* 한 주 동안의 총 주문횟수 */}
