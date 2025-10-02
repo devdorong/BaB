@@ -20,6 +20,7 @@ function SalesPage() {
         subtitle="매출 현황과 정산 내역을 확인하세요."
         button={
           <>
+
             <ButtonFillLG>정산하기</ButtonFillLG>
           </>
         }
@@ -125,8 +126,92 @@ function SalesPage() {
             <div className="text-sm">15:30</div>
             {/* 결제 상태 */}
             <div>
-              <TagBadge bgColor="bg-babbutton-blue_back" textColor="text-babbutton-blue">
+              <TagBadge bgColor="bg-babbutton-brown_back" textColor="text-babbutton-brown">
+                대기
+              </TagBadge>
+            </div>
+          </div>
+          <div className="grid grid-cols-6 items-center border-b border-b-babgray py-4 text-babgray-800">
+            {/* 거래 ID */}
+            <div>TXN-002</div>
+            {/* 주문 번호  */}
+            <div className="text-bab">ORD-046</div>
+            {/* 주문 상품 금액 합계 */}
+            <div className="font-bold">41,000 원</div>
+            {/* 결제 수단 */}
+            <div className="flex items-center gap-2">
+              <RiBankCardLine className="w-4 h-4" />
+              <p>카드</p>
+            </div>
+            {/* 결제된 시간 */}
+            <div className="text-sm">10:30</div>
+            {/* 결제 상태 */}
+            <div>
+              <TagBadge bgColor="bg-babbutton-green_back" textColor="text-babbutton-green">
                 완료
+              </TagBadge>
+            </div>
+          </div>
+          <div className="grid grid-cols-6 items-center border-b border-b-babgray py-4 text-babgray-800">
+            {/* 거래 ID */}
+            <div>TXN-003</div>
+            {/* 주문 번호  */}
+            <div className="text-bab">ORD-047</div>
+            {/* 주문 상품 금액 합계 */}
+            <div className="font-bold">21,000 원</div>
+            {/* 결제 수단 */}
+            <div className="flex items-center gap-2">
+              <RiBankCardLine className="w-4 h-4" />
+              <p>카드</p>
+            </div>
+            {/* 결제된 시간 */}
+            <div className="text-sm">11:11</div>
+            {/* 결제 상태 */}
+            <div>
+              <TagBadge bgColor="bg-babbutton-brown_back" textColor="text-babbutton-brown">
+                대기
+              </TagBadge>
+            </div>
+          </div>
+          <div className="grid grid-cols-6 items-center border-b border-b-babgray py-4 text-babgray-800">
+            {/* 거래 ID */}
+            <div>TXN-004</div>
+            {/* 주문 번호  */}
+            <div className="text-bab">ORD-048</div>
+            {/* 주문 상품 금액 합계 */}
+            <div className="font-bold">18,000 원</div>
+            {/* 결제 수단 */}
+            <div className="flex items-center gap-2">
+              <RiBankCardLine className="w-4 h-4" />
+              <p>카드</p>
+            </div>
+            {/* 결제된 시간 */}
+            <div className="text-sm">17:00</div>
+            {/* 결제 상태 */}
+            <div>
+              <TagBadge bgColor="bg-babbutton-brown_back" textColor="text-babbutton-brown">
+                대기
+              </TagBadge>
+            </div>
+          </div>
+          <div className="grid grid-cols-6 items-center border-b border-b-babgray py-4 text-babgray-800">
+            {/* 거래 ID */}
+            <div>TXN-005</div>
+            {/* 주문 번호  */}
+            <div className="text-bab">ORD-049</div>
+            {/* 주문 상품 금액 합계 */}
+            <div className="font-bold">82,000 원</div>
+            {/* 결제 수단 */}
+            <div className="flex items-center gap-2">
+              <RiBankCardLine className="w-4 h-4" />
+              <p>카드</p>
+            </div>
+            {/* 결제된 시간 */}
+            <div className="text-sm">22:01</div>
+            {/* 결제 상태 */}
+            <div>
+              <TagBadge bgColor="bg-babbutton-brown_back" textColor="text-babbutton-brown">
+                대기
               </TagBadge>
             </div>
           </div>
