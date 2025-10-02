@@ -153,6 +153,10 @@ const SupportModal = ({ setOpenModal }: SupportModalProps) => {
               submitButtonText="문의하기"
               closeButtonText="닫기"
               submitButtonBgColor="#ff5722"
+              onSubmit={() => {
+                setIsOpen(false);
+                setOpenModal(false);
+              }}
             />
           </div>
         </div>

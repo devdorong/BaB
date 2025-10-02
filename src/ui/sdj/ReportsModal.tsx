@@ -56,7 +56,7 @@ const ReportsModal = ({ setReports }: ReportsModalProps) => {
             <ButtonFillMd
               style={{ backgroundColor: '#e5e7eb', color: '#5C5C5C' }}
               className="flex-1 hover:!bg-gray-300"
-              onClick={()=>setReports(false)}
+              onClick={() => setReports(false)}
             >
               취소
             </ButtonFillMd>
@@ -76,6 +76,10 @@ const ReportsModal = ({ setReports }: ReportsModalProps) => {
               submitButtonText="신고하기"
               closeButtonText="닫기"
               submitButtonBgColor="#ef4444"
+              onSubmit={() => {
+                setIsOpen(false);
+                setReports(false);
+              }}
             />
           </div>
         </div>

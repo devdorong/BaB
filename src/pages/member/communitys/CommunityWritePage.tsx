@@ -124,7 +124,7 @@ function CommunityWritePage() {
           {/* 등록하기 클릭시 커뮤니티페이지 detail:id 로 이동 */}
           {/* 카테고리 선택안했거나 제목,내용 중 하나라도 false라면 모달창 띄움 */}
           <ButtonFillMd onClick={handleSubmit} className="w-[320px]">
-            매칭 등록하기
+            등록하기
           </ButtonFillMd>
         </div>
       </div>

@@ -56,7 +56,7 @@ const MemberHeader = () => {
   // id로 닉네임을 받아옴
   useEffect(() => {
     loadProfile();
-  }, [user?.id]);
+  }, [user?.id, location.pathname]);
 
   return (
     <header className="flex items-center w-full justify-between bg-white z-20 border border-babgray-150">

@@ -86,11 +86,11 @@ function SettingsPage() {
             {/* 파트너 프로필 이미지 사진 */}
             <div className="flex flex-col gap-2.5 justify-between items-center">
               <UserFill size={20} bgColor="#FF5722" padding={30} />
-              <div className="flex flex-col items-center">
+              <div className="flex flex-col  items-center">
                 {/* 파트너 닉네임 */}
                 <div className="text-black font-bold">{profileData?.nickname}</div>
                 {/* 파트너 아이디 */}
-                <div>{userId}</div>
+                {/* <div>{userId}</div> */}
               </div>
             </div>
             {/* 클릭시 사진등록 후 바로 변경 */}

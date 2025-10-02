@@ -18,7 +18,11 @@ function SalesPage() {
       <PartnerBoardHeader
         title="매출 & 정산"
         subtitle="매출 현황과 정산 내역을 확인하세요."
-        button={<><ButtonFillLG>버튼</ButtonFillLG></>}
+        button={
+          <>
+            <ButtonFillLG>정산하기</ButtonFillLG>
+          </>
+        }
       />
       <div className="w-full flex flex-col gap-10 text-babgray-500">
         <div className="px-6 py-6 bg-white rounded-lg shadow-[0px_4px_4px_rgba(0,0,0,0.02)] border flex justify-between items-center">
