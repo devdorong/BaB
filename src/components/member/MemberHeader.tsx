@@ -1,4 +1,4 @@
-import { Link, useNavigate } from 'react-router-dom';
+import { Link, NavLink, useNavigate } from 'react-router-dom';
 import { ButtonFillMd, ButtonFillSm, ButtonLineMd, GrayButtonFillSm } from '../../ui/button';
 import { LogoSm } from '../../ui/Ui';
 
@@ -25,6 +25,7 @@ const MemberHeader = () => {
   const [error, setError] = useState<string>('');
   // 사용자 닉네임
   const [nickName, setNickName] = useState<string>('');
+  
   const isAdmin = profileData?.role === 'admin';
   const isPartner = profileData?.role === 'partner';
 
@@ -66,22 +67,45 @@ const MemberHeader = () => {
         </Link>
         <div className="flex items-center gap-[40px] ">
           <div className="flex items-center gap-[40px] text-babgray-800">
-            <Link to={'/member/community'} className="flex items-center gap-[16px] hover:text-bab">
+            <NavLink
+              to="/member/community"
+              className={({ isActive }) =>
+                `flex items-center gap-[16px] ${isActive ? 'text-bab' : 'hover:text-bab'}`
+              }
+            >
               <Chat3Line color="none" bgColor="none" size={16} />
               <p>커뮤니티</p>
-            </Link>
-            <Link to={'/member/reviews'} className="flex items-center gap-[16px] hover:text-bab">
+            </NavLink>
+
+            <NavLink
+              to="/member/reviews"
+              className={({ isActive }) =>
+                `flex items-center gap-[16px] ${isActive ? 'text-bab' : 'hover:text-bab'}`
+              }
+            >
               <StarLine color="none" bgColor="none" size={16} />
               <p>맛집추천</p>
-            </Link>
-            <Link to={'/member/events'} className="flex items-center gap-[16px] hover:text-bab">
+            </NavLink>
+
+            <NavLink
+              to="/member/events"
+              className={({ isActive }) =>
+                `flex items-center gap-[16px] ${isActive ? 'text-bab' : 'hover:text-bab'}`
+              }
+            >
               <GiftLine color="none" bgColor="none" size={16} />
               <p>이벤트</p>
-            </Link>
-            <Link to={'/member/support'} className="flex items-center gap-[16px] hover:text-bab">
+            </NavLink>
+
+            <NavLink
+              to="/member/support"
+              className={({ isActive }) =>
+                `flex items-center gap-[16px] ${isActive ? 'text-bab' : 'hover:text-bab'}`
+              }
+            >
               <CustomerServiceLine color="none" bgColor="none" size={16} />
               <p>고객센터</p>
-            </Link>
+            </NavLink>
           </div>
           {user ? (
             <>

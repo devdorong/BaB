@@ -53,6 +53,11 @@ function CommunityWritePage() {
   };
 
   const categories: CategoriesType[] = ['자유게시판', 'Q&A', '팁과노하우'];
+  const categoryTagMap: Record<CategoriesType, TagFilterType> = {
+    자유게시판: '자유',
+    'Q&A': 'Q&A',
+    팁과노하우: 'TIP',
+  };
 
   return (
     <div className="flex flex-col gap-4 w-[750px] mx-auto py-8">
@@ -69,7 +74,10 @@ function CommunityWritePage() {
                 key={item}
                 className={`flex p-2 rounded-full cursor-pointer ${activeCategory === item ? 'text-white bg-bab' : 'bg-bg-bg text-babgray-700'} focus:bg-bab transition-colors`}
                 onClick={() => {
-                  setActiveCategory(item);
+                  {
+                    setActiveCategory(item);
+                    setTag(categoryTagMap[item]);
+                  }
                 }}
               >
                 {item}
