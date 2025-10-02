@@ -89,9 +89,9 @@ const AddMenuModal = ({ open, onClose, onSubmit }: AddMenuProps) => {
       <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/50">
         <div className="w-[520px] rounded-2xl bg-white shadow-2xl p-8 flex flex-col gap-6">
           {/* 헤더 */}
-          <div className="flex justify-between items-center border-b border-gray-200 pb-3">
+          <div className="flex justify-start items-center border-b border-gray-200 pb-3">
             <h2 className="text-xl font-bold text-gray-900">새 메뉴 등록</h2>
-            <button className="text-2xl text-gray-400 hover:text-gray-600">&times;</button>
+            {/* <button className="text-2xl text-gray-400 hover:text-gray-600">&times;</button> */}
           </div>
 
           {/* 사진 등록 */}

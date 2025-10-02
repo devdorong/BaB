@@ -1,5 +1,7 @@
 import { RiCheckLine, RiEye2Line, RiRestaurantLine } from 'react-icons/ri';
 import TagBadge from '../TagBadge';
+import { useState } from 'react';
+import OrderDetailModal from '../../components/partner/OrderDetailModal';
 
 type OrderStatus = '대기중' | '조리중' | '준비중' | '완료';
 
@@ -28,6 +30,7 @@ const getStatusColors = (status: '대기중' | '조리중' | '준비중' | '완�
 
 const OrderCard = ({ id, type, time, customerName, customerPhone, status }: Order) => {
   const { bgColor, textColor } = getStatusColors(status);
+  const [isModalOpen, setIsModalOpen] = useState(false);
   return (
     <div className="px-6 py-7 bg-white rounded-lg shadow-[0px_4px_4px_0px_rgba(0,0,0,0.02)] border border-babgray-150  inline-flex flex-col justify-start items-start gap-5 w-full">
       {/* 상단 */}
@@ -67,6 +70,13 @@ const OrderCard = ({ id, type, time, customerName, customerPhone, status }: Orde
           <RiEye2Line className="w-4 h-4" />
           <span>상세 보기</span>
         </button>
+        <OrderDetailModal
+          open={isModalOpen}
+          onClose={() => setIsModalOpen(false)}
+          onSubmit={data => {
+            console.log('새 메뉴 추가 제출', data);
+          }}
+        />
       </div>
     </div>
   );
