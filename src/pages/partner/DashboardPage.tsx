@@ -50,7 +50,7 @@ function DashboardPage() {
         title="대시보드"
         subtitle={`안녕하세요, ${profileData?.nickname}님! 오늘 레스토랑 현황을 확인해보세요.`}
       />
-      <div className="w-full  flex flex-col text-babgray-800 gap-10">
+      <div className="w-full flex flex-col text-babgray-800 gap-10">
         {/* 오늘의 매출, 대기 중인 주문, 새로운 리뷰 */}
         <div className="flex gap-6">
           <div className="flex-1 px-6 py-6 bg-white rounded-lg shadow-[0px_4px_4px_rgba(0,0,0,0.02)] border outline-babgray flex justify-between items-center">
