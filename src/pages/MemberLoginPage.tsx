@@ -1,6 +1,6 @@
 import { useState } from 'react';
 import { RiCheckboxCircleLine, RiLock2Line, RiUserLine } from 'react-icons/ri';
-import { useNavigate } from 'react-router-dom';
+import { Link, useNavigate } from 'react-router-dom';
 import KakaoLoginButton from '../components/KakaoLoginButton';
 import { useAuth } from '../contexts/AuthContext';
 import { LogoLg } from '../ui/Ui';
@@ -47,7 +47,9 @@ function MemberLoginPage() {
   return (
     <div className="flex flex-col items-center bg-bg-bg h-screen justify-center">
       <div className="pb-[52px]">
-        <LogoLg />
+        <Link to={'/member'} className="cursor-pointer">
+          <LogoLg />
+        </Link>
       </div>
       <div className="flex flex-col">
         <form onSubmit={handleSubmit}>
@@ -151,7 +153,10 @@ function MemberLoginPage() {
           {/* <div className="flex w-[40px] h-[40px] justify-center items-center pw-[8px] py-[8px] bg-white rounded-[20px]">
             <GoogleIconSvg />
           </div> */}
-          <GoogleLoginButton />
+          <GoogleLoginButton
+            onError={error => setMsg(`구글 로그인 오류 : ${error}`)}
+            onSuccess={message => setMsg(message)}
+          />
           {/* 카카오 로그인 버튼 : 오류 메시지는 사용자도 볼 수 있어야 함.*/}
           <KakaoLoginButton onError={error => setMsg(`카카오 로그인 오류 : ${error}`)} />
         </div>

@@ -29,6 +29,7 @@ const PartnerHeader = () => {
   const [error, setError] = useState<string>('');
   // 사용자 닉네임
   const [nickName, setNickName] = useState<string>('');
+  
 
   useEffect(() => {
     const handleClickOutside = (e: MouseEvent) => {
@@ -79,8 +80,8 @@ const PartnerHeader = () => {
   }, [user?.id]);
 
   return (
-    <div>
-      <div className="w-64 h-screen z-50 flex fixed flex-col justify-between border-r border-babgray bg-white text-babgray-700">
+    <div className="flex relative">
+      <div className="left-0 top-0 w-64 min-h-screen z-50 flex fixed flex-col justify-between border-r border-babgray bg-white text-babgray-700">
         <div className="flex flex-col">
           <div
             className="px-6 py-8 border-b border-babgray flex items-center gap-3 cursor-pointer"
