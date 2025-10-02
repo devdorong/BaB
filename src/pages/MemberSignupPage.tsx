@@ -97,7 +97,7 @@ function MemberSignupPage() {
       }
 
       // 2. 회원가입 성공 메시지만 표시
-      setMsg('회원가입에 성공했습니다. 이메일 인증 링크를 확인해주세요.');
+      setMsg('회원가입에 성공했습니다. 이메일 인증 링크를 눌러 회원가입을 완료해주세요.');
 
       // 3. 프로필 생성은 이메일 인증 완료 후 로그인 시 처리
       // (별도 컴포넌트나 useEffect에서 처리)
@@ -136,7 +136,7 @@ function MemberSignupPage() {
           </div>
         </div>
         <div>
-          <form onSubmit={handleSubmit}>
+          <form className="w-[426px]" onSubmit={handleSubmit}>
             <div className="flex flex-col gap-5">
               <InputField
                 label="이름"
@@ -376,7 +376,22 @@ function MemberSignupPage() {
               로그인하기
             </span>
           </div>
-          {msg && <p>{msg}</p>}
+          <div className="max-w-[426px]">
+            {msg && (
+              <p
+                style={{
+                  marginTop: '16px',
+                  padding: '12px',
+                  borderRadius: '8px',
+                  backgroundColor: msg.includes('성공') ? '#ecfdf5' : '#fef2f2',
+                  color: msg.includes('성공') ? '#059669' : '#dc2626',
+                  border: `1px solid ${msg.includes('성공') ? '#059669' : '#dc2626'}`,
+                }}
+              >
+                {msg}
+              </p>
+            )}
+          </div>
         </div>
       </div>
     </div>
