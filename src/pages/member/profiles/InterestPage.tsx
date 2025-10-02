@@ -79,7 +79,7 @@ function InterestPage() {
               <section className="inline-flex w-full px-[35px] py-[25px] flex-col justify-center bg-white rounded-[16px] shadow-[0_4px_4px_rgba(0,0,0,0.02)]">
                 <div className="flex flex-col gap-[30px]">
                   <div className="flex justify-between items-center">
-                    <h2 className="text-babgray-900 text-[18px] font-bold">선택된 관심사</h2>
+                    <h2 className="text-babgray-900 text-[18px] font-bold">추천 관심사</h2>
                   </div>
                   <div className="flex flex-col gap-[15px]">
                     <p className="text-[14px] text-babgray-900">음식 종류</p>
