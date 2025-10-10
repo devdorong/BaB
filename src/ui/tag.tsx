@@ -532,3 +532,23 @@ export const TagButton = styled.div<TagButtonProps>`
 
   transition: all 0.2s ease;
 `;
+
+interface TagBadgeProps {
+  bgColor?: string; // 배경색 클래스
+  textColor?: string; // 텍스트 색상 클래스
+  children: React.ReactNode; // 태그 안에 표시할 텍스트
+}
+
+export const InterestBadge = ({
+  bgColor = 'bg-gray-100',
+  textColor = 'text-gray-700',
+  children,
+}: TagBadgeProps) => {
+  return (
+    <span
+      className={`flex w-auto px-[20px] py-[10px] rounded-3xl text-[13px] cursor-pointer items-center justify-center  ${bgColor} ${textColor}`}
+    >
+      {children}
+    </span>
+  );
+};
