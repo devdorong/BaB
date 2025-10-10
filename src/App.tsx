@@ -56,6 +56,7 @@ import { GetOrCreatePoint } from './services/PointService';
 import type { ProfileInsert } from './types/bobType';
 import MatchingDetailEditPage from './pages/member/matchings/MatchingDetailEditPage';
 import ProtectedRoute from './components/ProtectedRoute';
+import CommunityEditPage from './pages/member/communitys/CommunityEditPage';
 function App() {
   // 인증 메일 확인후, 프로필 생성
   useEffect(() => {
@@ -131,7 +132,8 @@ function App() {
               <Route path="community">
                 <Route index element={<CommunityPage />} />
                 <Route path="write" element={<CommunityWritePage />} />
-                <Route path="detail" element={<CommunityDetailPage />} />
+                <Route path="detail/:id" element={<CommunityDetailPage />} />
+                <Route path="edit/:id" element={<CommunityEditPage />} />
               </Route>
               <Route path="reviews">
                 <Route index element={<ReviewsPage />} />
