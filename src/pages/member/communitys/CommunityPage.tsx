@@ -21,14 +21,6 @@ type CategoriesType = Database['public']['Tables']['posts']['Row']['post_categor
 type CategoryTagType = Database['public']['Tables']['posts']['Row']['tag'];
 
 type PostWithProfile = Posts & {
-  // id?: number;
-  // post_category: CategoriesType;
-  // profile_id: string;
-  // tag: CategoryTagType;
-  // title: string;
-  // content: string;
-  // created_at?: string | null;
-  // view_count?: number;
   profiles: { id: string; nickname: string } | null;
   comments: { id: number }[];
 };
@@ -211,9 +203,8 @@ function CommunityPage() {
               {currentItems.length > 0 ? (
                 currentItems.map(item => (
                   <div
-                    // 디테일 페이지 :id 이동 추가
-                    onClick={() => navigate(`/member/community/detail`)}
                     key={item.id}
+                    onClick={() => navigate(`/member/community/detail/${item.id}`)}
                     className="w-full h-auto flex flex-col gap-4 bg-white shadow-card rounded-xl2 py-6 px-8 cursor-pointer"
                   >
                     <div className="flex justify-between">

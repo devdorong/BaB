@@ -100,9 +100,9 @@ function ProfilePage() {
                     {profileData?.avatar_url && (
                       <img
                         src={
-                          profileData.avatar_url === 'guest_image'
-                            ? 'https://www.gravatar.com/avatar/?d=mp&s=200'
-                            : ''
+                          profileData.avatar_url !== 'guest_image'
+                            ? profileData.avatar_url
+                            : 'https://www.gravatar.com/avatar/?d=mp&s=200'
                         }
                         alt="프로필 이미지"
                         className="w-full h-full object-cover object-center"
@@ -301,6 +301,14 @@ function ProfilePage() {
                     className="flex text-babgray-900 justify-between items-center border border-babgray-150 rounded-[12px] bg-bg-bg p-[20px]"
                   >
                     내가 쓴 리뷰
+                    <RiArrowRightSLine />
+                  </Link>
+                  {/* 동재님 링크 수정할부분 */}
+                  <Link
+                    to={'/member/profile/myreviews'}
+                    className="flex text-babgray-900 justify-between items-center border border-babgray-150 rounded-[12px] bg-bg-bg p-[20px]"
+                  >
+                    내가 쓴 게시글
                     <RiArrowRightSLine />
                   </Link>
                   <Link
