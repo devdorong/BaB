@@ -1,3 +1,4 @@
+import { useEffect, useState } from 'react';
 import {
   RiAlarmWarningLine,
   RiChat3Line,
@@ -6,14 +7,99 @@ import {
   RiHeart3Line,
   RiShareForwardLine,
 } from 'react-icons/ri';
-import { BlueTag } from '../../../ui/tag';
-import { Navigate, useNavigate } from 'react-router-dom';
+import { ButtonFillMd } from '../../../ui/button';
 import ReportsModal from '../../../ui/sdj/ReportsModal';
-import { useState } from 'react';
-import { ButtonFillMd, ButtonFillSm } from '../../../ui/button';
+import { BlueTag } from '../../../ui/tag';
+import { useNavigate, useParams } from 'react-router-dom';
+import { supabase } from '../../../lib/supabase';
+import type { Posts } from '../../../types/bobType';
+import dayjs from 'dayjs';
+import TagBadge from '../../../ui/TagBadge';
+import { useAuth } from '../../../contexts/AuthContext';
+
+type PostDetail = Posts & {
+  profiles: { id: string; nickname: string } | null;
+};
 
 function CommunityDetailPage() {
+  const navigate = useNavigate();
   const [reports, setReports] = useState(false);
+  const { id } = useParams();
+  const { user } = useAuth();
+  const [post, setPost] = useState<PostDetail | null>(null);
+  const [loading, setLoading] = useState(true);
+
+  const handleViewCount = async (postId: number) => {
+    const {
+      data: { user },
+    } = await supabase.auth.getUser();
+    if (!user) return;
+
+    const today = new Date().toISOString().split('T')[0];
+    const key = `viewed_${postId}_${user.id}_${today}`;
+    if (localStorage.getItem(key)) return;
+    localStorage.setItem(key, 'true');
+
+    const { data, error: selectError } = await supabase
+      .from('posts')
+      .select('view_count')
+      .eq('id', postId)
+      .single();
+
+    if (selectError || !data) return;
+
+    const { error } = await supabase
+      .from('posts')
+      .update({ view_count: data.view_count + 1 })
+      .eq('id', postId);
+
+    if (!error) {
+      setPost(prev => (prev ? { ...prev, view_count: data.view_count + 1 } : prev));
+    }
+  };
+
+  useEffect(() => {
+    const loadPost = async () => {
+      if (!id) return;
+      const { data, error } = await supabase.from('posts').select('*').eq('id', id).single();
+
+      if (error) console.log(error);
+      else setPost(data);
+      setLoading(false);
+    };
+    loadPost();
+  }, [id]);
+
+  useEffect(() => {
+    if (post?.id) {
+      handleViewCount(post.id);
+      console.log(handleViewCount);
+    }
+  }, [post?.id]);
+
+  useEffect(() => {
+    const fetchPost = async () => {
+      const { data, error } = await supabase
+        .from('posts')
+        //   .select(
+        //     `id,post_category,profile_id,tag,title,content,created_at,view_count, profiles (
+        //   nickname
+        // )`,
+        //   )
+        .select(`*, profiles(nickname)`)
+        .eq('id', id)
+        .single();
+      if (!error && data) setPost(data as unknown as PostDetail);
+    };
+
+    fetchPost();
+  }, [id]);
+
+  // 로딩중 반응넣기(로딩 스피너)
+  if (loading) return <div>로딩 중 ...</div>;
+  if (!post) return <p>게시글을 찾을 수 없습니다.</p>;
+
+  const isAuthor = user?.id === post.profile_id;
 
   return (
     <div className="w-[746px] h-full flex flex-col gap-10 py-8 mx-auto">
@@ -21,43 +107,59 @@ function CommunityDetailPage() {
       {/* 게시글 영역 */}
       <div className="flex flex-col p-7 gap-6 bg-white rounded-2xl shadow-[0px_4px_4px_rgba(0,0,0,0.02)]">
         <div className="flex items-center justify-between">
-          {/* write page 에서 선택한 카테고리 적용 */}
-          <BlueTag>자유 게시판</BlueTag>
-          {/* dayjs사용 시간변화 적용 */}
-          <p className="font-medium text-[12px] text-babgray-500">2시간 전</p>
+          <div>
+            {post.post_category === '팁과노하우' && (
+              <TagBadge
+                bgColor="bg-babbutton-purple_back"
+                textColor="text-babbutton-purple"
+                children="TIP"
+              />
+            )}
+            {post.post_category === 'Q&A' && (
+              <TagBadge
+                bgColor="bg-babbutton-green_back"
+                textColor="text-babbutton-green"
+                children="Q&A"
+              />
+            )}
+            {post.post_category === '자유게시판' && (
+              <TagBadge
+                bgColor="bg-babbutton-blue_back"
+                textColor="text-babbutton-blue"
+                children="자유"
+              />
+            )}
+          </div>
+          {isAuthor && (
+            <ButtonFillMd onClick={() => navigate(`/member/community/edit/${post.id}`)}>
+              게시글 수정
+            </ButtonFillMd>
+          )}
         </div>
-        {/* write page title 받아오기 */}
-        <div>
-          <p className="font-bold text-2xl">강남역 근처 맛집 친구 구해요!</p>
+        <div className="flex flex-col gap-8">
+          <p className="font-bold text-2xl">{post.title}</p>
+          <div className="flex items-center justify-between text-babgray-700 text-sm">
+            <div className="flex items-center gap-4">
+              <p className="font-bold text-lg">{post.profiles?.nickname}</p>
+              <span className="flex items-center gap-1 text-babgray-600">
+                <RiEyeLine /> <p>{post.view_count}</p>
+              </span>
+              {/* 이 게시글 좋아요 수 */}
+              <span className="flex items-center gap-1 text-babgray-600">
+                <RiHeart3Line /> <p>23</p>
+              </span>
+              {/* 이 게시글에 달린 댓글 수 */}
+              <span className="flex items-center gap-1 text-babgray-600">
+                <RiChat3Line /> <p>3</p>
+              </span>
+            </div>
+            <p className="font-medium text-[12px] text-babgray-500">
+              {dayjs(post.created_at).fromNow()}
+            </p>
+          </div>
         </div>
-        <div className="flex items-center gap-4 text-babgray-700 text-sm">
-          {/* write page 작성자 닉네임 */}
-          <p className="font-bold text-lg">도로롱</p>
-          {/* 이 게시글 읽은 회원 수 */}
-          <span className="flex items-center gap-1 text-babgray-600">
-            <RiEyeLine /> <p>156</p>
-          </span>
-          {/* 이 게시글 좋아요 수 */}
-          <span className="flex items-center gap-1 text-babgray-600">
-            <RiHeart3Line /> <p>23</p>
-          </span>
-          {/* 이 게시글에 달린 댓글 수 */}
-          <span className="flex items-center gap-1 text-babgray-600">
-            <RiChat3Line /> <p>3</p>
-          </span>
-        </div>
-        {/* write page content 받아오기 */}
-        <div className="flex border-y border-color-grayscale-g-150 py-4 text-babgray-700 leading-relaxed">
-          <p>
-            이번 주말에 강남역 근처에서 맛있는 음식 먹으면서 친구들과 즐거운 시간 보내고 싶어요.
-            함께 하실 분 계신가요? 강남역 주변에는 정말 맛있는 곳들이 많잖아요. 특히 고기구이나
-            한식, 일식 등 다양한 음식들을 즐길 수 있는 곳들이 많아서 선택의 폭이 넓어요. 강남역
-            주변에는 정말 맛있는 곳들이 많잖아요. 특히 고기구이나 한식, 일식 등 다양한 음식들을 즐길
-            수 있는 곳들이 많아서 선택의 폭이 넓어요. 강남역 주변에는 정말 맛있는 곳들이 많잖아요.
-            특히 고기구이나 한식, 일식 등 다양한 음식들을 즐길 수 있는 곳들이 많아서 선택의 폭이
-            넓어요. 강남역 주변에는 정말 맛있는 곳들이 많잖아요. 특히 고기구이나 한식, 일식 등
-            다양한 음식들을 즐길 수 있는 곳들이 많아서 선택의 폭이 넓어요.
-          </p>
+        <div className="flex border-y py-4 text-babgray-700 leading-relaxed">
+          <p>{post.content}</p>
         </div>
         <div className="flex justify-center items-center gap-10 py-2">
           <div className="flex items-center gap-2 text-babgray-700 cursor-pointer">
