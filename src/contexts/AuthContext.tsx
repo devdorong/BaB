@@ -112,6 +112,7 @@ export const AuthProvider = ({ children }: AuthProviderProps) => {
       // // 출석체크
       // const pointResult = await givePoint();
 
+
       // PointContext에서 불러오므로 AuthContext에서는 제외
       // 오늘 출석 안 했을 때만 givePoint 호출
       // const alreadyChecked = sessionStorage.getItem(`dailyLogin:${user.id}`);
@@ -121,6 +122,7 @@ export const AuthProvider = ({ children }: AuthProviderProps) => {
       //   //   sessionStorage.setItem(`dailyLogin:${user.id}`, 'true');
       //   // }
       // }
+
     } catch (error) {
       console.error('handlePostLogin 오류:', error);
     } finally {

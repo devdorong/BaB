@@ -805,14 +805,14 @@ export type Database = {
           {
             foreignKeyName: "user_points_profile_id_fkey"
             columns: ["profile_id"]
-            isOneToOne: false
+            isOneToOne: true
             referencedRelation: "nickname_profiles"
             referencedColumns: ["id"]
           },
           {
             foreignKeyName: "user_points_profile_id_fkey"
             columns: ["profile_id"]
-            isOneToOne: false
+            isOneToOne: true
             referencedRelation: "profiles"
             referencedColumns: ["id"]
           },
@@ -978,6 +978,7 @@ export type Database = {
           phone: string
           profile_id: string
           send_avg_rating: number | null
+          status: Database["public"]["Enums"]["restaurant_status_enum"] | null
           storeintro: string | null
           thumbnail_url: string | null
         }
@@ -997,6 +998,7 @@ export type Database = {
           phone: string
           profile_id: string
           send_avg_rating?: number | null
+          status?: Database["public"]["Enums"]["restaurant_status_enum"] | null
           storeintro?: string | null
           thumbnail_url?: string | null
         }
@@ -1016,6 +1018,7 @@ export type Database = {
           phone?: string
           profile_id?: string
           send_avg_rating?: number | null
+          status?: Database["public"]["Enums"]["restaurant_status_enum"] | null
           storeintro?: string | null
           thumbnail_url?: string | null
         }
@@ -1294,7 +1297,10 @@ export type Database = {
       }
     }
     Functions: {
-      [_ in never]: never
+      check_email_exists: {
+        Args: { p_email: string }
+        Returns: boolean
+      }
     }
     Enums: {
       event_badge_enum: "HOT" | "신규"
@@ -1335,6 +1341,7 @@ export type Database = {
         | "게시글"
         | "매칭"
         | "채팅"
+      restaurant_status_enum: "draft" | "pending" | "approved" | "rejected"
       sales_status_enum: "정산 전" | "정산 대기" | "정산 완료"
       user_role: "member" | "partner" | "admin"
     }
@@ -1506,6 +1513,7 @@ export const Constants = {
         "매칭",
         "채팅",
       ],
+      restaurant_status_enum: ["draft", "pending", "approved", "rejected"],
       sales_status_enum: ["정산 전", "정산 대기", "정산 완료"],
       user_role: ["member", "partner", "admin"],
     },
