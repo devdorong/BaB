@@ -85,44 +85,40 @@ export const AuthProvider = ({ children }: AuthProviderProps) => {
       const profile = await getProfile(user.id);
 
       if (!profile) {
-        const isKakaoLogin = user.app_metadata.provider === 'kakao';
-        let nickName = user.user_metadata.nickName;
-        if (isKakaoLogin) {
-          nickName =
-            user.user_metadata.full_name ||
-            user.user_metadata.name ||
-            user.user_metadata.nickname ||
-            user.email?.split('@')[0] ||
+        const provider = user.app_metadata.provider;
+        const meta = user.user_metadata;
+
+        let nickname = '';
+        let name = '';
+        let phone = meta?.phone ?? '소셜로그인 사용자입니다';
+
+        if (provider === 'kakao') {
+          nickname =
+            meta.nickname ||
+            meta.name ||
+            meta.full_name ||
+            meta.email?.split('@')[0] ||
             '카카오 사용자';
+          name = meta.name || meta.nickname || '카카오 사용자';
+        } else if (provider === 'google') {
+          nickname = meta.full_name || meta.name || meta.email?.split('@')[0] || '구글 사용자';
+          name = meta.full_name || meta.name || '구글 사용자';
         } else {
-          nickName = user.user_metadata.nickName ?? '';
+          nickname = meta.nickName ?? meta.name ?? user.email?.split('@')[0] ?? '회원';
+          name = meta.name ?? '';
         }
 
         const newProfile: ProfileInsert = {
           id: user.id,
-          name: user.user_metadata?.name ?? '',
-          nickname: user.user_metadata.nickName ?? '',
-          phone: user.user_metadata?.phone ?? '',
-          gender: user.user_metadata?.gender ?? true,
-          birth: user.user_metadata?.birth ?? '2000-01-01',
+          name,
+          nickname,
+          phone,
+          gender: meta?.gender ?? true,
+          birth: meta?.birth ?? '2000-01-01',
         };
+
         await createProfile(newProfile);
       }
-
-      // // 출석체크
-      // const pointResult = await givePoint();
-
-
-      // PointContext에서 불러오므로 AuthContext에서는 제외
-      // 오늘 출석 안 했을 때만 givePoint 호출
-      // const alreadyChecked = sessionStorage.getItem(`dailyLogin:${user.id}`);
-      // if (!alreadyChecked) {
-      //   // const pointResult = await givePoint();
-      //   // if (pointResult) {
-      //   //   sessionStorage.setItem(`dailyLogin:${user.id}`, 'true');
-      //   // }
-      // }
-
     } catch (error) {
       console.error('handlePostLogin 오류:', error);
     } finally {

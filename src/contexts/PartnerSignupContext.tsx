@@ -1,5 +1,6 @@
 import { createContext, useContext, useState } from 'react';
 import { supabase } from '../lib/supabase';
+import type { Dayjs } from 'dayjs';
 import { useAuth } from './AuthContext';
 import type { Database } from '../types/bobType';
 import dayjs from 'dayjs';
@@ -16,10 +17,10 @@ interface PartnerFormData {
   restaurantName: string;
   address: string;
   category: string;
-  price: string;
+
   storeIntro: string;
-  openTime: string | null;
-  closeTime: string | null;
+  openTime: Dayjs | null;
+  closeTime: Dayjs | null;
   closedDays: string[];
   businessFile: File | null;
   menuFile: File | null;
@@ -56,7 +57,7 @@ export function PartnerSignupProvider({ children }: PartnerSignupProviderProps) 
     restaurantName: '',
     address: '',
     category: '',
-    price: '',
+
     storeIntro: '',
     openTime: null,
     closeTime: null,
@@ -177,7 +178,7 @@ export function PartnerSignupProvider({ children }: PartnerSignupProviderProps) 
       restaurantName: '',
       address: '',
       category: '',
-      price: '',
+
       storeIntro: '',
       openTime: null,
       closeTime: null,
