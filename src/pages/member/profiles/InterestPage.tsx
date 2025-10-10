@@ -17,9 +17,51 @@ import {
   Outdoor,
   RoofTop,
 } from '../../../ui/tag';
+import CategoryListBadge from '../../../components/member/CategoryListBadge';
+import { useEffect, useState } from 'react';
+import { fetchInterestsGrouped } from '../../../lib/interests';
+import CategoryBadge from '../../../ui/jy/CategoryBadge';
 
 function InterestPage() {
   const navigate = useNavigate();
+
+  const FOOD = '음식 종류';
+  const DRINK = '음료 · 디저트';
+  const SPACE = '공간 · 환경';
+
+  const [interests, setInterests] = useState<Record<string, string[]>>({});
+  const [selected, setSelected] = useState<string[]>([]);
+  const [loading, setLoading] = useState<boolean>(true);
+  const [saving, setSaving] = useState<boolean>(false);
+
+  useEffect(() => {
+    const load = async () => {
+      setLoading(true);
+      try {
+        const grouped = await fetchInterestsGrouped();
+        setInterests(grouped);
+      } catch (err) {
+        console.log(err);
+      } finally {
+        setLoading(false);
+      }
+    };
+    load();
+  }, []);
+
+  const addSelect = (name: string) =>
+    setSelected(prev => (prev.includes(name) ? prev : [...prev, name]));
+
+  const removeSelect = (name: string) =>
+    setSelected(prev => prev.filter(interest => interest !== name));
+
+  const handleSave = async () => {
+    try {
+      navigate('/member/profile');
+    } catch (error) {
+      console.log(error);
+    }
+  };
   return (
     <div className="flex flex-col min-h-screen">
       <div className="flex bg-bg-bg ">
@@ -61,7 +103,7 @@ function InterestPage() {
                     <div className="flex justify-between items-center">
                       <h2 className="text-babgray-900 text-[18px] font-bold">선택된 관심사</h2>
                       <ButtonFillMd
-                        onClick={() => navigate('/member/profile')}
+                        onClick={handleSave}
                         style={{ fontWeight: 400, justifyContent: 'center', alignItems: 'center' }}
                       >
                         <RiSaveLine />
@@ -69,10 +111,17 @@ function InterestPage() {
                       </ButtonFillMd>
                     </div>
                     <div className="flex gap-[12px]">
-                      <KFood />
-                      <ChineseFood />
-                      <Cafe />
-                      <Indoor />
+                      {selected.length === 0 ? (
+                        <span className="text-babgray-500 text-[13px]">
+                          아직 선택된 관심사가 없어요
+                        </span>
+                      ) : (
+                        selected.map(item => (
+                          <button key={item} onClick={() => removeSelect(item)} type="button">
+                            <CategoryBadge name={item} />
+                          </button>
+                        ))
+                      )}
                     </div>
                   </div>
                 </section>
@@ -82,33 +131,31 @@ function InterestPage() {
                     <div className="flex justify-between items-center">
                       <h2 className="text-babgray-900 text-[18px] font-bold">추천 관심사</h2>
                     </div>
-                    <div className="flex flex-col gap-[15px]">
-                      <p className="text-[14px] text-babgray-900">음식 종류</p>
-                      <div className="flex gap-[12px]">
-                        <KoreanFood />
-                        <ChineseFood />
-                        <JapaneseFood />
-                        <ItalianFood />
-                        <KFood />
-                        <AsianFood />
-                        <IndianFood />
-                        <MexicanFood />
+                    <div className="flex flex-col gap-[50px]">
+                      {interests[FOOD] && (
+                        <div className="flex flex-col gap-[15px]">
+                          <p className="text-[14px] text-babgray-900">{FOOD}</p>
+                          <hr />
+                          <div className="flex gap-[12px]">
+                            <CategoryListBadge categories={interests[FOOD]} onClick={addSelect} />
+                          </div>
+                        </div>
+                      )}
+
+                      <div className="flex flex-col gap-[15px]">
+                        <p className="text-[14px] text-babgray-900">{DRINK}</p>
+                        <hr />
+                        <div className="flex gap-[12px]">
+                          <CategoryListBadge categories={interests[DRINK]} onClick={addSelect} />
+                        </div>
                       </div>
-                    </div>
-                    <div className="flex flex-col gap-[15px]">
-                      <p className="text-[14px] text-babgray-900">음료 · 디저트</p>
-                      <div className="flex gap-[12px]">
-                        <Cafe />
-                        <Dessert />
-                        <Drink />
-                      </div>
-                    </div>
-                    <div className="flex flex-col gap-[15px]">
-                      <p className="text-[14px] text-babgray-900">공간 · 환경</p>
-                      <div className="flex gap-[12px]">
-                        <Indoor />
-                        <Outdoor />
-                        <RoofTop />
+
+                      <div className="flex flex-col gap-[15px]">
+                        <p className="text-[14px] text-babgray-900">{SPACE}</p>
+                        <hr />
+                        <div className="flex gap-[12px]">
+                          <CategoryListBadge categories={interests[SPACE]} onClick={addSelect} />
+                        </div>
                       </div>
                     </div>
                   </div>
