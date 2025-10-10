@@ -33,6 +33,11 @@ type AuthContextType = {
   checkEmailExists: (email: string) => Promise<{ exists: boolean; error?: string }>;
   // 구글 로그인 함수
   signInWithGoogle: () => Promise<{ error?: string }>;
+  // 비밀번호 변경 함수
+  changePassword: (
+    currentPassword: string,
+    newPassword: string,
+  ) => Promise<{ error?: string; success?: boolean; message?: string }>;
 
   // 회원 로그아웃 함수
   signOut: () => Promise<void>;
@@ -107,14 +112,15 @@ export const AuthProvider = ({ children }: AuthProviderProps) => {
       // // 출석체크
       // const pointResult = await givePoint();
 
-      // ✅ 오늘 출석 안 했을 때만 givePoint 호출
-      const alreadyChecked = sessionStorage.getItem(`dailyLogin:${user.id}`);
-      if (!alreadyChecked) {
-        const pointResult = await givePoint();
-        if (pointResult) {
-          sessionStorage.setItem(`dailyLogin:${user.id}`, 'true');
-        }
-      }
+      // PointContext에서 불러오므로 AuthContext에서는 제외
+      // 오늘 출석 안 했을 때만 givePoint 호출
+      // const alreadyChecked = sessionStorage.getItem(`dailyLogin:${user.id}`);
+      // if (!alreadyChecked) {
+      //   // const pointResult = await givePoint();
+      //   // if (pointResult) {
+      //   //   sessionStorage.setItem(`dailyLogin:${user.id}`, 'true');
+      //   // }
+      // }
     } catch (error) {
       console.error('handlePostLogin 오류:', error);
     } finally {
@@ -308,6 +314,48 @@ export const AuthProvider = ({ children }: AuthProviderProps) => {
     await supabase.auth.signOut();
   };
 
+  // 비밀번호 변경 함수
+  const changePassword: AuthContextType['changePassword'] = async (
+    currentPassword,
+    newPassword,
+  ) => {
+    try {
+      // 이메일 로그인 사용자인지 확인
+      if (user?.app_metadata.provider && user.app_metadata.provider !== 'email') {
+        return { error: '이메일 로그인 사용자만 비밀번호 변경 가능' };
+      }
+
+      if (!user?.email) return { error: '이메일 정보를 찾을 수 없음' };
+      // 비밀번호 길이 확인
+      if (newPassword.length < 6) {
+        return { error: '비밀번호는 최소 6자 이상 입력해주세요' };
+      }
+
+      // 현재 비밀번호 검증
+      const { error: currentPwError } = await supabase.auth.signInWithPassword({
+        email: user.email,
+        password: currentPassword,
+      });
+      if (currentPwError) {
+        return { error: '현재 비밀번호가 올바르지 않습니다' };
+      }
+
+      // supabase에서 비밀번호 업데이트
+      const { error } = await supabase.auth.updateUser({ password: newPassword });
+      if (error) {
+        return { error: '비밀번호 변경에 실패하였습니다' };
+      }
+
+      return {
+        success: true,
+        message: '비밀번호가 성공적으로 변경되었습니다.',
+      };
+    } catch (err) {
+      console.log('비밀번호 변경 오류 :', err);
+      return { error: '비밀번호 변경 중 오류가 발생했습니다' };
+    }
+  };
+
   // 탈퇴기능은 추후 구현
 
   const value = {
@@ -321,6 +369,7 @@ export const AuthProvider = ({ children }: AuthProviderProps) => {
     signInWithKakao,
     signInWithGoogle,
     unlinkKakaoAccount,
+    changePassword,
   };
   return (
     <AuthContext.Provider value={value}>

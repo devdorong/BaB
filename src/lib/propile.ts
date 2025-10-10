@@ -116,18 +116,8 @@ const uploadAvatar = async (file: File, userId: string): Promise<string | null> 
     const fileName = `${userId}-${Date.now()}.${fileExt}`;
     const filePath = `avatars/${fileName}`;
 
-    // storage 에 bucket 이 존재하는지 검사
-    const { data: buckets, error: bucketError } = await supabase.storage.listBuckets();
-    if (bucketError) {
-      throw new Error(`Storage 버킷 확인 실패 : ${bucketError.message}`);
-    }
-    //  bucket 들의 목록 전달 {} 형태로 나옴. user-images 라는 이름에 업로드
-    let profileImagesBucket = buckets.find(item => item.name === 'user-images');
-    if (!profileImagesBucket) {
-      throw new Error(`user-images 버킷이 존재하지 않습니다. 버킷생성 필요!!`);
-    }
     // 파일 업로드 : upload(파일명, 실제파일, 옵션)
-    const { data, error } = await supabase.storage.from('user-images').upload(filePath, file, {
+    const { error } = await supabase.storage.from('user-images').upload(filePath, file, {
       cacheControl: '3600', // 3600 초는 1시간 동안 파일 캐시 적용
       upsert: false, // 동일한 파일명은 덮어씌운다.
     });
