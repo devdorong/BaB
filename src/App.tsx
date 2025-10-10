@@ -56,6 +56,7 @@ import { GetOrCreatePoint } from './services/PointService';
 import type { ProfileInsert } from './types/bobType';
 import MatchingDetailEditPage from './pages/member/matchings/MatchingDetailEditPage';
 import ProtectedRoute from './components/ProtectedRoute';
+import { PartnerSignupProvider } from './contexts/PartnerSignupContext';
 function App() {
   // 인증 메일 확인후, 프로필 생성
   useEffect(() => {
@@ -167,7 +168,14 @@ function App() {
               <Route path="member/login" element={<MemberLoginPage />} />
               <Route path="member/signup" element={<MemberSignupPage />} />
               <Route path="partner/login" element={<PartnerLoginPage />} />
-              <Route path="partner/signup" element={<PartnerSignupPage />} />
+              <Route
+                path="partner/signup"
+                element={
+                  <PartnerSignupProvider>
+                    <PartnerSignupPage />
+                  </PartnerSignupProvider>
+                }
+              />
             </Route>
 
             {/* Partner */}

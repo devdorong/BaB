@@ -107,7 +107,6 @@ export const AuthProvider = ({ children }: AuthProviderProps) => {
       // // 출석체크
       // const pointResult = await givePoint();
 
-      // ✅ 오늘 출석 안 했을 때만 givePoint 호출
       const alreadyChecked = sessionStorage.getItem(`dailyLogin:${user.id}`);
       if (!alreadyChecked) {
         const pointResult = await givePoint();

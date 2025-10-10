@@ -2,11 +2,16 @@ import { useState } from 'react';
 import { InputField, InputFieldWithButton, TextAreaCustom } from '../components/InputField';
 import { useDaumPostcodePopup } from 'react-daum-postcode';
 import { RiArrowDownSLine, RiCheckLine } from 'react-icons/ri';
-import { useNavigate } from 'react-router-dom';
 
-const categorys = ['한식', '양식', '일식', '중식', '아시안', '인도', '멕시칸'];
+import type { Dayjs } from 'dayjs';
+import { useNavigate } from 'react-router-dom';
+import OperatingHours from '../components/partner/OperatingHours';
+import CategorySelect from '../components/partner/CategorySelect';
+import { usePartnerSignup } from '../contexts/PartnerSignupContext';
 
 function PartnerSignupPage() {
+  const { formData, setFormData, saveDraft, submitApplication } = usePartnerSignup();
+
   const navigate = useNavigate();
   const [nickname, setNickname] = useState('');
   const [pw, setPw] = useState('');
@@ -23,26 +28,16 @@ function PartnerSignupPage() {
   const [businessFile, setBusinessFile] = useState<File | null>(null);
   const [menuFile, setMenuFile] = useState<File | null>(null);
   const [storeFiles, setStoreFiles] = useState<File[]>([]);
+  const [openTime, setOpenTime] = useState<Dayjs | null>(null);
+  const [closeTime, setCloseTime] = useState<Dayjs | null>(null);
+  const [closedDays, setClosedDays] = useState<string[]>([]);
+  // 이용 약관
   const [agreements, setAgreements] = useState({
-    terms: false,
-    privacy: false,
-    approval: false,
-    marketing: false,
+    terms: false, // 서비스 이용약관 동의(필수)
+    privacy: false, // 개인정보 처리방침 동의(필수)
+    approval: false, // 제3자 제공/심사 동의, 혹은 파트너 입점 승인 관련 동의(필수)
+    marketing: false, // 마케팅/광고 수신 동의(선택)
   });
-  const handleBusinessChange = (e: React.ChangeEvent<HTMLInputElement>) => {
-    let value = e.target.value.replace(/\D/g, ''); // 숫자만 남기기
-
-    if (value.length <= 3) {
-      // 3자리 이하
-      setBusinessNumber(value);
-    } else if (value.length <= 5) {
-      // 3-2
-      setBusinessNumber(`${value.slice(0, 3)}-${value.slice(3)}`);
-    } else {
-      // 3-2-5
-      setBusinessNumber(`${value.slice(0, 3)}-${value.slice(3, 5)}-${value.slice(5, 10)}`);
-    }
-  };
 
   // Daum Post 팝업
   const scriptUrl = 'https://t1.daumcdn.net/mapjsapi/bundle/postcode/prod/postcode.v2.js';
@@ -66,6 +61,24 @@ function PartnerSignupPage() {
     open({ onComplete: handleCompletedZip });
   };
 
+  // 사업자 번호 양식 맞추기
+  const handleBusinessChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+    // 숫자만 남기기
+    let value = e.target.value.replace(/\D/g, '');
+
+    if (value.length <= 3) {
+      // 3자리 이하
+      setBusinessNumber(value);
+    } else if (value.length <= 5) {
+      // 3-2
+      setBusinessNumber(`${value.slice(0, 3)}-${value.slice(3)}`);
+    } else {
+      // 3-2-5
+      setBusinessNumber(`${value.slice(0, 3)}-${value.slice(3, 5)}-${value.slice(5, 10)}`);
+    }
+  };
+
+  // 핸드폰 번호 양식 맞추기
   const handlePhoneChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     let value = e.target.value.replace(/\D/g, ''); // 숫자만 남기기
 
@@ -81,6 +94,7 @@ function PartnerSignupPage() {
     }
   };
 
+  // 파일 업로드 양식
   const validateFile = (file: File, type: 'pdf' | 'image') => {
     const imageTypes = ['image/jpeg', 'image/png', 'image/svg+xml', 'image/webp'];
     if (type === 'pdf' && file.type !== 'application/pdf') {
@@ -98,6 +112,7 @@ function PartnerSignupPage() {
     return true;
   };
 
+  // 메뉴판 이미지 (단일)
   const handleSingleFileChange = (
     e: React.ChangeEvent<HTMLInputElement>,
     setter: React.Dispatch<React.SetStateAction<File | null>>,
@@ -108,6 +123,8 @@ function PartnerSignupPage() {
       setter(file);
     }
   };
+
+  // 매장 이미지 (복수)
   const handleMultipleFileChange = (
     e: React.ChangeEvent<HTMLInputElement>,
     setter: React.Dispatch<React.SetStateAction<File[]>>,
@@ -128,6 +145,7 @@ function PartnerSignupPage() {
     );
   };
 
+  // 약관동의
   const allChecked = Object.values(agreements).every(Boolean);
 
   const toggleAll = () => {
@@ -143,10 +161,7 @@ function PartnerSignupPage() {
     setAgreements(prev => ({ ...prev, [key]: !prev[key] }));
   };
 
-  const handleButtonClick = () => {
-    alert('신청이 완료되었습니다. 관리자 확인후 승인됩니다.(2~3일 소요)');
-    navigate('/partner/login');
-  };
+  const handleChnage = () => {};
 
   return (
     <div className="w-full py-24 bg-gray-50 flex flex-col items-center">
@@ -265,7 +280,8 @@ function PartnerSignupPage() {
                     <label>카테고리</label>
                     <span className="text-bab-500">*</span>
                   </div>
-                  <div className="flex items-center relative">
+                  <CategorySelect onChange={handleChnage} value={category} />
+                  {/* <div className="flex items-center relative">
                     <select
                       value={category}
                       onChange={e => setCategory(e.target.value)}
@@ -282,11 +298,11 @@ function PartnerSignupPage() {
                     <div className="pointer-events-none absolute right-3 top-1/2 -translate-y-1/2">
                       <RiArrowDownSLine color="#C2C2C2" />
                     </div>
-                  </div>
+                  </div> */}
                 </div>
 
                 <div className="flex flex-col w-[50%] gap-2">
-                  {/* 대표자명 + 연락처 */}
+                  {/* 가격대 */}
                   <div className="flex gap-7">
                     <InputField
                       label="가격대"
@@ -299,6 +315,15 @@ function PartnerSignupPage() {
                   </div>
                 </div>
               </div>
+
+              <OperatingHours
+                openTime={openTime}
+                closeTime={closeTime}
+                closedDays={closedDays}
+                setOpenTime={setOpenTime}
+                setCloseTime={setCloseTime}
+                setClosedDays={setClosedDays}
+              />
 
               {/* 매장 소개 */}
               <div className="flex flex-col w-full gap-2">
@@ -489,13 +514,14 @@ function PartnerSignupPage() {
             <button
               type="button"
               className="flex-1 h-14 border border-babgray-300 rounded-lg font-bold text-babgray-600"
+              onClick={saveDraft}
             >
               임시저장
             </button>
             <button
               type="button"
-              onClick={handleButtonClick}
               className="flex-1 h-14 bg-bab text-white rounded-lg font-bold"
+              onClick={submitApplication}
             >
               신청하기
             </button>
