@@ -11,12 +11,14 @@ import {
   RiUserSettingsLine,
 } from 'react-icons/ri';
 import { Link, NavLink, useNavigate } from 'react-router-dom';
-import { RestaurantFill, UserLine } from '../ui/Icon';
 import { useAuth } from '../contexts/AuthContext';
-import type { Profile } from '../types/bobType';
+import { useRestaurant } from '../contexts/PartnerRestaurantContext';
 import { getProfile } from '../lib/propile';
+import type { Profile } from '../types/bobType';
+import { RestaurantFill, UserLine } from '../ui/Icon';
 
 const PartnerHeader = () => {
+  const { restaurant } = useRestaurant();
   const navigate = useNavigate();
   const [open, setOpen] = useState(false);
   const menuRef = useRef<HTMLDivElement>(null);
@@ -29,7 +31,6 @@ const PartnerHeader = () => {
   const [error, setError] = useState<string>('');
   // 사용자 닉네임
   const [nickName, setNickName] = useState<string>('');
-  
 
   useEffect(() => {
     const handleClickOutside = (e: MouseEvent) => {
@@ -91,7 +92,9 @@ const PartnerHeader = () => {
               <RestaurantFill bgColor="#ff5722" />
             </div>
             <div className="flex flex-col ">
-              <p className="text-black text-lg font-bold">레스토랑허브</p>
+              <p className="text-black text-lg font-bold">
+                {profileData?.role === 'admin' ? '관리자' : restaurant?.name}
+              </p>
               <p className="text-babgray-500 text-xs">파트너 대시보드</p>
             </div>
           </div>
@@ -302,7 +305,9 @@ const PartnerHeader = () => {
             </div>
             <div className="flex flex-col">
               {/* 파트너 매장 이름 지금은 임시로.. 닉네임출력 */}
-              <p className="text-black text-sm">도로롱의 피자가게</p>
+              <p className="text-black text-sm">
+                {profileData?.role === 'admin' ? '관리자' : restaurant?.name}
+              </p>
               {/* 파트너 id */}
               <p className="text-gray-600 text-xs">{user?.email}</p>
             </div>

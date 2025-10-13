@@ -1,15 +1,25 @@
-import { createContext, useContext, useState } from 'react';
+import { createContext, useContext, useEffect, useState } from 'react';
 import { supabase } from '../lib/supabase';
 import type { Dayjs } from 'dayjs';
 import { useAuth } from './AuthContext';
-import type { Database } from '../types/bobType';
+import type { Database, Profile } from '../types/bobType';
 import dayjs from 'dayjs';
+import { getProfile } from '../lib/propile';
+
+const toTime = (t: any) => {
+  if (!t) return null;
+  try {
+    const d = dayjs(t);
+    return d.format('HH:mm:ss');
+  } catch {
+    return null;
+  }
+};
 
 type RestaurantStatus = Database['public']['Enums']['restaurant_status_enum'];
 
 interface PartnerFormData {
   email: string;
-  pw: string;
   nickname: string;
   name: string;
   phone: string;
@@ -26,6 +36,8 @@ interface PartnerFormData {
   menuFile: File | null;
   storeFiles: File[];
   status: RestaurantStatus;
+  latitude?: number | null;
+  longitude?: number | null;
 }
 
 interface PartnerSignupContextType {
@@ -44,12 +56,46 @@ interface PartnerSignupProviderProps {
 }
 
 export function PartnerSignupProvider({ children }: PartnerSignupProviderProps) {
-  const { user, signUp } = useAuth();
-  const [loading, setLoading] = useState(false);
+  const { user } = useAuth();
+  const [nickname, setNickname] = useState('');
+  const [loading, setLoading] = useState<boolean>(true);
+  // 사용자 프로필
+  const [profileData, setProfileData] = useState<Profile | null>(null);
+  // 에러메세지
+  const [error, setError] = useState<string>('');
+
+  // 사용자 프로필 정보
+  const loadProfile = async () => {
+    if (!user?.id) {
+      setError('사용자정보 없음');
+      setLoading(false);
+      return;
+    }
+    try {
+      // 사용자 정보 가져오기
+      const tempData = await getProfile(user?.id);
+      if (!tempData) {
+        // null의 경우
+        setError('사용자 프로필 정보 찾을 수 없음');
+        return;
+      }
+      // 사용자 정보 유효함
+      setNickname(tempData.nickname || '');
+      setProfileData(tempData);
+    } catch (error) {
+      setError('프로필 호출 오류');
+    } finally {
+      setLoading(false);
+    }
+  };
+
+  // id로 닉네임을 받아옴
+  useEffect(() => {
+    loadProfile();
+  }, [user?.id]);
 
   const [formData, setFormDataState] = useState<PartnerFormData>({
     email: '',
-    pw: '',
     nickname: '',
     name: '',
     phone: '',
@@ -66,6 +112,8 @@ export function PartnerSignupProvider({ children }: PartnerSignupProviderProps) 
     menuFile: null,
     storeFiles: [],
     status: 'draft',
+    latitude: null,
+    longitude: null,
   });
 
   const setFormData = (data: Partial<PartnerFormData>) =>
@@ -74,37 +122,24 @@ export function PartnerSignupProvider({ children }: PartnerSignupProviderProps) 
   const saveDraft = async () => {
     try {
       setLoading(true);
-      let currentUser = user;
-
-      if (!currentUser) {
-        const { error } = await signUp({
-          email: formData.email,
-          password: formData.pw,
-          name: formData.name,
-          nickName: formData.nickname,
-          phone: formData.phone,
-          gender: true,
-          birth: dayjs().format('YYYY-MM-DD'),
-        });
-
-        if (error) throw new Error('회원가입 중 오류 발생');
-        const { data } = await supabase.auth.getUser();
-        currentUser = data.user;
+      if (!user) {
+        alert('로그인 후 이용 가능합니다.');
+        return;
       }
-
-      if (!currentUser) throw new Error('유저 정보를 불러올 수 없습니다.');
 
       await supabase.from('restaurants').upsert([
         {
-          profile_id: currentUser.id,
+          profile_id: user.id,
           name: formData.restaurantName,
           address: formData.address,
           phone: formData.phone,
-          opentime: formData.openTime,
-          closetime: formData.closeTime,
+          opentime: toTime(formData.openTime),
+          closetime: toTime(formData.closeTime),
           closeday: formData.closedDays,
           storeintro: formData.storeIntro,
           business_number: formData.businessNumber,
+          latitude: formData.latitude,
+          longitude: formData.longitude,
           status: 'draft',
         },
       ]);
@@ -121,42 +156,41 @@ export function PartnerSignupProvider({ children }: PartnerSignupProviderProps) 
   const submitApplication = async () => {
     try {
       setLoading(true);
-      let currentUser = user;
-
-      if (!currentUser) {
-        const { error } = await signUp({
-          email: formData.email,
-          password: formData.pw,
-          name: formData.name,
-          nickName: formData.nickname,
-          phone: formData.phone,
-          gender: true,
-          birth: dayjs().format('YYYY-MM-DD'),
-        });
-
-        if (error) throw new Error('회원가입 중 오류 발생');
-        const { data } = await supabase.auth.getUser();
-        currentUser = data.user;
+      if (!user) {
+        alert('로그인 후 이용 가능합니다.');
+        return;
       }
 
-      if (!currentUser) throw new Error('유저 정보를 불러올 수 없습니다.');
-
-      const { error: restaurantError } = await supabase.from('restaurants').upsert([
+      const { error } = await supabase.from('restaurants').upsert([
         {
-          profile_id: currentUser.id,
+          profile_id: user.id,
           name: formData.restaurantName,
           address: formData.address,
           phone: formData.phone,
-          opentime: formData.openTime,
-          closetime: formData.closeTime,
+          opentime: toTime(formData.openTime),
+          closetime: toTime(formData.closeTime),
           closeday: formData.closedDays,
           storeintro: formData.storeIntro,
           business_number: formData.businessNumber,
-          status: 'pending',
+          latitude: formData.latitude,
+          longitude: formData.longitude,
+          status: 'pending', // 신청 완료 상태
         },
       ]);
 
-      if (restaurantError) throw restaurantError;
+      if (error) throw error;
+
+      // 프로필 업데이트 (role 을 patner 로)
+      const { error: updateError } = await supabase
+        .from('profiles')
+        .update({ role: 'partner' })
+        .eq('id', profileData?.id);
+
+      if (updateError) {
+        console.error(updateError);
+        alert('프로필 업데이트 중 오류가 발생했습니다.');
+        return;
+      }
 
       alert('신청이 완료되었습니다! 승인 후 연락드리겠습니다.');
     } catch (err) {
@@ -170,7 +204,6 @@ export function PartnerSignupProvider({ children }: PartnerSignupProviderProps) 
   const resetForm = () => {
     setFormDataState({
       email: '',
-      pw: '',
       nickname: '',
       name: '',
       phone: '',
@@ -186,6 +219,8 @@ export function PartnerSignupProvider({ children }: PartnerSignupProviderProps) 
       businessFile: null,
       menuFile: null,
       storeFiles: [],
+      latitude: null,
+      longitude: null,
       status: 'draft',
     });
   };

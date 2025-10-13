@@ -1,4 +1,4 @@
-import { useState } from 'react';
+import { useEffect, useState } from 'react';
 import { useDaumPostcodePopup } from 'react-daum-postcode';
 import { RiCheckLine } from 'react-icons/ri';
 import { InputField, InputFieldWithButton, TextAreaCustom } from '../components/InputField';
@@ -8,15 +8,59 @@ import OperatingHours from '../components/partner/OperatingHours';
 import { usePartnerSignup } from '../contexts/PartnerSignupContext';
 import { supabase } from '../lib/supabase';
 import { useAuth } from '../contexts/AuthContext';
+import { useNavigate } from 'react-router-dom';
+import type { Profile } from '../types/bobType';
+import { getProfile } from '../lib/propile';
+import { useAddressSearch } from '../components/partner/UseAddressSearch';
 
 function PartnerSignupPage() {
-  const { formData, setFormData, saveDraft } = usePartnerSignup();
+  const navigate = useNavigate();
+  const { formData, setFormData, saveDraft, submitApplication } = usePartnerSignup();
+  const { address, latitude, longitude, openPostcode } = useAddressSearch();
+
   const { user } = useAuth();
 
-  const [price, setPrice] = useState(''); // (옵션) 아직 DB에 저장하진 않음
+  const [price, setPrice] = useState('');
   const [businessFile, setBusinessFile] = useState<File | null>(null);
   const [storeFile, setStoreFile] = useState<File | null>(null);
   const [submitting, setSubmitting] = useState(false);
+
+  const [nickname, setNickname] = useState('');
+  const [loading, setLoading] = useState<boolean>(true);
+  // 사용자 프로필
+  const [profileData, setProfileData] = useState<Profile | null>(null);
+  // 에러메세지
+  const [error, setError] = useState<string>('');
+
+  // 사용자 프로필 정보
+  const loadProfile = async () => {
+    if (!user?.id) {
+      setError('사용자정보 없음');
+      setLoading(false);
+      return;
+    }
+    try {
+      // 사용자 정보 가져오기
+      const tempData = await getProfile(user?.id);
+      if (!tempData) {
+        // null의 경우
+        setError('사용자 프로필 정보 찾을 수 없음');
+        return;
+      }
+      // 사용자 정보 유효함
+      setNickname(tempData.nickname || '');
+      setProfileData(tempData);
+    } catch (error) {
+      setError('프로필 호출 오류');
+    } finally {
+      setLoading(false);
+    }
+  };
+
+  // id로 닉네임을 받아옴
+  useEffect(() => {
+    loadProfile();
+  }, [user?.id]);
 
   // 이용 약관
   const [agreements, setAgreements] = useState({
@@ -25,28 +69,16 @@ function PartnerSignupPage() {
     approval: false,
     marketing: false, // 선택
   });
-
-  // Daum Post 팝업
-  const scriptUrl = 'https://t1.daumcdn.net/mapjsapi/bundle/postcode/prod/postcode.v2.js';
-  const open = useDaumPostcodePopup(scriptUrl);
-
-  const handleCompletedZip = (data: any) => {
-    let fullAddress = data.address;
-    let extraAddress = '';
-
-    if (data.addressType === 'R') {
-      if (data.bname !== '') extraAddress += data.bname;
-      if (data.buildingName !== '')
-        extraAddress += extraAddress !== '' ? `, ${data.buildingName}` : data.buildingName;
-      fullAddress += extraAddress !== '' ? ` (${extraAddress})` : '';
+  useEffect(() => {
+    if (address && latitude && longitude) {
+      setFormData({
+        ...formData,
+        address,
+        latitude: latitude,
+        longitude: longitude,
+      });
     }
-
-    setFormData({ address: fullAddress });
-  };
-
-  const handleClickZipCode = () => {
-    open({ onComplete: handleCompletedZip });
-  };
+  }, [address, latitude, longitude]);
 
   // 사업자 번호 양식 맞추기
   const handleBusinessChange = (e: React.ChangeEvent<HTMLInputElement>) => {
@@ -106,7 +138,7 @@ function PartnerSignupPage() {
     e.currentTarget.value = '';
   };
 
-  // 미리보기 (메모리 누수 방지)
+  // 미리보기
   const renderPreview = (file: File) => {
     if (file.type === 'application/pdf') {
       return <p className="text-babgray-500">📄 {file.name}</p>;
@@ -122,19 +154,21 @@ function PartnerSignupPage() {
     );
   };
 
-  // 업로드 (Private: path 저장 / Public: publicUrl 저장)
+  const sanitizeFileName = (name: string) =>
+    name
+      .normalize('NFC')
+      .replace(/\s+/g, '_')
+      .replace(/[^\w.-]/g, '');
+
   const uploadSingleFile = async (bucket: string, file: File): Promise<string | null> => {
-    const fileName = `${Date.now()}_${file.name}`;
+    const safeName = sanitizeFileName(file.name);
+    const fileName = `${Date.now()}_${safeName}`;
     const { data, error } = await supabase.storage.from(bucket).upload(fileName, file);
     if (error) {
       console.error(`${bucket} 업로드 실패:`, error.message);
       return null;
     }
-
-    if (bucket === 'business_docs') {
-      return data.path; // 비공개는 path 저장
-    }
-
+    if (bucket === 'business_docs') return data.path;
     const { data: urlData } = supabase.storage.from(bucket).getPublicUrl(data.path);
     return urlData?.publicUrl ?? null;
   };
@@ -177,74 +211,8 @@ function PartnerSignupPage() {
       return;
     }
 
-    // 이메일/비번 필수 (자동 회원가입용)
-    if (!formData.email || !formData.pw) {
-      alert('이메일과 비밀번호를 입력해주세요.');
-      return;
-    }
-
     setSubmitting(true);
     try {
-      // 1) 로그인/회원가입 처리
-      let authUserId = user?.id ?? null;
-
-      if (!authUserId) {
-        // 우선 로그인 시도 (이미 가입한 경우 대비)
-        const { data: signInData, error: signInErr } = await supabase.auth.signInWithPassword({
-          email: formData.email,
-          password: formData.pw,
-        });
-
-        if (signInErr) {
-          // 로그인 실패면 회원가입 시도
-          const { data: signUpData, error: signUpErr } = await supabase.auth.signUp({
-            email: formData.email,
-            password: formData.pw,
-            options: { data: { nickname: formData.nickname } }, // 메타데이터 예시
-          });
-          if (signUpErr) {
-            console.error(signUpErr);
-            alert('회원가입에 실패했습니다.');
-            return;
-          }
-
-          // 이메일 확인이 꺼진 환경이면 세션이 바로 생기고, 켜져 있으면 세션이 없을 수 있음
-          authUserId = signUpData.user?.id ?? null;
-
-          // 필요시 바로 로그인도 시도 (확인메일 미사용 가정)
-          if (!authUserId) {
-            const { data: si2, error: si2Err } = await supabase.auth.signInWithPassword({
-              email: formData.email,
-              password: formData.pw,
-            });
-            if (si2Err) {
-              console.error(si2Err);
-              alert('로그인에 실패했습니다.');
-              return;
-            }
-            authUserId = si2.user?.id ?? null;
-          }
-        } else {
-          authUserId = signInData.user?.id ?? null;
-        }
-      }
-
-      if (!authUserId) {
-        alert('인증 정보를 확인할 수 없습니다. (이메일 확인 설정 여부를 점검하세요)');
-        return;
-      }
-
-      // 2) profiles 행 보장 (참조 무결성 대비)
-      await supabase.from('profiles').upsert(
-        {
-          id: authUserId,
-          // 필요한 최소 컬럼만 넣기 (스키마에 따라 조정)
-          // nickname: formData.nickname,
-          // phone: formData.phone,
-        },
-        { onConflict: 'id' },
-      );
-
       // 3) 파일 업로드(병렬)
       const [businessUrl, thumbnailUrl] = await Promise.all([
         uploadSingleFile('business_docs', businessFile), // path 저장
@@ -257,32 +225,78 @@ function PartnerSignupPage() {
       }
 
       // 4) 식당 등록
-      const { error } = await supabase.from('restaurants').insert({
-        name: formData.restaurantName,
-        phone: formData.phone,
-        address: formData.address,
-        opentime: toTime(formData.openTime),
-        closetime: toTime(formData.closeTime),
-        closeday: formData.closedDays,
-        storeintro: formData.storeIntro,
-        business_number: formData.businessNumber,
-        thumbnail_url: thumbnailUrl,
-        profile_id: authUserId,
-        // business_doc_path: businessUrl, // ← 스키마에 컬럼 추가하면 같이 저장 추천
-      });
+      // const { error } = await supabase.from('restaurants').insert({
+      //   name: formData.restaurantName,
+      //   phone: formData.phone,
+      //   address: formData.address,
+      //   opentime: toTime(formData.openTime),
+      //   closetime: toTime(formData.closeTime),
+      //   closeday: formData.closedDays,
+      //   storeintro: formData.storeIntro,
+      //   business_number: formData.businessNumber,
+      //   thumbnail_url: thumbnailUrl,
+      //   profile_id: profileData?.id,
+      //   latitude: formData.latitude,
+      //   longitude: formData.longitude,
+      // });
 
-      if (error) {
-        console.error(error);
-        alert('등록 실패');
-        return;
-      }
+      // if (error) {
+      //   console.error(error);
+      //   alert('등록 실패');
+      //   return;
+      // }
+      // // 프로필 업데이트 (role 을 patner 로)
+      // const { error: updateError } = await supabase
+      //   .from('profiles')
+      //   .update({ role: 'partner' })
+      //   .eq('id', profileData?.id);
 
-      alert('등록 완료!');
-      // TODO: navigate('/partner/waiting')
+      // if (updateError) {
+      //   console.error(updateError);
+      //   alert('프로필 업데이트 중 오류가 발생했습니다.');
+      //   return;
+      // }
+
+      // alert('등록 완료! 프로필이 파트너로 전환되었습니다.');
+      await submitApplication();
+
+      navigate('/partner');
     } finally {
       setSubmitting(false);
     }
   };
+
+  // 확인용
+  // useEffect(() => {
+  //   console.log('formData 변경:', formData);
+  //   console.log('주소:', address);
+  //   console.log('위도:', latitude);
+  //   console.log('경도:', longitude);
+  // }, [formData]);
+
+  useEffect(() => {
+    if (!user) {
+      alert('로그인 후 이용 가능한 서비스입니다.');
+      navigate('/partner/login');
+    }
+  }, [user]);
+
+  useEffect(() => {
+    if (profileData && user) {
+      setFormData({
+        email: user.email || '',
+        nickname: profileData.nickname || '',
+        phone: profileData.phone || '',
+        name: profileData.name || '',
+      });
+    }
+  }, [profileData, user]);
+
+  useEffect(() => {
+    if (profileData?.role === 'partner') {
+      navigate('/partner');
+    }
+  }, [profileData]);
 
   return (
     <div className="w-full py-24 bg-gray-50 flex flex-col items-center">
@@ -312,25 +326,34 @@ function PartnerSignupPage() {
                 />
 
                 <InputField
-                  label="비밀번호"
-                  type="password"
-                  value={formData.pw}
-                  onChange={e => setFormData({ pw: e.target.value })}
-                  placeholder="비밀번호를 입력해주세요"
+                  label="이메일"
+                  type="email"
+                  value={formData.email}
+                  onChange={e => setFormData({ email: e.target.value })}
+                  placeholder="이메일을 입력해주세요"
                   required
                 />
               </div>
 
-              <InputFieldWithButton
-                label="이메일"
-                type="email"
-                value={formData.email}
-                onChange={e => setFormData({ email: e.target.value })}
-                placeholder="이메일을 입력해주세요"
-                required
-              >
-                중복 확인
-              </InputFieldWithButton>
+              <div className="flex gap-7">
+                <InputField
+                  label="대표자명"
+                  type="text"
+                  value={formData.name}
+                  onChange={e => setFormData({ name: e.target.value })}
+                  placeholder="대표자명 입력해주세요"
+                  required
+                />
+
+                <InputField
+                  label="휴대폰 번호"
+                  type="text"
+                  value={formData.phone}
+                  onChange={handlePhoneChange}
+                  placeholder="번호를 입력해주세요"
+                  required
+                />
+              </div>
 
               <div className="flex gap-7">
                 <InputField
@@ -357,32 +380,13 @@ function PartnerSignupPage() {
                 type="text"
                 value={formData.address}
                 onChange={e => setFormData({ address: e.target.value })}
-                onButtonClick={handleClickZipCode}
+                onButtonClick={openPostcode}
                 placeholder="업체 주소 입력해주세요"
                 required
+                readOnly
               >
                 주소 검색
               </InputFieldWithButton>
-
-              <div className="flex gap-7">
-                <InputField
-                  label="대표자명"
-                  type="text"
-                  value={formData.name}
-                  onChange={e => setFormData({ name: e.target.value })}
-                  placeholder="대표자명 입력해주세요"
-                  required
-                />
-
-                <InputField
-                  label="휴대폰 번호"
-                  type="text"
-                  value={formData.phone}
-                  onChange={handlePhoneChange}
-                  placeholder="번호를 입력해주세요"
-                  required
-                />
-              </div>
             </section>
 
             {/* 운영 정보 */}

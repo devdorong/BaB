@@ -4,6 +4,7 @@ import { createProfile, getProfile } from '../lib/propile';
 import { supabase } from '../lib/supabase';
 import type { ProfileInsert } from '../types/bobType';
 import { givePoint } from '../services/PointService';
+import LoadingDiv from '../components/LoadingDiv';
 
 type SignUpPayload = {
   email: string;
@@ -370,9 +371,7 @@ export const AuthProvider = ({ children }: AuthProviderProps) => {
     changePassword,
   };
   return (
-    <AuthContext.Provider value={value}>
-      {loading ? <div>로딩 중...</div> : children}
-    </AuthContext.Provider>
+    <AuthContext.Provider value={value}>{loading ? <LoadingDiv /> : children}</AuthContext.Provider>
   );
 };
 

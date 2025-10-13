@@ -1,0 +1,274 @@
+<!DOCTYPE html>
+<html lang="ko">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>카카오 주소 검색 및 좌표 변환</title>
+    <script src="//t1.daumcdn.net/mapjsapi/bundle/postcode/prod/postcode.v2.js"></script>
+    <script src="//dapi.kakao.com/v2/maps/sdk.js?appkey=076e534c41e81d0280f67bca54ac8d8c&libraries=services"></script>
+    <style>
+      body {
+        font-family: "Segoe UI", Tahoma, Geneva, Verdana, sans-serif;
+        max-width: 800px;
+        margin: 50px auto;
+        padding: 20px;
+        background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+        min-height: 100vh;
+      }
+      .container {
+        background: white;
+        padding: 30px;
+        border-radius: 15px;
+        box-shadow: 0 10px 30px rgba(0, 0, 0, 0.3);
+      }
+      h1 {
+        color: #333;
+        text-align: center;
+        margin-bottom: 30px;
+      }
+      .search-box {
+        display: flex;
+        gap: 10px;
+        margin-bottom: 30px;
+      }
+      input[type="text"] {
+        flex: 1;
+        padding: 12px;
+        border: 2px solid #ddd;
+        border-radius: 8px;
+        font-size: 16px;
+        transition: border-color 0.3s;
+      }
+      input[type="text"]:focus {
+        outline: none;
+        border-color: #667eea;
+      }
+      button {
+        padding: 12px 24px;
+        background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+        color: white;
+        border: none;
+        border-radius: 8px;
+        font-size: 16px;
+        cursor: pointer;
+        transition: transform 0.2s;
+      }
+      button:hover {
+        transform: translateY(-2px);
+      }
+      button:active {
+        transform: translateY(0);
+      }
+      .result-box {
+        background: #f8f9fa;
+        padding: 20px;
+        border-radius: 10px;
+        margin-top: 20px;
+        display: none;
+      }
+      .result-box.show {
+        display: block;
+        animation: fadeIn 0.5s;
+      }
+      @keyframes fadeIn {
+        from {
+          opacity: 0;
+          transform: translateY(-10px);
+        }
+        to {
+          opacity: 1;
+          transform: translateY(0);
+        }
+      }
+      .info-item {
+        margin: 10px 0;
+        padding: 10px;
+        background: white;
+        border-radius: 5px;
+        border-left: 4px solid #667eea;
+      }
+      .label {
+        font-weight: bold;
+        color: #667eea;
+        display: inline-block;
+        width: 120px;
+      }
+      .value {
+        color: #333;
+      }
+      .notice {
+        background: #fff3cd;
+        padding: 15px;
+        border-radius: 8px;
+        margin-bottom: 20px;
+        border-left: 4px solid #ffc107;
+      }
+      #map {
+        width: 100%;
+        height: 300px;
+        border-radius: 10px;
+        margin-top: 20px;
+        display: none;
+      }
+      #map.show {
+        display: block;
+      }
+    </style>
+  </head>
+  <body>
+    <div class="container">
+      <h1>🗺️ 카카오 주소 검색 및 좌표 변환</h1>
+
+      <div class="notice">
+        <strong>✅ API 키 설정 완료:</strong> 카카오 Maps API 키가 정상적으로
+        설정되었습니다. 이제 주소 검색과 좌표 변환 기능을 사용할 수 있습니다.
+      </div>
+
+      <div class="search-box">
+        <input
+          type="text"
+          id="address"
+          placeholder="주소를 입력하거나 검색 버튼을 클릭하세요"
+          readonly
+        />
+        <button onclick="execDaumPostcode()">주소 검색</button>
+      </div>
+
+      <div id="result" class="result-box">
+        <h3>📍 주소 정보</h3>
+        <div class="info-item">
+          <span class="label">우편번호:</span>
+          <span class="value" id="zonecode">-</span>
+        </div>
+        <div class="info-item">
+          <span class="label">도로명 주소:</span>
+          <span class="value" id="roadAddress">-</span>
+        </div>
+        <div class="info-item">
+          <span class="label">지번 주소:</span>
+          <span class="value" id="jibunAddress">-</span>
+        </div>
+
+        <h3 style="margin-top: 20px">🌐 좌표 정보</h3>
+        <div class="info-item">
+          <span class="label">위도 (Latitude):</span>
+          <span class="value" id="latitude">-</span>
+        </div>
+        <div class="info-item">
+          <span class="label">경도 (Longitude):</span>
+          <span class="value" id="longitude">-</span>
+        </div>
+      </div>
+
+      <div id="map"></div>
+    </div>
+
+    <script>
+      // API 로딩 완료 확인
+      function waitForKakaoAPI(callback) {
+        if (typeof kakao !== "undefined" && kakao.maps && kakao.maps.services) {
+          callback();
+        } else {
+          setTimeout(() => waitForKakaoAPI(callback), 100);
+        }
+      }
+
+      // 카카오 우편번호 서비스 실행
+      function execDaumPostcode() {
+        new daum.Postcode({
+          oncomplete: function (data) {
+            // 선택한 주소 정보 표시
+            document.getElementById("address").value = data.address;
+            document.getElementById("zonecode").textContent = data.zonecode;
+            document.getElementById("roadAddress").textContent =
+              data.roadAddress || "-";
+            document.getElementById("jibunAddress").textContent =
+              data.jibunAddress || data.autoJibunAddress || "-";
+
+            // 결과 박스 표시
+            document.getElementById("result").classList.add("show");
+
+            // 주소로 좌표 변환 (API 로딩 대기)
+            waitForKakaoAPI(() => getCoordinates(data.address));
+          },
+        }).open();
+      }
+
+      // 주소를 좌표로 변환
+      function getCoordinates(address) {
+        // 디버깅 정보 출력
+        console.log("kakao 객체:", typeof kakao);
+        console.log("kakao.maps:", kakao && kakao.maps);
+        console.log(
+          "kakao.maps.services:",
+          kakao && kakao.maps && kakao.maps.services
+        );
+
+        // 카카오 Maps API가 로드되었는지 확인
+        if (
+          typeof kakao === "undefined" ||
+          !kakao.maps ||
+          !kakao.maps.services
+        ) {
+          let errorMsg = "카카오 Maps API 로딩 실패\n\n";
+          if (typeof kakao === "undefined") {
+            errorMsg += "• kakao 객체가 정의되지 않음\n";
+            errorMsg += "• API 키가 유효하지 않거나 도메인이 등록되지 않음\n";
+            errorMsg += "• 네트워크 연결을 확인하세요\n\n";
+            errorMsg += "해결 방법:\n";
+            errorMsg += "1. 카카오 개발자 센터에서 플랫폼 설정 확인\n";
+            errorMsg +=
+              "2. 현재 도메인(localhost 또는 파일 경로)이 등록되어 있는지 확인\n";
+            errorMsg += "3. API 키가 활성화되어 있는지 확인";
+          } else if (!kakao.maps) {
+            errorMsg += "• kakao.maps 객체가 로드되지 않음";
+          } else if (!kakao.maps.services) {
+            errorMsg += "• services 라이브러리가 로드되지 않음";
+          }
+
+          alert(errorMsg);
+          document.getElementById("latitude").textContent = "API 로딩 실패";
+          document.getElementById("longitude").textContent = "API 로딩 실패";
+          return;
+        }
+
+        const geocoder = new kakao.maps.services.Geocoder();
+
+        geocoder.addressSearch(address, function (result, status) {
+          if (status === kakao.maps.services.Status.OK) {
+            const coords = new kakao.maps.LatLng(result[0].y, result[0].x);
+
+            // 좌표 표시
+            document.getElementById("latitude").textContent = result[0].y;
+            document.getElementById("longitude").textContent = result[0].x;
+
+            // 지도 표시
+            displayMap(coords);
+          } else {
+            document.getElementById("latitude").textContent = "변환 실패";
+            document.getElementById("longitude").textContent = "변환 실패";
+          }
+        });
+      }
+
+      // 지도 표시
+      function displayMap(coords) {
+        const mapContainer = document.getElementById("map");
+        mapContainer.classList.add("show");
+
+        const mapOption = {
+          center: coords,
+          level: 3,
+        };
+
+        const map = new kakao.maps.Map(mapContainer, mapOption);
+
+        // 마커 표시
+        const marker = new kakao.maps.Marker({
+          position: coords,
+        });
+        marker.setMap(map);
+      }
+    </script>
+  </body>
+</html>
