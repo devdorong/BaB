@@ -80,7 +80,6 @@ function CommunityWritePage() {
           <span className="flex gap-1 font-semibold">
             카테고리 <p className="text-bab">*</p>
           </span>
-          {/* 카테고리 태그 불러오기 */}
           <div className="flex gap-4">
             {categories.map(item => (
               <button
@@ -102,7 +101,6 @@ function CommunityWritePage() {
           <span className="flex gap-1 font-semibold">
             제목 <p className="text-bab">*</p>
           </span>
-          {/* 게시글 제목작성 input */}
           <input
             type="text"
             value={title}
@@ -110,14 +108,12 @@ function CommunityWritePage() {
             maxLength={100}
             onChange={e => setTitle(e.target.value)}
           />
-          {/* input 글자수에따라 실시간 변경,최대 100자 제한 */}
           <div className="flex justify-end text-babgray-500">{title.length}/100</div>
         </div>
         <div className="flex flex-col gap-2">
           <span className="flex gap-1 font-semibold">
             내용 <p className="text-bab">*</p>
           </span>
-          {/* textarea 글자수에따라 실시간 변경,최대 500자 제한 */}
           <textarea
             value={content}
             className="w-full h-[100px] py-2 px-3 border border-babgray rounded-3xl focus:outline-none resize-none"
@@ -142,7 +138,6 @@ function CommunityWritePage() {
           <ButtonLineMd onClick={() => navigate('/member/community')} className="w-[320px]">
             취소
           </ButtonLineMd>
-          {/* 등록하기 클릭시 커뮤니티페이지 detail:id 로 이동 */}
           {/* 카테고리 선택안했거나 제목,내용 중 하나라도 false라면 모달창 띄움 */}
           <ButtonFillMd onClick={handleSubmit} className="w-[320px]">
             등록하기
