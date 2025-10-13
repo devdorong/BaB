@@ -24,16 +24,16 @@ const categorys = [
 const SupportModal = ({ setOpenModal }: SupportModalProps) => {
   const { user } = useAuth();
   const [isOpen, setIsOpen] = useState(false);
-  const [nickname, setNickname] = useState(''); // 로딩
-  const [loading, setLoading] = useState<boolean>(true);
   const [title, setTitle] = useState('');
   const [content, setContent] = useState('');
+  const [category, setCategory] = useState('');
+  const [nickname, setNickname] = useState(''); // 로딩
+  const [loading, setLoading] = useState<boolean>(true);
   // 사용자 프로필
   const [profileData, setProfileData] = useState<Profile | null>(null);
   // 에러메세지
   const [error, setError] = useState<string>('');
 
-  const [category, setCategory] = useState('');
 
   // 사용자 프로필 정보
   const loadProfile = async () => {

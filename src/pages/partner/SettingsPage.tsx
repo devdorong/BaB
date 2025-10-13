@@ -6,8 +6,10 @@ import PartnerBoardHeader from '../../components/PartnerBoardHeader';
 import { useAuth } from '../../contexts/AuthContext';
 import type { Profile } from '../../types/bobType';
 import { getProfile } from '../../lib/propile';
+import { useRestaurant } from '../../contexts/PartnerRestaurantContext';
 
 function SettingsPage() {
+  const { restaurant } = useRestaurant();
   const [settings, setSettings] = useState({
     sms: false,
     newLogin: false,
@@ -27,7 +29,7 @@ function SettingsPage() {
 
   //=================== 프로필 불러오기
 
-  const { user, signOut } = useAuth();
+  const { user } = useAuth();
   // 로딩
   const [loading, setLoading] = useState<boolean>(true);
   // 사용자 프로필
@@ -161,13 +163,13 @@ function SettingsPage() {
               <div className="w-full flex flex-col justify-start gap-4">
                 <p className="font-semibold">사업자명</p>
                 {/* 파트너 매장 명 */}
-                <p className="">도롱의 피자가게</p>
+                <p className="">{restaurant?.name}</p>
               </div>
 
               <div className="flex flex-col gap-4">
                 <div className="font-semibold ">사업장 주소</div>
                 {/* 파트너 매장 주소 */}
-                <div className="">대구광역시 동성로 123길 56</div>
+                <div className="">{restaurant?.address}</div>
               </div>
             </div>
           </div>

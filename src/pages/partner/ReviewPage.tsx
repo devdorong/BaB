@@ -1,26 +1,20 @@
-import { useRef, useState } from 'react';
 import {
-  RiArrowDownBoxLine,
-  RiArrowDownLine,
   RiArrowDownSLine,
   RiChat3Fill,
   RiEditLine,
   RiHeartLine,
-  RiImage2Line,
   RiQuestionAnswerLine,
-  RiShareForward2Line,
   RiShareForwardLine,
   RiStarFill,
   RiStarLine,
   RiTimeLine,
-  RiUser2Line,
-  RiUserFill,
   RiUserLine,
 } from 'react-icons/ri';
 import PartnerBoardHeader from '../../components/PartnerBoardHeader';
-import { MoneyDollarCircleFill, StarFill, TimeLine } from '../../ui/Icon';
+import { useRestaurant } from '../../contexts/PartnerRestaurantContext';
 
 function ReviewPage() {
+  const { restaurant } = useRestaurant();
   return (
     <>
       <PartnerBoardHeader title="고객 리뷰" subtitle="고객 리뷰를 확인하고 답변을 관리하세요." />
@@ -30,8 +24,7 @@ function ReviewPage() {
           <div className="flex-1 px-6 py-6 bg-white rounded-lg shadow-[0px_4px_4px_rgba(0,0,0,0.02)] border  flex justify-between items-center">
             <div className="flex flex-col gap-2 justify-start">
               <p className="text-babgray-600">평균 별점</p>
-              {/* 하루 매출 값 출력(최근 주문 영역의 금액내역 추출) */}
-              <p className="text-2xl font-semibold">4.4점</p>
+              <p className="text-2xl font-semibold">{restaurant?.send_avg_rating}점</p>
               <p className="flex text-babbutton-yellow">
                 <RiStarFill />
                 <RiStarFill />
@@ -47,7 +40,7 @@ function ReviewPage() {
           <div className="flex-1 px-6 py-6 bg-white rounded-lg shadow-[0px_4px_4px_rgba(0,0,0,0.02)] border  flex justify-between items-center">
             <div className="flex flex-col gap-2">
               <p className="text-babgray-600">총 리뷰 수</p>
-              {/* 대기 중인 주문 출력 (최근주문 영역의 조리중,주문접수만 체크) */}
+              {/* 리뷰테이블 만들고난뒤, 연결하기 */}
               <p className="text-2xl font-semibold">5개</p>
             </div>
             <div className="w-12 h-12 p-3.5 bg-babbutton-blue rounded-lg flex items-center justify-center">

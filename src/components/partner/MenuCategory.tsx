@@ -1,7 +1,4 @@
-import React, { useMemo, useState } from 'react';
-import { dororongpizza, type Category, type CategoryTab } from './MenusList';
-import PartnerBoardHeader from '../PartnerBoardHeader';
-import { ButtonFillLG, ButtonFillMd } from '../../ui/button';
+import { type CategoryTab } from './MenusList';
 
 type MenuCategorysProps = {
   categories: readonly CategoryTab[];
