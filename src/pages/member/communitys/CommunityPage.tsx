@@ -49,6 +49,7 @@ function CommunityPage() {
 
   const handlePageClick = (e: { selected: number }) => {
     setCurrentPage(e.selected);
+    sessionStorage.setItem('community_page', String(e.selected));
     const newOffset = (e.selected * itemsPerPage) % posts.length;
     setItemOffset(newOffset);
   };
@@ -141,6 +142,15 @@ function CommunityPage() {
     setCurrentPage(0);
   }, [activeCategory, search]);
 
+  useEffect(() => {
+    const savedPage = sessionStorage.getItem('community_page');
+    if (savedPage) {
+      const pageNum = Number(savedPage);
+      setCurrentPage(pageNum);
+      setItemOffset(pageNum * itemsPerPage);
+    }
+  }, []);
+
   return (
     <div className="w-full bg-bg-bg">
       <div className="w-[1280px] mx-auto flex flex-col gap-8 py-8">
@@ -173,20 +183,18 @@ function CommunityPage() {
           <div>
             <ButtonFillMd onClick={handleWriteClick}>작성하기</ButtonFillMd>
             {isOpen ? (
-              <div>
-                <Modal
-                  isOpen={isOpen}
-                  onClose={() => setIsOpen(false)}
-                  onSubmit={() => {
-                    setIsOpen(false);
-                    navigate(`/member/login`);
-                  }}
-                  titleText="로그인 확인"
-                  contentText="로그인이 필요합니다. 로그인 페이지로 이동하시겠습니까?"
-                  submitButtonText="확인"
-                  closeButtonText="취소"
-                />
-              </div>
+              <Modal
+                isOpen={isOpen}
+                onClose={() => setIsOpen(false)}
+                onSubmit={() => {
+                  setIsOpen(false);
+                  navigate(`/member/login`);
+                }}
+                titleText="로그인 확인"
+                contentText="로그인이 필요합니다. 로그인 페이지로 이동하시겠습니까?"
+                submitButtonText="확인"
+                closeButtonText="취소"
+              />
             ) : (
               <Link to={`/community/write`} />
             )}

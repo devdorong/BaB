@@ -8,6 +8,7 @@ import type { Comment, Database, Posts, ReportsInsert } from '../../../types/bob
 import { ButtonFillMd } from '../../../ui/button';
 import ReportsModal from '../../../ui/sdj/ReportsModal';
 import TagBadge from '../../../ui/TagBadge';
+import { Modal } from 'antd';
 
 type PostWithProfile = Posts & {
   profiles: { id: string; nickname: string } | null;
@@ -46,6 +47,13 @@ function CommunityDetailPage() {
   const [content, setContent] = useState('');
   const [editingId, setEditingId] = useState<number | null>(null);
   const [editText, setEditText] = useState('');
+
+  const [modalData, setModalData] = useState({
+    isOpen: false,
+    title: '',
+    content: '',
+    onSubmit: () => {},
+  });
 
   const fetchComments = async () => {
     if (!post?.id) return;
@@ -395,11 +403,11 @@ function CommunityDetailPage() {
                   </div>
                   {reports && (
                     <ReportsModal
+                      setReports={setReports}
                       targetNickname={reportInfo.nickname ?? ''}
                       handleReport={(type, title, reason) =>
                         handleReport(type, title, reason, reportInfo.targetProfileId)
                       }
-                      setReports={setReports}
                       reportType={reportInfo.type}
                     />
                   )}
