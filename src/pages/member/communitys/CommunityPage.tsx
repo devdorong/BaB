@@ -118,6 +118,14 @@ function CommunityPage() {
     }
   };
 
+  const handlePostClick = (postId: number) => {
+    if (!user) {
+      setIsOpen(true);
+      return;
+    }
+    navigate(`/member/community/detail/${postId}`);
+  };
+
   useEffect(() => {
     const endOffset = itemOffset + itemsPerPage;
     setCurrentItems(filteredPosts.slice(itemOffset, endOffset));
@@ -204,7 +212,7 @@ function CommunityPage() {
                 currentItems.map(item => (
                   <div
                     key={item.id}
-                    onClick={() => navigate(`/member/community/detail/${item.id}`)}
+                    onClick={() => handlePostClick(item.id)}
                     className="w-full h-auto flex flex-col gap-4 bg-white shadow-card rounded-xl2 py-6 px-8 cursor-pointer"
                   >
                     <div className="flex justify-between">
@@ -223,8 +231,6 @@ function CommunityPage() {
                         <span className="flex items-center gap-1">
                           <RiChat3Line />
                           {item.comments?.length}
-                          {/* 뷰어추가 */}
-                          {/* 좋아요수 추가 */}
                         </span>
                       </div>
                     </div>

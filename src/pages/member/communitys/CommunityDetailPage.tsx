@@ -4,25 +4,45 @@ import { RiAlarmWarningLine, RiChat3Line, RiEyeLine } from 'react-icons/ri';
 import { useNavigate, useParams } from 'react-router-dom';
 import { useAuth } from '../../../contexts/AuthContext';
 import { supabase } from '../../../lib/supabase';
-import type { Comment, Posts } from '../../../types/bobType';
+import type { Comment, Database, Posts, ReportsInsert } from '../../../types/bobType';
 import { ButtonFillMd } from '../../../ui/button';
 import ReportsModal from '../../../ui/sdj/ReportsModal';
 import TagBadge from '../../../ui/TagBadge';
 
 type PostWithProfile = Posts & {
   profiles: { id: string; nickname: string } | null;
-  comments: { id: number }[];
 };
+
+type CommentWithProfile = Comment & {
+  profiles: {
+    id: string;
+    nickname: string;
+    avatar_url?: string;
+  } | null;
+};
+
+export type ReportsType = Database['public']['Tables']['reports']['Insert']['report_type'];
+export type ReportsStatus = Database['public']['Tables']['reports']['Insert'];
 
 function CommunityDetailPage() {
   const navigate = useNavigate();
   const [reports, setReports] = useState(false);
+  const [reportInfo, setReportInfo] = useState<{
+    type: ReportsType;
+    nickname: string | null;
+    targetProfileId?: string;
+  }>({
+    type: '게시글',
+    nickname: null,
+    targetProfileId: undefined,
+  });
+
   const { id } = useParams();
   const { user } = useAuth();
   const [post, setPost] = useState<PostWithProfile | null>(null);
+  const [comments, setComments] = useState<CommentWithProfile[]>([]);
   const [loading, setLoading] = useState(true);
 
-  const [comments, setComments] = useState<Comment[]>([]);
   const [content, setContent] = useState('');
   const [editingId, setEditingId] = useState<number | null>(null);
   const [editText, setEditText] = useState('');
@@ -32,18 +52,42 @@ function CommunityDetailPage() {
 
     const { data, error } = await supabase
       .from('comments')
-      .select(`*,profiles(nickname)`)
+      .select(`*,profiles (nickname)`)
       .eq('post_id', post?.id)
       .order(`created_at`, { ascending: true });
+    if (!error && data) {
+      setComments(data as unknown as CommentWithProfile[]);
+    }
+  };
 
-    if (!error && data) setComments(data);
+  const fetchPost = async () => {
+    const { data, error } = await supabase
+      .from('posts')
+      .select(
+        `*,
+      profiles (id, nickname, avatar_url)
+    )`,
+      )
+      .eq('id', id)
+      .single();
+    if (!error && data) setPost(data as unknown as PostWithProfile);
   };
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
     // 모달창 띄우기
     if (!user) return alert('로그인이 필요합니다');
-
+    if (!content.trim()) {
+      // 모달창 띄우기
+      alert('댓글 내용을 입력해주세요.');
+      return;
+    }
+    if (
+      // 모달창 띄우기
+      !window.confirm('댓글을 등록하시겠습니까?')
+    ) {
+      return;
+    }
     const { error } = await supabase
       .from('comments')
       .insert({ post_id: post?.id, profile_id: user.id, content });
@@ -72,6 +116,42 @@ function CommunityDetailPage() {
 
     const { error } = await supabase.from('comments').delete().eq('id', id);
     if (!error) fetchComments();
+  };
+
+  const handleReport = async (
+    type: ReportsType,
+    title: string,
+    reason: string,
+    targetProfileId: string | undefined,
+  ) => {
+    if (!user) {
+      // 모달띄우기
+      alert('로그인이 필요합니다.');
+      return;
+    }
+
+    if (!targetProfileId) {
+      alert('신고 대상 정보를 불러오지 못했습니다.');
+      return;
+    }
+
+    const { error } = await supabase.from('reports').insert([
+      {
+        reporter_id: user.id,
+        accused_profile_id: targetProfileId,
+        reason: `${title.trim()} - ${reason.trim()}`,
+        report_type: type,
+      },
+    ]);
+
+    if (error) {
+      console.error('신고 실패:', error);
+      // 모달띄우기
+      alert('신고 중 오류가 발생했습니다.');
+    } else {
+      // 모달띄우기
+      alert('신고가 접수되었습니다.');
+    }
   };
 
   const handleViewCount = async (postId: number) => {
@@ -103,21 +183,14 @@ function CommunityDetailPage() {
     }
   };
 
-  useEffect(() => {
-    fetchComments();
-  }, [post]);
+  const loadPost = async () => {
+    if (!id) return;
+    const { data, error } = await supabase.from('posts').select('*').eq('id', id).single();
 
-  useEffect(() => {
-    const loadPost = async () => {
-      if (!id) return;
-      const { data, error } = await supabase.from('posts').select('*').eq('id', id).single();
-
-      if (error) console.log(error);
-      else setPost(data);
-      setLoading(false);
-    };
-    loadPost();
-  }, [id]);
+    if (error) console.log(error);
+    else setPost(data);
+    setLoading(false);
+  };
 
   useEffect(() => {
     if (post?.id) {
@@ -126,19 +199,14 @@ function CommunityDetailPage() {
   }, [post?.id]);
 
   useEffect(() => {
-    const fetchPost = async () => {
-      const { data, error } = await supabase
-        .from('posts')
-        .select(
-          `id,post_category,profile_id,tag,title,content,created_at,view_count, profiles (
-          nickname
-        )`,
-        )
-        .eq('id', id)
-        .single();
-      if (!error && data) setPost(data as unknown as PostWithProfile);
-    };
+    loadPost();
+  }, [id]);
 
+  useEffect(() => {
+    fetchComments();
+  }, [post]);
+
+  useEffect(() => {
     fetchPost();
   }, [id]);
 
@@ -188,13 +256,12 @@ function CommunityDetailPage() {
           <p className="font-bold text-2xl">{post.title}</p>
           <div className="flex items-center justify-between text-babgray-700 text-sm">
             <div className="flex items-center gap-4">
-              <p className="font-bold text-lg">{post.profiles?.nickname}</p>
+              <p className="font-bold text-lg">{post.profiles?.nickname || '익명'}</p>
               <span className="flex items-center gap-1 text-babgray-600">
                 <RiEyeLine /> <p>{post.view_count}</p>
               </span>
-              {/* 이 게시글에 달린 댓글 수 */}
               <span className="flex items-center gap-1 text-babgray-600">
-                <RiChat3Line /> <p>3</p>
+                <RiChat3Line /> <p>{comments.length}</p>
               </span>
             </div>
             <p className="font-medium text-[12px] text-babgray-500">
@@ -206,15 +273,20 @@ function CommunityDetailPage() {
           <p>{post.content}</p>
         </div>
         <div className="flex justify-center items-center gap-10 py-2">
-          {/* 신고 버튼 클릭시 reports modal 출력 */}
           <div
-            onClick={() => setReports(true)}
+            onClick={() => {
+              setReportInfo({
+                type: '게시글',
+                nickname: post.profiles?.nickname ?? null,
+                targetProfileId: post.profiles?.id,
+              });
+              setReports(true);
+            }}
             className="flex items-center gap-2 text-babbutton-red cursor-pointer"
           >
             <RiAlarmWarningLine />
             <p>게시글 신고</p>
           </div>
-          {reports && <ReportsModal setReports={setReports} />}
         </div>
       </div>
       {/* 댓글 영역 */}
@@ -253,7 +325,7 @@ function CommunityDetailPage() {
                 className="flex flex-col gap-4 border-y border-y-babgray py-5 text-babgray-700"
               >
                 <div className="flex justify-between items-start">
-                  <span className="text-babgray-800 font-bold"></span>
+                  <span className="text-babgray-800 font-bold">{comment.profiles?.nickname}</span>
                   <span className="text-babgray-700 text-[12px]">
                     {dayjs(comment.created_at).fromNow()}
                   </span>
@@ -307,11 +379,30 @@ function CommunityDetailPage() {
                       </button>
                     </div>
                   )}
-                  {/* 눌렀을때 reports 모달 */}
-                  <div className="flex items-center gap-1 text-babbutton-red cursor-pointer">
+                  <div
+                    onClick={() => {
+                      setReportInfo({
+                        type: '댓글',
+                        nickname: comment.profiles?.nickname ?? null,
+                        targetProfileId: comment.profiles?.id,
+                      });
+                      setReports(true);
+                    }}
+                    className="flex items-center gap-1 text-babbutton-red cursor-pointer"
+                  >
                     <RiAlarmWarningLine />
                     <p>신고하기</p>
                   </div>
+                  {reports && (
+                    <ReportsModal
+                      targetNickname={reportInfo.nickname ?? ''}
+                      handleReport={(type, title, reason) =>
+                        handleReport(type, title, reason, reportInfo.targetProfileId)
+                      }
+                      setReports={setReports}
+                      reportType={reportInfo.type}
+                    />
+                  )}
                 </div>
               </li>
             );
