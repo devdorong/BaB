@@ -1,28 +1,19 @@
-import { RiEdit2Line, RiSaveLine } from 'react-icons/ri';
-import { ButtonFillMd } from '../../../ui/button';
-import { useNavigate } from 'react-router-dom';
-import {
-  AsianFood,
-  Cafe,
-  ChineseFood,
-  Dessert,
-  Drink,
-  IndianFood,
-  Indoor,
-  ItalianFood,
-  JapaneseFood,
-  KFood,
-  KoreanFood,
-  MexicanFood,
-  Outdoor,
-  RoofTop,
-} from '../../../ui/tag';
-import CategoryListBadge from '../../../components/member/CategoryListBadge';
 import { useEffect, useState } from 'react';
-import { fetchInterestsGrouped } from '../../../lib/interests';
+import { RiSaveLine } from 'react-icons/ri';
+import { useNavigate } from 'react-router-dom';
+import CategoryListBadge from '../../../components/member/CategoryListBadge';
+import {
+  fetchCurrentProfileInterests,
+  fetchInterestsGrouped,
+  saveCurrentProfileInterests,
+} from '../../../lib/interests';
+import { ButtonFillMd } from '../../../ui/button';
 import CategoryBadge from '../../../ui/jy/CategoryBadge';
+import { useAuth } from '../../../contexts/AuthContext';
+import { supabase } from '../../../lib/supabase';
 
 function InterestPage() {
+  const { user } = useAuth();
   const navigate = useNavigate();
 
   const FOOD = '음식 종류';
@@ -38,8 +29,13 @@ function InterestPage() {
     const load = async () => {
       setLoading(true);
       try {
+        // 전체 관심사 목록
         const grouped = await fetchInterestsGrouped();
         setInterests(grouped);
+
+        // 사용자가 이미 선택한 관심사
+        const profileInterests = await fetchCurrentProfileInterests();
+        setSelected(profileInterests);
       } catch (err) {
         console.log(err);
       } finally {
@@ -56,10 +52,14 @@ function InterestPage() {
     setSelected(prev => prev.filter(interest => interest !== name));
 
   const handleSave = async () => {
+    // setSaving(true);
     try {
+      await saveCurrentProfileInterests(selected);
       navigate('/member/profile');
     } catch (error) {
       console.log(error);
+    } finally {
+      setSaving(false);
     }
   };
   return (
