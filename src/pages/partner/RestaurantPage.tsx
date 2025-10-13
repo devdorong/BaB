@@ -106,15 +106,16 @@ function RestaurantPage() {
               <div className="flex justify-between">
                 <span className="font-medium">휴무일</span>
                 <span>
-                  {' '}
                   {restaurant?.closeday
-                    ?.sort(
-                      (a, b) =>
-                        ['월', '화', '수', '목', '금', '토', '일'].indexOf(a) -
-                        ['월', '화', '수', '목', '금', '토', '일'].indexOf(b),
-                    )
-                    .map(day => `${day}요일`)
-                    .join(', ') || '-'}
+                    ? restaurant?.closeday
+                        ?.sort(
+                          (a, b) =>
+                            ['월', '화', '수', '목', '금', '토', '일'].indexOf(a) -
+                            ['월', '화', '수', '목', '금', '토', '일'].indexOf(b),
+                        )
+                        .map(day => `${day}요일`)
+                        .join(', ') || '-'
+                    : ''}
                 </span>
               </div>
             </div>
