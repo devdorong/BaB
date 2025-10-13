@@ -19,6 +19,10 @@ import type { Profile } from '../../../types/bobType';
 import { ButtonFillMd } from '../../../ui/button';
 import { Cafe, ChineseFood, GrayTag, Indoor, KFood, OrangeTag } from '../../../ui/tag';
 import { usePoint } from '../../../contexts/PointContext';
+import { supabase } from '../../../lib/supabase';
+import { fetchCurrentProfileInterests } from '../../../lib/interests';
+import { Divider } from 'antd';
+import CategoryBadge from '../../../ui/jy/CategoryBadge';
 
 function ProfilePage() {
   const { user, signOut } = useAuth();
@@ -35,6 +39,8 @@ function ProfilePage() {
   const [error, setError] = useState<string>('');
   // 사용자 닉네임
   const [nickName, setNickName] = useState<string>('');
+  // 사용자 관심사
+  const [interests, setInterests] = useState<string[]>([]);
 
   // 사용자 프로필 정보
   const loadProfile = async () => {
@@ -75,6 +81,22 @@ function ProfilePage() {
     const [first, middle, last] = path;
     return `${first}-${middle.slice(0, 2)}**-${last.slice(0, 2)}**`;
   };
+
+  // 관심사 저장
+  useEffect(() => {
+    const loadProfileInterests = async () => {
+      setLoading(true);
+      try {
+        const interests = await fetchCurrentProfileInterests();
+        setInterests(interests);
+      } catch (error) {
+        console.log(error);
+      } finally {
+        setLoading(false);
+      }
+    };
+    loadProfileInterests();
+  }, []);
 
   // 로그아웃 처리
   const handleLogout = () => {
@@ -182,7 +204,7 @@ function ProfilePage() {
                     </div>
                     <div>{profileData?.nickname}</div>
                   </div>
-                  <div className="w-full border-babgray-100 border"></div>
+                  <hr />
                   <div className="flex justify-between text-babgray-600">
                     <div className="flex items-center gap-[10px] ">
                       <RiMailLine />
@@ -190,7 +212,7 @@ function ProfilePage() {
                     </div>
                     <div>{user?.email}</div>
                   </div>
-                  <div className="w-full border-babgray-100 border"></div>
+                  <hr />
                   <div className="flex justify-between text-babgray-600">
                     <div className="flex items-center gap-[10px] ">
                       <RiPhoneLine />
@@ -198,7 +220,7 @@ function ProfilePage() {
                     </div>
                     <div>{maskPhone(profileData?.phone)}</div>
                   </div>
-                  <div className="w-full border-babgray-100 border"></div>
+                  <hr />
                   <div className="flex justify-between text-babgray-600">
                     <div className="flex items-center gap-[10px] ">
                       <RiCalendarLine />
@@ -221,10 +243,13 @@ function ProfilePage() {
                   </ButtonFillMd>
                 </div>
                 <div className="flex gap-[12px] mt-[12px] mb-[25px]">
-                  <KFood />
-                  <ChineseFood />
-                  <Cafe />
-                  <Indoor />
+                  {interests.length === 0 ? (
+                    <span className="text-babgray-500 text-[13px]">
+                      아직 선택된 관심사가 없어요
+                    </span>
+                  ) : (
+                    interests.map(item => <CategoryBadge key={item} name={item} />)
+                  )}
                 </div>
                 <p className="text-[13px] text-babgray-600">
                   관심사는 맛집 추천과 매칭에 활용됩니다
