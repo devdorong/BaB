@@ -5,14 +5,14 @@
  *   onClose={() => setIsOpen(false)} // 고정
  *   titleText="타이틀"
  *   contentText="내용"
- *   submitButtonText="확인버튼"
- *   closeButtonText="닫기버튼"
+ *   submitButtonText="확인버튼 텍스트"
+ *   closeButtonText="닫기버튼 텍스트"
  * />
  */
 import { RiCloseFill } from 'react-icons/ri';
 import { ButtonFillMd } from '../button';
 import type React from 'react';
-interface ModalProps {
+export interface ModalProps {
   isOpen: boolean;
   onClose: () => void;
   onSubmit?: () => void;
@@ -53,9 +53,11 @@ const Modal: React.FC<ModalProps> = ({
           <p className="font-bold">{contentText}</p>
         </div>
         <div className="flex justify-center gap-4 items-center bg-babgray-100 py-[20px] px-[20px] rounded-b-[30px]">
-          <ButtonFillMd onClick={onSubmit} style={{ background: submitButtonBgColor, flex: 1 }}>
-            {submitButtonText}
-          </ButtonFillMd>
+          {submitButtonText && (
+            <ButtonFillMd onClick={onSubmit} style={{ background: submitButtonBgColor, flex: 1 }}>
+              {submitButtonText}
+            </ButtonFillMd>
+          )}
           <ButtonFillMd onClick={onClose} className="w-[200px]  !text-babgray-700 !bg-babgray-200">
             {closeButtonText}
           </ButtonFillMd>

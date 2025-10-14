@@ -1,11 +1,10 @@
-import { RiErrorWarningLine } from 'react-icons/ri';
-import { GrayTag } from '../../../ui/tag';
-import { ButtonFillMd, ButtonLineMd } from '../../../ui/button';
-import { useNavigate } from 'react-router-dom';
 import { useState } from 'react';
-import type { Database, PostsInsert } from '../../../types/bobType';
+import { RiErrorWarningLine } from 'react-icons/ri';
+import { useNavigate } from 'react-router-dom';
 import { supabase } from '../../../lib/supabase';
-import { useAuth } from '../../../contexts/AuthContext';
+import type { Database, PostsInsert } from '../../../types/bobType';
+import { ButtonFillMd, ButtonLineMd } from '../../../ui/button';
+import Modal from '../../../ui/sdj/Modal';
 
 type CategoriesType = Database['public']['Tables']['posts']['Row']['post_category'];
 type TagType = Database['public']['Tables']['posts']['Insert']['tag'];
@@ -13,30 +12,35 @@ type TagFilterType = Exclude<TagType, '맛집추천요청'>;
 
 function CommunityWritePage() {
   const navigate = useNavigate();
+  const [isOpen, setIsOpen] = useState(false);
   const [title, setTitle] = useState('');
   const [content, setContent] = useState('');
   const [tag, setTag] = useState<TagFilterType>('자유');
   const [activeCategory, setActiveCategory] = useState<CategoriesType>('자유게시판');
+
+  const [modalText, setModalText] = useState('');
 
   const handleSubmit = async () => {
     try {
       const { data: userData, error: userError } = await supabase.auth.getUser();
 
       if (!title.trim() && !content.trim()) {
-        // 제목과 내용을 모두 입력해주세요. 모달 띄우기
-        alert('제목과 내용을 모두 입력해주세요.');
+        setModalText('제목과 내용을 모두 입력해주세요.');
+        setIsOpen(true);
         return;
       } else if (!title.trim()) {
-        alert('제목을 입력해주세요');
+        setModalText('제목을 입력해주세요.');
+        setIsOpen(true);
         return;
       } else if (!content.trim()) {
-        alert('내용을 입력해주세요');
+        setModalText('내용을 입력해주세요.');
+        setIsOpen(true);
         return;
       }
 
       if (userError || !userData) {
-        // 로그인이 필요합니다 모달 띄우기
-        alert('로그인이 필요합니다.');
+        setModalText('로그인이 필요합니다.');
+        setIsOpen(true);
         return;
       }
 
@@ -51,17 +55,18 @@ function CommunityWritePage() {
       const { data, error } = await supabase.from('posts').insert([newPost]).select('id').single();
 
       if (error) {
-        // 모달 띄우기
-        alert('등록에 실패했습니다');
+        setIsOpen(true);
+        setModalText('등록에 실패했습니다.');
         navigate(-1);
+        return;
       } else {
-        // 모달 띄우기
-        alert('등록되었습니다!');
+        setModalText('등록 되었습니다.');
+        setIsOpen(true);
         navigate(`/member/community/detail/${data.id}`);
       }
     } catch (error) {
-      // 모달 띄우기
-      alert('예상치 못한 오류 발생');
+      setModalText('예상치 못한 오류 발생.');
+      setIsOpen(true);
     }
   };
 
@@ -138,11 +143,21 @@ function CommunityWritePage() {
           <ButtonLineMd onClick={() => navigate('/member/community')} className="w-[320px]">
             취소
           </ButtonLineMd>
-          {/* 카테고리 선택안했거나 제목,내용 중 하나라도 false라면 모달창 띄움 */}
           <ButtonFillMd onClick={handleSubmit} className="w-[320px]">
             등록하기
           </ButtonFillMd>
         </div>
+        {isOpen && (
+          <Modal
+            isOpen={isOpen}
+            onClose={() => setIsOpen(false)}
+            titleText="등록 확인"
+            contentText={modalText}
+            closeButtonText="닫기"
+            submitButtonText="확인"
+            onSubmit={() => setIsOpen(false)}
+          />
+        )}
       </div>
     </div>
   );
