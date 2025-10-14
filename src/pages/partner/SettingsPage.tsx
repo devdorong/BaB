@@ -77,6 +77,7 @@ function SettingsPage() {
 
   useEffect(() => {
     console.log(user?.app_metadata.provider);
+    console.log(restaurant);
   }, []);
 
   return (
@@ -129,7 +130,7 @@ function SettingsPage() {
                 <div className="flex flex-col gap-4">
                   <div className="flex flex-col items-start gap-1">
                     <div className="font-semibold">사업장등록번호</div>
-                    <div className="">123-45-67890</div>
+                    <div className="">{restaurant?.business_number}</div>
                   </div>
                 </div>
               </div>

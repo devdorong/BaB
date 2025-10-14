@@ -173,14 +173,6 @@ function PartnerSignupPage() {
     return urlData?.publicUrl ?? null;
   };
 
-  // Dayjs → 'HH:mm:ss'
-  const toTime = (t: any) => {
-    if (!t) return null;
-    if (typeof t?.format === 'function') return t.format('HH:mm:ss');
-    if (typeof t === 'string') return t;
-    return null;
-  };
-
   const allChecked = Object.values(agreements).every(Boolean);
   const toggleAll = () => {
     const newValue = !allChecked;
@@ -258,7 +250,7 @@ function PartnerSignupPage() {
       // }
 
       // alert('등록 완료! 프로필이 파트너로 전환되었습니다.');
-      await submitApplication();
+      await submitApplication(thumbnailUrl);
 
       navigate('/partner');
     } finally {
@@ -401,8 +393,8 @@ function PartnerSignupPage() {
                     <span className="text-bab-500">*</span>
                   </div>
                   <CategorySelect
-                    value={formData.category}
-                    onChange={value => setFormData({ category: value })}
+                    value={formData.categoryId}
+                    onChange={value => setFormData({ categoryId: value })}
                   />
                 </div>
 

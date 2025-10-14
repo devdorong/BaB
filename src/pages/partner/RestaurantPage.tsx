@@ -6,6 +6,8 @@ import { useAuth } from '../../contexts/AuthContext';
 import type { Profile } from '../../types/bobType';
 import { getProfile } from '../../lib/propile';
 import DaysSince from '../../components/partner/DaysSince';
+import { fetchInterests } from '../../lib/interests';
+import { Divider } from 'antd';
 
 function RestaurantPage() {
   const { restaurant } = useRestaurant();
@@ -58,6 +60,25 @@ function RestaurantPage() {
     }
   }, []);
 
+  const [categories, setCategories] = useState<{ id: number; name: string }[]>([]);
+
+  useEffect(() => {
+    const loadCategories = async () => {
+      const all = await fetchInterests();
+      const foodCategories = all.filter(item => item.category === '음식 종류');
+      setCategories(foodCategories);
+    };
+    loadCategories();
+  }, []);
+
+  const categoryName =
+    categories.find(item => item.id === restaurant?.category_id)?.name || '알수없음';
+
+  const formatTime = (timeString?: string | null): string => {
+    if (!timeString) return '-';
+    return timeString.slice(0, 5); // "09:00:00" → "09:00"
+  };
+
   return (
     <>
       <PartnerBoardHeader
@@ -77,8 +98,7 @@ function RestaurantPage() {
               </div>
               <div className="flex justify-between">
                 <span className="font-medium">카테고리</span>
-                {/* 수정해야됨!! */}
-                <span>{restaurant ? restaurant.category_id : '양식'}</span>
+                <span>{categoryName}</span>
               </div>
               <div className="flex justify-between">
                 <span className="font-medium">전화번호</span>
@@ -97,24 +117,25 @@ function RestaurantPage() {
               </div>
               <div className="flex justify-between">
                 <span className="font-medium">오픈시간</span>
-                <span>{restaurant?.opentime}</span>
+                <span>{formatTime(restaurant?.opentime)}</span>
               </div>
               <div className="flex justify-between">
                 <span className="font-medium">마감 시간</span>
-                <span>{restaurant?.closetime}</span>
+                <span>{formatTime(restaurant?.closetime)}</span>
               </div>
               <div className="flex justify-between">
                 <span className="font-medium">휴무일</span>
                 <span>
-                  {' '}
                   {restaurant?.closeday
-                    ?.sort(
-                      (a, b) =>
-                        ['월', '화', '수', '목', '금', '토', '일'].indexOf(a) -
-                        ['월', '화', '수', '목', '금', '토', '일'].indexOf(b),
-                    )
-                    .map(day => `${day}요일`)
-                    .join(', ') || '-'}
+                    ? restaurant?.closeday
+                        ?.sort(
+                          (a, b) =>
+                            ['월', '화', '수', '목', '금', '토', '일'].indexOf(a) -
+                            ['월', '화', '수', '목', '금', '토', '일'].indexOf(b),
+                        )
+                        .map(day => `${day}요일`)
+                        .join(', ') || '-'
+                    : ''}
                 </span>
               </div>
             </div>
