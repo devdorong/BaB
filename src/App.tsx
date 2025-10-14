@@ -126,7 +126,9 @@ function App() {
             }}
           >
             <Routes>
+              
               <Route path="/" element={<IndexPage />} />
+
               {/* Member */}
               <Route path="/member" element={<MemberLayout />}>
                 <Route index element={<MemberPage />} />

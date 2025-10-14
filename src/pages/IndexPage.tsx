@@ -55,10 +55,10 @@ function IndexPage() {
   };
 
   return (
-    <div className="flex w-screen h-screen overflow-hidden">
-      <div className="flex w-fit relative group overflow-hidden">
+    <div className="flex w-[calc(100vw/0.9)] h-[calc(100vh/0.9)] overflow-hidden">
+      <div className="flex w-[50%] relative group overflow-hidden">
         <img
-          className="w-screen h-screen object-cover transition group-hover:blur-sm outline-none group-hover:scale-105 overflow-hidden"
+          className="w-full h-full object-cover transition group-hover:blur-sm outline-none group-hover:scale-105 overflow-hidden"
           src="/unsplash_ZgREXhl8ER0.png"
           alt="파트너 이미지"
         />
@@ -76,9 +76,9 @@ function IndexPage() {
           </button>
         </div>
       </div>
-      <div className="flex w-fit relative group overflow-hidden">
+      <div className="flex w-[50%] relative group overflow-hidden">
         <img
-          className="w-screen h-screen object-cover transition group-hover:blur-sm outline-none group-hover:scale-105 "
+          className="w-full h-full object-cover transition group-hover:blur-sm outline-none group-hover:scale-105 "
           src="/membermain.png"
           alt="멤버 이미지"
         />
