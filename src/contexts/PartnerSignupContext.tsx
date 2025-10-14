@@ -18,7 +18,7 @@ const toTime = (t: any) => {
 
 type RestaurantStatus = Database['public']['Enums']['restaurant_status_enum'];
 
-interface PartnerFormData {
+export interface PartnerFormData {
   email: string;
   nickname: string;
   name: string;
@@ -26,7 +26,7 @@ interface PartnerFormData {
   businessNumber: string;
   restaurantName: string;
   address: string;
-  category: string;
+  categoryId: number | null;
 
   storeIntro: string;
   openTime: Dayjs | null;
@@ -38,13 +38,14 @@ interface PartnerFormData {
   status: RestaurantStatus;
   latitude?: number | null;
   longitude?: number | null;
+  thumbnailUrl?: string | null;
 }
 
 interface PartnerSignupContextType {
   formData: PartnerFormData;
   setFormData: (data: Partial<PartnerFormData>) => void;
   saveDraft: () => Promise<void>;
-  submitApplication: () => Promise<void>;
+  submitApplication: (thumbnailUrl?: string) => Promise<void>;
   resetForm: () => void;
   loading: boolean;
 }
@@ -102,7 +103,7 @@ export function PartnerSignupProvider({ children }: PartnerSignupProviderProps) 
     businessNumber: '',
     restaurantName: '',
     address: '',
-    category: '',
+    categoryId: null,
 
     storeIntro: '',
     openTime: null,
@@ -114,6 +115,7 @@ export function PartnerSignupProvider({ children }: PartnerSignupProviderProps) 
     status: 'draft',
     latitude: null,
     longitude: null,
+    thumbnailUrl: null,
   });
 
   const setFormData = (data: Partial<PartnerFormData>) =>
@@ -140,6 +142,8 @@ export function PartnerSignupProvider({ children }: PartnerSignupProviderProps) 
           business_number: formData.businessNumber,
           latitude: formData.latitude,
           longitude: formData.longitude,
+          category_id: formData.categoryId,
+          thumbnail_url: formData.thumbnailUrl,
           status: 'draft',
         },
       ]);
@@ -153,7 +157,7 @@ export function PartnerSignupProvider({ children }: PartnerSignupProviderProps) 
     }
   };
 
-  const submitApplication = async () => {
+  const submitApplication = async (thumbnailUrl?: string) => {
     try {
       setLoading(true);
       if (!user) {
@@ -174,10 +178,11 @@ export function PartnerSignupProvider({ children }: PartnerSignupProviderProps) 
           business_number: formData.businessNumber,
           latitude: formData.latitude,
           longitude: formData.longitude,
-          status: 'pending', // 신청 완료 상태
+          category_id: formData.categoryId,
+          thumbnail_url: thumbnailUrl || formData.thumbnailUrl,
+          status: 'pending',
         },
       ]);
-
       if (error) throw error;
 
       // 프로필 업데이트 (role 을 patner 로)
@@ -210,7 +215,7 @@ export function PartnerSignupProvider({ children }: PartnerSignupProviderProps) 
       businessNumber: '',
       restaurantName: '',
       address: '',
-      category: '',
+      categoryId: null,
 
       storeIntro: '',
       openTime: null,
@@ -221,6 +226,7 @@ export function PartnerSignupProvider({ children }: PartnerSignupProviderProps) 
       storeFiles: [],
       latitude: null,
       longitude: null,
+      thumbnailUrl: null,
       status: 'draft',
     });
   };

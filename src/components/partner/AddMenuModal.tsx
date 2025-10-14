@@ -1,11 +1,6 @@
 import React, { useEffect, useRef, useState } from 'react';
 import type { Category } from './MenusList';
 
-type Interest = {
-  id: number;
-  name: string; // 예: "매운맛", "치즈", "단짠"
-};
-
 type AddMenuProps = {
   open: boolean;
   onClose: () => void;
@@ -23,26 +18,12 @@ type AddMenuProps = {
 const AddMenuModal = ({ open, onClose, onSubmit }: AddMenuProps) => {
   const [file, setFile] = useState<File | null>(null);
   const fileInputRef = useRef<HTMLInputElement>(null);
-  const [selectedInterests, setSelectedInterests] = useState<number[]>([]);
 
-  // 리셋 함수
   const [title, setTitle] = useState('');
   const [description, setDescription] = useState('');
   const [price, setPrice] = useState(0);
-  const [tag, setTag] = useState('');
   const [interest, setInterest] = useState('');
   const [enable, setEnable] = useState(true);
-
-  // 관심사
-  const interests: Interest[] = [
-    { id: 1, name: '양식' },
-    { id: 2, name: '실내' },
-    { id: 3, name: '술' },
-  ]; // Supabase에서 불러와야 함
-
-  const toggleInterest = (id: number) => {
-    setSelectedInterests(prev => (prev.includes(id) ? prev.filter(v => v !== id) : [...prev, id]));
-  };
 
   // 파일 선택
   const handlePickFiles = (e: React.ChangeEvent<HTMLInputElement>) => {
@@ -147,31 +128,6 @@ const AddMenuModal = ({ open, onClose, onSubmit }: AddMenuProps) => {
                 placeholder="예: 12000"
                 className="w-full h-[40px] rounded-lg border border-gray-300 px-3 py-2 text-sm focus:border-[#FF5722] focus:ring-1 focus:ring-[#FF5722] outline-none"
               />
-            </div>
-          </div>
-
-          {/* 관심사 */}
-          <div className="flex flex-col gap-1">
-            <label className="text-sm font-medium text-gray-700">관심사</label>
-            <div className="flex flex-wrap gap-2">
-              {interests.map(item => {
-                const active = selectedInterests.includes(item.id);
-                return (
-                  <button
-                    key={item.id}
-                    type="button"
-                    onClick={() => toggleInterest(item.id)}
-                    className={[
-                      'px-3 py-1 rounded-full text-sm border transition',
-                      active
-                        ? 'bg-[#FF5722] text-white border-[#FF5722]'
-                        : 'bg-gray-100 text-gray-700 border-gray-200 hover:bg-gray-200',
-                    ].join(' ')}
-                  >
-                    {item.name}
-                  </button>
-                );
-              })}
             </div>
           </div>
 

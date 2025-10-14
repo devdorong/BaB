@@ -19,6 +19,9 @@ body,
   height: 100%;
   font-family: 'NotoSansKR-VariableFont_wght';
 }
+html {
+  zoom: 0.9;
+}
 
 .container-app {
   @apply max-w-[var(--app-max-w)] mx-auto px-4;

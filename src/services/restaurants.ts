@@ -21,7 +21,7 @@ export const getMyRestaurant = async (): Promise<Restaurant | null> => {
     if (error && error.code !== 'PGRST116') throw error;
     return data ?? null;
   } catch (err) {
-    console.error('❌ getMyRestaurant 오류:', err);
+    console.error('getMyRestaurant 오류:', err);
     return null;
   }
 };
