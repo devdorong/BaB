@@ -8,7 +8,7 @@ import type { Comment, Database, Posts, ReportsInsert } from '../../../types/bob
 import { ButtonFillMd } from '../../../ui/button';
 import ReportsModal from '../../../ui/sdj/ReportsModal';
 import TagBadge from '../../../ui/TagBadge';
-import { Modal } from 'antd';
+import Modal from '../../../ui/sdj/Modal';
 
 type PostWithProfile = Posts & {
   profiles: { id: string; nickname: string } | null;
@@ -20,6 +20,15 @@ type CommentWithProfile = Comment & {
     nickname: string;
     avatar_url?: string;
   } | null;
+};
+
+type ModalType = {
+  isOpen: boolean;
+  title: string;
+  content: string;
+  closeText: string;
+  submitText?: string;
+  onSubmit?: () => void;
 };
 
 export type ReportsType = Database['public']['Tables']['reports']['Insert']['report_type'];
@@ -48,12 +57,30 @@ function CommunityDetailPage() {
   const [editingId, setEditingId] = useState<number | null>(null);
   const [editText, setEditText] = useState('');
 
-  const [modalData, setModalData] = useState({
+  const [modal, setModal] = useState<ModalType>({
     isOpen: false,
     title: '',
     content: '',
-    onSubmit: () => {},
+    closeText: '',
+    submitText: '',
   });
+
+  const openModal = (
+    title: string,
+    content: string,
+    closeText: string,
+    submitText?: string,
+    onSubmit?: () => void,
+  ) => {
+    setModal({
+      isOpen: true,
+      title,
+      content,
+      closeText,
+      submitText,
+      onSubmit,
+    });
+  };
 
   const fetchComments = async () => {
     if (!post?.id) return;
@@ -83,29 +110,31 @@ function CommunityDetailPage() {
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
-    // 모달창 띄우기
-    if (!user) return alert('로그인이 필요합니다');
+    if (!user) {
+      openModal(
+        '로그인 필요',
+        '로그인이 필요합니다. 로그인 페이지로 이동하시겠습니까?',
+        '취소',
+        '확인',
+      );
+      return;
+    }
     if (!content.trim()) {
-      // 모달창 띄우기
-      alert('댓글 내용을 입력해주세요.');
+      openModal('내용 확인', '댓글 내용을 입력해주세요.', '닫기');
       return;
     }
-    if (
-      // 모달창 띄우기
-      !window.confirm('댓글을 등록하시겠습니까?')
-    ) {
-      return;
-    }
-    const { error } = await supabase
-      .from('comments')
-      .insert({ post_id: post?.id, profile_id: user.id, content });
+    openModal('등록 확인', '댓글을 등록하시겠습니까?', '취소', '확인', async () => {
+      const { error } = await supabase
+        .from('comments')
+        .insert({ post_id: post?.id, profile_id: user.id, content });
 
-    if (!error) {
-      setContent('');
-      fetchComments();
-    } else {
-      console.error(error);
-    }
+      if (!error) {
+        setContent('');
+        fetchComments();
+      } else {
+        console.error(error);
+      }
+    });
   };
 
   const handleEditSave = async (id: number) => {
@@ -120,6 +149,7 @@ function CommunityDetailPage() {
   const handleDelete = async (id: number) => {
     // 모달창 띄우기
     const confirmDelete = window.confirm('정말 삭제하시겠습니까?');
+    openModal('댓글 삭제', '해당 댓글을 삭제하시겠습니까?', '취소', '삭제');
     if (!confirmDelete) return;
 
     const { error } = await supabase.from('comments').delete().eq('id', id);
@@ -139,6 +169,7 @@ function CommunityDetailPage() {
     }
 
     if (!targetProfileId) {
+      // 모달띄우기
       alert('신고 대상 정보를 불러오지 못했습니다.');
       return;
     }
@@ -308,7 +339,6 @@ function CommunityDetailPage() {
                 <div className="font-bold">{comments.length}</div>개
               </span>
             </div>
-            {/* 댓글등록 클릭시 확인모달 출력 */}
             <div>
               <ButtonFillMd type="submit">댓글 등록</ButtonFillMd>
             </div>
@@ -416,6 +446,20 @@ function CommunityDetailPage() {
             );
           })}
         </ul>
+        {modal.isOpen && (
+          <Modal
+            isOpen={modal.isOpen}
+            onClose={() => setModal(prev => ({ ...prev, isOpen: false }))}
+            onSubmit={() => {
+              if (modal.onSubmit) modal.onSubmit();
+              setModal(prev => ({ ...prev, isOpen: false }));
+            }}
+            titleText={modal.title}
+            contentText={modal.content}
+            submitButtonText={modal.submitText}
+            closeButtonText={modal.closeText}
+          />
+        )}
       </div>
     </div>
   );
