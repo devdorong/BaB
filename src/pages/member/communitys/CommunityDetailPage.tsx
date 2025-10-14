@@ -4,11 +4,12 @@ import { RiAlarmWarningLine, RiChat3Line, RiEyeLine } from 'react-icons/ri';
 import { useNavigate, useParams } from 'react-router-dom';
 import { useAuth } from '../../../contexts/AuthContext';
 import { supabase } from '../../../lib/supabase';
-import type { Comment, Database, Posts, ReportsInsert } from '../../../types/bobType';
+import type { Comment, Database, Posts } from '../../../types/bobType';
 import { ButtonFillMd } from '../../../ui/button';
+import Modal from '../../../ui/sdj/Modal';
+import { useModal } from '../../../ui/sdj/ModalState';
 import ReportsModal from '../../../ui/sdj/ReportsModal';
 import TagBadge from '../../../ui/TagBadge';
-import Modal from '../../../ui/sdj/Modal';
 
 type PostWithProfile = Posts & {
   profiles: { id: string; nickname: string } | null;
@@ -22,19 +23,11 @@ type CommentWithProfile = Comment & {
   } | null;
 };
 
-type ModalType = {
-  isOpen: boolean;
-  title: string;
-  content: string;
-  closeText: string;
-  submitText?: string;
-  onSubmit?: () => void;
-};
-
 export type ReportsType = Database['public']['Tables']['reports']['Insert']['report_type'];
 export type ReportsStatus = Database['public']['Tables']['reports']['Insert'];
 
 function CommunityDetailPage() {
+  const { modal, closeModal, openModal } = useModal();
   const navigate = useNavigate();
   const [reports, setReports] = useState(false);
   const [reportInfo, setReportInfo] = useState<{
@@ -57,37 +50,12 @@ function CommunityDetailPage() {
   const [editingId, setEditingId] = useState<number | null>(null);
   const [editText, setEditText] = useState('');
 
-  const [modal, setModal] = useState<ModalType>({
-    isOpen: false,
-    title: '',
-    content: '',
-    closeText: '',
-    submitText: '',
-  });
-
-  const openModal = (
-    title: string,
-    content: string,
-    closeText: string,
-    submitText?: string,
-    onSubmit?: () => void,
-  ) => {
-    setModal({
-      isOpen: true,
-      title,
-      content,
-      closeText,
-      submitText,
-      onSubmit,
-    });
-  };
-
   const fetchComments = async () => {
     if (!post?.id) return;
 
     const { data, error } = await supabase
       .from('comments')
-      .select(`*,profiles (nickname)`)
+      .select(`*,profiles (id,nickname)`)
       .eq('post_id', post?.id)
       .order(`created_at`, { ascending: true });
     if (!error && data) {
@@ -134,6 +102,7 @@ function CommunityDetailPage() {
       } else {
         console.error(error);
       }
+      closeModal();
     });
   };
 
@@ -147,13 +116,13 @@ function CommunityDetailPage() {
   };
 
   const handleDelete = async (id: number) => {
-    // 모달창 띄우기
-    const confirmDelete = window.confirm('정말 삭제하시겠습니까?');
-    openModal('댓글 삭제', '해당 댓글을 삭제하시겠습니까?', '취소', '삭제');
-    if (!confirmDelete) return;
-
-    const { error } = await supabase.from('comments').delete().eq('id', id);
-    if (!error) fetchComments();
+    openModal('댓글 삭제', '해당 댓글을 삭제하시겠습니까?', '취소', '삭제', async () => {
+      const { error } = await supabase.from('comments').delete().eq('id', id);
+      if (!error) {
+        fetchComments();
+      }
+      closeModal();
+    });
   };
 
   const handleReport = async (
@@ -163,14 +132,12 @@ function CommunityDetailPage() {
     targetProfileId: string | undefined,
   ) => {
     if (!user) {
-      // 모달띄우기
-      alert('로그인이 필요합니다.');
+      openModal('로그인 확인', '로그인이 필요합니다.', '닫기');
       return;
     }
 
     if (!targetProfileId) {
-      // 모달띄우기
-      alert('신고 대상 정보를 불러오지 못했습니다.');
+      openModal('사용자 정보', '사용자 정보를 불러오는데 실패했습니다.', '닫기');
       return;
     }
 
@@ -185,11 +152,9 @@ function CommunityDetailPage() {
 
     if (error) {
       console.error('신고 실패:', error);
-      // 모달띄우기
-      alert('신고 중 오류가 발생했습니다.');
+      openModal('오류', '신고 중 오류가 발생했습니다.', '닫기');
     } else {
-      // 모달띄우기
-      alert('신고가 접수되었습니다.');
+      openModal('신고완료', '신고가 접수되었습니다.', '닫기');
     }
   };
 
@@ -449,11 +414,8 @@ function CommunityDetailPage() {
         {modal.isOpen && (
           <Modal
             isOpen={modal.isOpen}
-            onClose={() => setModal(prev => ({ ...prev, isOpen: false }))}
-            onSubmit={() => {
-              if (modal.onSubmit) modal.onSubmit();
-              setModal(prev => ({ ...prev, isOpen: false }));
-            }}
+            onClose={closeModal}
+            onSubmit={modal.onSubmit}
             titleText={modal.title}
             contentText={modal.content}
             submitButtonText={modal.submitText}
