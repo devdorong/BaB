@@ -5,6 +5,7 @@ import type { Place } from '../../types/place';
 interface KkoMapProps {
   radius?: number;
   onFetched?: (places: Place[]) => void;
+  onCenterChange?: (center: { lat: number; lng: number }) => void;
 }
 // 헤더 쪽에 유틸 추가 (컴포넌트 위)
 const toRad = (d: number) => (d * Math.PI) / 180;
@@ -24,7 +25,7 @@ const REFINE_WINDOW_MS = 7000; // 보정 수집 시간
 
 const DEFAULT_CENTER = { lat: 35.87058104715006, lng: 128.60503833459654 };
 
-const KkoMapDetail = ({ radius = 1000, onFetched }: KkoMapProps) => {
+const KkoMapDetail = ({ radius = 1000, onFetched, onCenterChange }: KkoMapProps) => {
   const mapRef = useRef<kakao.maps.Map | null>(null);
   const [center, setCenter] = useState(DEFAULT_CENTER);
   const [loading, setLoading] = useState(true);
@@ -33,6 +34,10 @@ const KkoMapDetail = ({ radius = 1000, onFetched }: KkoMapProps) => {
   const paginationRef = useRef<any | null>(null);
   const appendingRef = useRef(false); // append 여부 플래그
   const [hasMore, setHasMore] = useState(true);
+
+  useEffect(() => {
+    onCenterChange?.(center);
+  }, [center, onCenterChange]);
   // 현재 위치 가져오기
   useEffect(() => {
     if (!navigator.geolocation) {

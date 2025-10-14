@@ -33,6 +33,10 @@ import {
  * state 의 모양
  * action 의 모양
  */
+/**
+ * DirectChatContext의 타입 정의
+ * 채팅 관련 상태와 액션을 관리하는 Context의 인터페이스
+ */
 interface DirectChatContextType {
   // state ========================
   chats: ChatListItem[]; // 채팅방 여러개 관리
@@ -40,13 +44,14 @@ interface DirectChatContextType {
   users: ChatUser[]; // 검색된 여러 사용자
   currentChat: ChatListItem | null; // 현재 선택된 채팅방 정보
   loading: boolean; // 로딩 상태 관리
-  error: string | null;
+  error: string | null; // 에러 메시지 상태
   // action ========================
   loadChats: () => Promise<void>; // 채팅 목록 로딩 상태관리
   loadMessages: (chatId: string) => Promise<void>; // 특정 채팅방의 메시지 조회
   // 메시지가 제대로 전송되었는지 아닌지 체크를 위해서 boolean 리턴 타입
   sendMessage: (messageData: CreateMessageData) => Promise<boolean>; // 메시지 전송
   searchUsers: (searchTerm: string) => Promise<void>; // 검색어(닉네임)롤 사용자 검색
+  setUsers: (users: ChatUser[]) => void; // 사용자 목록 직접 설정 (수정사항: 추가됨)
   createDirectChat: (participantId: string) => Promise<string | null>; // 채팅방 생성 또는 접근
   exitDirectChat: (chatId: string) => Promise<boolean>; // 채팅방 나가기
   clearError: () => void; // 에러 상태만 초기화 하기
@@ -150,21 +155,31 @@ export const DirectChatProider: React.FC<DirectChatProiderProps> = ({ children }
     [handleError, loadChats, loadMessages],
   );
 
-  // 검색어로 사용자 목록 출력
+  /**
+   * 검색어로 사용자 목록 출력
+   *
+   * @param searchTerm - 검색할 사용자 닉네임 또는 이메일
+   *
+   * 수정사항:
+   * - 전역 로딩 상태(setLoading) 제거하여 불필요한 리랜더링 방지
+   * - 검색 기능만 담당하도록 단순화
+   * - 로딩 상태는 컴포넌트에서 로컬로 관리
+   */
   const searchUsers = useCallback(
     async (searchTerm: string) => {
       try {
-        setLoading(true);
+        // Supabase를 통해 사용자 검색 API 호출
         const response = await searchUsersService(searchTerm);
         if (response.success && response.data) {
+          // 검색 성공 시 사용자 목록 상태 업데이트
           setUsers(response.data);
         } else {
+          // 검색 실패 시 에러 메시지 설정
           handleError(response.error || '사용자 검색에 실패했습니다.');
         }
       } catch (err) {
+        // 예외 발생 시 에러 메시지 설정
         handleError('사용자 검색 중 오류가 발생했습니다.');
-      } finally {
-        setLoading(false);
       }
     },
     [handleError],
@@ -244,6 +259,7 @@ export const DirectChatProider: React.FC<DirectChatProiderProps> = ({ children }
     loadMessages,
     sendMessage,
     searchUsers,
+    setUsers,
     createDirectChat,
     exitDirectChat: exitDirectChatHandler,
     clearError,
