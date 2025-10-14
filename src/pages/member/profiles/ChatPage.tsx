@@ -2,23 +2,22 @@ import { RiSearchLine } from 'react-icons/ri';
 import { ButtonFillMd } from '../../../ui/button';
 import { useNavigate } from 'react-router-dom';
 import DirectChatList from '../../../components/member/chat/DirectChatList';
-import { useState } from 'react';
+import { useCallback, useRef, useState } from 'react';
 import DirectChatRoom from '../../../components/member/chat/DirectChatRoom';
 
 function ChatPage() {
   const navigate = useNavigate();
-
   // 현재 선택된 채팅방의 ID 상태 관리
-  const [selectedChatId, setSelectedChatId] = useState<string | null>('');
+  const [selectedChatId, setSelectedChatId] = useState<string | null>(null);
 
   /**
    * 채팅방 선택 처리 함수
    * DirectChatList 에서 목록 중 채팅방 1개를 선택하면 호출됨
    * 선택한 채팅방 ID를 상태에 보관함
    */
-  const handleChatSelect = (chatId: string) => {
+  const handleChatSelect = useCallback((chatId: string) => {
     setSelectedChatId(chatId);
-  };
+  }, []);
 
   /**
    * 새로운 채팅 생성 처리 함수
@@ -28,6 +27,7 @@ function ChatPage() {
   const handleCreateChat = () => {
     // 새로운 채팅 방 생성 처리
   };
+
   return (
     <div className="chat-page max-w-[1280px] text-center m-auto min-h-screen">
       <div className="flex py-[15px]">
@@ -55,6 +55,7 @@ function ChatPage() {
           {/* 선택된 채팅방 ID 유무 */}
           {selectedChatId ? (
             // /* 채팅방이 선택된 경우 : DirectChatRoom */
+
             <DirectChatRoom chatId={selectedChatId} />
           ) : (
             // /* 채팅방이 선택되지 않은 경우 : 환영 화면 표시 */}

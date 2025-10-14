@@ -1,11 +1,13 @@
-import { useState } from 'react';
+import { useEffect, useState } from 'react';
 import { RiArrowLeftSLine, RiArrowRightSLine, RiSearchLine } from 'react-icons/ri';
 import { useNavigate } from 'react-router-dom';
-import { mockReviews } from '../../../types/review';
+import { fetchInterestsGrouped } from '../../../lib/interests';
+import { fetchRestaurants, type RestaurantsType } from '../../../lib/restaurants';
 import { ReviewCard } from '../../../ui/dorong/ReviewMockCard';
+import { categoryColors, defaultCategoryColor } from '../../../ui/jy/categoryColors';
 import { BlackTag, GrayTag } from '../../../ui/tag';
 
-const categories = ['전체', '한식', '중식', '일식', '양식', '분식', '아시안', '인도', '멕시칸'];
+const FOOD = '음식 종류';
 
 function ReviewsPage() {
   const navigate = useNavigate();
@@ -13,17 +15,93 @@ function ReviewsPage() {
   const [selectedCategory, setSelectedCategory] = useState('전체');
   const [currentPage, setCurrentPage] = useState(1);
   const itemsPerPage = 6;
+  const [restaurants, setRestaurants] = useState<RestaurantsType[]>([]);
+  const [interests, setInterests] = useState<Record<string, string[]>>({});
+  const [loading, setLoading] = useState<boolean>(false);
+  // 사용자 위치
+  const [userPos, setUserPos] = useState<{ lat: number; lng: number } | null>(null);
+
+  // 카테고리
+  useEffect(() => {
+    const restaurantLoad = async () => {
+      setLoading(true);
+      try {
+        const [grouped, restaurantData] = await Promise.all([
+          fetchInterestsGrouped(),
+          fetchRestaurants(),
+        ]);
+        setInterests(grouped);
+        setRestaurants(restaurantData);
+      } catch (err) {
+        // console.log(err);
+      } finally {
+        setLoading(false);
+      }
+    };
+    restaurantLoad();
+  }, []);
 
   // 카테고리 필터 적용
   const filtered =
     selectedCategory === '전체'
-      ? mockReviews
-      : mockReviews.filter(r => r.category === selectedCategory);
+      ? restaurants
+      : restaurants.filter(item => item.interests?.name === selectedCategory);
 
   const startIdx = (currentPage - 1) * itemsPerPage;
   const endIdx = startIdx + itemsPerPage;
   const currentItems = filtered.slice(startIdx, endIdx);
   const totalPages = Math.ceil(filtered.length / itemsPerPage);
+
+  useEffect(() => {
+    const load = async () => {
+      setLoading(true);
+      try {
+        const grouped = await fetchInterestsGrouped();
+        setInterests(grouped);
+      } catch (err) {
+        console.log(err);
+      } finally {
+        setLoading(false);
+      }
+    };
+    load();
+  }, []);
+
+  // 현재위치
+  useEffect(() => {
+    if (!navigator.geolocation) {
+      console.error('이 브라우저는 위치 정보를 지원하지 않습니다.');
+      return;
+    }
+
+    navigator.geolocation.getCurrentPosition(
+      pos => {
+        setUserPos({
+          lat: pos.coords.latitude,
+          lng: pos.coords.longitude,
+        });
+      },
+      err => {
+        console.error('위치 정보를 가져올 수 없습니다:', err);
+      },
+      { enableHighAccuracy: true },
+    );
+  }, []);
+
+  // 현재 위치 기준으로 거리 계산
+  const getDistance = (lat1: number, lon1: number, lat2: number, lon2: number): string => {
+    const R = 6371; // 지구 반지름 (km)
+    const dLat = ((lat2 - lat1) * Math.PI) / 180;
+    const dLon = ((lon2 - lon1) * Math.PI) / 180;
+    const a =
+      Math.sin(dLat / 2) ** 2 +
+      Math.cos((lat1 * Math.PI) / 180) * Math.cos((lat2 * Math.PI) / 180) * Math.sin(dLon / 2) ** 2;
+    const c = 2 * Math.atan2(Math.sqrt(a), Math.sqrt(1 - a));
+    const distance = R * c;
+
+    // 단위 변환 (1km 미만이면 m, 그 이상이면 km)
+    return distance < 1 ? `${(distance * 1000).toFixed(0)} m` : `${distance.toFixed(1)} km`;
+  };
 
   return (
     <div className="w-full bg-bg-bg">
@@ -57,24 +135,43 @@ function ReviewsPage() {
               <RiSearchLine size={20} className=" text-white" />
             </div>
           </div>
-          <div className="flex gap-[8px] justify-start ">
-            {categories.map(cat => (
+          <div className="flex gap-[8px]">
+            <div className="flex gap-[8px] justify-start ">
               <button
-                key={cat}
                 onClick={() => {
-                  setSelectedCategory(cat);
+                  setSelectedCategory('전체');
                   setCurrentPage(1);
                 }}
                 className={`px-4 py-2 rounded-full ${
-                  selectedCategory === cat
-                    ? 'bg-bab-500 text-white'
-                    : 'bg-babgray-100 text-babgray-700'
+                  selectedCategory === '전체'
+                    ? 'bg-bab-500 text-white text-[13px]'
+                    : 'bg-babgray-100 text-babgray-700 text-[13px]'
                 }`}
               >
-                {cat}
+                전체
               </button>
-            ))}
+            </div>
+
+            <div className="flex gap-[8px] justify-start ">
+              {(interests[FOOD] ?? []).map(cat => (
+                <button
+                  key={cat}
+                  onClick={() => {
+                    setSelectedCategory(cat);
+                    setCurrentPage(1);
+                  }}
+                  className={`px-4 py-2 rounded-full ${
+                    selectedCategory === cat
+                      ? 'bg-bab-500 text-white text-[13px]'
+                      : 'bg-babgray-100 text-babgray-700 text-[13px]'
+                  }`}
+                >
+                  {cat}
+                </button>
+              ))}
+            </div>
           </div>
+
           <div className="flex justify-start gap-[8px]">
             <BlackTag>거리순</BlackTag>
             <GrayTag>별점순</GrayTag>
@@ -85,19 +182,35 @@ function ReviewsPage() {
           onClick={() => navigate('/member/reviews/detail')}
           className="grid grid-cols-2 gap-[34px]"
         >
-          {currentItems.map(r => (
-            <ReviewCard
-              key={r.id}
-              name={r.name}
-              category={r.category}
-              img={r.img}
-              review={r.review}
-              rating={r.rating}
-              distance={r.distance}
-              tagBg={r.tagBg}
-              tagText={r.tagText}
-            />
-          ))}
+          {currentItems.map(r => {
+            const category = r.interests?.name ?? '';
+            const color = categoryColors[category] || defaultCategoryColor;
+            const distance =
+              userPos && r.latitude && r.longitude
+                ? getDistance(
+                    userPos.lat,
+                    userPos.lng,
+                    parseFloat(r.latitude),
+                    parseFloat(r.longitude),
+                  )
+                : '';
+
+            return (
+              <ReviewCard
+                key={r.id}
+                restaurantId={r.id}
+                name={r.name}
+                category={r.interests?.name ?? ''}
+                img={r.thumbnail_url}
+                review={`리뷰 ${r.reviews?.[0]?.count ?? 0}개`}
+                storeintro={r.storeintro ?? ''}
+                rating={r.send_avg_rating ?? 0}
+                distance={distance}
+                tagBg={color.bg}
+                tagText={color.text}
+              />
+            );
+          })}
         </div>
         <div className="flex justify-center gap-2 mt-6">
           <button

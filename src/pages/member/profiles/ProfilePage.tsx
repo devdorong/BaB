@@ -26,6 +26,7 @@ import CategoryBadge from '../../../ui/jy/CategoryBadge';
 
 function ProfilePage() {
   const { user, signOut } = useAuth();
+  const { refreshPoint } = usePoint();
   // 네비게이터
   const navigate = useNavigate();
 
@@ -60,6 +61,7 @@ function ProfilePage() {
       // 사용자 정보 유효함
       setNickName(tempData.nickname || '');
       setProfileData(tempData);
+      await refreshPoint();
     } catch (error) {
       setError('프로필 호출 오류');
     } finally {

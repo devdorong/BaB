@@ -1,12 +1,19 @@
 import styled from 'styled-components';
 import {
   RiArrowRightLine,
+  RiHeart3Fill,
   RiHeart3Line,
   RiMapPinLine,
+  RiMessage2Line,
+  RiMessage3Line,
+  RiMessageLine,
   RiShareLine,
   RiStarFill,
 } from 'react-icons/ri';
 import TagBadge from '../TagBadge';
+import { InterestBadge } from '../tag';
+import React, { useEffect, useState } from 'react';
+import { supabase } from '../../lib/supabase';
 
 const CardLayout = styled.div`
   display: inline-flex;
@@ -37,10 +44,12 @@ const Title = styled.div`
 
 interface ReviewCardProps {
   onClick?: () => void;
+  restaurantId: number;
   name: string;
   category: string;
   img: string;
   review: string;
+  storeintro: string;
   rating: number;
   distance: string;
   tagBg?: string;
@@ -49,15 +58,90 @@ interface ReviewCardProps {
 
 export const ReviewCard = ({
   onClick,
+  restaurantId,
   name,
   category,
   img,
   review,
+  storeintro,
   rating,
   distance,
   tagBg,
   tagText,
 }: ReviewCardProps) => {
+  const [isFavorite, setIsFavorite] = useState(false);
+  const [favoriteCount, setFavoriteCount] = useState(0);
+  const [loading, setLoading] = useState(true);
+
+  useEffect(() => {
+    const fetchFavorite = async () => {
+      const {
+        data: { user },
+      } = await supabase.auth.getUser();
+
+      const { count } = await supabase
+        .from('restaurants_favorites')
+        .select('*', { count: 'exact', head: true })
+        .eq('restaurant_id', restaurantId);
+      setFavoriteCount(count ?? 0);
+
+      if (user) {
+        // 이미 찜한 식당인지
+        const { data } = await supabase
+          .from('restaurants_favorites')
+          .select('id')
+          .eq('profile_id', user.id)
+          .eq('restaurant_id', restaurantId)
+          .maybeSingle();
+        setIsFavorite(!!data);
+      }
+      setLoading(false);
+    };
+    fetchFavorite();
+  }, [restaurantId]);
+
+  const handleToggleFavorite = async (e: React.MouseEvent) => {
+    // 이동 막기
+    e.stopPropagation();
+    const {
+      data: { user },
+    } = await supabase.auth.getUser();
+
+    if (!user) {
+      return;
+    }
+
+    if (isFavorite) {
+      setIsFavorite(false);
+      setFavoriteCount(prev => Math.max(prev - 1, 0));
+      const { error } = await supabase
+        .from('restaurants_favorites')
+        .delete()
+        .eq('profile_id', user.id)
+        .eq('restaurant_id', restaurantId);
+
+      if (error) {
+        setIsFavorite(true);
+        setFavoriteCount(prev => prev + 1);
+      }
+    } else {
+      setIsFavorite(true);
+      setFavoriteCount(prev => prev + 1);
+      const { error } = await supabase.from('restaurants_favorites').insert([
+        {
+          profile_id: user.id,
+          restaurant_id: restaurantId,
+        },
+      ]);
+      if (error) {
+        setIsFavorite(false);
+        setFavoriteCount(prev => Math.max(prev - 1, 0));
+      }
+    }
+  };
+
+  if (loading) return null;
+
   return (
     <div onClick={onClick}>
       <CardLayout className="rounded-2xl overflow-hidden border border-black/5 cursor-pointer">
@@ -67,7 +151,7 @@ export const ReviewCard = ({
         {/* 오른쪽 컨텐츠 */}
         <div className="w-full h-full">
           {/* 상단: 태그 + 제목 */}
-          <div className="flex flex-col items-start gap-1">
+          <div className="flex flex-col items-start gap-2">
             <TagBadge bgColor={tagBg || 'bg-babgray-100'} textColor={tagText || 'text-babgray-700'}>
               {category}
             </TagBadge>
@@ -78,7 +162,7 @@ export const ReviewCard = ({
           <div className="flex gap-[20px] pt-[7px]">
             <div className="flex items-center gap-[5px]">
               <RiStarFill className="text-[#FACC15]" />
-              <span className='w-[37px] text-gray-700'>{rating}점</span>
+              <span className="w-[37px] text-[14px] text-gray-700">{rating}점</span>
             </div>
             <div className="flex items-center gap-2 text-babgray-700 text-sm">
               <RiMapPinLine className="text-[#FF5722]" />
@@ -88,22 +172,28 @@ export const ReviewCard = ({
 
           {/* 리뷰 요약 */}
           <p className="tracking-[-0.32px] text-[15px] pt-2 line-clamp-2 min-h-[53px] text-babgray-700">
-            {review}
+            {storeintro}
           </p>
 
           {/* 하단 액션 */}
           <div className="flex justify-between items-center pt-3 text-babgray-700">
             <div className="flex items-center gap-6">
-              <div className="flex items-center gap-2 text-sm">
-                <RiHeart3Line />
-                <span>찜</span>
+              <div
+                onClick={handleToggleFavorite}
+                className="min-w-[37px] flex items-center pt-0.5  gap-2 text-sm"
+              >
+                {isFavorite ? (
+                  <RiHeart3Fill className="text-[#FF5722]" />
+                ) : (
+                  <RiHeart3Line className="text-babgray-600" />
+                )}
+                <span>찜 {favoriteCount}개</span>
               </div>
-              <div className="flex items-center gap-2 text-sm">
-                <RiShareLine />
-                <span>공유</span>
+              <div className="min-x-[37px] flex items-center pt-0.5 gap-2 text-sm">
+                <RiMessageLine />
+                {review}
               </div>
             </div>
-            <RiArrowRightLine className="text-lg" />
           </div>
         </div>
       </CardLayout>

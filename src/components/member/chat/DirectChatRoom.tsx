@@ -26,6 +26,15 @@ function DirectChatRoom({ chatId }: DirectChatRoomProps) {
   // 새 메시지가 추가될 때마다 최신 메시지를 볼 수 있도록 해야 함.
   const messageEndRef = useRef<HTMLDivElement>(null);
 
+  const lastLoadedChatId = useRef<string | null>(null);
+
+  useEffect(() => {
+    if (chatId && chatId !== lastLoadedChatId.current) {
+      lastLoadedChatId.current = chatId;
+      loadMessages(chatId);
+    }
+  }, [chatId, loadMessages]);
+
   // DOM 업데이트 후 실행되도록 함
   const scrollToBottom = () => {
     // DOM 완료 후 실행되도록
@@ -83,7 +92,7 @@ function DirectChatRoom({ chatId }: DirectChatRoomProps) {
     if (chatId) {
       loadMessages(chatId);
     }
-  }, [chatId, loadMessages]);
+  }, [chatId]);
 
   // 메시지 시간 포맷팅 함수 : HH:MM:DD 형식 반환
   const formatTime = (dateString: string) => {
@@ -237,18 +246,21 @@ function DirectChatRoom({ chatId }: DirectChatRoomProps) {
                 {dateMessages.map((message: DirectMessage, index) => {
                   const isMyMessage = message.sender_id === currentUserId;
 
-                  // 이전 메시지와 비교
                   const prevMessage = dateMessages[index - 1];
+                  const nextMessage = dateMessages[index + 1];
+
+                  // 보낸 사람 같은지
                   const isSameSenderAsPrev =
                     prevMessage && prevMessage.sender_id === message.sender_id;
-
-                  // 다음 메시지와 비교 (시간 표시 제어용)
-                  const nextMessage = dateMessages[index + 1];
                   const isSameSenderAsNext =
                     nextMessage && nextMessage.sender_id === message.sender_id;
 
-                  // 다음 메시지도 같은 사람이면, 지금은 시간 안 보여주기
-                  const showTime = !isSameSenderAsNext;
+                  // 보낸 시간 (분 단위까지)
+                  const currentMinute = new Date(message.created_at).getMinutes();
+                  const nextMinute = nextMessage && new Date(nextMessage.created_at).getMinutes();
+
+                  // 다음 메시지랑 사람이 같고 분도 같으면 숨김
+                  const showTime = !(isSameSenderAsNext && nextMinute === currentMinute);
 
                   return (
                     <div
@@ -311,4 +323,6 @@ function DirectChatRoom({ chatId }: DirectChatRoomProps) {
   );
 }
 
-export default DirectChatRoom;
+export default React.memo(DirectChatRoom, (prevProps, nextProps) => {
+  return prevProps.chatId === nextProps.chatId;
+});
