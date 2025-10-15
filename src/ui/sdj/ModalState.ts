@@ -4,7 +4,7 @@ export type ModalState = {
   isOpen: boolean;
   title: string;
   content: string;
-  closeText: string;
+  closeText?: string;
   submitText?: string;
   onSubmit?: () => void;
 };
@@ -21,7 +21,7 @@ export const useModal = () => {
   const openModal = (
     title: string,
     content: string,
-    closeText: string,
+    closeText?: string,
     submitText?: string,
     onSubmit?: () => void,
   ) => {
@@ -38,6 +38,5 @@ export const useModal = () => {
   const closeModal = () => {
     setModal(prev => ({ ...prev, isOpen: false }));
   };
-
   return { modal, openModal, closeModal };
 };

@@ -4,17 +4,59 @@ import { useNavigate, useParams } from 'react-router-dom';
 import { supabase } from '../../../lib/supabase';
 import { ButtonFillMd, ButtonLineMd } from '../../../ui/button';
 import { useModal } from '../../../ui/sdj/ModalState';
-import { categoryTagMap, type CategoriesType, type TagFilterType } from './CommunityWritePage';
+import { categories, type CategoriesType } from './CommunityWritePage';
+import Modal from '../../../ui/sdj/Modal';
+
+export const categoryBadgeMap: Record<CategoriesType, string> = {
+  자유게시판: '자유',
+  'Q&A': 'Q&A',
+  팁과노하우: 'TIP',
+};
 
 function CommunityEditPage() {
   const { id } = useParams();
-  const { closeModal, modal, openModal } = useModal();
+  const { modal, closeModal, openModal } = useModal();
   const navigate = useNavigate();
 
   const [activeCategory, setActiveCategory] = useState<CategoriesType | null>(null);
-  const [tag, setTag] = useState<TagFilterType | null>(null);
   const [title, setTitle] = useState('');
   const [content, setContent] = useState('');
+
+  const handleCancel = () => {
+    openModal('수정 취소', '수정중인 내용을 저장하지않고 나가시겠습니까?', '닫기', '확인', () =>
+      navigate('/member/community'),
+    );
+    return;
+  };
+
+  const handleSave = async () => {
+    if (!title.trim()) {
+      openModal('수정 실패', '제목을 입력해주세요.', '확인');
+      return;
+    } else if (!content.trim()) {
+      openModal('수정 실패', '내용을 입력해주세요.', '확인');
+      return;
+    }
+
+    const { error } = await supabase
+      .from('posts')
+      .update({
+        post_category: activeCategory,
+        tag: categoryBadgeMap[activeCategory as CategoriesType],
+        title,
+        content,
+      })
+      .eq('id', id);
+
+    if (error) {
+      openModal('수정 실패', '게시글 수정 중 오류가 발생했습니다.', '닫기');
+      return;
+    } else {
+      openModal('수정 완료', '게시글이 성공적으로 수정되었습니다.', '', '확인', () => {
+        navigate(-1);
+      });
+    }
+  };
 
   useEffect(() => {
     if (!id) return;
@@ -29,8 +71,7 @@ function CommunityEditPage() {
       }
 
       if (data) {
-        setActiveCategory(data.category as CategoriesType);
-        setTag(categoryTagMap[data.category as CategoriesType]);
+        setActiveCategory(data.post_category as CategoriesType);
         setTitle(data.title);
         setContent(data.content);
       }
@@ -47,20 +88,17 @@ function CommunityEditPage() {
             카테고리 <p className="text-bab">*</p>
           </span>
           <div className="flex gap-4">
-            {/* {categories.map(item => (
+            {categories.map(item => (
               <button
                 key={item}
                 className={`flex p-2 rounded-full cursor-pointer ${activeCategory === item ? 'text-white bg-bab' : 'bg-bg-bg text-babgray-700'} focus:bg-bab transition-colors`}
                 onClick={() => {
-                  {
-                    setActiveCategory(item);
-                    setTag(categoryTagMap[item]);
-                  }
+                  setActiveCategory(item);
                 }}
               >
                 {item}
               </button>
-            ))} */}
+            ))}
           </div>
         </div>
         <div className="flex flex-col gap-2">
@@ -107,13 +145,24 @@ function CommunityEditPage() {
         </div>
         <div className="border-b border-b-babgray" />
         <div className="flex justify-between">
-          <ButtonLineMd onClick={() => navigate('/member/community')} className="w-[320px]">
+          <ButtonLineMd onClick={handleCancel} className="w-[320px]">
             취소
           </ButtonLineMd>
-          {/* 수정하기 클릭시 커뮤니티페이지 detail:id 로 이동 */}
-          {/* 카테고리 선택안했거나 제목,내용 중 하나라도 false라면 모달창 띄움 */}
-          <ButtonFillMd className="w-[320px]">수정하기</ButtonFillMd>
+          <ButtonFillMd onClick={handleSave} className="w-[320px]">
+            수정하기
+          </ButtonFillMd>
         </div>
+        {modal.isOpen && (
+          <Modal
+            isOpen={modal.isOpen}
+            onClose={closeModal}
+            titleText={modal.title}
+            contentText={modal.content}
+            closeButtonText={modal.closeText}
+            submitButtonText={modal.submitText}
+            onSubmit={modal.onSubmit}
+          />
+        )}
       </div>
     </div>
   );
