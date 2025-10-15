@@ -12,11 +12,11 @@ export function StarScore({
   return (
     <div className="flex items-center justify-between">
       <span className="text-[15px]">{label}</span>
-      <div className="flex items-center gap-1">
+      <div className="flex items-center">
         {Array.from({ length: 5 }).map((_, i) => {
           const n = i + 1;
           const Active = n <= value;
-          const Icon = Active ? RiStarFill : RiStarLine;
+          const Icon = Active ? RiStarFill : RiStarFill;
           return (
             <button
               key={n}

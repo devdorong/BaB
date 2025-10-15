@@ -1,10 +1,23 @@
 import React, { useEffect, useRef, useState } from 'react';
 import { RiCloseFill, RiImage2Line } from 'react-icons/ri';
 import { StarScore } from '../../ui/jy/StarScore';
+import {
+  fetchRestaurantDetailId,
+  fetchRestaurantReviews,
+  insertReview,
+  type RestaurantsDetailType,
+  type ReviewWithPhotos,
+} from '../../lib/restaurants';
+import { useParams } from 'react-router-dom';
+import { useAuth } from '../../contexts/AuthContext';
+import { getProfile } from '../../lib/propile';
+import type { Profile } from '../../types/bobType';
 
 type Props = {
+  restaurantId: number;
   open: boolean;
   onClose: () => void;
+  onSuccess?: () => void;
   onSubmit?: (data: {
     food: number;
     service: number;
@@ -14,13 +27,75 @@ type Props = {
   }) => void;
 };
 
-function WriteReview({ open, onClose, onSubmit }: Props) {
+function WriteReview({ open, onClose, onSubmit, onSuccess, restaurantId }: Props) {
+  const { user } = useAuth();
   const [food, setFood] = useState(0);
   const [service, setService] = useState(0);
   const [mood, setMood] = useState(0);
   const [content, setContent] = useState('');
   const [files, setFiles] = useState<File[]>([]);
+  const [reviews, setReviews] = useState<ReviewWithPhotos[]>([]);
+  const [loading, setLoading] = useState(true);
+  const { id } = useParams<{ id: string }>();
+  const [restaurant, setRestaurant] = useState<RestaurantsDetailType | null>(null);
+  // 사용자 프로필
+  const [profileData, setProfileData] = useState<Profile | null>(null);
+  // 에러메세지
+  const [error, setError] = useState<string>('');
+  // 사용자 닉네임
+  const [nickName, setNickName] = useState<string>('');
+
   const fileInputRef = useRef<HTMLInputElement>(null);
+
+  // 사용자 프로필 정보
+  const loadProfile = async () => {
+    if (!user?.id) {
+      setError('사용자정보 없음');
+      setLoading(false);
+      return;
+    }
+    try {
+      // 사용자 정보 가져오기
+      const tempData = await getProfile(user?.id);
+      if (!tempData) {
+        // null의 경우
+        setError('사용자 프로필 정보 찾을 수 없음');
+        return;
+      }
+      // 사용자 정보 유효함
+      setNickName(tempData.nickname || '');
+      setProfileData(tempData);
+    } catch (error) {
+      setError('프로필 호출 오류');
+    } finally {
+      setLoading(false);
+    }
+  };
+
+  // id로 닉네임을 받아옴
+  useEffect(() => {
+    loadProfile();
+  }, [user?.id]);
+
+  useEffect(() => {
+    const loadReviews = async () => {
+      setLoading(true);
+      const review = await fetchRestaurantReviews(restaurantId);
+      setReviews(review);
+      setLoading(false);
+    };
+    loadReviews();
+  }, [restaurantId]);
+
+  useEffect(() => {
+    if (!id) return;
+
+    const loadRestaurant = async () => {
+      const data = await fetchRestaurantDetailId(id);
+      setRestaurant(data);
+    };
+    loadRestaurant();
+  }, [id]);
 
   // 리셋 함수
   const resetReview = () => {
@@ -58,9 +133,26 @@ function WriteReview({ open, onClose, onSubmit }: Props) {
     setFiles(prev => prev.filter((_, i) => i !== idx));
   };
 
-  const submit = () => {
-    onSubmit?.({ food, service, mood, content, files });
-    onClose();
+  const submit = async () => {
+    if (!user) {
+      return;
+    }
+
+    const success = await insertReview({
+      restaurantId,
+      profileId: user.id,
+      content,
+      rating_food: food,
+      files,
+    });
+
+    if (success) {
+      resetReview();
+      onClose();
+      onSuccess?.();
+    } else {
+      alert('리뷰 등록 실패');
+    }
   };
 
   if (!open) return null;
@@ -71,10 +163,10 @@ function WriteReview({ open, onClose, onSubmit }: Props) {
       aria-modal="true"
       role="dialog"
     >
-      <div className="w-[680px] max-w-[92vw] rounded-2xl bg-white shadow-[0_4px_4px_rgba(0,0,0,0.02)]">
+      <div className="w-[500px] max-w-[92vw] rounded-2xl bg-white shadow-[0_4px_4px_rgba(0,0,0,0.02)]">
         {/* 헤더 */}
         <div className="relative px-6 py-4 border-b border-black/10">
-          <h2 className="text-center text-[18px] font-semibold">가게 이름</h2>
+          <h2 className="text-center text-[18px] font-semibold">{restaurant?.name}</h2>
           <button
             onClick={onClose}
             aria-label="닫기"
@@ -88,17 +180,29 @@ function WriteReview({ open, onClose, onSubmit }: Props) {
         <div className="px-6 py-5">
           {/* 작성자 라인 (목업) */}
           <div className="flex items-center gap-3 mb-6">
-            <div className="w-9 h-9 rounded-full bg-gray-200 overflow-hidden" />
+            <div className="w-9 h-9 rounded-full bg-gray-100 overflow-hidden">
+              {profileData?.avatar_url && (
+                <img
+                  src={
+                    user?.user_metadata.avatar_url !== 'guest_image'
+                      ? user?.user_metadata.avatar_url
+                      : 'https://www.gravatar.com/avatar/?d=mp&s=200'
+                  }
+                  alt="프로필 이미지"
+                  className="w-full h-full object-cover object-center"
+                />
+              )}
+            </div>
             <div className="text-sm text-babgray-700">
-              스팸두개 · <span className="text-babgray-500">2023-09-02</span>
+              {profileData?.nickname} ·{' '}
+              <span className="text-babgray-500">{new Date().toLocaleDateString()}</span>
             </div>
           </div>
-
+          <hr />
+          <br />
           {/* 별점 */}
-          <div className="space-y-4 mb-6">
-            <StarScore label="음식" value={food} onChange={setFood} />
-            <StarScore label="서비스" value={service} onChange={setService} />
-            <StarScore label="분위기" value={mood} onChange={setMood} />
+          <div className="text-babgray-600 space-y-4 mb-6">
+            <StarScore label="만족도" value={food} onChange={setFood} />
           </div>
 
           {/* 내용 */}
@@ -106,12 +210,14 @@ function WriteReview({ open, onClose, onSubmit }: Props) {
             <textarea
               rows={5}
               value={content}
+              maxLength={500}
               onChange={e => setContent(e.target.value)}
               placeholder="이곳에 다녀온 경험을 자세히 공유해 주세요."
               className="w-full resize-none rounded-xl border border-black/10 outline-none
                          px-4 py-3 text-[14px] placeholder:text-babgray-400
                          focus:border-bab-500"
             />
+            <div className="text-right text-xs text-babgray-500 mt-1">{content.length}/500</div>
           </div>
 
           {/* 이미지 업로드 - 왼쪽부터 채우기 (4칸 고정) */}
@@ -164,9 +270,9 @@ function WriteReview({ open, onClose, onSubmit }: Props) {
           <div className="pt-3 pb-2">
             <button
               onClick={submit}
-              className="w-full h-12 rounded-full bg-bab-500 text-white font-semibold
+              className="w-full h-12 rounded-xl bg-bab-500 text-white font-semibold
                          shadow-[0_4px_4px_rgba(0,0,0,0.02)] disabled:opacity-50"
-              disabled={food === 0 && service === 0 && mood === 0 && !content.trim()}
+              disabled={food === 0 || !content.trim()}
             >
               등록하기
             </button>
