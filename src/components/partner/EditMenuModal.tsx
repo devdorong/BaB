@@ -1,29 +1,21 @@
 import React, { useEffect, useRef, useState } from 'react';
-import type { Category } from './MenusList';
 import { useMenus } from '../../contexts/MenuContext';
-import type { Database, MenusInsert } from '../../types/bobType';
-import { supabase } from '../../lib/supabase';
 import { useRestaurant } from '../../contexts/PartnerRestaurantContext';
+import type { Database, MenusUpdate } from '../../types/bobType';
+import type { Menus } from '../../types/bobType';
+import { supabase } from '../../lib/supabase';
 import { Select } from 'antd';
 
-type AddMenuProps = {
+interface EditMenuModalProps {
   open: boolean;
   onClose: () => void;
-  onSubmit?: (data: {
-    title: string;
-    description?: string;
-    price: number;
-    tag: Category;
-    interestIs: number[];
-    files: File[]; // 업로드용 파일
-    enabled?: boolean;
-  }) => void;
-};
+  menu: Menus;
+}
 
 type CategoryType = Database['public']['Enums']['menu_category_enum'];
 
-const AddMenuModal = ({ open, onClose }: AddMenuProps) => {
-  const { createMenuItem } = useMenus();
+const EditMenuModal = ({ open, onClose, menu }: EditMenuModalProps) => {
+  const { updateMenuItem } = useMenus();
   const { restaurant } = useRestaurant();
   const [file, setFile] = useState<File | null>(null);
   const fileInputRef = useRef<HTMLInputElement>(null);
@@ -31,11 +23,21 @@ const AddMenuModal = ({ open, onClose }: AddMenuProps) => {
   const [title, setTitle] = useState('');
   const [description, setDescription] = useState('');
   const [price, setPrice] = useState(0);
-  const [interest, setInterest] = useState('');
-  const [enable, setEnable] = useState(true);
-
   const [category, setCategory] = useState<CategoryType>('메인메뉴');
   const [loading, setLoading] = useState(false);
+  const [existingImageUrl, setExistingImageUrl] = useState<string | null>(null);
+
+  // 메뉴 데이터로 초기화
+  useEffect(() => {
+    if (open && menu) {
+      setTitle(menu.name);
+      setDescription(menu.description || '');
+      setPrice(menu.price);
+      setCategory(menu.category as CategoryType);
+      setExistingImageUrl(menu.image_url || null);
+      setFile(null);
+    }
+  }, [open, menu]);
 
   // 파일 선택
   const handlePickFiles = (e: React.ChangeEvent<HTMLInputElement>) => {
@@ -48,6 +50,7 @@ const AddMenuModal = ({ open, onClose }: AddMenuProps) => {
   // 파일 제거
   const removeFile = () => {
     setFile(null);
+    setExistingImageUrl(null);
   };
 
   const uploadFile = async (file: File): Promise<string | null> => {
@@ -64,67 +67,41 @@ const AddMenuModal = ({ open, onClose }: AddMenuProps) => {
   const handleSubmit = async () => {
     try {
       if (!title.trim() || price <= 0) {
-        alert(`메뉴명과 가격을 입력해주세요.`);
+        alert('메뉴명과 가격을 입력해주세요.');
         return;
       }
       setLoading(true);
-      let imageUrl: string | null = null;
+      let imageUrl: string | null = existingImageUrl;
 
+      // 새 파일이 선택된 경우에만 업로드
       if (file) {
         imageUrl = await uploadFile(file);
         if (!imageUrl) {
-          alert(`이미지 업로드 실패`);
+          alert('이미지 업로드 실패');
           return;
         }
       }
 
-      const newMenu: MenusInsert = {
+      const updatedMenu: MenusUpdate = {
         name: title.trim(),
         description: description.trim(),
         price,
         category,
         image_url: imageUrl,
-        is_active: true,
-        restaurant_id: restaurant!.id,
       };
-      await createMenuItem(newMenu);
-      alert('메뉴가 등록되었습니다!');
+
+      await updateMenuItem(menu.id, updatedMenu);
+      alert('메뉴가 수정되었습니다!');
       onClose();
     } catch (error) {
-      console.error('메뉴 등록 중 오류:', error);
-      alert('메뉴 등록에 실패했습니다.');
+      console.error('메뉴 수정 중 오류:', error);
+      alert('메뉴 수정에 실패했습니다.');
     } finally {
       setLoading(false);
     }
   };
 
-  // 리셋 함수
-  const resetReview = () => {
-    setTitle('');
-    setDescription('');
-    setPrice(0);
-    setInterest('');
-    setEnable(true);
-    setFile(file);
-    if (fileInputRef.current) fileInputRef.current.value = '';
-  };
-
-  // 열릴 때 스크롤 잠금
-  // useEffect(() => {
-  //   if (!open) {
-  //     const prev = document.body.style.overflow;
-  //     document.body.style.overflow = open ? 'hidden' : '';
-  //     return () => {
-  //       document.body.style.overflow = prev;
-  //     };
-  //   } else {
-  //     // 닫히면 폼 초기화
-  //     resetReview();
-  //   }
-  // }, [open]);
-
-  
-  // 열릴 때 스크롤 잠금
+  // 모달이 닫힐 때 스크롤 잠금 해제
   useEffect(() => {
     if (open) {
       const prev = document.body.style.overflow;
@@ -132,16 +109,6 @@ const AddMenuModal = ({ open, onClose }: AddMenuProps) => {
       return () => {
         document.body.style.overflow = prev;
       };
-    }
-  }, [open]);
-
-  useEffect(() => {
-    if (!open) {
-      setTitle('');
-      setDescription('');
-      setPrice(0);
-      setFile(null);
-      setCategory('메인메뉴');
     }
   }, [open]);
 
@@ -153,8 +120,7 @@ const AddMenuModal = ({ open, onClose }: AddMenuProps) => {
         <div className="w-[520px] rounded-2xl bg-white shadow-2xl p-8 flex flex-col gap-6">
           {/* 헤더 */}
           <div className="flex justify-start items-center border-b border-gray-200 pb-3">
-            <h2 className="text-xl font-bold text-gray-900">새 메뉴 등록</h2>
-            {/* <button className="text-2xl text-gray-400 hover:text-gray-600">&times;</button> */}
+            <h2 className="text-xl font-bold text-gray-900">메뉴 수정</h2>
           </div>
 
           {/* 사진 등록 */}
@@ -162,7 +128,7 @@ const AddMenuModal = ({ open, onClose }: AddMenuProps) => {
             <label className="block text-sm font-medium text-gray-700 mb-2">사진 등록</label>
             <div
               onClick={() => {
-                if (file) {
+                if (file || existingImageUrl) {
                   removeFile();
                 } else {
                   fileInputRef.current?.click();
@@ -171,12 +137,20 @@ const AddMenuModal = ({ open, onClose }: AddMenuProps) => {
               className="relative w-full h-64 border-2 border-dashed border-gray-300 rounded-lg flex items-center justify-center text-gray-400 cursor-pointer hover:border-[#FF5722] hover:text-[#FF5722] transition"
             >
               {file ? (
-                <div className="w-full h-full relative rounded-xl overflow-hidden ">
+                <div className="w-full h-full relative rounded-xl overflow-hidden">
                   <img
                     src={URL.createObjectURL(file)}
                     alt=""
                     className="w-full h-full object-cover"
                     onLoad={e => URL.revokeObjectURL((e.target as HTMLImageElement).src)}
+                  />
+                </div>
+              ) : existingImageUrl ? (
+                <div className="w-full h-full relative rounded-xl overflow-hidden">
+                  <img
+                    src={existingImageUrl}
+                    alt=""
+                    className="w-full h-full object-cover"
                   />
                 </div>
               ) : (
@@ -245,25 +219,26 @@ const AddMenuModal = ({ open, onClose }: AddMenuProps) => {
           <input
             type="file"
             accept="image/*"
-            multiple
             ref={fileInputRef}
             onChange={handlePickFiles}
             className="hidden"
           />
 
           {/* 버튼 */}
-          <div className="flex justify-end gap-5 pt-3 border-t border-gray-200">
+          <div className="flex justify-end gap-3 pt-5 border-t border-gray-200">
             <button
               onClick={onClose}
-              className="px-4 py-2 rounded-lg bg-gray-200 text-gray-700 hover:bg-gray-300 transition"
+              disabled={loading}
+              className="px-4 py-2 rounded-lg bg-gray-200 text-gray-700 hover:bg-gray-300 transition disabled:opacity-50"
             >
               취소
             </button>
             <button
-              className="px-4 py-2 rounded-lg bg-[#FF5722] text-white hover:bg-[#e14a1c] transition"
+              className="px-4 py-2 rounded-lg bg-[#FF5722] text-white hover:bg-[#e14a1c] transition disabled:opacity-50"
               onClick={handleSubmit}
+              disabled={loading}
             >
-              등록
+              {loading ? '수정 중...' : '수정'}
             </button>
           </div>
         </div>
@@ -272,4 +247,4 @@ const AddMenuModal = ({ open, onClose }: AddMenuProps) => {
   );
 };
 
-export default AddMenuModal;
+export default EditMenuModal;

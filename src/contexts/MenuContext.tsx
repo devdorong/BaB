@@ -94,16 +94,43 @@ export const MenusProvider = ({ children }: MenusProviderProps) => {
     }
   };
 
+  // 메뉴 활성화 여부
+  // const updateMenuActive = async (id: number, newToggle: boolean) => {
+  //   if (!restaurant?.id) return;
+  //   setLoading(true);
+  //   try {
+  //     await updateMenuToggle(restaurant.id, id, newToggle);
+  //     await refreshMenus();
+  //   } catch (error) {
+  //     console.log('updateMenuActive 에러', error);
+  //   } finally {
+  //     setLoading(false);
+  //   }
+  // };
+
+
+  // 낙관적업데이트 참고
   const updateMenuActive = async (id: number, newToggle: boolean) => {
     if (!restaurant?.id) return;
-    setLoading(true);
+
+    // 1. 즉시 UI 업데이트 (낙관적 업데이트)
+    setMenus(prevMenus =>
+      prevMenus.map(menu => (menu.id === id ? { ...menu, is_active: newToggle } : menu)),
+    );
+
+    // 2. 서버에 업데이트 요청
     try {
       await updateMenuToggle(restaurant.id, id, newToggle);
+
+      // 3. 서버 업데이트 성공 후 최신 데이터로 동기화
       await refreshMenus();
     } catch (error) {
       console.log('updateMenuActive 에러', error);
-    } finally {
-      setLoading(false);
+
+      // 4. 실패 시 롤백 (이전 상태로 되돌림)
+      setMenus(prevMenus =>
+        prevMenus.map(menu => (menu.id === id ? { ...menu, is_active: !newToggle } : menu)),
+      );
     }
   };
 

@@ -43,7 +43,7 @@ function PartnerLoginPage() {
   };
 
   return (
-    <div className="flex flex-col items-center bg-bg-bg h-screen justify-center">
+    <div className="flex flex-col items-center bg-bg-bg min-h-[calc(100vh/0.9)] justify-center">
       <div className="pb-[52px]">
         <PartnerLogo />
       </div>
