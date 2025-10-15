@@ -22,7 +22,7 @@ type AddMenuProps = {
 
 type CategoryType = Database['public']['Enums']['menu_category_enum'];
 
-const AddMenuModal = ({ open, onClose, onSubmit }: AddMenuProps) => {
+const AddMenuModal = ({ open, onClose }: AddMenuProps) => {
   const { createMenuItem } = useMenus();
   const { restaurant } = useRestaurant();
   const [file, setFile] = useState<File | null>(null);
@@ -65,7 +65,7 @@ const AddMenuModal = ({ open, onClose, onSubmit }: AddMenuProps) => {
     try {
       if (!title.trim() || price <= 0) {
         alert(`메뉴명과 가격을 입력해주세요.`);
-        return
+        return;
       }
       setLoading(true);
       let imageUrl: string | null = null;

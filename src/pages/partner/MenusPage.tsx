@@ -5,6 +5,7 @@ import MenusList, { CATEGORY_TABS, type CategoryTab } from '../../components/par
 import PartnerBoardHeader from '../../components/PartnerBoardHeader';
 import { useMenus } from '../../contexts/MenuContext';
 import { ButtonFillLG } from '../../ui/button';
+import EditMenuModal from '../../components/partner/EditMenuModal';
 
 function MenusPage() {
   // 선택된 탭
