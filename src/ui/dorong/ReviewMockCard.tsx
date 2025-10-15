@@ -185,7 +185,7 @@ export const ReviewCard = ({
                 {isFavorite ? (
                   <RiHeart3Fill className="text-[#FF5722]" />
                 ) : (
-                  <RiHeart3Line className="text-babgray-600" />
+                  <RiHeart3Fill className="text-babgray-600" />
                 )}
                 <span>찜 {favoriteCount}개</span>
               </div>

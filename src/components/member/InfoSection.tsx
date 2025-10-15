@@ -2,7 +2,14 @@ import { RiMapPinLine, RiPhoneLine, RiTimeLine } from 'react-icons/ri';
 import { useKakaoLoader } from '../../hooks/useKakaoLoader';
 import KkoMapDetail from '../../ui/jy/Kakaomapdummy';
 
-function InfoSection() {
+interface InfoSectionProps {
+  restPhone?: string;
+  restAddress?: string;
+  lat?: string | null;
+  lng?: string | null;
+}
+
+function InfoSection({ restPhone, restAddress, lat, lng }: InfoSectionProps) {
   const isMapLoaded = useKakaoLoader();
 
   return (
@@ -18,7 +25,7 @@ function InfoSection() {
             <ul className="space-y-3 text-babgray-800">
               <li className="flex items-start gap-2">
                 <RiPhoneLine className="mt-0.5 text-[18px] text-babgray-500" />
-                <span className="text-[16px]">02-1234-5678</span>
+                <span className="text-[16px]">{restPhone}</span>
               </li>
               <li className="flex items-start gap-2">
                 <RiTimeLine className="mt-0.5 text-[18px] text-babgray-500" />
@@ -26,7 +33,7 @@ function InfoSection() {
               </li>
               <li className="flex items-start gap-2">
                 <RiMapPinLine className="mt-0.5 text-[18px] text-babgray-500" />
-                <span className="text-[16px]">강남구 청담동</span>
+                <span className="text-[16px]">{restAddress}</span>
               </li>
             </ul>
           </div>
@@ -35,7 +42,7 @@ function InfoSection() {
           <div>
             <h3 className="text-[18px] font-semibold text-babgray-900 mb-3">지도</h3>
             {isMapLoaded ? (
-              <KkoMapDetail />
+              <KkoMapDetail lat={lat} lng={lng} />
             ) : (
               <div className="py-10 text-center text-babgray-600 max-w-[1280px] mx-auto">
                 지도를 불러오는 중입니다...

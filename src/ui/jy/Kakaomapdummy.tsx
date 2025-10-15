@@ -5,7 +5,9 @@ import type { Place } from '../../types/place';
 interface KkoMapProps {
   radius?: number;
   onFetched?: (places: Place[]) => void;
-  onCenterChange?: (center: { lat: number; lng: number }) => void;
+  onCenterChange?: (center: { lat: string; lng: string }) => void;
+  lat?: string | null;
+  lng?: string | null;
 }
 // 헤더 쪽에 유틸 추가 (컴포넌트 위)
 const toRad = (d: number) => (d * Math.PI) / 180;
@@ -23,23 +25,37 @@ const BEST_ACCURACY = 20; // m 이하이면 “꽤 정확”
 const IMPROVE_THRESH = 30; // m 이상 좋아지면 교체
 const REFINE_WINDOW_MS = 7000; // 보정 수집 시간
 
-const DEFAULT_CENTER = { lat: 35.87058104715006, lng: 128.60503833459654 };
+const KkoMapDetail = ({ radius = 1000, onFetched, onCenterChange, lat, lng }: KkoMapProps) => {
+  const parsedLat = lat ? parseFloat(lat) : 37.5665;
+  const parsedLng = lng ? parseFloat(lng) : 126.978;
 
-const KkoMapDetail = ({ radius = 1000, onFetched, onCenterChange }: KkoMapProps) => {
   const mapRef = useRef<kakao.maps.Map | null>(null);
-  const [center, setCenter] = useState(DEFAULT_CENTER);
+  const [center, setCenter] = useState<{ lat: number; lng: number }>({
+    lat: parsedLat,
+    lng: parsedLng,
+  });
   const [loading, setLoading] = useState(true);
   const [places, setPlaces] = useState<Place[]>([]);
   const [selectedId, setSelectedId] = useState<string | null>(null);
   const paginationRef = useRef<any | null>(null);
   const appendingRef = useRef(false); // append 여부 플래그
   const [hasMore, setHasMore] = useState(true);
+  // props로 좌표가 전달되었는지 확인
+  const hasPropsCoords = lat && lng;
 
   useEffect(() => {
-    onCenterChange?.(center);
+    onCenterChange?.({
+      lat: center.lat.toString(),
+      lng: center.lng.toString(),
+    });
   }, [center, onCenterChange]);
+
   // 현재 위치 가져오기
   useEffect(() => {
+    if (hasPropsCoords) {
+      setLoading(false);
+      return;
+    }
     if (!navigator.geolocation) {
       setLoading(false);
       return;
@@ -191,13 +207,26 @@ const KkoMapDetail = ({ radius = 1000, onFetched, onCenterChange }: KkoMapProps)
           }}
         >
           {/* 현재 위치 마커 */}
-          <MapMarker
-            position={center}
-            image={{
-              src: 'https://t1.daumcdn.net/localimg/localimages/07/mapapidoc/markerStar.png',
-              size: { width: 24, height: 35 },
-            }}
-          />
+          {!hasPropsCoords && (
+            <MapMarker
+              position={center}
+              image={{
+                src: 'https://t1.daumcdn.net/localimg/localimages/07/mapapidoc/markerStar.png',
+                size: { width: 24, height: 35 },
+              }}
+            />
+          )}
+
+          {/* 식당 위치 마커 */}
+          {hasPropsCoords && (
+            <MapMarker
+              position={center}
+              // image={{
+              //   src: 'https://raw.githubusercontent.com/paullee714/kakao-map-icons/main/markerStarRed.png',
+              //   size: { width: 24, height: 35 },
+              // }}
+            />
+          )}
 
           {/* 맛집 마커 클러스터 */}
           <MarkerClusterer averageCenter minLevel={6}>
