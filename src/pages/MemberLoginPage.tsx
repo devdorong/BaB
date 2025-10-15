@@ -45,7 +45,7 @@ function MemberLoginPage() {
   };
 
   return (
-    <div className="flex flex-col items-center bg-bg-bg h-screen justify-center">
+    <div className="flex flex-col items-center bg-bg-bg min-h-[calc(100vh/0.9)] justify-center">
       <div className="pb-[52px]">
         <Link to={'/member'} className="cursor-pointer">
           <LogoLg />

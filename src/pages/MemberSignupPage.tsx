@@ -124,7 +124,7 @@ function MemberSignupPage() {
 
   // tsx
   return (
-    <div className="w-screen min-h-full bg-bg-bg">
+    <div className="w-[full] min-h-full bg-bg-bg">
       <div className="w-[530px] flex flex-col justify-center items-center gap-[60px] mx-auto py-[100px] ">
         <div className="flex justify-center items-center flex-col gap-[50px] ]">
           <LogoLg />

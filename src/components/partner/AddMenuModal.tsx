@@ -110,16 +110,28 @@ const AddMenuModal = ({ open, onClose }: AddMenuProps) => {
   };
 
   // 열릴 때 스크롤 잠금
+  // useEffect(() => {
+  //   if (!open) {
+  //     const prev = document.body.style.overflow;
+  //     document.body.style.overflow = open ? 'hidden' : '';
+  //     return () => {
+  //       document.body.style.overflow = prev;
+  //     };
+  //   } else {
+  //     // 닫히면 폼 초기화
+  //     resetReview();
+  //   }
+  // }, [open]);
+
+  
+  // 열릴 때 스크롤 잠금
   useEffect(() => {
-    if (!open) {
+    if (open) {
       const prev = document.body.style.overflow;
-      document.body.style.overflow = open ? 'hidden' : '';
+      document.body.style.overflow = 'hidden';
       return () => {
         document.body.style.overflow = prev;
       };
-    } else {
-      // 닫히면 폼 초기화
-      resetReview();
     }
   }, [open]);
 
@@ -240,7 +252,7 @@ const AddMenuModal = ({ open, onClose }: AddMenuProps) => {
           />
 
           {/* 버튼 */}
-          <div className="flex justify-end gap-3 pt-3 border-t border-gray-200">
+          <div className="flex justify-end gap-5 pt-3 border-t border-gray-200">
             <button
               onClick={onClose}
               className="px-4 py-2 rounded-lg bg-gray-200 text-gray-700 hover:bg-gray-300 transition"

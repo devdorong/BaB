@@ -12,9 +12,11 @@ export type CategoryTab = (typeof CATEGORY_TABS)[number];
 interface MenusListProps {
   filtered: Menus[];
   onToggle: (id: number, newToggle: boolean) => void;
+  onEdit: (menu: Menus) => void;
+  onDelete: (menu: Menus) => void;
 }
 
-function MenusList({ filtered, onToggle }: MenusListProps) {
+function MenusList({ filtered, onToggle, onEdit, onDelete }: MenusListProps) {
   // 피자가게 목업 데이터
 
   // 로딩 상태일때 스켈레톤
@@ -50,7 +52,13 @@ function MenusList({ filtered, onToggle }: MenusListProps) {
     <div className="grid grid-cols-4 gap-[26px]">
       {filtered &&
         filtered.map(item => (
-          <MenuCard key={item.id} {...item} onToggle={newToggle => onToggle(item.id, newToggle)} />
+          <MenuCard
+            key={item.id}
+            {...item}
+            onToggle={newToggle => onToggle(item.id, newToggle)}
+            onEdit={() => onEdit(item)}
+            onDelete={() => onDelete(item)}
+          />
         ))}
     </div>
   );
