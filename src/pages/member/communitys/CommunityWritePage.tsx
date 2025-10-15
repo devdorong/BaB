@@ -6,9 +6,16 @@ import type { Database, PostsInsert } from '../../../types/bobType';
 import { ButtonFillMd, ButtonLineMd } from '../../../ui/button';
 import Modal from '../../../ui/sdj/Modal';
 
-type CategoriesType = Database['public']['Tables']['posts']['Row']['post_category'];
+export type CategoriesType = Database['public']['Tables']['posts']['Row']['post_category'];
+export type TagFilterType = Exclude<TagType, '맛집추천요청'>;
 type TagType = Database['public']['Tables']['posts']['Insert']['tag'];
-type TagFilterType = Exclude<TagType, '맛집추천요청'>;
+
+export const categories: CategoriesType[] = ['자유게시판', 'Q&A', '팁과노하우'];
+export const categoryTagMap: Record<CategoriesType, TagFilterType> = {
+  자유게시판: '자유',
+  'Q&A': 'Q&A',
+  팁과노하우: 'TIP',
+};
 
 function CommunityWritePage() {
   const navigate = useNavigate();
@@ -68,13 +75,6 @@ function CommunityWritePage() {
       setModalText('예상치 못한 오류 발생.');
       setIsOpen(true);
     }
-  };
-
-  const categories: CategoriesType[] = ['자유게시판', 'Q&A', '팁과노하우'];
-  const categoryTagMap: Record<CategoriesType, TagFilterType> = {
-    자유게시판: '자유',
-    'Q&A': 'Q&A',
-    팁과노하우: 'TIP',
   };
 
   return (
