@@ -7,17 +7,19 @@ import {
   getMenus,
   getMenusById,
   updateMenu,
+  updateMenuToggle,
 } from '../services/menusService';
 
 interface MenusContextValue {
   menus: Menus[];
   loading: boolean;
   selectedMenu: Menus | null;
-  refreshMenus: () => Promise<void>;
+  refreshMenus: () => Promise<Menus[] | undefined>;
   fetchMenuById: (id: number) => Promise<void>;
   createMenuItem: (newMenu: MenusInsert) => Promise<void>;
   updateMenuItem: (id: number, updated: MenusUpdate) => Promise<void>;
   deleteMenuItem: (id: number) => Promise<void>;
+  updateMenuActive: (id: number, newToggle: boolean) => Promise<void>;
 }
 
 const MenusContext = createContext<MenusContextValue | undefined>(undefined);
@@ -39,8 +41,11 @@ export const MenusProvider = ({ children }: MenusProviderProps) => {
     try {
       const data = await getMenus(restaurant.id);
       setMenus(data);
+      return data;
     } catch (error) {
       console.log('refreshMenus 에러', error);
+
+      return [];
     } finally {
       setLoading(false);
     }
@@ -89,6 +94,19 @@ export const MenusProvider = ({ children }: MenusProviderProps) => {
     }
   };
 
+  const updateMenuActive = async (id: number, newToggle: boolean) => {
+    if (!restaurant?.id) return;
+    setLoading(true);
+    try {
+      await updateMenuToggle(restaurant.id, id, newToggle);
+      await refreshMenus();
+    } catch (error) {
+      console.log('updateMenuActive 에러', error);
+    } finally {
+      setLoading(false);
+    }
+  };
+
   // 메뉴 삭제
   const deleteMenuItem = async (id: number) => {
     if (!restaurant?.id) return;
@@ -119,6 +137,7 @@ export const MenusProvider = ({ children }: MenusProviderProps) => {
     menus,
     loading,
     selectedMenu,
+    updateMenuActive,
   };
 
   return <MenusContext.Provider value={value}>{children}</MenusContext.Provider>;

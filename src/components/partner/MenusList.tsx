@@ -1,5 +1,8 @@
-import React from 'react';
+import React, { useEffect, useMemo, useState } from 'react';
 import MenuCard from '../../ui/jy/Menucard';
+import { useMenus } from '../../contexts/MenuContext';
+import type { Menus } from '../../types/bobType';
+import { useRestaurant } from '../../contexts/PartnerRestaurantContext';
 
 // 카테고리(= tag) 정의
 export const CATEGORYS = ['피자', '사이드', '음료'] as const;
@@ -111,12 +114,50 @@ function MenusList({
   onToggle: (id: number, newToggle: boolean) => void;
 }) {
   // 피자가게 목업 데이터
+  const { refreshMenus, loading } = useMenus();
+  const { restaurant } = useRestaurant();
+  const [menuliset, setMenulist] = useState<Menus[] | undefined>([]);
+
+  useEffect(() => {
+    if (!restaurant?.id) return;
+
+    const fetchmenus = async () => {
+      const menus = await refreshMenus();
+      console.log(menus);
+      setMenulist(menus);
+    };
+    fetchmenus();
+  }, [restaurant?.id]);
+  if (loading) {
+    return (
+      <div className="grid grid-cols-4 gap-[26px]">
+        {[...Array(6)].map((_, i) => (
+          <div
+            key={i}
+            className="animate-pulse rounded-lg border border-babgray-150 bg-gray-100 h-[280px]"
+          >
+            <div className="h-32 bg-gray-200 rounded-t-lg"></div>
+            <div className="p-4 space-y-3">
+              <div className="h-4 bg-gray-200 rounded w-3/4"></div>
+              <div className="h-3 bg-gray-200 rounded w-full"></div>
+              <div className="h-3 bg-gray-200 rounded w-5/6"></div>
+            </div>
+          </div>
+        ))}
+      </div>
+    );
+  }
+
+  if (menuliset?.length === 0) {
+    return <div>메뉴를 추가해주세요!</div>;
+  }
 
   return (
-    <div className="grid grid-cols-3 gap-[26px]">
-      {filtered.map(item => (
-        <MenuCard key={item.id} {...item} onToggle={newToggle => onToggle(item.id, newToggle)} />
-      ))}
+    <div className="grid grid-cols-4 gap-[26px]">
+      {menuliset &&
+        menuliset.map(item => (
+          <MenuCard key={item.id} {...item} onToggle={newToggle => onToggle(item.id, newToggle)} />
+        ))}
     </div>
   );
 }

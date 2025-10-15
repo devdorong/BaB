@@ -1,16 +1,15 @@
 // MenuCard.tsx
 import React from 'react';
 import { RiEdit2Line, RiDeleteBin2Line } from 'react-icons/ri';
-import TagBadge from '../TagBadge';
 import type { MenuItem } from '../../components/partner/MenusList';
 
-type Props = {
-  title: string;
-  description?: string;
+type MenuCardProps = {
+  name: string;
+  description?: string | null;
   price: number;
-  tag?: string; // 예: "메인 요리"
-  imageUrl?: string | null;
-  enabled: boolean;
+  category?: string; // 예: "메인 요리"
+  image_url?: string | null;
+  is_active: boolean | null;
   onToggle?: (newToggle: boolean) => void;
   onEdit?: () => void;
   onDelete?: () => void;
@@ -21,25 +20,25 @@ function formatPrice(krw: number) {
 }
 
 export default function MenuCard({
-  title,
+  name,
   description,
   price,
-  tag,
-  imageUrl,
-  enabled,
+  category,
+  image_url,
+  is_active,
   onToggle,
   onEdit,
   onDelete,
-}: Props) {
+}: MenuCardProps) {
   return (
     <article className="w-full rounded-lg border border-babgray-150 bg-white shadow-[0_4px_4px_rgba(0,0,0,0.02)] overflow-hidden">
       {/* 이미지 영역 */}
       <div className="p-3">
         <div className="w-full aspect-[5/3] rounded-xl bg-gray-200 overflow-hidden flex items-center justify-center">
-          {imageUrl ? (
+          {image_url ? (
             <img
-              src={imageUrl}
-              alt={title}
+              src={image_url}
+              alt={name}
               className="h-full w-full object-cover"
               onError={e => {
                 const el = e.currentTarget;
@@ -56,22 +55,22 @@ export default function MenuCard({
       <div className="px-4">
         {/* 타이틀 + 토글 */}
         <div className="flex items-center justify-between">
-          <h3 className="text-[16px] font-bold text-gray-900 truncate">{title}</h3>
+          <h3 className="text-[16px] font-bold text-gray-900 truncate">{name}</h3>
 
           {/* 토글 스위치 */}
           <button
             type="button"
-            aria-label={enabled ? '메뉴 비활성화' : '메뉴 활성화'}
-            onClick={() => onToggle?.(!enabled)}
+            aria-label={is_active ? '메뉴 비활성화' : '메뉴 활성화'}
+            onClick={() => onToggle?.(!is_active)}
             className={[
               'relative inline-flex h-5 w-9 items-center rounded-full transition-colors',
-              enabled ? 'bg-[#FF5722]' : 'bg-gray-300',
+              is_active ? 'bg-[#FF5722]' : 'bg-gray-300',
             ].join(' ')}
           >
             <span
               className={[
                 'inline-block h-4 w-4 transform rounded-full bg-white transition-transform',
-                enabled ? 'translate-x-[18px]' : 'translate-x-[2px]',
+                is_active ? 'translate-x-[18px]' : 'translate-x-[2px]',
               ].join(' ')}
             />
           </button>
@@ -87,9 +86,9 @@ export default function MenuCard({
           <strong className="text-[16px] font-extrabold text-[#FF5722]">
             {formatPrice(price)}
           </strong>
-          {tag && (
+          {category && (
             <span className="shrink-0 rounded-full border border-gray-150 bg-gray-50 px-2.5 py-1 text-[11px] text-gray-700">
-              {tag}
+              {category}
             </span>
           )}
         </div>

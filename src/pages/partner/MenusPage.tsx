@@ -1,4 +1,4 @@
-import { useMemo, useState } from 'react';
+import { useEffect, useMemo, useState } from 'react';
 import MenuCategory from '../../components/partner/MenuCategory';
 import MenusList, {
   CATEGORY_TABS,
@@ -10,12 +10,14 @@ import MenusList, {
 import AddMenuModal from '../../components/partner/AddMenuModal';
 import PartnerBoardHeader from '../../components/PartnerBoardHeader';
 import { ButtonFillLG } from '../../ui/button';
+import { MenusProvider, useMenus } from '../../contexts/MenuContext';
 
 function MenusPage() {
   // 선택된 탭
   const [selected, setSelected] = useState<CategoryTab>('전체');
   const [menuToggle, setMenuToggle] = useState<MenuItem[]>(dororongpizza);
   const [writeOpen, setWriteOpen] = useState(false);
+  const { updateMenuActive } = useMenus();
 
   // 선택된 탭에 맞는 필터링
   const filtered = useMemo(() => {
@@ -27,8 +29,9 @@ function MenusPage() {
 
   const handleMenuToggle = (id: number, newToggle: boolean) => {
     setMenuToggle(prev =>
-      prev.map(item => (item.id === id ? { ...item, enabled: newToggle } : item)),
+      prev.map(item => (item.id === id ? { ...item, is_active: newToggle } : item)),
     );
+    updateMenuActive(id, newToggle);
   };
 
   return (
