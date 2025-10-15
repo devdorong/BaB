@@ -11,6 +11,7 @@ const FOOD = '음식 종류';
 
 function ReviewsPage() {
   const navigate = useNavigate();
+  const [currentItem, setCurrentItems] = useState<RestaurantsType[]>([]);
   const [search, setSearch] = useState('');
   const [selectedCategory, setSelectedCategory] = useState('전체');
   const [currentPage, setCurrentPage] = useState(1);
@@ -178,10 +179,7 @@ function ReviewsPage() {
             <GrayTag>리뷰순</GrayTag>
           </div>
         </div>
-        <div
-          onClick={() => navigate('/member/reviews/detail')}
-          className="grid grid-cols-2 gap-[34px]"
-        >
+        <div className="grid grid-cols-2 gap-[34px]">
           {currentItems.map(r => {
             const category = r.interests?.name ?? '';
             const color = categoryColors[category] || defaultCategoryColor;
@@ -196,19 +194,21 @@ function ReviewsPage() {
                 : '';
 
             return (
-              <ReviewCard
-                key={r.id}
-                restaurantId={r.id}
-                name={r.name}
-                category={r.interests?.name ?? ''}
-                img={r.thumbnail_url}
-                review={`리뷰 ${r.reviews?.[0]?.count ?? 0}개`}
-                storeintro={r.storeintro ?? ''}
-                rating={r.send_avg_rating ?? 0}
-                distance={distance}
-                tagBg={color.bg}
-                tagText={color.text}
-              />
+              <div onClick={() => navigate(`/member/reviews/${r.id}`)}>
+                <ReviewCard
+                  key={r.id}
+                  restaurantId={r.id}
+                  name={r.name}
+                  category={r.interests?.name ?? ''}
+                  img={r.thumbnail_url}
+                  review={`리뷰 ${r.reviews?.[0]?.count ?? 0}개`}
+                  storeintro={r.storeintro ?? ''}
+                  rating={r.send_avg_rating ?? 0}
+                  distance={distance}
+                  tagBg={color.bg}
+                  tagText={color.text}
+                />
+              </div>
             );
           })}
         </div>

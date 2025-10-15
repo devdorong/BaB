@@ -126,7 +126,6 @@ function App() {
             }}
           >
             <Routes>
-              
               <Route path="/" element={<IndexPage />} />
 
               {/* Member */}
@@ -146,7 +145,7 @@ function App() {
                 </Route>
                 <Route path="reviews">
                   <Route index element={<ReviewsPage />} />
-                  <Route path="detail" element={<ReviewDetailPage />} />
+                  <Route path=":id" element={<ReviewDetailPage />} />
                 </Route>
                 <Route path="events" element={<EventPage />} />
                 <Route path="support" element={<SupportPage />} />

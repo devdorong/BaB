@@ -7,20 +7,44 @@ import {
   RiNavigationLine,
   RiChatSmile3Line,
   RiArrowLeftLine,
+  RiMessageLine,
+  RiHeart3Fill,
 } from 'react-icons/ri';
 import ReviewItem from '../../../components/member/ReviewItem';
-import { ItalianFood } from '../../../ui/tag';
-import { useNavigate } from 'react-router-dom';
-import { useState } from 'react';
+import { InterestBadge, ItalianFood } from '../../../ui/tag';
+import { useNavigate, useParams } from 'react-router-dom';
+import { useEffect, useState } from 'react';
 import { ButtonFillLG, ButtonLineLg } from '../../../ui/button';
 import InfoSection from '../../../components/member/InfoSection';
 import WriteReview from '../../../components/member/WriteReview';
+import {
+  fetchRestaurantDetailId,
+  fetchRestaurants,
+  type RestaurantsDetailType,
+  type RestaurantsType,
+} from '../../../lib/restaurants';
+import { fetchInterestsGrouped } from '../../../lib/interests';
+import CategoryBadge from '../../../ui/jy/CategoryBadge';
+import CategoryListBadge from '../../../components/member/CategoryListBadge';
+import { badgeColors } from '../../partner/NotificationPage';
+import { categoryColors, defaultCategoryColor } from '../../../ui/jy/categoryColors';
+import { supabase } from '../../../lib/supabase';
 
 type TabKey = 'review' | 'info';
+const FOOD = '음식 종류';
 
 function ReviewDetailPage() {
   const navigate = useNavigate();
   const [writeOpen, setWriteOpen] = useState(false);
+  const { id } = useParams<{ id: string }>();
+  const [restaurant, setRestaurant] = useState<RestaurantsDetailType | null>(null);
+  const [restaurants, setRestaurants] = useState<RestaurantsType[]>([]);
+  const [userPos, setUserPos] = useState<{ lat: number; lng: number } | null>(null);
+  const [interests, setInterests] = useState<Record<string, string[]>>({});
+  const [selected, setSelected] = useState<string[]>([]);
+  const [loading, setLoading] = useState<boolean>(false);
+  const [isFavorite, setIsFavorite] = useState(false);
+  const [favoriteCount, setFavoriteCount] = useState(0);
 
   const goBack = () => {
     if (window.history && window.history.length > 1) navigate(-1);
@@ -42,6 +66,142 @@ function ReviewDetailPage() {
       'group-focus-visible:opacity-100 group-focus-visible:bg-bab-500',
     ].join(' ');
 
+  useEffect(() => {
+    if (!id) return;
+
+    const loadRestaurant = async () => {
+      const data = await fetchRestaurantDetailId(id);
+      setRestaurant(data);
+    };
+    loadRestaurant();
+  }, [id]);
+
+  // 카테고리
+  useEffect(() => {
+    const restaurantLoad = async () => {
+      setLoading(true);
+      try {
+        const [grouped, restaurantData] = await Promise.all([
+          fetchInterestsGrouped(),
+          fetchRestaurants(),
+        ]);
+        setInterests(grouped);
+        setRestaurants(restaurantData);
+      } catch (err) {
+        // console.log(err);
+      } finally {
+        setLoading(false);
+      }
+    };
+    restaurantLoad();
+  }, []);
+
+  // 현재위치
+  useEffect(() => {
+    if (!navigator.geolocation) {
+      console.error('이 브라우저는 위치 정보를 지원하지 않습니다.');
+      return;
+    }
+
+    navigator.geolocation.getCurrentPosition(
+      pos => {
+        setUserPos({
+          lat: pos.coords.latitude,
+          lng: pos.coords.longitude,
+        });
+      },
+      err => {
+        console.error('위치 정보를 가져올 수 없습니다:', err);
+      },
+      { enableHighAccuracy: true },
+    );
+  }, []);
+
+  // 현재 위치 기준으로 거리 계산
+  const getDistance = (lat1: number, lon1: number, lat2: number, lon2: number): string => {
+    const R = 6371; // 지구 반지름 (km)
+    const dLat = ((lat2 - lat1) * Math.PI) / 180;
+    const dLon = ((lon2 - lon1) * Math.PI) / 180;
+    const a =
+      Math.sin(dLat / 2) ** 2 +
+      Math.cos((lat1 * Math.PI) / 180) * Math.cos((lat2 * Math.PI) / 180) * Math.sin(dLon / 2) ** 2;
+    const c = 2 * Math.atan2(Math.sqrt(a), Math.sqrt(1 - a));
+    const distance = R * c;
+
+    // 단위 변환 (1km 미만이면 m, 그 이상이면 km)
+    return distance < 1 ? `${(distance * 1000).toFixed(0)} m` : `${distance.toFixed(1)} km`;
+  };
+
+  // 거리 계산
+  const distance =
+    userPos && restaurant?.latitude && restaurant?.longitude
+      ? getDistance(
+          userPos.lat,
+          userPos.lng,
+          parseFloat(restaurant.latitude),
+          parseFloat(restaurant.longitude),
+        )
+      : '';
+
+  useEffect(() => {
+    const fetchFavorite = async () => {
+      const {
+        data: { user },
+      } = await supabase.auth.getUser();
+
+      const { count } = await supabase
+        .from('restaurants_favorites')
+        .select('*', { count: 'exact', head: true })
+        .eq('restaurant_id', restaurant?.id);
+      setFavoriteCount(count ?? 0);
+
+      if (user) {
+        // 이미 찜한 식당인지
+        const { data } = await supabase
+          .from('restaurants_favorites')
+          .select('id')
+          .eq('profile_id', user.id)
+          .eq('restaurant_id', restaurant?.id)
+          .maybeSingle();
+        setIsFavorite(!!data);
+      }
+      setLoading(false);
+    };
+    fetchFavorite();
+  }, [restaurant?.id]);
+
+  const handleToggleFavorite = async () => {
+    const {
+      data: { user },
+    } = await supabase.auth.getUser();
+
+    if (!user || !restaurant) {
+      alert('로그인이 필요합니다.');
+      return;
+    }
+
+    if (isFavorite) {
+      // 찜 해제
+      const { error } = await supabase
+        .from('restaurants_favorites')
+        .delete()
+        .eq('profile_id', user.id)
+        .eq('restaurant_id', restaurant.id);
+
+      if (!error) setIsFavorite(false);
+    } else {
+      // 찜 등록
+      const { error } = await supabase.from('restaurants_favorites').insert([
+        {
+          profile_id: user.id,
+          restaurant_id: restaurant.id,
+        },
+      ]);
+
+      if (!error) setIsFavorite(true);
+    }
+  };
+
   return (
     <div className="w-full">
       <div className="max-w-[1280px] mx-auto py-[50px]">
@@ -55,7 +215,7 @@ function ReviewDetailPage() {
                        bg-white/95 backdrop-blur border border-black/10
                        shadow-[0_4px_4px_rgba(0,0,0,0.02)]
                        inline-flex items-center justify-center
-                       hover:shadow-lg hover:-translate-y-0.5 transition"
+                       "
           >
             <RiArrowLeftLine className="text-[18px]" />
           </button>
@@ -65,37 +225,62 @@ function ReviewDetailPage() {
           <div className="px-5 py-4 md:px-8 md:py-6 bg-white rounded-t-3xl">
             <div className="flex items-center justify-between">
               <div className="flex item-center justify-center gap-[14px] mb-[4px]">
-                <h1 className="text-[30px] font-semibold ">미슐랭 파스타 하우스</h1>
-                <ItalianFood />
+                <h1 className="text-[30px] font-semibold ">{restaurant?.name}</h1>
+                {restaurant?.interests?.category === FOOD && (
+                  <InterestBadge
+                    bgColor={
+                      categoryColors[restaurant.interests.name]?.bg || defaultCategoryColor.bg
+                    }
+                    textColor={
+                      categoryColors[restaurant.interests.name]?.text || defaultCategoryColor.text
+                    }
+                  >
+                    {restaurant.interests.name}
+                  </InterestBadge>
+                )}
               </div>
-              <div className="flex items-center gap-2 text-babgray-700">
-                <button className="inline-flex items-center justify-center w-9 h-9 rounded-full bg-white shadow-[0_4px_4px_rgba(0,0,0,0.02)] border border-black/5">
-                  <RiHeart3Line className="text-[18px]" />
-                </button>
-                <button className="inline-flex items-center justify-center w-9 h-9 rounded-full bg-white shadow-[0_4px_4px_rgba(0,0,0,0.02)] border border-black/5">
+              <div className="flex relative items-center gap-2 text-babgray-700">
+                <div
+                  onClick={handleToggleFavorite}
+                  className="absolute cursor-pointer bottom-[70px] right-[5px] text-[50px]"
+                >
+                  {isFavorite ? (
+                    <RiHeart3Fill className="text-[#FF5722]" />
+                  ) : (
+                    <RiHeart3Fill className="text-babgray-600" />
+                  )}
+                </div>
+                {/* <button className="inline-flex items-center justify-center w-9 h-9 rounded-full bg-white shadow-[0_4px_4px_rgba(0,0,0,0.02)] border border-black/5">
                   <RiShareLine className="text-[18px]" />
-                </button>
+                </button> */}
               </div>
             </div>
 
             {/* 평점/리뷰/거리 */}
-            <div className="mt-2 flex flex-wrap items-center gap-4 text-babgray-700">
-              <div className="flex items-center gap-1">
-                <RiStarFill className="text-[#FACC15] text-[16px]" />
-                <span className="text-[16px]">4.8</span>
-                <span className="text-[16px]">리뷰 586개</span>
+            <div className="mt-2 flex flex-col flex-wrap items-start gap-2 text-babgray-700">
+              <div className="flex items-center gap-2">
+                <div className="flex items-center gap-1">
+                  <RiStarFill className="text-[#FACC15] text-[16px]" />
+                  <span className="w-[37px] text-[14px]">{restaurant?.send_avg_rating ?? 0}점</span>
+                </div>
+                <div className="flex items-center gap-1">
+                  <RiMessageLine className="text-[16px]" />
+                  <span className="w-[37px] whitespace-nowrap text-[14px]">
+                    리뷰 {restaurant?.reviews?.[0]?.count ?? 0}개
+                  </span>
+                </div>
               </div>
               <div className="flex items-center gap-1">
                 <RiMapPinLine className="text-[#FF5722] text-[18px]" />
-                <span className="text-[14px]">종로구 인사동 · 2.3km</span>
+                <span className="text-[14px]">
+                  {restaurant?.address} · {distance}
+                </span>
               </div>
             </div>
 
             {/* 한 줄 소개 */}
             <p className="my-4 text-[16px] text-babgray-600 line-clamp-2">
-              매일 뽑아 바로 삶아내는 생면 위에 트러플과 버터, 파르미지아노의 균형을 정교하게 맞춘
-              크림 소스부터 산미가 살아 있는 토마토, 향긋한 오일 파스타까지, 와인 한 잔과 함께
-              코스처럼 즐길 수 있는 도심 속 미슐랭 감성 파스타바.
+              {restaurant?.storeintro}
             </p>
 
             {/* 액션 버튼들 */}
@@ -129,7 +314,7 @@ function ReviewDetailPage() {
           >
             <div className="flex gap-2">
               리뷰
-              <div>526</div>
+              <div>{restaurant?.reviews?.[0]?.count ?? 0}</div>
             </div>
             <span className={underlineClass(tab === 'review')} />
           </button>
@@ -154,7 +339,12 @@ function ReviewDetailPage() {
             ))}
           </section>
         ) : (
-          <InfoSection />
+          <InfoSection
+            restPhone={restaurant?.phone}
+            restAddress={restaurant?.address}
+            lat={restaurant?.latitude}
+            lng={restaurant?.longitude}
+          />
         )}
       </div>
       <WriteReview
