@@ -4,6 +4,7 @@ import { useNavigate } from 'react-router-dom';
 import { supabase } from '../../../lib/supabase';
 import type { Database, PostsInsert } from '../../../types/bobType';
 import { ButtonFillMd, ButtonLineMd } from '../../../ui/button';
+import { useModal } from '../../../ui/sdj/ModalState';
 import Modal from '../../../ui/sdj/Modal';
 
 export type CategoriesType = Database['public']['Tables']['posts']['Row']['post_category'];
@@ -18,36 +19,49 @@ export const categoryTagMap: Record<CategoriesType, TagFilterType> = {
 };
 
 function CommunityWritePage() {
+  const { closeModal, modal, openModal } = useModal();
   const navigate = useNavigate();
-  const [isOpen, setIsOpen] = useState(false);
   const [title, setTitle] = useState('');
   const [content, setContent] = useState('');
   const [tag, setTag] = useState<TagFilterType>('자유');
   const [activeCategory, setActiveCategory] = useState<CategoriesType>('자유게시판');
 
-  const [modalText, setModalText] = useState('');
+  const handleCancel = () => {
+    if (title.trim() || content.trim()) {
+      openModal(
+        '등록 취소',
+        '작성중인 게시글 내용을 저장하지않고 나가시겠습니까?',
+        '취소',
+        '확인',
+        () => navigate('/member/community'),
+      );
+      return;
+    }
+  };
 
   const handleSubmit = async () => {
     try {
       const { data: userData, error: userError } = await supabase.auth.getUser();
 
       if (!title.trim() && !content.trim()) {
-        setModalText('제목과 내용을 모두 입력해주세요.');
-        setIsOpen(true);
+        openModal('등록확인', '제목과 내용을 모두 입력해주세요.', '닫기');
+
         return;
       } else if (!title.trim()) {
-        setModalText('제목을 입력해주세요.');
-        setIsOpen(true);
+        openModal('등록확인', '제목을 입력해주세요.', '닫기');
+
         return;
       } else if (!content.trim()) {
-        setModalText('내용을 입력해주세요.');
-        setIsOpen(true);
+        openModal('등록확인', '내용을 입력해주세요.', '닫기');
+
         return;
       }
 
       if (userError || !userData) {
-        setModalText('로그인이 필요합니다.');
-        setIsOpen(true);
+        openModal('로그인 확인', '로그인이 필요합니다.', '닫기', '로그인', () =>
+          navigate('/member/login'),
+        );
+
         return;
       }
 
@@ -62,18 +76,16 @@ function CommunityWritePage() {
       const { data, error } = await supabase.from('posts').insert([newPost]).select('id').single();
 
       if (error) {
-        setIsOpen(true);
-        setModalText('등록에 실패했습니다.');
+        openModal('등록확인', '등록에 실패했습니다.', '닫기');
         navigate(-1);
         return;
       } else {
-        setModalText('등록 되었습니다.');
-        setIsOpen(true);
+        openModal('등록확인', '등록 되었습니다.', '닫기');
+
         navigate(`/member/community/detail/${data.id}`);
       }
     } catch (error) {
-      setModalText('예상치 못한 오류 발생.');
-      setIsOpen(true);
+      openModal('오류확인', '예상치 못한 오류 발생.', '닫기');
     }
   };
 
@@ -140,22 +152,22 @@ function CommunityWritePage() {
         </div>
         <div className="border-b border-b-babgray" />
         <div className="flex justify-between">
-          <ButtonLineMd onClick={() => navigate('/member/community')} className="w-[320px]">
+          <ButtonLineMd onClick={handleCancel} className="w-[320px]">
             취소
           </ButtonLineMd>
           <ButtonFillMd onClick={handleSubmit} className="w-[320px]">
             등록하기
           </ButtonFillMd>
         </div>
-        {isOpen && (
+        {modal.isOpen && (
           <Modal
-            isOpen={isOpen}
-            onClose={() => setIsOpen(false)}
-            titleText="등록 확인"
-            contentText={modalText}
-            closeButtonText="닫기"
-            submitButtonText="확인"
-            onSubmit={() => setIsOpen(false)}
+            isOpen={modal.isOpen}
+            onClose={closeModal}
+            titleText={modal.title}
+            contentText={modal.content}
+            closeButtonText={modal.closeText}
+            submitButtonText={modal.submitText}
+            onSubmit={modal.onSubmit}
           />
         )}
       </div>

@@ -250,7 +250,7 @@ function CommunityDetailPage() {
               />
             )}
           </div>
-          {isAuthor && (
+          {(isAuthor || isAdmin) && (
             <ButtonFillMd onClick={() => navigate(`/member/community/edit/${post.id}`)}>
               게시글 수정
             </ButtonFillMd>
@@ -396,21 +396,21 @@ function CommunityDetailPage() {
                     <RiAlarmWarningLine />
                     <p>신고하기</p>
                   </div>
-                  {reports && (
-                    <ReportsModal
-                      setReports={setReports}
-                      targetNickname={reportInfo.nickname ?? ''}
-                      handleReport={(type, title, reason) =>
-                        handleReport(type, title, reason, reportInfo.targetProfileId)
-                      }
-                      reportType={reportInfo.type}
-                    />
-                  )}
                 </div>
               </li>
             );
           })}
         </ul>
+        {reports && (
+          <ReportsModal
+            setReports={setReports}
+            targetNickname={reportInfo.nickname ?? ''}
+            handleReport={(type, title, reason) =>
+              handleReport(type, title, reason, reportInfo.targetProfileId)
+            }
+            reportType={reportInfo.type}
+          />
+        )}
         {modal.isOpen && (
           <Modal
             isOpen={modal.isOpen}

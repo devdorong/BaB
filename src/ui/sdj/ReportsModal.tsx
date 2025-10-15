@@ -67,7 +67,7 @@ const ReportsModal = ({
 
   return (
     <div className="fixed inset-0 flex items-center justify-center bg-black bg-opacity-10 z-50">
-      <div className="flex flex-col items-center justify-center gap-10 px-8 py-8 bg-white rounded-[30px] shadow-[0_4px_4px_0_rgba(0,0,0,0.02)] overflow-hidden">
+      <div className="flex flex-col items-center justify-center gap-10 px-8 py-8 bg-white rounded-[30px] shadow-[0_4px_4px_0_rgba(0,0,0,0.02)] overflow-hidden transition duration-300 ease-in-out">
         <p className="w-full flex items-start text-xl font-bold">신고하기</p>
         <div className="flex flex-col items-start gap-7 text-babgray-700">
           <div className="w-full">

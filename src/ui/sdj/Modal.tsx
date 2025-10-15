@@ -58,9 +58,14 @@ const Modal: React.FC<ModalProps> = ({
               {submitButtonText}
             </ButtonFillMd>
           )}
-          <ButtonFillMd onClick={onClose} className="w-[200px]  !text-babgray-700 !bg-babgray-200">
-            {closeButtonText}
-          </ButtonFillMd>
+          {closeButtonText && (
+            <ButtonFillMd
+              onClick={onClose}
+              className="w-[200px]  !text-babgray-700 !bg-babgray-200"
+            >
+              {closeButtonText}
+            </ButtonFillMd>
+          )}
         </div>
       </div>
     </div>
