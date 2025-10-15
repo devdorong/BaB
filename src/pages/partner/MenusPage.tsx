@@ -1,37 +1,27 @@
-import { useEffect, useMemo, useState } from 'react';
-import MenuCategory from '../../components/partner/MenuCategory';
-import MenusList, {
-  CATEGORY_TABS,
-  dororongpizza,
-  type Category,
-  type CategoryTab,
-  type MenuItem,
-} from '../../components/partner/MenusList';
+import { useMemo, useState } from 'react';
 import AddMenuModal from '../../components/partner/AddMenuModal';
+import MenuCategory from '../../components/partner/MenuCategory';
+import MenusList, { CATEGORY_TABS, type CategoryTab } from '../../components/partner/MenusList';
 import PartnerBoardHeader from '../../components/PartnerBoardHeader';
+import { useMenus } from '../../contexts/MenuContext';
 import { ButtonFillLG } from '../../ui/button';
-import { MenusProvider, useMenus } from '../../contexts/MenuContext';
 
 function MenusPage() {
   // 선택된 탭
   const [selected, setSelected] = useState<CategoryTab>('전체');
-  const [menuToggle, setMenuToggle] = useState<MenuItem[]>(dororongpizza);
   const [writeOpen, setWriteOpen] = useState(false);
-  const { updateMenuActive } = useMenus();
+  const { menus, updateMenuActive } = useMenus();
 
   // 선택된 탭에 맞는 필터링
   const filtered = useMemo(() => {
     if (selected === '전체') {
-      return menuToggle;
+      return menus;
     }
-    return menuToggle.filter(item => item.tag === selected);
-  }, [selected, menuToggle]);
+    return menus.filter(item => item.category === selected);
+  }, [selected, menus]);
 
-  const handleMenuToggle = (id: number, newToggle: boolean) => {
-    setMenuToggle(prev =>
-      prev.map(item => (item.id === id ? { ...item, is_active: newToggle } : item)),
-    );
-    updateMenuActive(id, newToggle);
+  const handleMenuToggle = async (id: number, newToggle: boolean) => {
+    await updateMenuActive(id, newToggle);
   };
 
   return (

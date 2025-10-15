@@ -1,8 +1,3 @@
-// MenuCard.tsx
-import React from 'react';
-import { RiEdit2Line, RiDeleteBin2Line } from 'react-icons/ri';
-import type { MenuItem } from '../../components/partner/MenusList';
-
 type MenuCardProps = {
   name: string;
   description?: string | null;
