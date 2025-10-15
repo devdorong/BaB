@@ -1,5 +1,10 @@
 import React, { useEffect, useRef, useState } from 'react';
 import type { Category } from './MenusList';
+import { useMenus } from '../../contexts/MenuContext';
+import type { Database, MenusInsert } from '../../types/bobType';
+import { supabase } from '../../lib/supabase';
+import { useRestaurant } from '../../contexts/PartnerRestaurantContext';
+import { Select } from 'antd';
 
 type AddMenuProps = {
   open: boolean;
@@ -15,7 +20,11 @@ type AddMenuProps = {
   }) => void;
 };
 
+type CategoryType = Database['public']['Enums']['menu_category_enum'];
+
 const AddMenuModal = ({ open, onClose, onSubmit }: AddMenuProps) => {
+  const { createMenuItem } = useMenus();
+  const { restaurant } = useRestaurant();
   const [file, setFile] = useState<File | null>(null);
   const fileInputRef = useRef<HTMLInputElement>(null);
 
@@ -24,6 +33,9 @@ const AddMenuModal = ({ open, onClose, onSubmit }: AddMenuProps) => {
   const [price, setPrice] = useState(0);
   const [interest, setInterest] = useState('');
   const [enable, setEnable] = useState(true);
+
+  const [category, setCategory] = useState<CategoryType>('메인메뉴');
+  const [loading, setLoading] = useState(false);
 
   // 파일 선택
   const handlePickFiles = (e: React.ChangeEvent<HTMLInputElement>) => {
@@ -36,6 +48,54 @@ const AddMenuModal = ({ open, onClose, onSubmit }: AddMenuProps) => {
   // 파일 제거
   const removeFile = () => {
     setFile(null);
+  };
+
+  const uploadFile = async (file: File): Promise<string | null> => {
+    const fileName = `${Date.now()}_${file.name}`;
+    const { data, error } = await supabase.storage.from('store_photos').upload(fileName, file);
+    if (error) {
+      console.log('파일 업로드 오류 :', error.message);
+      return null;
+    }
+    const { data: urlData } = supabase.storage.from('store_photos').getPublicUrl(data.path);
+    return urlData.publicUrl ?? null;
+  };
+
+  const handleSubmit = async () => {
+    try {
+      if (!title.trim() || price <= 0) {
+        alert(`메뉴명과 가격을 입력해주세요.`);
+        return
+      }
+      setLoading(true);
+      let imageUrl: string | null = null;
+
+      if (file) {
+        imageUrl = await uploadFile(file);
+        if (!imageUrl) {
+          alert(`이미지 업로드 실패`);
+          return;
+        }
+      }
+
+      const newMenu: MenusInsert = {
+        name: title.trim(),
+        description: description.trim(),
+        price,
+        category,
+        image_url: imageUrl,
+        is_active: true,
+        restaurant_id: restaurant!.id,
+      };
+      await createMenuItem(newMenu);
+      alert('메뉴가 등록되었습니다!');
+      onClose();
+    } catch (error) {
+      console.error('메뉴 등록 중 오류:', error);
+      alert('메뉴 등록에 실패했습니다.');
+    } finally {
+      setLoading(false);
+    }
   };
 
   // 리셋 함수
@@ -60,6 +120,16 @@ const AddMenuModal = ({ open, onClose, onSubmit }: AddMenuProps) => {
     } else {
       // 닫히면 폼 초기화
       resetReview();
+    }
+  }, [open]);
+
+  useEffect(() => {
+    if (!open) {
+      setTitle('');
+      setDescription('');
+      setPrice(0);
+      setFile(null);
+      setCategory('메인메뉴');
     }
   }, [open]);
 
@@ -109,6 +179,8 @@ const AddMenuModal = ({ open, onClose, onSubmit }: AddMenuProps) => {
             <input
               type="text"
               placeholder="예: 마르게리타 피자"
+              value={title}
+              onChange={e => setTitle(e.target.value)}
               className="w-full rounded-lg border border-gray-300 px-3 py-2 text-sm focus:border-[#FF5722] focus:ring-1 focus:ring-[#FF5722] outline-none"
             />
           </div>
@@ -117,15 +189,29 @@ const AddMenuModal = ({ open, onClose, onSubmit }: AddMenuProps) => {
           <div className="flex gap-4">
             <div className="flex flex-col flex-1 gap-1">
               <label className="text-sm font-medium text-gray-700">카테고리</label>
-              <select className="w-full h-[40px] appearance-none rounded-lg border border-gray-300 px-2 py-2 text-sm focus:border-[#FF5722] focus:ring-1 focus:ring-[#FF5722] outline-none">
-                <option value="피자">음식카테고리</option>
-              </select>
+              <Select
+                value={category}
+                onChange={(value: CategoryType) => setCategory(value)}
+                size={'large'}
+                className="bab-menu-select w-full h-[40px]"
+                classNames={{
+                  popup: {
+                    root: 'bab-menu-select-dropdown',
+                  },
+                }}
+              >
+                <Select.Option value="메인메뉴">메인메뉴</Select.Option>
+                <Select.Option value="사이드">사이드</Select.Option>
+                <Select.Option value="음료 및 주류">음료 및 주류</Select.Option>
+              </Select>
             </div>
             <div className="flex flex-col flex-1 gap-1">
               <label className="text-sm font-medium text-gray-700">가격</label>
               <input
                 type="number"
                 placeholder="예: 12000"
+                value={price}
+                onChange={e => setPrice(Number(e.target.value))}
                 className="w-full h-[40px] rounded-lg border border-gray-300 px-3 py-2 text-sm focus:border-[#FF5722] focus:ring-1 focus:ring-[#FF5722] outline-none"
               />
             </div>
@@ -137,6 +223,8 @@ const AddMenuModal = ({ open, onClose, onSubmit }: AddMenuProps) => {
             <textarea
               rows={4}
               placeholder="메뉴 설명을 입력하세요"
+              value={description}
+              onChange={e => setDescription(e.target.value)}
               className="w-full rounded-lg border border-gray-300 px-3 py-2 text-sm focus:border-[#FF5722] focus:ring-1 focus:ring-[#FF5722] outline-none resize-none"
             />
           </div>
@@ -159,7 +247,10 @@ const AddMenuModal = ({ open, onClose, onSubmit }: AddMenuProps) => {
             >
               취소
             </button>
-            <button className="px-4 py-2 rounded-lg bg-[#FF5722] text-white hover:bg-[#e14a1c] transition">
+            <button
+              className="px-4 py-2 rounded-lg bg-[#FF5722] text-white hover:bg-[#e14a1c] transition"
+              onClick={handleSubmit}
+            >
               등록
             </button>
           </div>

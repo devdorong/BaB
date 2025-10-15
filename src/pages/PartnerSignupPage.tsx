@@ -216,40 +216,7 @@ function PartnerSignupPage() {
         return;
       }
 
-      // 4) 식당 등록
-      // const { error } = await supabase.from('restaurants').insert({
-      //   name: formData.restaurantName,
-      //   phone: formData.phone,
-      //   address: formData.address,
-      //   opentime: toTime(formData.openTime),
-      //   closetime: toTime(formData.closeTime),
-      //   closeday: formData.closedDays,
-      //   storeintro: formData.storeIntro,
-      //   business_number: formData.businessNumber,
-      //   thumbnail_url: thumbnailUrl,
-      //   profile_id: profileData?.id,
-      //   latitude: formData.latitude,
-      //   longitude: formData.longitude,
-      // });
-
-      // if (error) {
-      //   console.error(error);
-      //   alert('등록 실패');
-      //   return;
-      // }
-      // // 프로필 업데이트 (role 을 patner 로)
-      // const { error: updateError } = await supabase
-      //   .from('profiles')
-      //   .update({ role: 'partner' })
-      //   .eq('id', profileData?.id);
-
-      // if (updateError) {
-      //   console.error(updateError);
-      //   alert('프로필 업데이트 중 오류가 발생했습니다.');
-      //   return;
-      // }
-
-      // alert('등록 완료! 프로필이 파트너로 전환되었습니다.');
+      
       await submitApplication(thumbnailUrl);
 
       navigate('/partner');

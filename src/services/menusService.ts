@@ -58,6 +58,18 @@ export const updateMenu = async (
   }
 };
 
+export const updateMenuToggle = async (
+  restaurantId: number,
+  id: number,
+  newToggle: boolean,
+): Promise<void> => {
+  const {} = await supabase
+    .from('menus')
+    .update({ is_active: newToggle })
+    .eq('restaurant_id', restaurantId)
+    .eq('id', id);
+};
+
 export const deleteMenu = async (restaurantId: number, menuId: number): Promise<void> => {
   const { error } = await supabase
     .from('menus')

@@ -215,3 +215,58 @@ html {
   font-weight: 600 !important;
   border-radius: 6px !important;
 }
+
+
+
+/* === Custom Select (Input 스타일 일치) === */
+.bab-menu-select .ant-select-selector {
+  height: 40px !important; /* 기존 input 높이 */
+  border-radius: 8px !important; /* rounded-lg */
+  border: 1px solid #d1d5db !important; /* border-gray-300 */
+  padding: 0 12px !important; /* px-3 */
+  display: flex !important;
+  align-items: center !important;
+  transition: all 0.2s ease !important;
+  box-shadow: none !important;
+}
+
+/* Hover 및 Focus 시 효과 (focus:border-[#FF5722] focus:ring-1 focus:ring-[#FF5722]) */
+.bab-menu-select .ant-select-selector:hover,
+.bab-menu-select.ant-select-focused .ant-select-selector {
+  border-color: #ff5722 !important;
+  box-shadow: 0 0 0 1px #ff5722 !important; /* focus:ring-1 */
+}
+
+/* placeholder */
+.bab-menu-select .ant-select-selection-placeholder {
+  color: #9ca3af !important; /* text-gray-400 */
+  font-size: 14px !important;
+}
+
+/* 선택된 텍스트 */
+.bab-menu-select .ant-select-selection-item {
+  color: #111827 !important; /* text-gray-900 */
+  font-size: 14px !important; /* text-sm */
+  font-weight: 400 !important;
+}
+
+/* 드롭다운 */
+.bab-menu-select-dropdown .ant-select-item {
+  font-size: 14px !important;
+  padding: 8px 12px !important;
+  border-radius: 6px !important;
+}
+
+/* Hover 상태 */
+.bab-menu-select-dropdown .ant-select-item-option-active {
+  background-color: rgba(255, 87, 34, 0.08) !important;
+  color: #ff5722 !important;
+}
+
+/* 선택된 상태 */
+.bab-menu-select-dropdown .ant-select-item-option-selected {
+  background-color: #ff5722 !important;
+  color: #fff !important;
+  font-weight: 500 !important;
+  border-radius: 6px !important;
+}
