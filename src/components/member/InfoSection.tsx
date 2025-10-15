@@ -1,15 +1,33 @@
-import { RiMapPinLine, RiPhoneLine, RiTimeLine } from 'react-icons/ri';
+import {
+  RiCalculatorLine,
+  RiCalendar2Line,
+  RiCalendarLine,
+  RiMapPinLine,
+  RiPhoneLine,
+  RiTimeLine,
+} from 'react-icons/ri';
 import { useKakaoLoader } from '../../hooks/useKakaoLoader';
 import KkoMapDetail from '../../ui/jy/Kakaomapdummy';
 
 interface InfoSectionProps {
   restPhone?: string;
   restAddress?: string;
+  opentime?: string | null;
+  closetime?: string | null;
+  closeday?: string[] | null;
   lat?: string | null;
   lng?: string | null;
 }
 
-function InfoSection({ restPhone, restAddress, lat, lng }: InfoSectionProps) {
+function InfoSection({
+  restPhone,
+  restAddress,
+  opentime,
+  closetime,
+  closeday,
+  lat,
+  lng,
+}: InfoSectionProps) {
   const isMapLoaded = useKakaoLoader();
 
   return (
@@ -22,18 +40,26 @@ function InfoSection({ restPhone, restAddress, lat, lng }: InfoSectionProps) {
           {/* 기본 정보 */}
           <div className="flex flex-col gap-[15px]">
             <h3 className="text-[18px] font-semibold text-babgray-900 mb-3">기본 정보</h3>
-            <ul className="space-y-3 text-babgray-800">
+            <ul className="flex flex-col space-y-3 justify-center text-babgray-800">
               <li className="flex items-start gap-2">
-                <RiPhoneLine className="mt-0.5 text-[18px] text-babgray-500" />
+                <RiPhoneLine className="mt-[5px] text-[18px] text-babgray-500" />
                 <span className="text-[16px]">{restPhone}</span>
               </li>
               <li className="flex items-start gap-2">
-                <RiTimeLine className="mt-0.5 text-[18px] text-babgray-500" />
-                <span className="text-[16px]">매일 11:00 - 22:00</span>
+                <RiTimeLine className="mt-[3px] text-[18px] text-babgray-500" />
+                <span className="text-[16px]">
+                  매일 {opentime} - {closetime}
+                </span>
+                <span>
+                  {Array.isArray(closeday) &&
+                    closeday.length > 0 &&
+                    `(${closeday.map(day => `${day}요일`).join(', ')} 휴무)`}
+                </span>
               </li>
+
               <li className="flex items-start gap-2">
-                <RiMapPinLine className="mt-0.5 text-[18px] text-babgray-500" />
-                <span className="text-[16px]">{restAddress}</span>
+                <RiMapPinLine className="mt-[3px] text-[18px] text-babgray-500" />
+                <span className="text-[16px]">주소 {restAddress}</span>
               </li>
             </ul>
           </div>

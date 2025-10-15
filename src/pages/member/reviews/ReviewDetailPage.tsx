@@ -1,34 +1,30 @@
-import {
-  RiMapPinLine,
-  RiStarFill,
-  RiHeart3Line,
-  RiShareLine,
-  RiPhoneLine,
-  RiNavigationLine,
-  RiChatSmile3Line,
-  RiArrowLeftLine,
-  RiMessageLine,
-  RiHeart3Fill,
-} from 'react-icons/ri';
-import ReviewItem from '../../../components/member/ReviewItem';
-import { InterestBadge, ItalianFood } from '../../../ui/tag';
-import { useNavigate, useParams } from 'react-router-dom';
 import { useEffect, useState } from 'react';
-import { ButtonFillLG, ButtonLineLg } from '../../../ui/button';
-import InfoSection from '../../../components/member/InfoSection';
-import WriteReview from '../../../components/member/WriteReview';
 import {
+  RiArrowLeftLine,
+  RiHeart3Fill,
+  RiMapPinLine,
+  RiMessageLine,
+  RiStarFill,
+} from 'react-icons/ri';
+import { useNavigate, useParams } from 'react-router-dom';
+import InfoSection from '../../../components/member/InfoSection';
+import ReviewItem from '../../../components/member/ReviewItem';
+import WriteReview from '../../../components/member/WriteReview';
+import { fetchInterestsGrouped } from '../../../lib/interests';
+import {
+  checkFavoriteRest,
   fetchRestaurantDetailId,
+  fetchRestaurantReviews,
   fetchRestaurants,
+  getFavoriteCount,
+  toggleFavorite,
   type RestaurantsDetailType,
   type RestaurantsType,
+  type ReviewWithPhotos,
 } from '../../../lib/restaurants';
-import { fetchInterestsGrouped } from '../../../lib/interests';
-import CategoryBadge from '../../../ui/jy/CategoryBadge';
-import CategoryListBadge from '../../../components/member/CategoryListBadge';
-import { badgeColors } from '../../partner/NotificationPage';
+import { ButtonFillLG, ButtonLineLg } from '../../../ui/button';
 import { categoryColors, defaultCategoryColor } from '../../../ui/jy/categoryColors';
-import { supabase } from '../../../lib/supabase';
+import { InterestBadge } from '../../../ui/tag';
 
 type TabKey = 'review' | 'info';
 const FOOD = '음식 종류';
@@ -45,6 +41,7 @@ function ReviewDetailPage() {
   const [loading, setLoading] = useState<boolean>(false);
   const [isFavorite, setIsFavorite] = useState(false);
   const [favoriteCount, setFavoriteCount] = useState(0);
+  const [reviews, setReviews] = useState<ReviewWithPhotos[]>([]);
 
   const goBack = () => {
     if (window.history && window.history.length > 1) navigate(-1);
@@ -144,62 +141,31 @@ function ReviewDetailPage() {
       : '';
 
   useEffect(() => {
-    const fetchFavorite = async () => {
-      const {
-        data: { user },
-      } = await supabase.auth.getUser();
+    const loadFavorite = async () => {
+      if (!restaurant) return;
+      const count = await getFavoriteCount(restaurant.id);
+      const isFav = await checkFavoriteRest(restaurant.id);
 
-      const { count } = await supabase
-        .from('restaurants_favorites')
-        .select('*', { count: 'exact', head: true })
-        .eq('restaurant_id', restaurant?.id);
-      setFavoriteCount(count ?? 0);
-
-      if (user) {
-        // 이미 찜한 식당인지
-        const { data } = await supabase
-          .from('restaurants_favorites')
-          .select('id')
-          .eq('profile_id', user.id)
-          .eq('restaurant_id', restaurant?.id)
-          .maybeSingle();
-        setIsFavorite(!!data);
-      }
+      setFavoriteCount(count);
+      setIsFavorite(isFav);
       setLoading(false);
     };
-    fetchFavorite();
+    loadFavorite();
   }, [restaurant?.id]);
 
   const handleToggleFavorite = async () => {
-    const {
-      data: { user },
-    } = await supabase.auth.getUser();
+    if (!restaurant) return;
 
-    if (!user || !restaurant) {
-      alert('로그인이 필요합니다.');
-      return;
-    }
+    const newState = await toggleFavorite(restaurant.id);
+    setIsFavorite(newState);
+    const count = await getFavoriteCount(restaurant.id);
+    setFavoriteCount(count);
+  };
 
-    if (isFavorite) {
-      // 찜 해제
-      const { error } = await supabase
-        .from('restaurants_favorites')
-        .delete()
-        .eq('profile_id', user.id)
-        .eq('restaurant_id', restaurant.id);
-
-      if (!error) setIsFavorite(false);
-    } else {
-      // 찜 등록
-      const { error } = await supabase.from('restaurants_favorites').insert([
-        {
-          profile_id: user.id,
-          restaurant_id: restaurant.id,
-        },
-      ]);
-
-      if (!error) setIsFavorite(true);
-    }
+  // 리뷰 등록 후 새로고침
+  const loadReviews = async () => {
+    const data = await fetchRestaurantReviews(restaurant!.id);
+    setReviews(data);
   };
 
   return (
@@ -334,26 +300,31 @@ function ReviewDetailPage() {
         {/* 탭 콘텐츠 */}
         {tab === 'review' ? (
           <section className="mt-10 space-y-4">
-            {[1, 2, 3].map(i => (
-              <ReviewItem key={i} />
-            ))}
+            {restaurant && <ReviewItem restaurantId={restaurant.id} />}
           </section>
         ) : (
           <InfoSection
             restPhone={restaurant?.phone}
             restAddress={restaurant?.address}
+            opentime={restaurant?.opentime}
+            closetime={restaurant?.closetime}
+            closeday={restaurant?.closeday}
             lat={restaurant?.latitude}
             lng={restaurant?.longitude}
           />
         )}
       </div>
-      <WriteReview
-        open={writeOpen}
-        onClose={() => setWriteOpen(false)}
-        onSubmit={data => {
-          console.log('리뷰 제출', data);
-        }}
-      />
+      {restaurant && (
+        <WriteReview
+          restaurantId={restaurant.id}
+          open={writeOpen}
+          onClose={() => setWriteOpen(false)}
+          onSubmit={data => {
+            console.log('리뷰 제출', data);
+          }}
+          onSuccess={() => loadReviews()}
+        />
+      )}
     </div>
   );
 }
