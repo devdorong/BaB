@@ -17,14 +17,15 @@ import {
   fetchRestaurantReviews,
   fetchRestaurants,
   getFavoriteCount,
-  toggleFavorite,
   type RestaurantsDetailType,
   type RestaurantsType,
+  type RestaurantTypeRatingAvg,
   type ReviewWithPhotos,
 } from '../../../lib/restaurants';
 import { ButtonFillLG, ButtonLineLg } from '../../../ui/button';
 import { categoryColors, defaultCategoryColor } from '../../../ui/jy/categoryColors';
 import { InterestBadge } from '../../../ui/tag';
+import { toggleFavorite } from '../../../services/RestReviewService';
 
 type TabKey = 'review' | 'info';
 const FOOD = '음식 종류';
@@ -34,7 +35,7 @@ function ReviewDetailPage() {
   const [writeOpen, setWriteOpen] = useState(false);
   const { id } = useParams<{ id: string }>();
   const [restaurant, setRestaurant] = useState<RestaurantsDetailType | null>(null);
-  const [restaurants, setRestaurants] = useState<RestaurantsType[]>([]);
+  const [restaurants, setRestaurants] = useState<RestaurantTypeRatingAvg[]>([]);
   const [userPos, setUserPos] = useState<{ lat: number; lng: number } | null>(null);
   const [interests, setInterests] = useState<Record<string, string[]>>({});
   const [selected, setSelected] = useState<string[]>([]);
@@ -62,16 +63,6 @@ function ReviewDetailPage() {
       // 포커스일 때만 나타남 (호버는 아님)
       'group-focus-visible:opacity-100 group-focus-visible:bg-bab-500',
     ].join(' ');
-
-  useEffect(() => {
-    if (!id) return;
-
-    const loadRestaurant = async () => {
-      const data = await fetchRestaurantDetailId(id);
-      setRestaurant(data);
-    };
-    loadRestaurant();
-  }, [id]);
 
   // 카테고리
   useEffect(() => {
@@ -153,6 +144,32 @@ function ReviewDetailPage() {
     loadFavorite();
   }, [restaurant?.id]);
 
+  // 별점 계산
+  useEffect(() => {
+    const loadRestaurant = async () => {
+      if (!id) return;
+
+      const detail = await fetchRestaurantDetailId(id);
+      if (!detail) return;
+
+      // 리뷰 목록 따로 불러오기
+      const reviewData = await fetchRestaurantReviews(Number(id));
+      setReviews(reviewData);
+
+      // 평균계산
+      const ratings = reviewData.map(r => r.rating_food ?? 0);
+      const avg =
+        ratings.length > 0 ? ratings.reduce((sum, val) => sum + val, 0) / ratings.length : 0;
+
+      setRestaurant({
+        ...detail,
+        send_avg_rating: Math.round(avg * 10) / 10,
+      });
+    };
+
+    loadRestaurant();
+  }, [id]);
+
   const handleToggleFavorite = async () => {
     if (!restaurant) return;
 
@@ -166,6 +183,22 @@ function ReviewDetailPage() {
   const loadReviews = async () => {
     const data = await fetchRestaurantReviews(restaurant!.id);
     setReviews(data);
+
+    const avg =
+      data.length > 0 ? data.reduce((sum, r) => sum + (r.rating_food ?? 0), 0) / data.length : 0;
+
+    const reviewCount = data.length;
+
+    setReviews(data);
+    setRestaurant(prev =>
+      prev
+        ? {
+            ...prev,
+            send_avg_rating: Math.round(avg * 10) / 10,
+            reviews: [{ count: reviewCount }],
+          }
+        : prev,
+    );
   };
 
   return (
@@ -185,7 +218,17 @@ function ReviewDetailPage() {
           >
             <RiArrowLeftLine className="text-[18px]" />
           </button>
-          <img src="/sample.jpg" alt="가게 사진" className="w-full h-[400px] object-cover" />
+          {restaurant?.thumbnail_url ? (
+            <>
+              <img
+                src={restaurant?.thumbnail_url}
+                alt="가게 사진"
+                className="w-full h-[400px] object-cover"
+              />
+            </>
+          ) : (
+            <div className="w-full h-[400px] object-cover bg-babgray-200"></div>
+          )}
 
           {/* 헤더 정보 박스 */}
           <div className="px-5 py-4 md:px-8 md:py-6 bg-white rounded-t-3xl">
@@ -300,7 +343,7 @@ function ReviewDetailPage() {
         {/* 탭 콘텐츠 */}
         {tab === 'review' ? (
           <section className="mt-10 space-y-4">
-            {restaurant && <ReviewItem restaurantId={restaurant.id} />}
+            {restaurant && <ReviewItem restaurantId={restaurant.id} reviews={reviews} />}
           </section>
         ) : (
           <InfoSection

@@ -1,22 +1,41 @@
-import React from 'react';
+import React, { useEffect, useState } from 'react';
 import { BrandTag, GrayTag } from '../../../ui/tag';
 import RestaurantCard from '../../../ui/jy/RestaurantCard';
 import { useNavigate } from 'react-router-dom';
+import { fetchMyReviewData, type MyReviewData } from '../../../lib/myreviews';
+import { supabase } from '../../../lib/supabase';
+import MyreviewCard from '../../../ui/jy/MyReviewCard';
+import { categoryColors, defaultCategoryColor } from '../../../ui/jy/categoryColors';
+import { RiArrowLeftSLine, RiArrowRightSLine } from 'react-icons/ri';
 
-const dummy = Array.from({ length: 10 }).map((_, i) => ({
-  imageUrl: '/sample.jpg',
-  name: `미슐랭 파스타 하우스`,
-  rating: 4.8,
-  reviewCount: 127,
-  location: '강남구 청담동',
-  distanceKm: 1.2,
-  reviewSnippet:
-    '정말 맛있는 파스타집이에요! 특히 트러플 크림 파스타가 최고였습니다. 분위기도 로맨틱…',
-  likeCount: 24 + i,
-}));
-
-function MyReviewPage() {
+function MyReviewPage({ restaurantId }: { restaurantId: number }) {
   const navigate = useNavigate();
+  const [review, setReview] = useState<MyReviewData[]>([]);
+  const [loading, setLoading] = useState<boolean>(false);
+  const [currentPage, setCurrentPage] = useState(1);
+  const itemsPerPage = 12;
+
+  const startIdx = (currentPage - 1) * itemsPerPage;
+  const endIdx = startIdx + itemsPerPage;
+  const currentItems = review.slice(startIdx, endIdx);
+  const totalPages = Math.ceil(review.length / itemsPerPage);
+
+  useEffect(() => {
+    const loadReview = async () => {
+      setLoading(true);
+      try {
+        const data = await fetchMyReviewData();
+        console.log(data);
+        setReview(data);
+      } catch (error) {
+        console.log(error);
+      } finally {
+        setLoading(false);
+      }
+    };
+    loadReview();
+  }, []);
+
   return (
     <div id="root" className="flex flex-col min-h-screen">
       <div className="w-[1280px] mx-auto">
@@ -38,9 +57,55 @@ function MyReviewPage() {
           </div>
 
           <div className="grid grid-cols-4 gap-6">
-            {dummy.map((d, idx) => (
-              <RestaurantCard key={idx} {...d} />
+            {currentItems.map(r => {
+              const reviewCount = r.restaurants?.reviews?.[0]?.count ?? 0;
+              const category = r.restaurants?.restaurants_category_id_fkey?.name ?? '';
+              const color = categoryColors[category] || defaultCategoryColor;
+              return (
+                <MyreviewCard
+                  key={r.review_id}
+                  onClick={() => navigate(`/member/reviews/${r.restaurant_id}`)}
+                  imageUrl={r.restaurants?.thumbnail_url || ''}
+                  name={r.restaurants?.name || ''}
+                  rating={r.rating_food}
+                  reviewCount={`리뷰 ${reviewCount}개`}
+                  comment={r.comment}
+                  category={category}
+                  tagBg={color.bg}
+                  tagText={color.text}
+                  review_photos={r.review_photos}
+                />
+              );
+            })}
+          </div>
+          <div className="flex justify-center gap-2 mt-6">
+            <button
+              disabled={currentPage === 1}
+              onClick={() => setCurrentPage(p => Math.max(p - 1, 1))}
+              className="p-2  bg-bg-bg rounded disabled:opacity-50 hover:bg-bab hover:text-white"
+            >
+              <RiArrowLeftSLine size={16} />
+            </button>
+
+            {Array.from({ length: totalPages }).map((_, idx) => (
+              <button
+                key={idx + 1}
+                onClick={() => setCurrentPage(idx + 1)}
+                className={`p-2 py-0 rounded hover:bg-bab hover:text-white ${
+                  currentPage === idx + 1 ? 'text-bab' : 'bg-bg-bg'
+                }`}
+              >
+                {idx + 1}
+              </button>
             ))}
+
+            <button
+              disabled={currentPage === totalPages}
+              onClick={() => setCurrentPage(p => Math.min(p + 1, totalPages))}
+              className="p-2 bg-bg-bg rounded disabled:opacity-50 hover:bg-bab hover:text-white"
+            >
+              <RiArrowRightSLine size={16} />
+            </button>
           </div>
         </div>
       </div>

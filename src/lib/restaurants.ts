@@ -18,6 +18,24 @@ export interface RestaurantsType {
   reviews: { count: number }[];
 }
 
+export interface RestaurantTypeRatingAvg {
+  id: number;
+  name: string;
+  phone: string;
+  address: string;
+  thumbnail_url: string;
+  status: string | null;
+  storeintro?: string | null;
+  send_avg_rating?: number | null;
+  favorite: number | null;
+  latitude: string | null;
+  longitude: string | null;
+  category_id?: number | null;
+  review_count: number;
+  interests?: { name: string };
+  reviews: { rating_food: number }[];
+}
+
 export interface RestaurantsDetailType {
   id: number;
   name: string;
@@ -64,22 +82,49 @@ export type ReviewWithPhotos = Review & {
   } | null;
 };
 
-export const fetchRestaurants = async (): Promise<RestaurantsType[]> => {
+export const fetchRestaurants = async (): Promise<RestaurantTypeRatingAvg[]> => {
   const { data, error } = await supabase
     .from('restaurants')
     .select(
-      `id, name, phone, address, thumbnail_url, status, send_avg_rating, favorite, storeintro, latitude, longitude, category_id, interests(name),reviews(count)`,
+      `
+      id,
+      name,
+      phone,
+      address,
+      thumbnail_url,
+      send_avg_rating,
+      status,
+      favorite,
+      storeintro,
+      latitude,
+      longitude,
+      category_id,
+      interests(name),
+      reviews(rating_food)
+    `,
     )
     .eq('status', 'approved');
 
-  // interests를 배열이아닌 객체로 변환
-  const normalized = (data ?? []).map(r => ({
-    ...r,
-    interests: Array.isArray(r.interests) ? r.interests[0] : r.interests,
-  }));
-
   if (error) throw error;
-  return normalized ?? [];
+
+  const formatted = (data ?? []).map(r => {
+    // 리뷰들의 평균 별점 직접 계산
+    const ratings =
+      r.reviews?.map((review: { rating_food: number | null }) => review.rating_food ?? 0) || [];
+    const avgRating =
+      ratings.length > 0
+        ? ratings.reduce((sum: number, rating: number) => sum + rating, 0) / ratings.length
+        : 0;
+
+    return {
+      ...r,
+      send_avg_rating: Math.round(avgRating * 10) / 10, // 실시간 계산된 평균
+      review_count: ratings.length,
+      interests: Array.isArray(r.interests) ? r.interests[0] : r.interests,
+    };
+  });
+
+  return formatted;
 };
 
 export const fetchFavoriteRestaurants = async (): Promise<RestaurantsType[]> => {
@@ -220,134 +265,4 @@ export const checkFavoriteRest = async (restaurantId: number): Promise<boolean> 
   if (error) return false;
 
   return !!data;
-};
-
-// 찜 토글
-export const toggleFavorite = async (restaurantId: number): Promise<boolean> => {
-  const {
-    data: { user },
-  } = await supabase.auth.getUser();
-
-  if (!user) {
-    alert('로그인이 필요합니다.');
-    return false;
-  }
-
-  const { data: exists } = await supabase
-    .from('restaurants_favorites')
-    .select('id')
-    .eq('profile_id', user.id)
-    .eq('restaurant_id', restaurantId)
-    .maybeSingle();
-
-  if (exists) {
-    const { error } = await supabase
-      .from('restaurants_favorites')
-      .delete()
-      .eq('profile_id', user.id)
-      .eq('restaurant_id', restaurantId);
-    if (error) return false;
-    return false;
-  } else {
-    // 찜 등록
-    const { error } = await supabase.from('restaurants_favorites').insert([
-      {
-        profile_id: user.id,
-        restaurant_id: restaurantId,
-      },
-    ]);
-    if (error) return false;
-    return true;
-  }
-};
-
-interface insertReviewProps {
-  restaurantId: number;
-  profileId: string;
-  content: string;
-  rating_food: number;
-  files: File[];
-}
-
-export const insertReview = async ({
-  restaurantId,
-  profileId,
-  content,
-  rating_food,
-  files,
-}: insertReviewProps): Promise<boolean> => {
-  try {
-    const { data: review, error: reviewError } = await supabase
-      .from('reviews')
-      .insert([
-        {
-          restaurant_id: restaurantId,
-          profile_id: profileId,
-          comment: content,
-          rating_food,
-        },
-      ])
-      .select()
-      .single();
-
-    if (reviewError || !review) throw new Error('리뷰 생성 실패');
-
-    // 이미지파일 스토리지 업로드
-    if (files.length > 0) {
-      const uploadedUrls: string[] = [];
-
-      for (const file of files) {
-        const url = await uploadReviewPhotos(file, review.review_id);
-        if (url) uploadedUrls.push(url);
-      }
-
-      if (uploadedUrls.length > 0) {
-        const photoRows = uploadedUrls.map(photoUrl => ({
-          review_id: review.review_id,
-          photo_url: photoUrl,
-        }));
-
-        const { error: photoError } = await supabase.from('review_photos').insert(photoRows);
-
-        if (photoError) throw photoError;
-      }
-    }
-
-    return true;
-  } catch (err) {
-    console.error(err);
-    return false;
-  }
-};
-
-// 리뷰 사진 업로드
-export const uploadReviewPhotos = async (file: File, reviewId: number): Promise<string | null> => {
-  try {
-    const allowedTypes = ['image/jpeg', 'image/png', 'image/webp', 'image/gif'];
-    if (!allowedTypes.includes(file.type)) {
-      throw new Error('지원하지 않는 이미지 형식');
-    }
-
-    const fileExt = file.name.split('.').pop();
-    const fileName = `${reviewId}-${Date.now()}.${fileExt}`;
-    const filePath = `reviews/${reviewId}/${fileName}`;
-
-    const { error: uploadError } = await supabase.storage
-      .from('review_photos')
-      .upload(filePath, file, {
-        cacheControl: '3600',
-        upsert: false,
-      });
-
-    if (uploadError) throw new Error(`업로드 실패: ${uploadError.message}`);
-
-    const {
-      data: { publicUrl },
-    } = supabase.storage.from('review_photos').getPublicUrl(filePath);
-
-    return publicUrl;
-  } catch (err) {
-    console.log(err);
-    return null;
-  }
 };

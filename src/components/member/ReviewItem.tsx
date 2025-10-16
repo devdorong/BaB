@@ -5,29 +5,35 @@ import ReviewContent from './ReviewContent';
 
 interface ReviewItemProps {
   restaurantId: number;
+  reviews?: ReviewWithPhotos[];
 }
 
-function ReviewItem({ restaurantId }: ReviewItemProps) {
-  const [reviews, setReviews] = useState<ReviewWithPhotos[]>([]);
-  const [loading, setLoading] = useState(true);
+function ReviewItem({ restaurantId, reviews }: ReviewItemProps) {
+  const [localReviews, setLocalReviews] = useState<ReviewWithPhotos[]>([]);
 
   useEffect(() => {
+    if (reviews && reviews.length > 0) {
+      setLocalReviews(reviews);
+      return;
+    }
+
     const loadReviews = async () => {
-      setLoading(true);
-      const review = await fetchRestaurantReviews(restaurantId);
-      setReviews(review);
-      setLoading(false);
+      const data = await fetchRestaurantReviews(restaurantId);
+      setLocalReviews(data);
     };
     loadReviews();
-  }, [restaurantId]);
+  }, [restaurantId, reviews]);
 
-  if (reviews.length === 0)
+  if (localReviews.length === 0)
     return <div className="p-4 text-gray-400 text-center">등록된 리뷰가 없습니다.</div>;
 
   return (
     <>
-      {reviews.map(review => (
-        <div className="bg-white rounded-2xl p-[30px] shadow-[0_4px_4px_rgba(0,0,0,0.02)] border border-black/5">
+      {localReviews.map(review => (
+        <div
+          key={review.review_id}
+          className="bg-white rounded-2xl p-[30px] shadow-[0_4px_4px_rgba(0,0,0,0.02)] border border-black/5"
+        >
           {/* 상단 헤더 */}
           <div className="flex items-start justify-between">
             <div className="flex items-center gap-3">

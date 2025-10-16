@@ -4,7 +4,6 @@ import { StarScore } from '../../ui/jy/StarScore';
 import {
   fetchRestaurantDetailId,
   fetchRestaurantReviews,
-  insertReview,
   type RestaurantsDetailType,
   type ReviewWithPhotos,
 } from '../../lib/restaurants';
@@ -12,6 +11,7 @@ import { useParams } from 'react-router-dom';
 import { useAuth } from '../../contexts/AuthContext';
 import { getProfile } from '../../lib/propile';
 import type { Profile } from '../../types/bobType';
+import { insertReview } from '../../services/RestReviewService';
 
 type Props = {
   restaurantId: number;
@@ -184,8 +184,8 @@ function WriteReview({ open, onClose, onSubmit, onSuccess, restaurantId }: Props
               {profileData?.avatar_url && (
                 <img
                   src={
-                    user?.user_metadata.avatar_url !== 'guest_image'
-                      ? user?.user_metadata.avatar_url
+                    profileData.avatar_url !== 'guest_image'
+                      ? profileData.avatar_url
                       : 'https://www.gravatar.com/avatar/?d=mp&s=200'
                   }
                   alt="프로필 이미지"

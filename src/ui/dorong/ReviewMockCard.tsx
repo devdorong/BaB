@@ -162,7 +162,7 @@ export const ReviewCard = ({
           <div className="flex gap-[20px] pt-[7px]">
             <div className="flex items-center gap-[5px]">
               <RiStarFill className="text-[#FACC15]" />
-              <span className="w-[37px] text-[14px] text-gray-700">{rating}점</span>
+              <span className="w-[35px] text-[14px] text-gray-700">{rating}점</span>
             </div>
             <div className="flex items-center gap-2 text-babgray-700 text-sm">
               <RiMapPinLine className="text-[#FF5722]" />
