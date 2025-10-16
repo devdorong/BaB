@@ -3,6 +3,7 @@ import type { Database } from '../types/bobType';
 
 type Restaurant = Database['public']['Tables']['restaurants']['Row'];
 
+// 레스토랑 불러오기
 export const getMyRestaurant = async (): Promise<Restaurant | null> => {
   try {
     const {

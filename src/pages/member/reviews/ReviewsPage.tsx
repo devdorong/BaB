@@ -2,7 +2,7 @@ import { useEffect, useState } from 'react';
 import { RiArrowLeftSLine, RiArrowRightSLine, RiSearchLine } from 'react-icons/ri';
 import { useNavigate } from 'react-router-dom';
 import { fetchInterestsGrouped } from '../../../lib/interests';
-import { fetchRestaurants, type RestaurantsType } from '../../../lib/restaurants';
+import { fetchRestaurants, type RestaurantTypeRatingAvg } from '../../../lib/restaurants';
 import { ReviewCard } from '../../../ui/dorong/ReviewMockCard';
 import { categoryColors, defaultCategoryColor } from '../../../ui/jy/categoryColors';
 import { BlackTag, GrayTag } from '../../../ui/tag';
@@ -11,12 +11,11 @@ const FOOD = '음식 종류';
 
 function ReviewsPage() {
   const navigate = useNavigate();
-  const [currentItem, setCurrentItems] = useState<RestaurantsType[]>([]);
   const [search, setSearch] = useState('');
   const [selectedCategory, setSelectedCategory] = useState('전체');
   const [currentPage, setCurrentPage] = useState(1);
   const itemsPerPage = 6;
-  const [restaurants, setRestaurants] = useState<RestaurantsType[]>([]);
+  const [restaurants, setRestaurants] = useState<RestaurantTypeRatingAvg[]>([]);
   const [interests, setInterests] = useState<Record<string, string[]>>({});
   const [loading, setLoading] = useState<boolean>(false);
   // 사용자 위치
@@ -183,6 +182,11 @@ function ReviewsPage() {
           {currentItems.map(r => {
             const category = r.interests?.name ?? '';
             const color = categoryColors[category] || defaultCategoryColor;
+            const ratings = r.reviews?.map(v => v.rating_food ?? 0) || [];
+            const avgRating =
+              ratings.length > 0
+                ? Math.round((ratings.reduce((sum, r) => sum + r, 0) / ratings.length) * 10) / 10
+                : 0;
             const distance =
               userPos && r.latitude && r.longitude
                 ? getDistance(
@@ -194,16 +198,16 @@ function ReviewsPage() {
                 : '';
 
             return (
-              <div onClick={() => navigate(`/member/reviews/${r.id}`)}>
+              <div key={r.id} onClick={() => navigate(`/member/reviews/${r.id}`)}>
                 <ReviewCard
                   key={r.id}
                   restaurantId={r.id}
                   name={r.name}
                   category={r.interests?.name ?? ''}
                   img={r.thumbnail_url}
-                  review={`리뷰 ${r.reviews?.[0]?.count ?? 0}개`}
+                  review={`리뷰 ${r.reviews.length}개`}
                   storeintro={r.storeintro ?? ''}
-                  rating={r.send_avg_rating ?? 0}
+                  rating={avgRating ?? 0}
                   distance={distance}
                   tagBg={color.bg}
                   tagText={color.text}
