@@ -8,7 +8,7 @@ import MyreviewCard from '../../../ui/jy/MyReviewCard';
 import { categoryColors, defaultCategoryColor } from '../../../ui/jy/categoryColors';
 import { RiArrowLeftSLine, RiArrowRightSLine } from 'react-icons/ri';
 
-function MyReviewPage({ restaurantId }: { restaurantId: number }) {
+function MyReviewPage() {
   const navigate = useNavigate();
   const [review, setReview] = useState<MyReviewData[]>([]);
   const [loading, setLoading] = useState<boolean>(false);

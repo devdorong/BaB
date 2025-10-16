@@ -32,7 +32,6 @@ import ChatPage from './pages/member/profiles/ChatPage';
 import EditPage from './pages/member/profiles/EditPage';
 import FavoritePage from './pages/member/profiles/FavoritePage';
 import InterestPage from './pages/member/profiles/InterestPage';
-import MyReviewPage from './pages/member/profiles/MyReviewPage';
 import PointPage from './pages/member/profiles/PointPage';
 import ProfilePage from './pages/member/profiles/ProfilePage';
 import RecentMatchingPage from './pages/member/profiles/RecentMatchingPage';
@@ -62,6 +61,7 @@ import { PartnerSignupProvider } from './contexts/PartnerSignupContext';
 import './components/member/chat/chat.css';
 import { DirectChatProider } from './contexts/DirectChatContext';
 import CommunityEditPage from './pages/member/communitys/CommunityEditPage';
+import MyReviewPage from './pages/member/profiles/MyReviewPage';
 
 function App() {
   // 인증 메일 확인후, 프로필 생성
