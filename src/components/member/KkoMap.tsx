@@ -1,8 +1,8 @@
 import { useCallback, useEffect, useMemo, useRef, useState } from 'react';
-import { Map, MapMarker, MarkerClusterer, CustomOverlayMap } from 'react-kakao-maps-sdk';
-import type { Place } from '../../types/place';
 import { RiMapPinLine } from 'react-icons/ri';
 import InfiniteScroll from 'react-infinite-scroll-component';
+import { CustomOverlayMap, Map, MapMarker, MarkerClusterer } from 'react-kakao-maps-sdk';
+import type { Place } from '../../types/place';
 
 interface KkoMapProps {
   radius?: number;
