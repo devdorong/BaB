@@ -1,14 +1,14 @@
 import { useEffect, useState } from 'react';
 import { RiFireFill, RiShareLine } from 'react-icons/ri';
+import OkCancelModal from '../../components/member/OkCancelModal';
+import { useAuth } from '../../contexts/AuthContext';
 import { supabase } from '../../lib/supabase';
 import type { Events } from '../../types/bobType';
-import TagBadge from '../../ui/TagBadge';
-import { GiftFill, PhoneLine } from '../../ui/Icon';
-import OkCancelModal from '../../components/member/OkCancelModal';
 import { ButtonFillMd } from '../../ui/button';
-import { useModal } from '../../ui/sdj/ModalState';
-import { useAuth } from '../../contexts/AuthContext';
+import { GiftFill } from '../../ui/Icon';
 import EventWriteModal from '../../ui/sdj/EventWriteModal';
+import { useModal } from '../../ui/sdj/ModalState';
+import TagBadge from '../../ui/TagBadge';
 
 function EventPage() {
   const { user } = useAuth();
@@ -31,6 +31,10 @@ function EventPage() {
     }
     return data || [];
   };
+
+  useEffect(() => {
+    document.body.style.overflow = eventModal ? 'hidden' : 'auto';
+  }, [eventModal]);
 
   useEffect(() => {
     const checkAdmin = async (userId: string | unknown) => {
@@ -131,7 +135,7 @@ function EventPage() {
         </button>
         {admin && <ButtonFillMd onClick={() => setEventModal(true)}>작성하기</ButtonFillMd>}
       </div>
-      {eventModal && <EventWriteModal />}
+      {eventModal && <EventWriteModal onClose={() => setEventModal(false)} />}
 
       {/* 이벤트 카드 리스트 */}
       <div className="grid grid-cols-2 gap-[25px]">
