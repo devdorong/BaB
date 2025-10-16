@@ -24,7 +24,7 @@ function CommunityEditPage() {
 
   const handleCancel = () => {
     openModal('수정 취소', '수정중인 내용을 저장하지않고 나가시겠습니까?', '닫기', '확인', () =>
-      navigate('/member/community'),
+      navigate(-1),
     );
     return;
   };
@@ -38,7 +38,7 @@ function CommunityEditPage() {
       return;
     }
 
-    const { error } = await supabase
+    const { data, error } = await supabase
       .from('posts')
       .update({
         post_category: activeCategory,
@@ -152,18 +152,18 @@ function CommunityEditPage() {
             수정하기
           </ButtonFillMd>
         </div>
-        {modal.isOpen && (
-          <Modal
-            isOpen={modal.isOpen}
-            onClose={closeModal}
-            titleText={modal.title}
-            contentText={modal.content}
-            closeButtonText={modal.closeText}
-            submitButtonText={modal.submitText}
-            onSubmit={modal.onSubmit}
-          />
-        )}
       </div>
+      {modal.isOpen && (
+        <Modal
+          isOpen={modal.isOpen}
+          onClose={closeModal}
+          titleText={modal.title}
+          contentText={modal.content}
+          closeButtonText={modal.closeText}
+          submitButtonText={modal.submitText}
+          onSubmit={modal.onSubmit}
+        />
+      )}
     </div>
   );
 }

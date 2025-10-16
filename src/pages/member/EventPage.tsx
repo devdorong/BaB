@@ -5,10 +5,20 @@ import type { Events } from '../../types/bobType';
 import TagBadge from '../../ui/TagBadge';
 import { GiftFill, PhoneLine } from '../../ui/Icon';
 import OkCancelModal from '../../components/member/OkCancelModal';
+import { ButtonFillMd } from '../../ui/button';
+import { useModal } from '../../ui/sdj/ModalState';
+import { useAuth } from '../../contexts/AuthContext';
+import EventWriteModal from '../../ui/sdj/EventWriteModal';
 
 function EventPage() {
+  const { user } = useAuth();
+  const { closeModal, modal, openModal } = useModal();
   const [events, setEvents] = useState<Events[]>([]);
   const [viewModal, setViewModal] = useState(false);
+
+  const [eventModal, setEventModal] = useState(false);
+
+  const [admin, setAdmin] = useState(false);
 
   const eventData = async (): Promise<Events[]> => {
     const { data, error } = await supabase
@@ -21,6 +31,23 @@ function EventPage() {
     }
     return data || [];
   };
+
+  useEffect(() => {
+    const checkAdmin = async (userId: string | unknown) => {
+      const { data, error } = await supabase
+        .from('profiles')
+        .select('role')
+        .eq('id', userId)
+        .single();
+
+      if (error || !data) {
+        setAdmin(false);
+        return;
+      }
+      setAdmin(data.role === 'admin');
+    };
+    checkAdmin(user?.id);
+  }, [user, events]);
 
   useEffect(() => {
     const fetchData = async () => {
@@ -97,6 +124,14 @@ function EventPage() {
           다양한 이벤트에 참여하고 특별한 혜택을 받아보세요
         </p>
       </div>
+
+      <div className="flex justify-between items-center p-5 bg-white rounded-2xl shadow">
+        <button className="cursor-pointer rounded-2xl focus:bg-bab focus:text-white ">
+          <TagBadge children="전체" />
+        </button>
+        {admin && <ButtonFillMd onClick={() => setEventModal(true)}>작성하기</ButtonFillMd>}
+      </div>
+      {eventModal && <EventWriteModal />}
 
       {/* 이벤트 카드 리스트 */}
       <div className="grid grid-cols-2 gap-[25px]">
