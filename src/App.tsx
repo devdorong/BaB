@@ -59,9 +59,9 @@ import type { ProfileInsert } from './types/bobType';
 
 import { PartnerSignupProvider } from './contexts/PartnerSignupContext';
 
+import './components/member/chat/chat.css';
 import { DirectChatProider } from './contexts/DirectChatContext';
 import CommunityEditPage from './pages/member/communitys/CommunityEditPage';
-import './components/member/chat/chat.css';
 
 function App() {
   // 인증 메일 확인후, 프로필 생성

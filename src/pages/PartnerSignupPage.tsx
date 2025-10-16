@@ -11,7 +11,7 @@ import { useAuth } from '../contexts/AuthContext';
 import { useNavigate } from 'react-router-dom';
 import type { Profile } from '../types/bobType';
 import { getProfile } from '../lib/propile';
-import { useAddressSearch } from '../components/partner/UseAddressSearch';
+import { useAddressSearch } from '../hooks/UseAddressSearch';
 
 function PartnerSignupPage() {
   const navigate = useNavigate();
@@ -225,7 +225,7 @@ function PartnerSignupPage() {
     }
   };
 
-  // 확인용
+  // // 확인용
   // useEffect(() => {
   //   console.log('formData 변경:', formData);
   //   console.log('주소:', address);
