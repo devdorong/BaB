@@ -1,6 +1,6 @@
 import dayjs from 'dayjs';
 import { useEffect, useState } from 'react';
-import { RiAlarmWarningLine, RiChat3Line, RiEyeLine } from 'react-icons/ri';
+import { RiAlarmWarningLine, RiChat3Line, RiCloseFill, RiEyeLine } from 'react-icons/ri';
 import { useNavigate, useParams } from 'react-router-dom';
 import { useAuth } from '../../../contexts/AuthContext';
 import { supabase } from '../../../lib/supabase';
@@ -49,6 +49,9 @@ function CommunityDetailPage() {
   const [content, setContent] = useState('');
   const [editingId, setEditingId] = useState<number | null>(null);
   const [editText, setEditText] = useState('');
+
+  const [isAdmin, setIsAdmin] = useState(false);
+  const [isAuthor, setIsAuthor] = useState(false);
 
   const fetchComments = async () => {
     if (!post?.id) return;
@@ -125,6 +128,16 @@ function CommunityDetailPage() {
     });
   };
 
+  const handlePostDelete = async (id: number) => {
+    openModal('게시글 삭제', '해당 게시글을 삭제하시겠습니까?', '취소', '삭제', async () => {
+      const { error } = await supabase.from('posts').delete().eq('id', id);
+      if (!error) {
+        navigate('/member/community');
+      }
+      closeModal();
+    });
+  };
+
   const handleReport = async (
     type: ReportsType,
     title: string,
@@ -187,6 +200,21 @@ function CommunityDetailPage() {
     }
   };
 
+  useEffect(() => {
+    const checkAdmin = async () => {
+      if (!user) return;
+      const { data: profile } = await supabase
+        .from('profiles')
+        .select('role')
+        .eq('id', user?.id)
+        .single();
+
+      setIsAdmin(profile?.role === 'admin');
+      setIsAuthor(user?.id === post?.profile_id);
+    };
+    checkAdmin();
+  }, [user, post]);
+
   const loadPost = async () => {
     if (!id) return;
     const { data, error } = await supabase.from('posts').select('*').eq('id', id).single();
@@ -207,19 +235,16 @@ function CommunityDetailPage() {
   }, [id]);
 
   useEffect(() => {
-    fetchComments();
-  }, [post]);
-
-  useEffect(() => {
     fetchPost();
   }, [id]);
+
+  useEffect(() => {
+    fetchComments();
+  }, [post]);
 
   // 로딩중 반응넣기(로딩 스피너)
   if (loading) return <div>로딩 중 ...</div>;
   if (!post) return <p>게시글을 찾을 수 없습니다.</p>;
-
-  const isAdmin = user?.user_metadata?.role === 'admin';
-  const isAuthor = user?.id === post.profile_id;
 
   return (
     <div className="w-[746px] h-full flex flex-col gap-10 py-8 mx-auto">
@@ -291,6 +316,15 @@ function CommunityDetailPage() {
             <RiAlarmWarningLine />
             <p>게시글 신고</p>
           </div>
+          {(isAuthor || isAdmin) && (
+            <div
+              onClick={() => handlePostDelete(post.id)}
+              className="flex items-center gap-2 text-babgray-500 cursor-pointer"
+            >
+              <RiCloseFill />
+              <p>게시글 삭제</p>
+            </div>
+          )}
         </div>
       </div>
       {/* 댓글 영역 */}
@@ -362,7 +396,7 @@ function CommunityDetailPage() {
                     <div className="text-gray-700 mt-1">{comment.content}</div>
                   )}
                 </div>
-                <div className="flex justify-between items-center text-sm">
+                <div className="flex justify-end items-center gap-2 text-sm">
                   {(isAuthor || isAdmin) && (
                     <div className="flex gap-1 items-center text-sm text-gray-500">
                       <button
@@ -382,20 +416,22 @@ function CommunityDetailPage() {
                       </button>
                     </div>
                   )}
-                  <div
-                    onClick={() => {
-                      setReportInfo({
-                        type: '댓글',
-                        nickname: comment.profiles?.nickname ?? null,
-                        targetProfileId: comment.profiles?.id,
-                      });
-                      setReports(true);
-                    }}
-                    className="flex items-center gap-1 text-babbutton-red cursor-pointer"
-                  >
-                    <RiAlarmWarningLine />
-                    <p>신고하기</p>
-                  </div>
+                  {!isAuthor && (
+                    <div
+                      onClick={() => {
+                        setReportInfo({
+                          type: '댓글',
+                          nickname: comment.profiles?.nickname ?? null,
+                          targetProfileId: comment.profiles?.id,
+                        });
+                        setReports(true);
+                      }}
+                      className="flex items-center gap-1 text-babbutton-red cursor-pointer"
+                    >
+                      <RiAlarmWarningLine />
+                      <p>신고하기</p>
+                    </div>
+                  )}
                 </div>
               </li>
             );

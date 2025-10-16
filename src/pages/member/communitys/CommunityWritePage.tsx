@@ -73,17 +73,21 @@ function CommunityWritePage() {
         content: content,
       };
 
-      const { data, error } = await supabase.from('posts').insert([newPost]).select('id').single();
+      openModal('등록확인', '작성한 내용으로 등록하시겠습니까?', '취소', '등록', async () => {
+        const { data, error } = await supabase
+          .from('posts')
+          .insert([newPost])
+          .select('id')
+          .single();
 
-      if (error) {
-        openModal('등록확인', '등록에 실패했습니다.', '닫기');
-        navigate(-1);
-        return;
-      } else {
-        openModal('등록확인', '등록 되었습니다.', '닫기');
+        if (error) {
+          openModal('등록확인', '등록에 실패했습니다.', '닫기');
+          navigate(-1);
+          return;
+        }
 
         navigate(`/member/community/detail/${data.id}`);
-      }
+      });
     } catch (error) {
       openModal('오류확인', '예상치 못한 오류 발생.', '닫기');
     }
