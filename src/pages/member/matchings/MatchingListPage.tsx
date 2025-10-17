@@ -4,6 +4,7 @@ import { useEffect, useState } from 'react';
 import { RiArrowRightDoubleLine, RiArrowRightSLine, RiSearchLine } from 'react-icons/ri';
 import MatchCard from '../../../components/MatchCard';
 import { BlackTag, BrandTag, GrayTag } from '../../../ui/tag';
+import { useModal } from '../../../ui/sdj/ModalState';
 const demo = [
   {
     tags: [
@@ -450,6 +451,8 @@ const MatchingListPage = () => {
     // 총 페이지 수 계산 (demo 전체 길이를 itemsPerPage로 나눔)
     setPageCount(Math.ceil(demo.length / itemsPerPage));
   }, [itemOffset, itemsPerPage]);
+  const { closeModal, modal, openModal } = useModal();
+
   return (
     <div className="w-full bg-bg-bg">
       <div className="w-[1280px] mx-auto flex flex-col gap-8 py-8">
@@ -501,7 +504,7 @@ const MatchingListPage = () => {
         <div className="w-full pt-[30px] pb-[50px]">
           <ul className="flex flex-col gap-x-[30px] gap-y-[24px] list-none p-0 m-0">
             {currentItems.map((item, index) => (
-              <MatchCard key={index} {...item} />
+              <MatchCard key={index} {...item} openModal={openModal} closeModal={closeModal} modal={modal} />
             ))}
           </ul>
         </div>
