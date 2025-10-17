@@ -2,7 +2,7 @@ import { RiCheckboxCircleLine, RiLock2Line, RiUserLine } from 'react-icons/ri';
 import { LogoLg, PartnerLogo } from '../ui/Ui';
 import { useNavigate } from 'react-router-dom';
 import { useAuth } from '../contexts/AuthContext';
-import { useState } from 'react';
+import { useEffect, useState } from 'react';
 import { GoogleIconSvg, KakaoIconSvg } from '../ui/jy/IconSvg';
 import type { Profile } from '../types/bobType';
 import { getProfile } from '../lib/propile';
@@ -10,10 +10,13 @@ import { supabase } from '../lib/supabase';
 import GoogleLoginButton from '../components/GoogleLoginButton';
 import GoogleLoginSmallButton from '../components/GoogleLoginSmallButton';
 import KakaoLoginSmallButton from '../components/KakaoLoginSmallButton';
+import { useModal } from '../ui/sdj/ModalState';
+import Modal from '../ui/sdj/Modal';
 
 function PartnerLoginPage() {
   const navigate = useNavigate();
-  const { signIn } = useAuth();
+  const { signIn, user } = useAuth();
+  const { openModal, closeModal, modal } = useModal();
   const [email, setEmail] = useState('');
   const [pw, setPw] = useState('');
   const [msg, setMsg] = useState('');
@@ -33,14 +36,56 @@ function PartnerLoginPage() {
     if (tempData.role === 'partner' || tempData.role === 'admin') {
       navigate('/partner');
     } else {
-      if (confirm('파트너만 이용가능합니다. 파트너 신청 하시겠습니까?')) {
-        navigate('/partner/signup');
-      } else {
-        alert('멤버페이지로 이동합니다.');
-        navigate('/member');
-      }
+      openModal(
+        '파트너 신청',
+        '파트너만 이용가능합니다. 파트너 신청 하시겠습니까?',
+        '취소',
+        '확인',
+        () => {
+          (closeModal(), navigate('/partner/signup'));
+        },
+        () => {
+          (closeModal(),
+            openModal('파트너 신청', '멤버페이지로 이동합니다.', '', '확인', () =>
+              navigate('/member'),
+            ));
+        },
+      );
+      // if (confirm('파트너만 이용가능합니다. 파트너 신청 하시겠습니까?')) {
+      //   navigate('/partner/signup');
+      // } else {
+      //   alert('멤버페이지로 이동합니다.');
+      //   navigate('/member');
+      // }
     }
   };
+  const handlePartnerSign = () => {
+    if (!user) {
+      openModal('로그인', '로그인 후 이용 가능한 서비스입니다.', '확인', '');
+    } else {
+      navigate('/partner/signup');
+    }
+  };
+
+  useEffect(() => {
+    if (profileData?.role === 'member') {
+      openModal(
+        '파트너 신청',
+        '파트너만 이용가능합니다. 파트너 신청 하시겠습니까?',
+        '취소',
+        '확인',
+        () => {
+          (closeModal(), navigate('/partner/signup'));
+        },
+        () => {
+          (closeModal(),
+            openModal('파트너 신청', '멤버페이지로 이동합니다.', '', '확인', () =>
+              navigate('/member'),
+            ));
+        },
+      );
+    }
+  }, [profileData,user]);
 
   return (
     <div className="flex flex-col items-center bg-bg-bg min-h-[calc(100vh/0.9)] justify-center">
@@ -116,7 +161,7 @@ function PartnerLoginPage() {
           </div>
           <div className="text-center justify-start text-babgray-500 text-base font-medium">|</div>
           <div
-            onClick={() => navigate('/partner/signup')}
+            onClick={handlePartnerSign}
             className="text-center justify-start text-babgray-500 text-base font-medium cursor-pointer"
           >
             파트너 신청하기
@@ -132,6 +177,17 @@ function PartnerLoginPage() {
           <KakaoLoginSmallButton onError={error => setMsg(`카카오 로그인 오류 : ${error}`)} />
         </div>
       </div>
+      {modal.isOpen && (
+        <Modal
+          isOpen={modal.isOpen}
+          onClose={closeModal}
+          titleText={modal.title}
+          contentText={modal.content}
+          closeButtonText={modal.closeText}
+          submitButtonText={modal.submitText}
+          onSubmit={modal.onSubmit}
+        />
+      )}
     </div>
   );
 }

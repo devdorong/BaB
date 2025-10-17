@@ -5,6 +5,8 @@ import type { Database, MenusInsert } from '../../types/bobType';
 import { supabase } from '../../lib/supabase';
 import { useRestaurant } from '../../contexts/PartnerRestaurantContext';
 import { Select } from 'antd';
+import { useModal } from '../../ui/sdj/ModalState';
+import Modal from '../../ui/sdj/Modal';
 
 type AddMenuProps = {
   open: boolean;
@@ -18,11 +20,14 @@ type AddMenuProps = {
     files: File[]; // 업로드용 파일
     enabled?: boolean;
   }) => void;
+  modal: any;
+  openModal: (...args: any[]) => void;
+  closeModal: () => void;
 };
 
 type CategoryType = Database['public']['Enums']['menu_category_enum'];
 
-const AddMenuModal = ({ open, onClose }: AddMenuProps) => {
+const AddMenuModal = ({ open, onClose, modal, openModal, closeModal }: AddMenuProps) => {
   const { createMenuItem } = useMenus();
   const { restaurant } = useRestaurant();
   const [file, setFile] = useState<File | null>(null);
@@ -63,8 +68,8 @@ const AddMenuModal = ({ open, onClose }: AddMenuProps) => {
 
   const handleSubmit = async () => {
     try {
-      if (!title.trim() || price <= 0) {
-        alert(`메뉴명과 가격을 입력해주세요.`);
+      if (!title.trim() || price <= 0 || !file) {
+        openModal('메뉴추가', '데이터를 모두 채워주세요!', '', '확인', () => closeModal());
         return;
       }
       setLoading(true);
@@ -73,7 +78,13 @@ const AddMenuModal = ({ open, onClose }: AddMenuProps) => {
       if (file) {
         imageUrl = await uploadFile(file);
         if (!imageUrl) {
-          alert(`이미지 업로드 실패`);
+          openModal(
+            '이미지 업로드 오류',
+            '이미지 업로드에 실패하였습니다. 다시 시도해주세요.',
+            '',
+            '확인',
+            () => closeModal(),
+          );
           return;
         }
       }
@@ -88,11 +99,14 @@ const AddMenuModal = ({ open, onClose }: AddMenuProps) => {
         restaurant_id: restaurant!.id,
       };
       await createMenuItem(newMenu);
-      alert('메뉴가 등록되었습니다!');
-      onClose();
+      openModal('메뉴추가', '메뉴가 등록되었습니다!', '', '확인', () => {
+        (closeModal(), onClose());
+      });
     } catch (error) {
       console.error('메뉴 등록 중 오류:', error);
-      alert('메뉴 등록에 실패했습니다.');
+      openModal('메뉴추가', '메뉴 등록에 실패했습니다. 다시한번 시도해주세요.', '', '확인', () => {
+        closeModal();
+      });
     } finally {
       setLoading(false);
     }
@@ -109,21 +123,6 @@ const AddMenuModal = ({ open, onClose }: AddMenuProps) => {
     if (fileInputRef.current) fileInputRef.current.value = '';
   };
 
-  // 열릴 때 스크롤 잠금
-  // useEffect(() => {
-  //   if (!open) {
-  //     const prev = document.body.style.overflow;
-  //     document.body.style.overflow = open ? 'hidden' : '';
-  //     return () => {
-  //       document.body.style.overflow = prev;
-  //     };
-  //   } else {
-  //     // 닫히면 폼 초기화
-  //     resetReview();
-  //   }
-  // }, [open]);
-
-  
   // 열릴 때 스크롤 잠금
   useEffect(() => {
     if (open) {

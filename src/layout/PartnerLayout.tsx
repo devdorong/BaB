@@ -9,7 +9,7 @@ function PartnerLayout() {
       <MenusProvider>
         <div className="relative">
           <PartnerHeader />
-          <main className="ml-[256px] px-[32px] bg-bg-bg py-[141px] min-h-screen">
+          <main className="ml-[256px] px-[32px] bg-bg-bg py-[141px] pb-[32px] min-h-[calc(100vh/0.9)]">
             <Outlet />
           </main>
         </div>

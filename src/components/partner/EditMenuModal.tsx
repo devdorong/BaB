@@ -10,11 +10,21 @@ interface EditMenuModalProps {
   open: boolean;
   onClose: () => void;
   menu: Menus;
+  modal: any;
+  openModal: (...args: any[]) => void;
+  closeModal: () => void;
 }
 
 type CategoryType = Database['public']['Enums']['menu_category_enum'];
 
-const EditMenuModal = ({ open, onClose, menu }: EditMenuModalProps) => {
+const EditMenuModal = ({
+  open,
+  onClose,
+  menu,
+  modal,
+  openModal,
+  closeModal,
+}: EditMenuModalProps) => {
   const { updateMenuItem } = useMenus();
   const { restaurant } = useRestaurant();
   const [file, setFile] = useState<File | null>(null);
@@ -66,8 +76,8 @@ const EditMenuModal = ({ open, onClose, menu }: EditMenuModalProps) => {
 
   const handleSubmit = async () => {
     try {
-      if (!title.trim() || price <= 0) {
-        alert('메뉴명과 가격을 입력해주세요.');
+      if (!title.trim() || price <= 0 || !file) {
+        openModal('메뉴 수정', '데이터를 모두 채워주세요!', '', '확인', () => closeModal());
         return;
       }
       setLoading(true);
@@ -77,7 +87,13 @@ const EditMenuModal = ({ open, onClose, menu }: EditMenuModalProps) => {
       if (file) {
         imageUrl = await uploadFile(file);
         if (!imageUrl) {
-          alert('이미지 업로드 실패');
+          openModal(
+            '이미지 업로드 오류',
+            '이미지 업로드에 실패하였습니다. 다시 시도해주세요.',
+            '',
+            '확인',
+            () => closeModal(),
+          );
           return;
         }
       }
@@ -91,11 +107,14 @@ const EditMenuModal = ({ open, onClose, menu }: EditMenuModalProps) => {
       };
 
       await updateMenuItem(menu.id, updatedMenu);
-      alert('메뉴가 수정되었습니다!');
-      onClose();
+      openModal('메뉴 수정', '메뉴가 수정되었습니다!', '', '확인', () => {
+        (closeModal(), onClose());
+      });
     } catch (error) {
       console.error('메뉴 수정 중 오류:', error);
-      alert('메뉴 수정에 실패했습니다.');
+      openModal('메뉴 수정', '메뉴 수정에 실패했습니다. 다시한번 시도해주세요.', '', '확인', () => {
+        closeModal();
+      });
     } finally {
       setLoading(false);
     }
@@ -147,11 +166,7 @@ const EditMenuModal = ({ open, onClose, menu }: EditMenuModalProps) => {
                 </div>
               ) : existingImageUrl ? (
                 <div className="w-full h-full relative rounded-xl overflow-hidden">
-                  <img
-                    src={existingImageUrl}
-                    alt=""
-                    className="w-full h-full object-cover"
-                  />
+                  <img src={existingImageUrl} alt="" className="w-full h-full object-cover" />
                 </div>
               ) : (
                 <div>이미지 업로드</div>

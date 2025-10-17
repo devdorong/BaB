@@ -12,10 +12,12 @@ import { useNavigate } from 'react-router-dom';
 import type { Profile } from '../types/bobType';
 import { getProfile } from '../lib/propile';
 import { useAddressSearch } from '../hooks/UseAddressSearch';
+import Modal from '../ui/sdj/Modal';
 
 function PartnerSignupPage() {
   const navigate = useNavigate();
-  const { formData, setFormData, saveDraft, submitApplication } = usePartnerSignup();
+  const { formData, setFormData, saveDraft, submitApplication, modal, openModal, closeModal } =
+    usePartnerSignup();
   const { address, latitude, longitude, openPostcode } = useAddressSearch();
 
   const { user } = useAuth();
@@ -216,7 +218,6 @@ function PartnerSignupPage() {
         return;
       }
 
-      
       await submitApplication(thumbnailUrl);
 
       navigate('/partner');
@@ -235,8 +236,9 @@ function PartnerSignupPage() {
 
   useEffect(() => {
     if (!user) {
-      alert('로그인 후 이용 가능한 서비스입니다.');
-      navigate('/partner/login');
+      openModal('로그인', '로그인 후 이용 가능한 서비스입니다.', '', '확인', () => {
+        (closeModal(), navigate('/partner/login'));
+      });
     }
   }, [user]);
 
@@ -561,7 +563,18 @@ function PartnerSignupPage() {
             </button>
           </div>
         </form>
-      </div>
+      </div>{' '}
+      {modal.isOpen && (
+        <Modal
+          isOpen={modal.isOpen}
+          onClose={closeModal}
+          titleText={modal.title}
+          contentText={modal.content}
+          closeButtonText={modal.closeText}
+          submitButtonText={modal.submitText}
+          onSubmit={modal.onSubmit}
+        />
+      )}
     </div>
   );
 }

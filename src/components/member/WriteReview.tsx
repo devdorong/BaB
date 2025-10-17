@@ -151,7 +151,6 @@ function WriteReview({ open, onClose, onSubmit, onSuccess, restaurantId }: Props
       onClose();
       onSuccess?.();
     } else {
-      alert('리뷰 등록 실패');
     }
   };
 

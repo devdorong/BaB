@@ -8,6 +8,9 @@ type MenuCardProps = {
   onToggle?: (newToggle: boolean) => void;
   onEdit?: () => void;
   onDelete?: () => void;
+  modal: any;
+  openModal: (...args: any[]) => void;
+  closeModal: () => void;
 };
 
 function formatPrice(krw: number) {
@@ -24,6 +27,9 @@ export default function MenuCard({
   onToggle,
   onEdit,
   onDelete,
+  modal,
+  openModal,
+  closeModal,
 }: MenuCardProps) {
   return (
     <article className="w-full rounded-lg border border-babgray-150 bg-white shadow-[0_4px_4px_rgba(0,0,0,0.02)] overflow-hidden">
