@@ -4,11 +4,11 @@
  * - 새 채팅 시작 : 사용자 검색을 통한 새 채팅방 생성
  */
 
-import { useCallback, useEffect, useRef, useState } from 'react';
-import { supabase } from '../../../lib/supabase';
+import { useEffect, useRef, useState } from 'react';
 import { useDirectChat } from '../../../contexts/DirectChatContext';
-import type { ChatUser } from '../../../types/chatType';
+import { supabase } from '../../../lib/supabase';
 import type { Profile } from '../../../types/bobType';
+import type { ChatUser } from '../../../types/chatType';
 
 // Props 정의
 interface DirectChatListProps {
@@ -21,8 +21,16 @@ interface DirectChatListProps {
 const DirectChatList = ({ onChatSelect, onCreateChat, selectedChatId }: DirectChatListProps) => {
   // ======================== Context 및 상태 관리 ========================
   // DirectChatContext에서 필요한 함수와 상태 추출
-  const { loadChats, createDirectChat, error, users, searchUsers, setUsers, loading, chats } =
-    useDirectChat();
+  const {
+    loadChats,
+    createDirectChat,
+    error,
+    users,
+    searchUsers,
+    loading,
+    userSearchLoading,
+    chats,
+  } = useDirectChat();
 
   // 사용자 프로필 상태 (현재 미사용)
   const [profileData, setProfileData] = useState<Profile | null>(null);
@@ -38,7 +46,7 @@ const DirectChatList = ({ onChatSelect, onCreateChat, selectedChatId }: DirectCh
   // 최초에 컴포넌트 마운트시 채팅 목록
   useEffect(() => {
     loadChats();
-  }, []); // 신규 또는 메시지 전송 등으로 업데이트 시 채팅목록 호출
+  }, [loadChats]); // 신규 또는 메시지 전송 등으로 업데이트 시 채팅목록 호출
 
   // Supabase Realtime으로 실시간 동기화
   useEffect(() => {
@@ -63,7 +71,7 @@ const DirectChatList = ({ onChatSelect, onCreateChat, selectedChatId }: DirectCh
       // 구독 해제
       subscription.unsubscribe(); // 반드시 해줌. 메모리 누수 방지, 백엔드 부하방지
     };
-  }, []);
+  }, [loadChats]);
 
   /**
    * 디바운싱이 적용된 사용자 검색 (수정사항)
@@ -75,51 +83,12 @@ const DirectChatList = ({ onChatSelect, onCreateChat, selectedChatId }: DirectCh
    * - 타이머 정리로 메모리 누수 방지
    */
 
+  // 검색어가 비어있지 않을 때만 검색 수행
   useEffect(() => {
-    // 이전 타이머가 있다면 클리어 (중복 타이머 방지)
-    if (searchTimeoutRef.current) {
-      clearTimeout(searchTimeoutRef.current);
-    }
-
-    // 검색어가 비어있지 않을 때만 검색 수행
     if (searchTerm.trim()) {
-      setSearchLoading(true); // 로컬 로딩 상태 시작
-      // 300ms 후에 검색 실행 (디바운싱으로 성능 최적화)
-      searchTimeoutRef.current = setTimeout(async () => {
-        try {
-          await searchUsers(searchTerm); // 실제 검색 API 호출
-        } finally {
-          setSearchLoading(false); // 로딩 상태 종료
-        }
-      }, 300);
-    } else {
-      // 검색어가 비어있으면 사용자 목록 초기화
-      setUsers([]);
-      setSearchLoading(false);
+      searchUsers(searchTerm);
     }
-
-    // 클린업 함수: 컴포넌트 언마운트 시 타이머 정리
-    return () => {
-      if (searchTimeoutRef.current) {
-        clearTimeout(searchTimeoutRef.current);
-      }
-    };
   }, [searchTerm, searchUsers]);
-
-  /**
-   * 컴포넌트 언마운트 시 타이머 정리 (수정사항)
-   *
-   * 메모리 누수 방지를 위한 추가적인 안전장치
-   * - 검색 타이머가 남아있을 경우 정리
-   * - 컴포넌트가 완전히 제거되기 전에 실행
-   */
-  useEffect(() => {
-    return () => {
-      if (searchTimeoutRef.current) {
-        clearTimeout(searchTimeoutRef.current);
-      }
-    };
-  }, []);
 
   // 날짜 관련 포맷 설정
   const formatTime = (dateString: string) => {
@@ -198,10 +167,10 @@ const DirectChatList = ({ onChatSelect, onCreateChat, selectedChatId }: DirectCh
           {/* ======================== 사용자 검색 결과 목록 (수정사항) ======================== */}
           <div className="search-result">
             {/* 검색 로딩 중일 때 - 로컬 로딩 상태 표시 */}
-            {searchLoading && <div className="no-results">검색 중...</div>}
-
-            {/* 검색된 사용자 출력 - 로딩이 아닐 때만 표시 */}
-            {!searchLoading &&
+            {userSearchLoading ? (
+              <div className="no-results">사용자 검색 중...</div>
+            ) : (
+              // 검색된 사용자 출력 - 로딩이 아닐 때만 표시
               users.map(user => (
                 // 사용자 중 대화상대를 선택할 수 있음. : handleUserSelect
                 <div key={user.id} className="user-item" onClick={() => handleUserSelect(user)}>
@@ -221,10 +190,11 @@ const DirectChatList = ({ onChatSelect, onCreateChat, selectedChatId }: DirectCh
                     <div className="user-nickname">{user.nickname}</div>
                   </div>
                 </div>
-              ))}
+              ))
+            )}
 
-            {/* 검색 결과가 없을 때 표시 - 로딩이 아니고 검색어가 있지만 결과가 없을 때 */}
-            {!searchLoading && searchTerm && users.length === 0 && (
+            {/* 사용자가 검색어는 있는데 사용자 목록이 없고 로딩 중이 아닐 때*/}
+            {!userSearchLoading && searchTerm && users.length === 0 && (
               <div className="no-results">검색 결과가 없습니다.</div>
             )}
           </div>
@@ -234,11 +204,12 @@ const DirectChatList = ({ onChatSelect, onCreateChat, selectedChatId }: DirectCh
       <div className="chat-items">
         {loading ? (
           // 로딩표시
-          <div className="loading">로딩 중...</div>
+          <div className="loading mt-4 text-babgray-600">로딩 중...</div>
         ) : chats.length === 0 ? (
           // 채팅방이 없을 때 안내 메시지
           <div className="no-chats">
             <p>아직 채팅방이 없습니다.</p>
+            <p>새 채팅 버튼을 눌러 대화를 시작해보세요!</p>
           </div>
         ) : (
           // 채팅 목록 렌더링
@@ -276,10 +247,12 @@ const DirectChatList = ({ onChatSelect, onCreateChat, selectedChatId }: DirectCh
                 <div className="chat-preview">
                   {chat.last_message ? (
                     <span className={chat.unread_count > 0 ? 'unread' : ''}>
-                      {chat.last_message.sender_nickname} : {chat.last_message.content}
+                      {chat.last_message.content}
                     </span>
                   ) : (
-                    <span className="no-message">메시지가 없습니다.</span>
+                    <span className="no-message">
+                      <br />
+                    </span>
                   )}
                 </div>
               </div>
