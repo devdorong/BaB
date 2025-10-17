@@ -1,7 +1,6 @@
-import { useState } from 'react';
 import { DatePicker } from 'antd';
 import dayjs, { Dayjs } from 'dayjs';
-import { RiCalendarLine } from 'react-icons/ri';
+import { useState } from 'react';
 import type { Database } from '../../types/bobType';
 
 const { RangePicker } = DatePicker;
@@ -40,8 +39,7 @@ export default function EventDateSelector({ onSelect }: EventDateSelectorProps) 
     : '이벤트 기간을 설정해주세요';
 
   return (
-    <div className="flex items-center gap-2 cursor-pointer text-babgray-700">
-      <RiCalendarLine />
+    <div className="flex items-center gap-2 text-babgray-700">
       <RangePicker
         format="YYYY-MM-DD"
         value={dates ?? undefined}

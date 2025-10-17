@@ -7,6 +7,7 @@ import dayjs from 'dayjs';
 import { useModal } from './ModalState';
 import Modal from './Modal';
 import { ButtonFillMd } from '../button';
+import EventDateSelector from './EventDateSelector';
 
 type EventState = Database['public']['Tables']['events']['Row']['status'];
 type EventBadge = Database['public']['Tables']['events']['Row']['badge'];
@@ -14,6 +15,12 @@ type EventWriteModalProps = {
   onClose: () => void;
   onSuccess: () => Promise<Events[]>;
 };
+type DateSelectType = {
+  start: string;
+  end: string;
+  status: string;
+};
+
 function EventWriteModal({ onClose, onSuccess }: EventWriteModalProps) {
   const { closeModal, modal, openModal } = useModal();
   const fileInputRef = useRef<HTMLInputElement | null>(null);
@@ -21,25 +28,11 @@ function EventWriteModal({ onClose, onSuccess }: EventWriteModalProps) {
   const [content, setContent] = useState('');
   const [benefit, setbenefit] = useState('');
   const [attend, setattend] = useState(0);
-  const [startDate, setstartDate] = useState<Date | null>(null);
-  const [endDate, setendDate] = useState<Date | null>(null);
+  const [startDate, setstartDate] = useState<string | null>(null);
+  const [endDate, setendDate] = useState<string | null>(null);
   const [badgeType, setbadgeType] = useState<EventBadge>(null);
   const [image, setImage] = useState<File | null>(null);
   const [imagePreview, setImagePreview] = useState<string | null>(null);
-
-  const today = dayjs();
-  const start = dayjs(startDate);
-  const end = dayjs(endDate);
-
-  let status: EventState = '예정';
-  if (today.isBefore(start)) {
-    status = '예정';
-  } else if (today.isAfter(end)) {
-    status = '종료';
-  } else {
-    status = '진행중';
-  }
-  const dateLabel = dayjs(startDate).format('MM-DD(dd) HH:mm');
 
   const badgeHot = attend >= 50 ? 'HOT' : null;
   const badgeNew = attend <= 10 ? 'NEW' : null;
@@ -54,6 +47,11 @@ function EventWriteModal({ onClose, onSuccess }: EventWriteModalProps) {
         onClose();
       },
     );
+  };
+
+  const handleDateSelect = ({ start, end, status }: DateSelectType) => {
+    setstartDate(start);
+    setendDate(end);
   };
 
   const handleImageChange = (e: React.ChangeEvent<HTMLInputElement>) => {
@@ -71,36 +69,46 @@ function EventWriteModal({ onClose, onSuccess }: EventWriteModalProps) {
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
 
-    let imageUrl: string | null = null;
-    if (image) {
-      imageUrl = await uploadEventImage(image);
-    }
-
-    if (!title.trim() || !content.trim() || !benefit.trim() || !image) {
-      openModal('이벤트 등록', '설정하지 않은 내용을 확인 후 다시 등록해주세요.', '닫기', '');
+    if (!title.trim() || !content.trim() || !benefit.trim() || !image || !startDate) {
+      openModal('이벤트 등록', '설정하지 않은 내용을 확인 후 다시 등록해주세요.', '닫기');
       return;
     }
 
-    const { error } = await supabase.from('events').insert({
-      title,
-      benefit,
-      description: content,
-      image_url: imageUrl,
-      start_date: startDate,
-      end_date: endDate,
-      status: '예정',
-      badge: badgeType,
-      participants_count: 0,
-    });
-    if (error) {
-      openModal('이벤트 등록', '이벤트 등록 중 오류가 발생했습니다', '', '닫기', () => onClose());
-    } else {
-      openModal('이벤트 등록', '현재 내용으로 이벤트를 등록하시겠습니까?', '등록', '취소', () =>
-        onClose(),
-      );
-    }
-    onSuccess?.();
-    onClose();
+    openModal(
+      '이벤트 등록',
+      '현재 내용으로 이벤트를 등록하시겠습니까?',
+      '취소',
+      '등록',
+      async () => {
+        let imageUrl: string | null = null;
+        if (image) {
+          imageUrl = await uploadEventImage(image);
+        }
+
+        const { error } = await supabase.from('events').insert({
+          title,
+          benefit,
+          description: content,
+          image_url: imageUrl,
+          start_date: startDate,
+          end_date: endDate,
+          status: '예정',
+          badge: badgeType,
+          participants_count: 0,
+        });
+
+        if (error) {
+          openModal('이벤트 등록', '이벤트 등록 중 오류가 발생했습니다.', '', '닫기', () =>
+            onClose(),
+          );
+        } else {
+          openModal('이벤트 등록', '이벤트가 성공적으로 등록되었습니다.', '', '확인', () => {
+            onSuccess?.();
+            onClose();
+          });
+        }
+      },
+    );
   };
 
   return (
@@ -150,10 +158,7 @@ function EventWriteModal({ onClose, onSuccess }: EventWriteModalProps) {
               placeholder="상세 내용을 입력해주세요"
             />
           </div>
-          <div className="flex items-center gap-2 cursor-pointer text-babgray-700">
-            <RiCalendarLine />
-            이벤트 기간을 설정해주세요
-          </div>
+          <EventDateSelector onSelect={handleDateSelect} />
           <div className="flex w-full gap-4">
             <ButtonFillMd className="flex flex-1" type="button" onClick={handleSubmit}>
               작성하기
