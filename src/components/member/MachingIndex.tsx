@@ -1,90 +1,105 @@
 import { RiAddLine, RiSearchLine } from 'react-icons/ri';
 import { useNavigate } from 'react-router-dom';
-import MatchCard from '../MatchCard';
+import { useAuth } from '../../contexts/AuthContext';
 import { ButtonFillLG, ButtonLineMd } from '../../ui/button';
+import Modal from '../../ui/sdj/Modal';
+import { useModal } from '../../ui/sdj/ModalState';
+import MatchCard from '../MatchCard';
 
+const demo = [
+  {
+    tags: [
+      {
+        label: '디저트',
+        bgClass: 'bg-babcategory-dessertbg',
+        textClass: 'babcategory-desserttext',
+      },
+      {
+        label: '실내',
+        bgClass: 'bg-babcategory-indoorbg',
+        textClass: 'text-babcategory-indoortext',
+      },
+    ],
+    title: '맛있는 도넛 먹으러 같이 가실 분!',
+    description: '달달한 도넛 하나에 커피 한잔 하실분 계신가요~',
+    distanceKm: 1.2,
+    area: '동성로',
+    timeAgo: '5분 전',
+  },
+  {
+    tags: [
+      {
+        label: '한식',
+        bgClass: 'bg-babcategory-koreanbg',
+        textClass: 'text-babcategory-koreantext',
+      },
+      {
+        label: '실내',
+        bgClass: 'bg-babcategory-indoorbg',
+        textClass: 'text-babcategory-indoortext',
+      },
+    ],
+    title: '동성로에 있는 밥장인 가실분!',
+    description: '뜨끈한 돼지찌개 한사바리 하러가실분',
+    distanceKm: 1.2,
+    area: '동성로',
+    timeAgo: '30분 전',
+  },
+  {
+    tags: [
+      {
+        label: '분식',
+        bgClass: 'bg-babcategory-kfoodbg',
+        textClass: 'text-babcategory-kfoodtext',
+      },
+      {
+        label: '실내',
+        bgClass: 'bg-babcategory-indoorbg',
+        textClass: 'text-babcategory-indoortext',
+      },
+    ],
+    title: '매콤한 떡볶이 한그릇 하실분',
+    description: '맛있는 떡볶이이 한그릇 하면서 땀쫌 빼러갈까요?',
+    distanceKm: 1.2,
+    area: '동성로',
+    timeAgo: '1시간 전',
+  },
+  {
+    tags: [
+      {
+        label: '분식',
+        bgClass: 'bg-babcategory-kfoodbg',
+        textClass: 'text-babcategory-kfoodtext',
+      },
+      {
+        label: '실내',
+        bgClass: 'bg-babcategory-indoorbg',
+        textClass: 'text-babcategory-indoortext',
+      },
+    ],
+    title: '달달한 탕후루 먹을분 있나요?',
+    description:
+      '한쿸에 와서 korean 분식이 탕후류가 유명하다 들어쒀효~ 처음이라 같이가주실분 구해요!',
+    distanceKm: 1.2,
+    area: '동성로',
+    timeAgo: '3시간 전',
+  },
+  // 필요 시 더 추가
+];
 const MachingIndex = () => {
   const navigate = useNavigate();
-  const demo = [
-    {
-      tags: [
-        {
-          label: '디저트',
-          bgClass: 'bg-babcategory-dessertbg',
-          textClass: 'babcategory-desserttext',
-        },
-        {
-          label: '실내',
-          bgClass: 'bg-babcategory-indoorbg',
-          textClass: 'text-babcategory-indoortext',
-        },
-      ],
-      title: '맛있는 도넛 먹으러 같이 가실 분!',
-      description: '달달한 도넛 하나에 커피 한잔 하실분 계신가요~',
-      distanceKm: 1.2,
-      area: '동성로',
-      timeAgo: '5분 전',
-    },
-    {
-      tags: [
-        {
-          label: '한식',
-          bgClass: 'bg-babcategory-koreanbg',
-          textClass: 'text-babcategory-koreantext',
-        },
-        {
-          label: '실내',
-          bgClass: 'bg-babcategory-indoorbg',
-          textClass: 'text-babcategory-indoortext',
-        },
-      ],
-      title: '동성로에 있는 밥장인 가실분!',
-      description: '뜨끈한 돼지찌개 한사바리 하러가실분',
-      distanceKm: 1.2,
-      area: '동성로',
-      timeAgo: '30분 전',
-    },
-    {
-      tags: [
-        {
-          label: '분식',
-          bgClass: 'bg-babcategory-kfoodbg',
-          textClass: 'text-babcategory-kfoodtext',
-        },
-        {
-          label: '실내',
-          bgClass: 'bg-babcategory-indoorbg',
-          textClass: 'text-babcategory-indoortext',
-        },
-      ],
-      title: '매콤한 떡볶이 한그릇 하실분',
-      description: '맛있는 떡볶이이 한그릇 하면서 땀쫌 빼러갈까요?',
-      distanceKm: 1.2,
-      area: '동성로',
-      timeAgo: '1시간 전',
-    },
-    {
-      tags: [
-        {
-          label: '분식',
-          bgClass: 'bg-babcategory-kfoodbg',
-          textClass: 'text-babcategory-kfoodtext',
-        },
-        {
-          label: '실내',
-          bgClass: 'bg-babcategory-indoorbg',
-          textClass: 'text-babcategory-indoortext',
-        },
-      ],
-      title: '달달한 탕후루 먹을분 있나요?',
-      description:
-        '한쿸에 와서 korean 분식이 탕후류가 유명하다 들어쒀효~ 처음이라 같이가주실분 구해요!',
-      distanceKm: 1.2,
-      area: '동성로',
-      timeAgo: '3시간 전',
-    },
-    // 필요 시 더 추가
-  ];
+  const { user } = useAuth();
+  const { modal, closeModal, openModal } = useModal();
+
+  const handleButtonClick = () => {
+    if (!user) {
+      openModal('로그인 확인', '로그인이 필요합니다.', '닫기', '로그인', () =>
+        navigate('/member/login'),
+      );
+    } else {
+      navigate('/member/matching/write');
+    }
+  };
   return (
     <div className="">
       {/* 상단 */}
@@ -104,7 +119,7 @@ const MachingIndex = () => {
             />{' '}
             <RiSearchLine className="text-babgray-300 w-5 h-5 mr-2" />
           </div>
-          <ButtonFillLG onClick={() => navigate('/member/matching/write')}>
+          <ButtonFillLG onClick={handleButtonClick}>
             <i>
               <RiAddLine size={24} />
             </i>
@@ -121,8 +136,15 @@ const MachingIndex = () => {
   gap-x-[30px] gap-y-[24px]
     "
         >
+          {/* 매칭 대기중인 게시글 최대 4개 출력하기 테이블연결후 수정 */}
           {demo.map((item, index) => (
-            <MatchCard key={index} {...item} />
+            <MatchCard
+              key={index}
+              {...item}
+              modal={modal}
+              openModal={openModal}
+              closeModal={closeModal}
+            />
           ))}
         </ul>
       </div>
@@ -135,6 +157,17 @@ const MachingIndex = () => {
           더보기
         </ButtonLineMd>
       </div>
+      {modal.isOpen && (
+        <Modal
+          isOpen={modal.isOpen}
+          onClose={closeModal}
+          titleText={modal.title}
+          contentText={modal.content}
+          closeButtonText={modal.closeText}
+          submitButtonText={modal.submitText}
+          onSubmit={modal.onSubmit}
+        />
+      )}
     </div>
   );
 };

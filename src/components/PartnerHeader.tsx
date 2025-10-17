@@ -16,6 +16,8 @@ import { useRestaurant } from '../contexts/PartnerRestaurantContext';
 import { getProfile } from '../lib/propile';
 import type { Profile } from '../types/bobType';
 import { RestaurantFill, UserLine } from '../ui/Icon';
+import { useModal } from '../ui/sdj/ModalState';
+import Modal from '../ui/sdj/Modal';
 
 const PartnerHeader = () => {
   const { restaurant } = useRestaurant();
@@ -31,6 +33,7 @@ const PartnerHeader = () => {
   const [error, setError] = useState<string>('');
   // 사용자 닉네임
   const [nickName, setNickName] = useState<string>('');
+  const { closeModal, modal, openModal } = useModal();
 
   useEffect(() => {
     const handleClickOutside = (e: MouseEvent) => {
@@ -43,12 +46,14 @@ const PartnerHeader = () => {
   }, []);
 
   const handleLogout = () => {
-    if (confirm('로그아웃 하시겠습니까?')) {
-      alert('로그아웃 되었습니다.');
-      signOut();
-      navigate('/');
-    }
-    setOpen(false);
+    openModal('로그아웃 확인', '로그아웃 하시겠습니까?', '닫기', '로그아웃', () => {
+      closeModal();
+      openModal('로그아웃 확인', '로그아웃 되었습니다', '', '확인', () => {
+        signOut();
+        navigate('/');
+        setOpen(false);
+      });
+    });
   };
 
   const loadProfile = async () => {
@@ -82,7 +87,7 @@ const PartnerHeader = () => {
 
   return (
     <div className="flex relative">
-      <div className="left-0 top-0 w-64 min-h-[calc(100vh/0.9)] z-50 flex fixed flex-col justify-between border-r border-babgray bg-white text-babgray-700">
+      <div className="left-0 top-0 w-64 h-[calc(100vh/0.9)] z-50 flex fixed flex-col justify-between border-r border-babgray bg-white text-babgray-700">
         <div className="flex flex-col">
           <div
             className="px-6 py-8 border-b border-babgray flex items-center gap-3 cursor-pointer"
@@ -339,6 +344,17 @@ const PartnerHeader = () => {
           </div>
         </div>
       </div>
+      {modal.isOpen && (
+        <Modal
+          isOpen={modal.isOpen}
+          onClose={closeModal}
+          titleText={modal.title}
+          contentText={modal.content}
+          closeButtonText={modal.closeText}
+          submitButtonText={modal.submitText}
+          onSubmit={modal.onSubmit}
+        />
+      )}
     </div>
   );
 };

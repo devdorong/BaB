@@ -59,10 +59,7 @@ const Modal: React.FC<ModalProps> = ({
             </ButtonFillMd>
           )}
           {closeButtonText && (
-            <ButtonFillMd
-              onClick={onClose}
-              className="w-[200px]  !text-babgray-700 !bg-babgray-200"
-            >
+            <ButtonFillMd onClick={onClose} className=" flex-1 !text-babgray-700 !bg-babgray-200">
               {closeButtonText}
             </ButtonFillMd>
           )}

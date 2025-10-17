@@ -1,5 +1,7 @@
+import { RiEmotionSadLine } from 'react-icons/ri';
 import type { Menus } from '../../types/bobType';
 import MenuCard from '../../ui/jy/Menucard';
+import { ButtonFillLG } from '../../ui/button';
 
 // 카테고리(= tag) 정의
 export const CATEGORYS = ['메인메뉴', '사이드', '음료 및 주류'] as const;
@@ -14,11 +16,22 @@ interface MenusListProps {
   onToggle: (id: number, newToggle: boolean) => void;
   onEdit: (menu: Menus) => void;
   onDelete: (menu: Menus) => void;
+  modal: any;
+  openModal: (...args: any[]) => void;
+  closeModal: () => void;
+  setWriteOpen: React.Dispatch<React.SetStateAction<boolean>>;
 }
 
-function MenusList({ filtered, onToggle, onEdit, onDelete }: MenusListProps) {
-  // 피자가게 목업 데이터
-
+function MenusList({
+  filtered,
+  onToggle,
+  onEdit,
+  onDelete,
+  modal,
+  openModal,
+  closeModal,
+  setWriteOpen,
+}: MenusListProps) {
   // 로딩 상태일때 스켈레톤
   // if (loading) {
   //   return (
@@ -42,8 +55,12 @@ function MenusList({ filtered, onToggle, onEdit, onDelete }: MenusListProps) {
 
   if (filtered.length === 0) {
     return (
-      <div className="flex items-center justify-center h-64 text-gray-500">
-        메뉴를 추가해주세요!
+      <div className="flex flex-col items-center justify-center h-[740px] bg-babgray-50 rounded-2xl border border-babgray-200 text-center gap-4">
+        <div className="flex flex-col items-center gap-2">
+          <RiEmotionSadLine className="w-10 h-10 text-babgray-400" />
+          <p className="text-babgray-600 font-medium text-[15px]">등록된 메뉴가 없습니다.</p>
+          <p className="text-babgray-400 text-sm">새로운 메뉴를 추가해보세요 🍽️</p>
+        </div>
       </div>
     );
   }
@@ -58,6 +75,9 @@ function MenusList({ filtered, onToggle, onEdit, onDelete }: MenusListProps) {
             onToggle={newToggle => onToggle(item.id, newToggle)}
             onEdit={() => onEdit(item)}
             onDelete={() => onDelete(item)}
+            modal={modal}
+            openModal={openModal}
+            closeModal={closeModal}
           />
         ))}
     </div>

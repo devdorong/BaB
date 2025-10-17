@@ -1,6 +1,7 @@
-import { useState, useRef, useEffect } from 'react';
+import { useEffect, useRef, useState } from 'react';
 import { RiCloseLine, RiSearchLine } from 'react-icons/ri';
-import { useKakaoLoader } from '../../hooks/useKakaoLoader';
+import { useModal } from '../../ui/sdj/ModalState';
+import Modal from '../../ui/sdj/Modal';
 
 interface SelectedPlace {
   id: string;
@@ -23,6 +24,7 @@ const MapSearchModal = ({ isOpen, onClose, onSelectPlace }: MapSearchModalProps)
   const [places, setPlaces] = useState<any[]>([]);
   const [selectedPlaceIdx, setSelectedPlaceIdx] = useState<number | null>(null);
   const markersRef = useRef<kakao.maps.Marker[]>([]);
+  const { closeModal, modal, openModal } = useModal();
 
   useEffect(() => {
     if (!isOpen || !mapContainer.current) return;
@@ -43,8 +45,7 @@ const MapSearchModal = ({ isOpen, onClose, onSelectPlace }: MapSearchModalProps)
 
   const searchPlaces = () => {
     if (!keyword.trim()) {
-      alert('검색어를 입력해주세요!');
-      return;
+      openModal('카카오맵', '검색어를 입력해주세요!', '닫기', '', () => closeModal());
     }
 
     if (!window.kakao?.maps?.services) return;
@@ -84,10 +85,9 @@ const MapSearchModal = ({ isOpen, onClose, onSelectPlace }: MapSearchModalProps)
 
         mapRef.current?.setBounds(bounds);
       } else if (status === window.kakao!.maps.services.Status.ZERO_RESULT) {
-        // alert('검색 결과가 없습니다.');
         setPlaces([]);
       } else if (status === window.kakao!.maps.services.Status.ERROR) {
-        alert('검색 중 오류가 발생했습니다.');
+        openModal('오류', '검색 중 오류가 발생했습니다', '닫기', '', () => closeModal());
       }
     });
   };
@@ -215,7 +215,7 @@ const MapSearchModal = ({ isOpen, onClose, onSelectPlace }: MapSearchModalProps)
               if (selectedPlaceIdx !== null) {
                 handleSelectPlace(selectedPlaceIdx);
               } else {
-                alert('맛집을 선택해주세요');
+                openModal('카카오맵', '맛집을 선택해주세요!', '닫기', '', () => closeModal());
               }
             }}
             className="flex-1 px-4 py-2 bg-bab text-white rounded-lg hover:bg-bab-600 transition font-medium disabled:bg-babgray-300"
@@ -225,6 +225,17 @@ const MapSearchModal = ({ isOpen, onClose, onSelectPlace }: MapSearchModalProps)
           </button>
         </div>
       </div>
+      {modal.isOpen && (
+        <Modal
+          isOpen={modal.isOpen}
+          onClose={closeModal}
+          titleText={modal.title}
+          contentText={modal.content}
+          closeButtonText={modal.closeText}
+          submitButtonText={modal.submitText}
+          onSubmit={modal.onSubmit}
+        />
+      )}
     </div>
   );
 };

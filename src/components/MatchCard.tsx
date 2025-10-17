@@ -1,6 +1,9 @@
 // MatchCard.tsx
 import { RiMapPinLine } from 'react-icons/ri';
 import { useNavigate } from 'react-router-dom';
+import { useAuth } from '../contexts/AuthContext';
+import Modal from '../ui/sdj/Modal';
+import { useModal, type ModalState } from '../ui/sdj/ModalState';
 
 type Badge = {
   label: string;
@@ -16,6 +19,9 @@ type MatchCardProps = {
   area: string;
   timeAgo: string; // 예: '30분 전'
   className?: string;
+  modal: any;
+  openModal: (...args: any[]) => void;
+  closeModal: () => void;
 };
 
 export default function MatchCard({
@@ -26,14 +32,27 @@ export default function MatchCard({
   area,
   timeAgo,
   className = '',
+  modal,
+  openModal,
+  closeModal,
 }: MatchCardProps) {
   const navigate = useNavigate();
+  const { user } = useAuth();
+  const handleClick = () => {
+    if (!user) {
+      openModal('로그인 확인', '로그인이 필요합니다.', '닫기', '로그인', () =>
+        navigate('/member/login'),
+      );
+    } else {
+      navigate('/member/matching/detail');
+    }
+  };
   return (
     <li
       className="w-full px-7 py-5 bg-white rounded-3xl shadow-[0_4px_4px_rgba(0,0,0,0.02)]
     flex flex-col gap-3 overflow-hidden cursor-pointer"
       // 추후 수정 해야됨 파람즈로 몇번쨰 매칭글로 이동할껀지
-      onClick={() => navigate('/member/matching/detail')}
+      onClick={handleClick}
     >
       {/* 상단: 좌측 내용 + 우측 시간 */}
       <div className="w-full flex justify-between items-start gap-4">

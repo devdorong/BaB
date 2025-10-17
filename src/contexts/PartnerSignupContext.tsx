@@ -5,6 +5,8 @@ import { useAuth } from './AuthContext';
 import type { Database, Profile } from '../types/bobType';
 import dayjs from 'dayjs';
 import { getProfile } from '../lib/propile';
+import { useModal, type ModalState } from '../ui/sdj/ModalState';
+import { useNavigate } from 'react-router-dom';
 
 const toTime = (t: any) => {
   if (!t) return null;
@@ -48,6 +50,15 @@ interface PartnerSignupContextType {
   submitApplication: (thumbnailUrl?: string) => Promise<void>;
   resetForm: () => void;
   loading: boolean;
+  modal: ModalState;
+  openModal: (
+    title: string,
+    content: string,
+    closeText?: string,
+    submitText?: string,
+    onSubmit?: () => void,
+  ) => void;
+  closeModal: () => void;
 }
 
 const PartnerSignupContext = createContext<PartnerSignupContextType | null>(null);
@@ -64,6 +75,8 @@ export function PartnerSignupProvider({ children }: PartnerSignupProviderProps) 
   const [profileData, setProfileData] = useState<Profile | null>(null);
   // 에러메세지
   const [error, setError] = useState<string>('');
+  const { modal, openModal, closeModal } = useModal();
+  const navigate = useNavigate();
 
   // 사용자 프로필 정보
   const loadProfile = async () => {
@@ -125,7 +138,6 @@ export function PartnerSignupProvider({ children }: PartnerSignupProviderProps) 
     try {
       setLoading(true);
       if (!user) {
-        alert('로그인 후 이용 가능합니다.');
         return;
       }
 
@@ -148,10 +160,11 @@ export function PartnerSignupProvider({ children }: PartnerSignupProviderProps) 
         },
       ]);
 
-      alert('임시저장 되었습니다.');
+      openModal('임시저장', '임시저장 되었습니다.', '', '확인', () => closeModal());
     } catch (err) {
       console.error(err);
-      alert(`임시저장 중 오류가 발생했습니다 : ${err}`);
+
+      openModal('오류', `임시저장 중 오류가 발생했습니다: ${err}`, '', '확인', () => closeModal());
     } finally {
       setLoading(false);
     }
@@ -161,7 +174,9 @@ export function PartnerSignupProvider({ children }: PartnerSignupProviderProps) 
     try {
       setLoading(true);
       if (!user) {
-        alert('로그인 후 이용 가능합니다.');
+        openModal('알림', '로그인 후 이용 가능합니다.', '취소', '로그인 하기', () => {
+          (closeModal(), navigate('/partner/login'));
+        });
         return;
       }
 
@@ -193,14 +208,20 @@ export function PartnerSignupProvider({ children }: PartnerSignupProviderProps) 
 
       if (updateError) {
         console.error(updateError);
-        alert('프로필 업데이트 중 오류가 발생했습니다.');
+
+        openModal('오류', '프로필 업데이트 중 오류가 발생했습니다.', '닫기', '', () =>
+          closeModal(),
+        );
         return;
       }
 
-      alert('신청이 완료되었습니다! 승인 후 연락드리겠습니다.');
+      openModal('성공', '신청이 완료되었습니다! 승인 후 연락드리겠습니다.', '', '확인', () =>
+        closeModal(),
+      );
     } catch (err) {
       console.error(err);
-      alert(`신청 중 오류가 발생했습니다. : ${err}`);
+
+      openModal('오류', `신청 중 오류가 발생했습니다: ${err}`, '닫기', '', () => closeModal());
     } finally {
       setLoading(false);
     }
@@ -240,6 +261,9 @@ export function PartnerSignupProvider({ children }: PartnerSignupProviderProps) 
         submitApplication,
         resetForm,
         loading,
+        modal,
+        openModal,
+        closeModal,
       }}
     >
       {children}
