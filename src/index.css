@@ -36,6 +36,10 @@ html {
   --border: 220 13% 91%;
   --primary: 245 83% 60%; /* 보라 */
   --primary-fg: 0 0% 100%;
+  --ant-primary-color: #ff5722;
+  --ant-primary-color-hover: #ff784e;
+  --ant-primary-color-active: #e64a19;
+  --ant-primary-color-outline: rgba(255, 87, 34, 0.2);
 }
 
 /* Dark */
@@ -103,7 +107,7 @@ html {
 
 .bab-time-picker-panel {
   border-radius: 16px !important;
-  overflow: hidden !important;
+  /* overflow: hidden !important; */
   font-family: 'Noto Sans KR', sans-serif !important;
 }
 
@@ -270,13 +274,11 @@ html {
   border-radius: 6px !important;
 }
 
-
-
 /* ===== Bab Custom TimePicker ===== */
 
 .custom-bab-time-picker-panel {
   border-radius: 16px !important;
-  overflow: hidden !important;
+  /* overflow: hidden !important; */
   font-family: 'Noto Sans KR', sans-serif !important;
 }
 
@@ -308,7 +310,9 @@ html {
 }
 
 /* 선택된 셀 강조 (선택 상태를 정렬 깨지 않게 유지) */
-.custom-bab-time-picker-panel .ant-picker-time-panel-cell-selected .ant-picker-time-panel-cell-inner {
+.custom-bab-time-picker-panel
+  .ant-picker-time-panel-cell-selected
+  .ant-picker-time-panel-cell-inner {
   background-color: rgba(255, 87, 34, 0.15) !important;
   border-radius: 8px !important;
   color: #ff5722 !important; /* bab-500 */
@@ -342,3 +346,137 @@ html {
 .ant-picker-dropdown .ant-picker-panel-container {
   box-shadow: rgba(0, 0, 0, 0.15) 1.95px 1.95px 2.6px;
 }
+
+/* ---------- 🗓 Ant Design DatePicker 커스텀 ---------- */
+
+/* 공통 폰트/배경 */
+.ant-picker {
+  border-radius: 8px !important;
+  border-color: #ff5722 !important; /* 메인 bab 색 */
+  font-family: 'Noto Sans KR', sans-serif !important;
+}
+
+.ant-picker:hover,
+.ant-picker-focused {
+  border-color: #ff784e !important; /* hover용 살짝 밝은색 */
+  box-shadow: 0 0 0 2px rgba(255, 87, 34, 0.2) !important;
+}
+
+/* 캘린더 전체 배경 */
+.ant-picker-panel {
+  background-color: #fffaf8 !important; /* 따뜻한 톤 배경 */
+  /* border-radius: 12px !important; */
+  /* border: 1px solid #ffe0d3 !important; */
+}
+
+/* 헤더 (연/월 표시 부분) */
+.ant-picker-header {
+  background-color: #fff !important;
+  color: #ff5722 !important;
+  font-weight: 600;
+  border-bottom: 1px solid #ffe0d3 !important;
+}
+
+/* 이전/다음 월 이동 버튼 */
+.ant-picker-header-prev-btn,
+.ant-picker-header-next-btn {
+  color: #ff5722 !important;
+}
+.ant-picker-header-prev-btn:hover,
+.ant-picker-header-next-btn:hover {
+  color: #ff784e !important;
+}
+
+/* 요일 표시 (일~토) */
+.ant-picker-content th {
+  color: #ff784e !important;
+  font-weight: 600 !important;
+}
+
+/* 날짜 셀 공통 */
+.ant-picker-cell {
+  color: #444 !important;
+  border-radius: 8px !important;
+  transition: all 0.2s ease-in-out;
+}
+
+/* hover 시 날짜 */
+.ant-picker-cell:hover .ant-picker-cell-inner {
+  background-color: rgba(255, 87, 34, 0.1) !important;
+  color: #ff5722 !important;
+  border-radius: 8px !important;
+}
+
+/* 오늘 날짜 테두리 */
+.ant-picker-cell-today .ant-picker-cell-inner::before {
+  border-color: #ff5722 !important;
+}
+
+/* 선택된 날짜 */
+.ant-picker-cell-selected .ant-picker-cell-inner,
+.ant-picker-cell-range-start .ant-picker-cell-inner,
+.ant-picker-cell-range-end .ant-picker-cell-inner {
+  background-color: #ff5722 !important;
+  color: #fff !important;
+  border-radius: 8px !important;
+}
+
+/* range 사이 영역 */
+.ant-picker-cell-in-range::before {
+  background-color: rgba(255, 87, 34, 0.15) !important;
+}
+
+/* 비활성 날짜 (이전/다음 달) */
+.ant-picker-cell-in-view.ant-picker-cell-disabled .ant-picker-cell-inner {
+  color: #ccc !important;
+}
+
+/* 오늘 버튼 */
+.ant-picker-today-btn {
+  color: #ff5722 !important;
+  font-weight: 600;
+}
+.ant-picker-today-btn:hover {
+  color: #ff784e !important;
+}
+
+/* 시간 선택 패널 (TimePicker) 색상 통일 */
+.ant-picker-time-panel-column
+  > li.ant-picker-time-panel-cell-selected
+  .ant-picker-time-panel-cell-inner {
+  background-color: #ff5722 !important;
+  color: #fff !important;
+}
+.ant-picker-time-panel-column > li.ant-picker-time-panel-cell-inner:hover {
+  background-color: rgba(255, 87, 34, 0.1) !important;
+  color: #ff5722 !important;
+}
+/* 🧡 DatePicker 헤더 hover 색상 오렌지톤으로 변경 */
+.ant-picker-header-view button:hover {
+  color: #ff5722 !important; /* BaB 메인 컬러 */
+}
+
+/* 연도/월 선택 시에도 동일한 hover 색 유지 */
+.ant-picker-year-btn:hover,
+.ant-picker-month-btn:hover {
+  color: #ff5722 !important;
+}
+
+/* 좌우 화살표 버튼 hover 색상 */
+.ant-picker-header-prev-btn:hover,
+.ant-picker-header-next-btn:hover {
+  color: #ff784e !important;
+}
+
+/* 전체적으로 파란색 잔상 제거 (Ant Design 기본 테마 오버라이드) */
+:where(.css-dev-only-do-not-override-l1py5d).ant-picker-dropdown
+  .ant-picker-header-view
+  button:hover {
+  color: #ff5722 !important;
+}
+
+.ant-picker-footer {
+  /* border-top: none !important; */
+  background-color: #fff !important;
+}
+

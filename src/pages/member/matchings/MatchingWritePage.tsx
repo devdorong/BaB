@@ -82,7 +82,7 @@ const MatchingWritePage = () => {
                 <p className="text-bab">*</p>
               </div>
               <div className="w flex items-center justify-between rounded-3xl outline outline-1 outline-offset-[-1px] outline-babgray">
-                <DatePicker placeholder="연도-월-일" className="w-full" />
+                <DatePicker placeholder="연도-월-일" className="custom-day-picker w-full" />
               </div>
             </div>
 

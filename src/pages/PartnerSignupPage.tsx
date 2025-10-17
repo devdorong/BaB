@@ -18,7 +18,15 @@ function PartnerSignupPage() {
   const navigate = useNavigate();
   const { formData, setFormData, saveDraft, submitApplication, modal, openModal, closeModal } =
     usePartnerSignup();
-  const { address, latitude, longitude, openPostcode } = useAddressSearch();
+  const {
+    address,
+    latitude,
+    longitude,
+    openPostcode,
+    closeModal: addressCloseModal,
+    modal: addressModal,
+    openModal: addressOpenModal,
+  } = useAddressSearch();
 
   const { user } = useAuth();
 
@@ -573,6 +581,17 @@ function PartnerSignupPage() {
           closeButtonText={modal.closeText}
           submitButtonText={modal.submitText}
           onSubmit={modal.onSubmit}
+        />
+      )}
+      {addressModal.isOpen && (
+        <Modal
+          isOpen={addressModal.isOpen}
+          onClose={addressCloseModal}
+          titleText={addressModal.title}
+          contentText={addressModal.content}
+          closeButtonText={addressModal.closeText}
+          submitButtonText={addressModal.submitText}
+          onSubmit={addressModal.onSubmit}
         />
       )}
     </div>
