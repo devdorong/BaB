@@ -266,3 +266,42 @@ export const checkFavoriteRest = async (restaurantId: number): Promise<boolean> 
 
   return !!data;
 };
+
+// 사용자 전체 찜 개수
+export const getMyFavoritesCount = async (userId: string): Promise<number> => {
+  const {
+    data: { user },
+  } = await supabase.auth.getUser();
+  if (!user) {
+    console.warn('로그인된 사용자가 없습니다.');
+    return 0;
+  }
+
+  const { count, error } = await supabase
+    .from('restaurants_favorites')
+    .select('*', { count: 'exact', head: true })
+    .eq('profile_id', userId);
+  // console.log(count);
+  if (error) {
+    console.error('찜 개수 조회 오류:', error.message);
+    return 0;
+  }
+
+  return count ?? 0;
+};
+
+// 사용자 별점 평균
+export const getAvgMyRatingScore = async () => {
+  const {
+    data: { user },
+  } = await supabase.auth.getUser();
+  if (!user) {
+    return [];
+  }
+
+  const { data, error } = await supabase.from('reviews').select('*').eq('profile_id', user.id);
+
+  if (error) throw error;
+  // console.log(data);
+  return data;
+};

@@ -14,7 +14,13 @@ export interface DirectChat {
   user1_id: string; // 참여자 1 ID
   user2_id: string; // 참여자 2 ID
   created_at: string; // 생성시간
-  last_mesaage_at: string; // 마지막 메세지 시간
+  last_message_at: string; // 마지막 메시지 시간
+  user1_active: boolean; // 사용자 1의 채팅방 참여 상태
+  user2_active: boolean; // 사용자 2의 채팅방 참여 상태
+  user1_left_at?: string; // 사용자 1이 나간 시점
+  user2_left_at?: string; // 사용자 2가 나간 시점
+  user1_notified?: boolean; // 사용자 1의 새 채팅방 알림 상태
+  user2_notified?: boolean; // 사용자 2의 새 채팅방 알림 상태
   user1?: ChatUser; // 참여자 1번의 정보
   user2?: ChatUser; // 참여자 2번의 정보
   last_message?: DirectMessage; // 마지막 메시지 정보
@@ -29,6 +35,7 @@ export interface DirectMessage {
   is_read: boolean; // 읽음 상태
   read_at?: string; // 읽은 시간
   created_at: string; // 전송 시간
+  is_system_message?: boolean; // 시스템 메시지 여부
   sender?: ChatUser; // 발신자 정보
 }
 
@@ -47,6 +54,7 @@ export interface ChatListItem {
     sender_nickname: string; // 보낸사람 닉네임
   };
   unread_count: number; // 읽지 않은 메시지 수
+  is_new_chat?: boolean; // 새 채팅방 알림 여부
 }
 
 // 채팅방 생성용
