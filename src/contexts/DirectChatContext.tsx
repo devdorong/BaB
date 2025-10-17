@@ -143,8 +143,8 @@ export const DirectChatProider: React.FC<DirectChatProiderProps> = ({ children }
   const loadMessages = useCallback(
     async (chatId: string) => {
       try {
+        setLoading(true);
         // 메시지 로드 시에는 전역 로딩 상태를 사용하지 않음 (사용자 경험 개선)
-
         // 현재 활성화된 채팅방 ID 보관
         currentChatId.current = chatId;
 
@@ -152,12 +152,15 @@ export const DirectChatProider: React.FC<DirectChatProiderProps> = ({ children }
         const chatInfo = chats.find(chat => chat.id === chatId);
         if (chatInfo) {
           setCurrentChat(chatInfo);
-
           // 새 채팅방 알림이 있으면 해제
           if (chatInfo.is_new_chat) {
             await clearNewChatNotificationHandler(chatId);
           }
         }
+
+        setChats(prev =>
+          prev.map(chat => (chat.id === chatId ? { ...chat, unread_count: 0 } : chat)),
+        );
 
         const response = await getMessages(chatId);
         if (response.success && response.data) {
@@ -165,11 +168,14 @@ export const DirectChatProider: React.FC<DirectChatProiderProps> = ({ children }
         } else {
           handleError(response.error || '메시지를 불러올 수 없습니다.');
         }
+        await loadChats();
       } catch (err) {
         handleError('메시지 로드 중 오류가 발생했습니다.');
+      } finally {
+        setLoading(false);
       }
     },
-    [handleError, chats, clearNewChatNotificationHandler],
+    [handleError, loadChats],
   );
 
   const sendMessage = useCallback(
@@ -337,7 +343,7 @@ export const DirectChatProider: React.FC<DirectChatProiderProps> = ({ children }
   useEffect(() => {
     if (!currentUserId) return;
 
-    console.log('Realtime 구독 시작, 사용자 ID:', currentUserId);
+    // console.log('Realtime 구독 시작, 사용자 ID:', currentUserId);
 
     // 간단한 Realtime 테스트
     const testChannel = supabase
@@ -350,11 +356,11 @@ export const DirectChatProider: React.FC<DirectChatProiderProps> = ({ children }
           table: 'direct_chats',
         },
         payload => {
-          console.log('테스트 Realtime 수신:', payload);
+          // console.log('테스트 Realtime 수신:', payload);
         },
       )
       .subscribe(status => {
-        console.log('테스트 Realtime 상태:', status);
+        // console.log('테스트 Realtime 상태:', status);
       });
 
     // 통합 채널로 모든 변경사항 감지
@@ -368,19 +374,10 @@ export const DirectChatProider: React.FC<DirectChatProiderProps> = ({ children }
           table: 'direct_chats',
         },
         payload => {
-          console.log('🔥 새 채팅방 생성됨:', payload.new);
-          console.log('현재 사용자 ID:', currentUserId);
-          console.log('채팅방 user1_id:', payload.new.user1_id);
-          console.log('채팅방 user2_id:', payload.new.user2_id);
-          console.log('user1_id === currentUserId:', payload.new.user1_id === currentUserId);
-          console.log('user2_id === currentUserId:', payload.new.user2_id === currentUserId);
-
           // 현재 사용자가 참여자인지 확인
           if (payload.new.user1_id === currentUserId || payload.new.user2_id === currentUserId) {
-            console.log('✅ 현재 사용자 관련 채팅방 생성, 목록 새로고침');
             loadChats();
           } else {
-            console.log('❌ 현재 사용자와 관련 없는 채팅방');
           }
         },
       )
@@ -414,60 +411,36 @@ export const DirectChatProider: React.FC<DirectChatProiderProps> = ({ children }
           table: 'direct_chats',
         },
         payload => {
-          console.log('채팅방 업데이트됨:', payload);
-          console.log('이전 상태:', payload.old);
-          console.log('새로운 상태:', payload.new);
+          const oldChat = payload.old;
+          const newChat = payload.new;
+          const isCurrentUserUser1 = newChat.user1_id === currentUserId;
 
-          // 현재 사용자가 참여자였는지 확인
-          if (payload.new.user1_id === currentUserId || payload.new.user2_id === currentUserId) {
-            // 사용자별 active 상태 변경 감지
-            const isCurrentUserUser1 = payload.new.user1_id === currentUserId;
-            const oldActive = isCurrentUserUser1
-              ? payload.old.user1_active
-              : payload.old.user2_active;
-            const newActive = isCurrentUserUser1
-              ? payload.new.user1_active
-              : payload.new.user2_active;
-            const otherUserActive = isCurrentUserUser1
-              ? payload.new.user2_active
-              : payload.new.user1_active;
+          const myOldActive = isCurrentUserUser1 ? oldChat.user1_active : oldChat.user2_active;
+          const myNewActive = isCurrentUserUser1 ? newChat.user1_active : newChat.user2_active;
 
-            // 현재 사용자가 나간 경우
-            if (oldActive === true && newActive === false) {
-              console.log('현재 사용자가 채팅방을 나갔습니다.');
-              loadChats(); // 채팅방 목록에서 제거
+          const otherOldActive = isCurrentUserUser1 ? oldChat.user2_active : oldChat.user1_active;
+          const otherNewActive = isCurrentUserUser1 ? newChat.user2_active : newChat.user1_active;
 
-              // 현재 채팅방이면 초기화
-              if (currentChatId.current === payload.new.id) {
-                console.log('현재 보고 있는 채팅방에서 나감. 채팅방 닫기');
-                currentChatId.current = null;
-                setCurrentChat(null);
-                setMessages([]);
-              }
+          // 내가 나간 경우
+          if (myOldActive === true && myNewActive === false) {
+            loadChats();
+            if (currentChatId.current === newChat.id) {
+              setCurrentChat(null);
+              setMessages([]);
             }
-            // 현재 사용자가 다시 들어온 경우
-            else if (oldActive === false && newActive === true) {
-              console.log('현재 사용자가 채팅방에 다시 들어왔습니다.');
-              loadChats(); // 채팅방 목록에 다시 표시
-            }
-            // 상대방이 나간 경우
-            else if (oldActive === true && newActive === true && otherUserActive === false) {
-              console.log('상대방이 채팅방을 나갔습니다.');
+          }
 
-              // 현재 채팅방이면 초기화 (상대방이 나갔으므로)
-              if (currentChatId.current === payload.new.id) {
-                console.log('상대방이 나간 채팅방. 채팅방 닫기');
-                currentChatId.current = null;
-                setCurrentChat(null);
-                setMessages([]);
-              }
-              // 채팅방 목록은 새로고침하지 않음 (현재 사용자는 여전히 참여 중)
+          // 상대방이 나간 경우
+          if (otherOldActive === true && otherNewActive === false) {
+            if (currentChatId.current === newChat.id) {
+              setCurrentChat(null);
+              setMessages([]);
             }
-            // 상대방이 다시 들어온 경우
-            else if (oldActive === true && newActive === true && otherUserActive === true) {
-              console.log('상대방이 채팅방에 다시 들어왔습니다.');
-              // 채팅방 목록은 새로고침하지 않음 (현재 사용자는 이미 목록에 있음)
-            }
+          }
+
+          // 상대방이 복귀한 경우
+          if (otherOldActive === false && otherNewActive === true) {
+            loadChats();
           }
         },
       )
@@ -479,51 +452,42 @@ export const DirectChatProider: React.FC<DirectChatProiderProps> = ({ children }
           table: 'direct_messages',
         },
         payload => {
-          console.log('새 메시지 수신:', payload.new);
-          console.log('시스템 메시지 여부:', payload.new.is_system_message);
-          console.log('메시지 내용:', payload.new.content);
-          console.log('전체 payload:', JSON.stringify(payload, null, 2));
-          console.log('현재 채팅방 ID:', currentChatId.current);
-          console.log('메시지 채팅방 ID:', payload.new.chat_id);
-
           // 현재 채팅방의 메시지라면 즉시 추가 (중복 방지)
           if (currentChatId.current === payload.new.chat_id) {
-            console.log('현재 채팅방에 메시지 추가:', payload.new);
+            // console.log('현재 채팅방에 메시지 추가:', payload.new);
             setMessages(prev => {
               // 중복 메시지 방지: 같은 ID의 메시지가 이미 있는지 확인
               const messageExists = prev.some(msg => msg.id === payload.new.id);
               if (messageExists) {
-                console.log('중복 메시지 감지, 추가하지 않음:', payload.new.id);
+                // console.log('중복 메시지 감지, 추가하지 않음:', payload.new.id);
                 return prev;
               }
               return [...prev, payload.new as DirectMessage];
             });
           } else {
-            console.log('다른 채팅방의 메시지이므로 추가하지 않음');
+            // console.log('다른 채팅방의 메시지이므로 추가하지 않음');
           }
           // 채팅방 목록도 업데이트 (마지막 메시지 시간 변경)
           loadChats();
         },
       )
-      .subscribe(status => {
-        console.log('Realtime 구독 상태:', status);
-        if (status === 'SUBSCRIBED') {
-          console.log('✅ Realtime 구독 성공!');
-        } else if (status === 'CHANNEL_ERROR') {
-          console.error('❌ Realtime 구독 실패!');
-        } else if (status === 'TIMED_OUT') {
-          console.error('❌ Realtime 구독 시간 초과!');
-        } else if (status === 'CLOSED') {
-          console.error('❌ Realtime 구독 연결 종료!');
-        }
-      });
+      .subscribe();
 
     return () => {
-      console.log('Realtime 구독 해제');
       channel.unsubscribe();
       testChannel.unsubscribe();
     };
   }, [currentUserId, loadChats]);
+
+  // chats가 갱신될 때 현재 선택된 채팅방 정보도 갱신 (nickname, avatar 등 최신화)
+  useEffect(() => {
+    if (currentChatId.current && chats.length > 0) {
+      const updatedChat = chats.find(chat => chat.id === currentChatId.current);
+      if (updatedChat) {
+        setCurrentChat(updatedChat);
+      }
+    }
+  }, [chats]);
 
   // Context 의 value
   const value: DirectChatContextType = {

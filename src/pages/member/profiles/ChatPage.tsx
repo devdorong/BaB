@@ -62,16 +62,15 @@ function ChatPage() {
             <div className="chat-welcome">
               {/* /* 환영 화면 내용 */}
               <div className="welcome-content">
-                <h2>1:1 채팅</h2>
+                {/* <h2>1:1 채팅</h2> */}
                 <p>좌측에서 채팅방을 선택하거나</p>
                 <p>매칭시스템을 통해 채팅을 시작해보세요.</p>
-
-                {/* 기능 안내 정보 */}
+                {/* 기능 안내 정보
                 <div className="feature-info">
-                  <p>💬 실시간 1:1 메시지</p>
-                  <p>👥 사용자 검색 및 초대</p>
-                  <p>📱 반응형 디자인</p>
-                </div>
+                  <p>BaB에서 매칭한 유저와</p>
+                  <p>일정 혹은 커뮤니티를 위한</p>
+                  <p>대화를 시작해보세요</p>
+                </div> */}
               </div>
             </div>
           )}
