@@ -9,6 +9,7 @@ import { GiftFill } from '../../ui/Icon';
 import EventWriteModal from '../../ui/sdj/EventWriteModal';
 import { useModal } from '../../ui/sdj/ModalState';
 import TagBadge from '../../ui/TagBadge';
+import Modal from '../../ui/sdj/Modal';
 
 function EventPage() {
   const { user } = useAuth();
@@ -34,7 +35,7 @@ function EventPage() {
 
   useEffect(() => {
     document.body.style.overflow = eventModal ? 'hidden' : 'auto';
-  }, [eventModal]);
+  }, [modal, eventModal]);
 
   useEffect(() => {
     const checkAdmin = async (userId: string | unknown) => {
@@ -72,7 +73,8 @@ function EventPage() {
       setEvents(sorted);
     };
     fetchData();
-  }, []);
+  }, [events]);
+
   const handleViewModal = () => {
     setViewModal(true);
   };
@@ -135,7 +137,7 @@ function EventPage() {
         </button>
         {admin && <ButtonFillMd onClick={() => setEventModal(true)}>작성하기</ButtonFillMd>}
       </div>
-      {eventModal && <EventWriteModal onClose={() => setEventModal(false)} />}
+      {eventModal && <EventWriteModal onSuccess={eventData} onClose={() => setEventModal(false)} />}
 
       {/* 이벤트 카드 리스트 */}
       <div className="grid grid-cols-2 gap-[25px]">
@@ -219,6 +221,7 @@ function EventPage() {
           </div>
         ))}
       </div>
+      {/* {modal.isOpen && <Modal />} */}
       {viewModal && (
         <div className="w-full">
           <OkCancelModal

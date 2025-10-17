@@ -12,6 +12,7 @@
 import { RiCloseFill } from 'react-icons/ri';
 import { ButtonFillMd } from '../button';
 import type React from 'react';
+import { useEffect } from 'react';
 export interface ModalProps {
   isOpen: boolean;
   onClose: () => void;
@@ -40,6 +41,15 @@ const Modal: React.FC<ModalProps> = ({
   submitButtonTextColor = '#ffffff',
 }) => {
   if (!isOpen) return null;
+
+  useEffect(() => {
+    document.body.style.overflow = isOpen ? 'hidden' : 'auto';
+
+    return () => {
+      document.body.style.overflow = 'auto';
+    };
+  }, [isOpen]);
+
   return (
     <div className="fixed inset-0 flex items-center justify-center bg-black bg-opacity-50 z-50">
       <div className="flex flex-col gap-10 w-[470px] min-h-[250px] bg-white rounded-[30px] shadow ">
@@ -61,7 +71,7 @@ const Modal: React.FC<ModalProps> = ({
           {closeButtonText && (
             <ButtonFillMd
               onClick={onClose}
-              className="w-[200px]  !text-babgray-700 !bg-babgray-200"
+              className="w-full flex-1 !text-babgray-700 !bg-babgray-200"
             >
               {closeButtonText}
             </ButtonFillMd>
