@@ -116,8 +116,8 @@ function App() {
   }, []);
 
   return (
-    <DirectChatProider>
-      <AuthProvider>
+    <AuthProvider>
+      <DirectChatProider>
         <PointProvider>
           <Router
             future={{
@@ -228,8 +228,8 @@ function App() {
             </Routes>
           </Router>
         </PointProvider>
-      </AuthProvider>
-    </DirectChatProider>
+      </DirectChatProider>
+    </AuthProvider>
   );
 }
 

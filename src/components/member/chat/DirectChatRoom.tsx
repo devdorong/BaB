@@ -3,7 +3,6 @@ import { useDirectChat } from '../../../contexts/DirectChatContext';
 import { supabase } from '../../../lib/supabase';
 import type { DirectMessage } from '../../../types/chatType';
 import MessageInput from './MessageInput';
-import { isAuthSessionMissingError } from '@supabase/supabase-js';
 
 // 날짜별 메시지 그룹 타입 정의 - 같은 날짜의 메세지들을 그룹핑
 // 원본데이터를 가공하고 마무리 별도의 파일에 type으로 정의안함.
@@ -25,47 +24,65 @@ function DirectChatRoom({ chatId }: DirectChatRoomProps) {
   // 메세지가 개수가 많으면 하단으로 스크롤을 해야 함.
   // 새 메시지가 추가될 때마다 최신 메시지를 볼 수 있도록 해야 함.
   const messageEndRef = useRef<HTMLDivElement>(null);
-
-  const lastLoadedChatId = useRef<string | null>(null);
-
-  useEffect(() => {
-    if (chatId && chatId !== lastLoadedChatId.current) {
-      lastLoadedChatId.current = chatId;
-      loadMessages(chatId);
-    }
-  }, [chatId, loadMessages]);
+  const previousMessageCount = useRef<number>(0);
+  const isInitialLoad = useRef<boolean>(true);
 
   // DOM 업데이트 후 실행되도록 함
-  const scrollToBottom = () => {
+  const scrollToBottom = (force: boolean = false) => {
     // DOM 완료 후 실행되도록
-    setTimeout(() => {
-      messageEndRef.current?.scrollIntoView({
-        behavior: 'smooth', // 부드러운 스크롤 애니메이션
-        block: 'end', // 수직 스크롤을 요소의 하단에 맞춤
-        inline: 'nearest', // 수평 스크롤을 가장 가까운 위치에 맞춤
-      });
-    }, 100);
+    requestAnimationFrame(() => {
+      // chat-room-message 클래스를 가진 메시지 컨테이너 찾기
+      const messageContainer = document.querySelector('.chat-room-message');
+      if (messageContainer) {
+        // 메시지 컨테이너의 스크롤을 맨 아래로 설정
+        if (force) {
+          messageContainer.scrollTop = messageContainer.scrollHeight;
+        } else {
+          // 부드러운 스크롤
+          messageContainer.scrollTo({
+            top: messageContainer.scrollHeight,
+            behavior: 'smooth',
+          });
+        }
+      } else {
+        // fallback : 기존 방식을 사용하되 block을 'nearest'로 변경함
+        messageEndRef.current?.scrollIntoView({
+          behavior: force ? 'auto' : 'smooth',
+          block: 'nearest', // 입력창이 보이도록 가장 가까운 위치에 맞춤
+          inline: 'nearest',
+        });
+      }
+    });
   };
 
   // 새로운 메시지가 추가되거나 메시지 목록이 변경이 되면 하단으로 스크롤
   useEffect(() => {
     // 메시지가 왔을 때만 스크롤 실행
     if (messages.length > 0) {
-      scrollToBottom();
+      // 초기 로드시에는 즉시 스크롤
+      if (isInitialLoad.current) {
+        scrollToBottom(true);
+        isInitialLoad.current = false;
+      }
+      // 메시지가 추가된 경우 부드럽게 스크롤
+      else if (messages.length > previousMessageCount.current) {
+        scrollToBottom(false);
+      }
+      previousMessageCount.current = messages.length;
     }
   }, [messages]);
 
   // 초기 로딩 완료 후 스크롤 (메세지 처음 로딩 완료)
   useEffect(() => {
-    if (!loading && messages.length > 0) {
+    if (!loading && messages.length > 0 && isInitialLoad.current) {
       scrollToBottom();
+      isInitialLoad.current = false;
     }
   }, [loading, messages]);
 
   // Supabase Realtime으로 메시지 실시간 동기화
   useEffect(() => {
     if (!chatId) return;
-
     const subscription = supabase
       .channel(`direct_messages_${chatId}`)
       .on(
@@ -119,6 +136,7 @@ function DirectChatRoom({ chatId }: DirectChatRoomProps) {
       });
     }
   };
+
   // 메시지를 날짜별로 그룹화하는 함수 - 같은 날짜의 메시지들을 하나의 그룹으로
   // 날짜 구분선도 표시
   // 사용자가 만약 채팅방을 한개 선택하면 각 채팅방의 메세지 내용이 들어옴

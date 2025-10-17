@@ -23,13 +23,24 @@ import { supabase } from '../../../lib/supabase';
 import { fetchCurrentProfileInterests } from '../../../lib/interests';
 import { Divider } from 'antd';
 import CategoryBadge from '../../../ui/jy/CategoryBadge';
+import { fetchMyReviewData, type MyReviewData } from '../../../lib/myreviews';
+import {
+  checkFavoriteRest,
+  fetchFavoriteRestaurants,
+  fetchRestaurantDetailId,
+  getAvgMyRatingScore,
+  getFavoriteCount,
+  getMyFavoritesCount,
+  type RestaurantsDetailType,
+  type RestaurantsType,
+  type RestaurantTypeRatingAvg,
+} from '../../../lib/restaurants';
 
 function ProfilePage() {
   const { user, signOut } = useAuth();
   const { refreshPoint } = usePoint();
   // 네비게이터
   const navigate = useNavigate();
-
   const { point } = usePoint();
 
   // 로딩
@@ -42,6 +53,55 @@ function ProfilePage() {
   const [nickName, setNickName] = useState<string>('');
   // 사용자 관심사
   const [interests, setInterests] = useState<string[]>([]);
+  // 리뷰 개수
+  const [review, setReview] = useState<MyReviewData[]>([]);
+  // 찜 개수
+  const [favoritesCount, setFavoritesCount] = useState(0);
+  // 평점
+  const [avgScore, setAvgScore] = useState<number>(0);
+
+  useEffect(() => {
+    const MyReviewCount = async () => {
+      setLoading(true);
+      try {
+        const data = await fetchMyReviewData();
+        setReview(data);
+      } catch (error) {
+        console.log(error);
+      } finally {
+        setLoading(false);
+      }
+    };
+    MyReviewCount();
+  }, []);
+
+  // 사용자 별점 계산
+
+  useEffect(() => {
+    const avgRating = async () => {
+      const data = await getAvgMyRatingScore();
+
+      const ratings = data.map(r => r.rating_food ?? 0);
+      const avg =
+        ratings.length > 0
+          ? Math.round((ratings.reduce((sum, r) => sum + r, 0) / ratings.length) * 10) / 10
+          : 0;
+
+      setAvgScore(avg);
+    };
+    avgRating();
+  }, []);
+
+  // 사용자 찜개수 계산
+  useEffect(() => {
+    const loadFavorite = async () => {
+      if (!user?.id) return;
+      const count = await getMyFavoritesCount(user.id);
+      // console.log(count);
+      setFavoritesCount(count);
+    };
+    loadFavorite();
+  }, [user?.id]);
 
   // 사용자 프로필 정보
   const loadProfile = async () => {
@@ -158,19 +218,19 @@ function ProfilePage() {
                 {/* 리뷰, 찜, 매칭, 평점 */}
                 <div className="pt-[23px] text-center grid grid-cols-2 gap-[21px]">
                   <div>
-                    <div className="text-[22px] font-bold text-bab-500">리뷰개수</div>
+                    <div className="text-[24px] font-bold text-bab-500">{review.length}</div>
                     <div className="text-[14px] text-babgray-600">리뷰</div>
                   </div>
                   <div>
-                    <div className="text-[22px] font-bold text-bab-500">찜개수</div>
+                    <div className="text-[24px] font-bold text-bab-500">{favoritesCount}</div>
                     <div className="text-[14px] text-babgray-600">찜</div>
                   </div>
                   <div>
-                    <div className="text-[22px] font-bold text-bab-500">매칭개수</div>
+                    <div className="text-[24px] font-bold text-bab-500">매칭개수</div>
                     <div className="text-[14px] text-babgray-600">매칭</div>
                   </div>
                   <div>
-                    <div className="text-[22px] font-bold text-bab-500">평점</div>
+                    <div className="text-[24px] font-bold text-bab-500">{avgScore}</div>
                     <div className="text-[14px] text-babgray-600">평점</div>
                   </div>
                 </div>
