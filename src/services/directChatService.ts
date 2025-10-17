@@ -171,10 +171,21 @@ export async function getChatList(): Promise<ChatApiResponse<ChatListItem[]>> {
     // 사용자의 활성화 된 채팅방 목록 조회 (최신 메시지 순)
     const { data: chats, error: chatsError } = await supabase
       .from('direct_chats')
-      .select('*')
-      .or(
-        `and(user1_id.eq.${currentUser.id},user1_active.eq.true),and(user2_id.eq.${currentUser.id},user2_active.eq.true)`,
+      .select(
+        `
+    id,
+    user1_id,
+    user2_id,
+    user1_active,
+    user2_active,
+    user1_notified,
+    user2_notified,
+    last_message_at,
+    user1:profiles!direct_chats_user1_id_fkey(id, nickname, avatar_url),
+    user2:profiles!direct_chats_user2_id_fkey(id, nickname, avatar_url)
+  `,
       )
+      .or(`user1_id.eq.${currentUser.id},user2_id.eq.${currentUser.id}`)
       .order('last_message_at', { ascending: false });
 
     if (chatsError) {
@@ -1011,3 +1022,4 @@ export async function restoreDirectChat(chatId: string): Promise<ChatApiResponse
     };
   }
 }
+

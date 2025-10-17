@@ -216,7 +216,9 @@ function DirectChatRoom({ chatId }: DirectChatRoomProps) {
   if (loading) {
     return (
       <div className="chat-room">
-        <div className="loading">메시지를 불러오는 중...</div>
+        <div className="loading justify-center mt-10 items-center text-babgray-600">
+          메시지를 불러오는 중...
+        </div>
       </div>
     );
   }
@@ -262,8 +264,21 @@ function DirectChatRoom({ chatId }: DirectChatRoomProps) {
               {/* 메시지들 묶음 컨테이너 */}
               <div className="message-group-container">
                 {dateMessages.map((message: DirectMessage, index) => {
-                  const isMyMessage = message.sender_id === currentUserId;
+                  // 시스템 메시지면 따로 렌더링
+                  if (message.is_system_message) {
+                    return (
+                      <div
+                        key={message.id}
+                        className="flex justify-center my-3 text-bab-400 text-sm font-medium"
+                      >
+                        <span className="bg-bab-100 px-4 py-1 rounded-full border border-bab-100">
+                          {message.content}
+                        </span>
+                      </div>
+                    );
+                  }
 
+                  const isMyMessage = message.sender_id === currentUserId;
                   const prevMessage = dateMessages[index - 1];
                   const nextMessage = dateMessages[index + 1];
 
@@ -332,6 +347,7 @@ function DirectChatRoom({ chatId }: DirectChatRoomProps) {
             </div>
           ))
         )}
+
         {/* 자동 스크롤을 위한 참조 */}
         <div ref={messageEndRef} />
       </div>

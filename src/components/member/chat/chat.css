@@ -617,6 +617,7 @@
 
 /* 전송버튼 - 원형버튼 */
 .send-button {
+  position: relative;
   width: 40px;
   height: 40px;
   border: none;
@@ -638,6 +639,12 @@
 .send-button:disabled {
   background-color: #ccc;
   cursor: not-allowed;
+}
+
+.send-button-icon {
+  position: absolute;
+  left: 9px;
+  top: 11px;
 }
 
 /* 로딩 스피너 */

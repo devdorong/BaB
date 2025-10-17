@@ -9,7 +9,7 @@
 
 import { useRef, useState } from 'react';
 import { useDirectChat } from '../../../contexts/DirectChatContext';
-
+import { RiSendPlaneFill } from 'react-icons/ri';
 
 interface MessageInputProps {
   chatId: string;
@@ -55,6 +55,10 @@ const MessageInput = ({ chatId }: MessageInputProps) => {
       console.log('메세지 전송 오류 : ', error);
     } finally {
       setSending(false);
+      // 메시지 전송 후 포커스를 다시 주기 (DOM 업데이트 후)
+      requestAnimationFrame(() => {
+        textareaRef.current?.focus();
+      });
     }
   };
 
@@ -111,15 +115,7 @@ const MessageInput = ({ chatId }: MessageInputProps) => {
             ) : (
               <>
                 {/* 평상시 전송 아이콘 표시 (종이비행기 모양) */}
-                <svg
-                  width="20"
-                  height="20"
-                  viewBox="0 0 24 24"
-                  fill="none"
-                  xmlns="http://www.w3.org/2000/svg"
-                >
-                  <path d="M2.01 21L23 12 2.01 3 2 10l15 2-15 2z" fill="currentColor" />
-                </svg>
+                <RiSendPlaneFill size={20} className="send-button-icon" />
               </>
             )}
           </button>
