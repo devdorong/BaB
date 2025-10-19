@@ -5,6 +5,9 @@ import { ButtonFillLG, ButtonLineMd } from '../../ui/button';
 import Modal from '../../ui/sdj/Modal';
 import { useModal } from '../../ui/sdj/ModalState';
 import MatchCard from '../MatchCard';
+import { useEffect, useState } from 'react';
+import { getMatchings } from '../../services/matchingService';
+import type { Matchings } from '../../types/bobType';
 
 const demo = [
   {
@@ -90,6 +93,7 @@ const MachingIndex = () => {
   const navigate = useNavigate();
   const { user } = useAuth();
   const { modal, closeModal, openModal } = useModal();
+  const [MatchingList, setMatchingList] = useState<Matchings[]>([]);
 
   const handleButtonClick = () => {
     if (!user) {
@@ -100,6 +104,15 @@ const MachingIndex = () => {
       navigate('/member/matching/write');
     }
   };
+  useEffect(() => {
+    const fetchMatching = async () => {
+      const matching = await getMatchings();
+      setMatchingList(matching);
+    };
+    fetchMatching();
+  }, []);
+  console.log(MatchingList);
+
   return (
     <div className="">
       {/* 상단 */}

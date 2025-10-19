@@ -6,19 +6,36 @@ import {
   RiGroupLine,
   RiMapPinLine,
   RiPhoneLine,
-  RiStarHalfFill,
   RiStarHalfSFill,
   RiStarSFill,
   RiTimeLine,
 } from 'react-icons/ri';
-import { CalendarLine } from '../../../ui/Icon';
-import TagBadge from '../../../ui/TagBadge';
-import { ButtonFillLG, ButtonFillMd, ButtonLineLg, ButtonLineMd } from '../../../ui/button';
-import KkoMapDetail from '../../../ui/jy/Kakaomapdummy';
 import { useKakaoLoader } from '../../../hooks/useKakaoLoader';
+import TagBadge from '../../../ui/TagBadge';
+import { ButtonFillLG, ButtonLineLg, ButtonLineMd } from '../../../ui/button';
+import KkoMapDetail from '../../../ui/jy/Kakaomapdummy';
+import { useNavigate, useParams } from 'react-router-dom';
+import { useEffect, useState } from 'react';
+import { getMatchingById } from '../../../services/matchingService';
+import type { Matchings } from '../../../types/bobType';
 
 const MatchingDetailPage = () => {
+  const navigate = useNavigate();
   const isMapLoaded = useKakaoLoader();
+  const { id } = useParams<{ id: string }>();
+  const matchingId = parseInt(id || '0', 10);
+  const [matchingData, setMatchingData] = useState<Matchings | null>(null);
+
+  useEffect(() => {
+    const fetchMatching = async () => {
+      const matching = await getMatchingById(matchingId);
+      // ...
+      console.log(matching);
+      setMatchingData(matching);
+    };
+    fetchMatching();
+    console.log('매칭 데이터 : ', matchingData);
+  }, [matchingId]);
 
   return (
     <div className="flex bg-bg-bg ">
@@ -240,6 +257,7 @@ const MatchingDetailPage = () => {
                   <ButtonLineLg
                     className="w-full"
                     style={{ fontWeight: 600, borderRadius: '12px' }}
+                    onClick={() => navigate(`/member/matching/edit/${id}`)}
                   >
                     <div className="flex gap-[5px] justify-center items-center">
                       수정하기
