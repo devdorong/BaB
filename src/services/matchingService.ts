@@ -2,7 +2,10 @@ import { supabase } from '../lib/supabase';
 import type { Matchings, MatchingsInsert, MatchingsUpdate } from '../types/bobType';
 
 export const getMatchings = async (): Promise<Matchings[]> => {
-  const { data, error } = await supabase.from('matchings').select('*');
+  const { data, error } = await supabase
+    .from('matchings')
+    .select('*')
+    .order('created_at', { ascending: false });
   if (error) {
     console.log('getMatchings 에러 : ', error.message);
     throw new Error(error.message);

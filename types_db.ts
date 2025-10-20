@@ -155,6 +155,141 @@ export type Database = {
         }
         Relationships: []
       }
+      direct_chats: {
+        Row: {
+          created_at: string | null
+          id: string
+          is_active: boolean | null
+          last_message_at: string | null
+          user_pair_high: string | null
+          user_pair_low: string | null
+          user1_active: boolean | null
+          user1_id: string
+          user1_left_at: string | null
+          user1_notified: boolean | null
+          user2_active: boolean | null
+          user2_id: string
+          user2_left_at: string | null
+          user2_notified: boolean | null
+        }
+        Insert: {
+          created_at?: string | null
+          id?: string
+          is_active?: boolean | null
+          last_message_at?: string | null
+          user_pair_high?: string | null
+          user_pair_low?: string | null
+          user1_active?: boolean | null
+          user1_id: string
+          user1_left_at?: string | null
+          user1_notified?: boolean | null
+          user2_active?: boolean | null
+          user2_id: string
+          user2_left_at?: string | null
+          user2_notified?: boolean | null
+        }
+        Update: {
+          created_at?: string | null
+          id?: string
+          is_active?: boolean | null
+          last_message_at?: string | null
+          user_pair_high?: string | null
+          user_pair_low?: string | null
+          user1_active?: boolean | null
+          user1_id?: string
+          user1_left_at?: string | null
+          user1_notified?: boolean | null
+          user2_active?: boolean | null
+          user2_id?: string
+          user2_left_at?: string | null
+          user2_notified?: boolean | null
+        }
+        Relationships: [
+          {
+            foreignKeyName: "direct_chats_user1_id_fkey"
+            columns: ["user1_id"]
+            isOneToOne: false
+            referencedRelation: "nickname_profiles"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "direct_chats_user1_id_fkey"
+            columns: ["user1_id"]
+            isOneToOne: false
+            referencedRelation: "profiles"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "direct_chats_user2_id_fkey"
+            columns: ["user2_id"]
+            isOneToOne: false
+            referencedRelation: "nickname_profiles"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "direct_chats_user2_id_fkey"
+            columns: ["user2_id"]
+            isOneToOne: false
+            referencedRelation: "profiles"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      direct_messages: {
+        Row: {
+          chat_id: string
+          content: string
+          created_at: string | null
+          id: string
+          is_read: boolean | null
+          is_system_message: boolean | null
+          read_at: string | null
+          sender_id: string
+        }
+        Insert: {
+          chat_id: string
+          content: string
+          created_at?: string | null
+          id?: string
+          is_read?: boolean | null
+          is_system_message?: boolean | null
+          read_at?: string | null
+          sender_id: string
+        }
+        Update: {
+          chat_id?: string
+          content?: string
+          created_at?: string | null
+          id?: string
+          is_read?: boolean | null
+          is_system_message?: boolean | null
+          read_at?: string | null
+          sender_id?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "direct_messages_chat_id_fkey"
+            columns: ["chat_id"]
+            isOneToOne: false
+            referencedRelation: "direct_chats"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "direct_messages_sender_id_fkey"
+            columns: ["sender_id"]
+            isOneToOne: false
+            referencedRelation: "nickname_profiles"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "direct_messages_sender_id_fkey"
+            columns: ["sender_id"]
+            isOneToOne: false
+            referencedRelation: "profiles"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
       events: {
         Row: {
           badge: Database["public"]["Enums"]["event_badge_enum"] | null
@@ -322,6 +457,7 @@ export type Database = {
           met_at: string | null
           restaurant_id: number
           status: string
+          title: string
           type: string
         }
         Insert: {
@@ -333,6 +469,7 @@ export type Database = {
           met_at?: string | null
           restaurant_id: number
           status?: string
+          title?: string
           type?: string
         }
         Update: {
@@ -344,6 +481,7 @@ export type Database = {
           met_at?: string | null
           restaurant_id?: number
           status?: string
+          title?: string
           type?: string
         }
         Relationships: [
@@ -971,6 +1109,7 @@ export type Database = {
           created_at: string | null
           favorite: number | null
           id: number
+          kakao_place_id: string | null
           latitude: number | null
           longitude: number | null
           name: string
@@ -991,6 +1130,7 @@ export type Database = {
           created_at?: string | null
           favorite?: number | null
           id?: number
+          kakao_place_id?: string | null
           latitude?: number | null
           longitude?: number | null
           name: string
@@ -1011,6 +1151,7 @@ export type Database = {
           created_at?: string | null
           favorite?: number | null
           id?: number
+          kakao_place_id?: string | null
           latitude?: number | null
           longitude?: number | null
           name?: string
@@ -1086,49 +1227,6 @@ export type Database = {
           },
         ]
       }
-      review_likes: {
-        Row: {
-          created_at: string | null
-          like_id: number
-          profile_id: string
-          review_id: number
-        }
-        Insert: {
-          created_at?: string | null
-          like_id?: number
-          profile_id: string
-          review_id: number
-        }
-        Update: {
-          created_at?: string | null
-          like_id?: number
-          profile_id?: string
-          review_id?: number
-        }
-        Relationships: [
-          {
-            foreignKeyName: "review_likes_profile_id_fkey"
-            columns: ["profile_id"]
-            isOneToOne: false
-            referencedRelation: "nickname_profiles"
-            referencedColumns: ["id"]
-          },
-          {
-            foreignKeyName: "review_likes_profile_id_fkey"
-            columns: ["profile_id"]
-            isOneToOne: false
-            referencedRelation: "profiles"
-            referencedColumns: ["id"]
-          },
-          {
-            foreignKeyName: "review_likes_review_id_fkey"
-            columns: ["review_id"]
-            isOneToOne: false
-            referencedRelation: "reviews"
-            referencedColumns: ["review_id"]
-          },
-        ]
-      }
       review_photos: {
         Row: {
           created_at: string | null
@@ -1162,12 +1260,8 @@ export type Database = {
         Row: {
           comment: string | null
           created_at: string | null
-          partner_comment: string | null
-          partner_id: string | null
           profile_id: string
-          rating_ambience: number | null
           rating_food: number | null
-          rating_service: number | null
           restaurant_id: number
           review_id: number
           updated_at: string | null
@@ -1175,12 +1269,8 @@ export type Database = {
         Insert: {
           comment?: string | null
           created_at?: string | null
-          partner_comment?: string | null
-          partner_id?: string | null
           profile_id: string
-          rating_ambience?: number | null
           rating_food?: number | null
-          rating_service?: number | null
           restaurant_id: number
           review_id?: number
           updated_at?: string | null
@@ -1188,31 +1278,13 @@ export type Database = {
         Update: {
           comment?: string | null
           created_at?: string | null
-          partner_comment?: string | null
-          partner_id?: string | null
           profile_id?: string
-          rating_ambience?: number | null
           rating_food?: number | null
-          rating_service?: number | null
           restaurant_id?: number
           review_id?: number
           updated_at?: string | null
         }
         Relationships: [
-          {
-            foreignKeyName: "reviews_partner_id_fkey"
-            columns: ["partner_id"]
-            isOneToOne: false
-            referencedRelation: "nickname_profiles"
-            referencedColumns: ["id"]
-          },
-          {
-            foreignKeyName: "reviews_partner_id_fkey"
-            columns: ["partner_id"]
-            isOneToOne: false
-            referencedRelation: "profiles"
-            referencedColumns: ["id"]
-          },
           {
             foreignKeyName: "reviews_profile_id_fkey"
             columns: ["profile_id"]

@@ -119,7 +119,7 @@ export const MatchingProvider = ({ children }: MatchingProviderProps) => {
       if (existingRestaurant) {
         restaurantId = existingRestaurant.id;
       } else {
-        // 시연용: 레스토랑이 없으면 목업 ID 사용 (1번 레스토랑이 존재한다고 가정)
+        // 시연용: 레스토랑이 없으면 목업 ID 사용 (1번 레스토랑이 존재한다고 가정 우리의 경우 제일 상위레스토랑이 8번 샐러디)
         // 실제 운영 시: 새 레스토랑 생성 로직 추가 필요
         restaurantId = 8;
         console.warn(`레스토랑 미등재: "${formData.selectedPlace.name}" - 목업 ID 사용`);
@@ -141,6 +141,7 @@ export const MatchingProvider = ({ children }: MatchingProviderProps) => {
           description: formData.content,
           desired_members: formData.desiredMembers,
           met_at: metAt,
+          title: formData.title,
         })
         .select('id')
         .single();
@@ -203,9 +204,9 @@ export const MatchingProvider = ({ children }: MatchingProviderProps) => {
 };
 
 export const useMatching = () => {
-  const context = useContext(MatchingContext);
-  if (!context) {
-    throw new Error('useMatching은 MatchingProvider 내에서만 사용 가능합니다');
+  const ctx = useContext(MatchingContext);
+  if (!ctx) {
+    throw new Error('useMatching 컨텍스트 없어요');
   }
-  return context;
+  return ctx;
 };

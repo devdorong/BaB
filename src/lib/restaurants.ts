@@ -1,5 +1,6 @@
 import dayjs from 'dayjs';
 import { supabase } from './supabase';
+import type { Restaurants } from '../types/bobType';
 
 export interface RestaurantsType {
   id: number;
@@ -304,4 +305,33 @@ export const getAvgMyRatingScore = async () => {
   if (error) throw error;
   // console.log(data);
   return data;
+};
+
+export const getRestaurantById = async (
+  restaurantId: number,
+): Promise<RestaurantsDetailType | null> => {
+  try {
+    const { data, error } = await supabase
+      .from('restaurants')
+      .select('*')
+      .eq('id', restaurantId)
+      .single();
+
+    if (error) {
+      console.error('레스토랑 조회 실패:', error);
+      return null;
+    }
+
+    if (!data) return null;
+
+    return {
+      ...data,
+      opentime: data.opentime,
+      closetime: data.closetime,
+      closeday: data.closeday || [],
+    } as RestaurantsDetailType;
+  } catch (err) {
+    console.error('getRestaurantById 에러:', err);
+    return null;
+  }
 };

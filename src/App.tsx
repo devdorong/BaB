@@ -122,114 +122,116 @@ function App() {
       <DirectChatProider>
         <PointProvider>
           <MatchingProvider>
-            <Router
-              future={{
-                v7_relativeSplatPath: true,
-                v7_startTransition: true,
-              }}
-            >
-              <Routes>
-                <Route path="/" element={<IndexPage />} />
+            <MatchingProvider>
+              <Router
+                future={{
+                  v7_relativeSplatPath: true,
+                  v7_startTransition: true,
+                }}
+              >
+                <Routes>
+                  <Route path="/" element={<IndexPage />} />
 
-                {/* Member */}
-                <Route path="/member" element={<MemberLayout />}>
-                  <Route index element={<MemberPage />} />
-                  <Route path="matching">
-                    <Route index element={<MatchingListPage />} />
-                    <Route path="write" element={<MatchingWritePage />} />
-                    <Route path=":id" element={<MatchingDetailPage />} />
-                    <Route path="edit/:id" element={<MatchingEditPage />} />
+                  {/* Member */}
+                  <Route path="/member" element={<MemberLayout />}>
+                    <Route index element={<MemberPage />} />
+                    <Route path="matching">
+                      <Route index element={<MatchingListPage />} />
+                      <Route path="write" element={<MatchingWritePage />} />
+                      <Route path=":id" element={<MatchingDetailPage />} />
+                      <Route path="edit/:id" element={<MatchingEditPage />} />
+                    </Route>
+                    <Route path="community">
+                      <Route index element={<CommunityPage />} />
+                      <Route path="write" element={<CommunityWritePage />} />
+                      <Route path="detail/:id" element={<CommunityDetailPage />} />
+                      <Route path="edit/:id" element={<CommunityEditPage />} />
+                    </Route>
+                    <Route path="reviews">
+                      <Route index element={<ReviewsPage />} />
+                      <Route path=":id" element={<ReviewDetailPage />} />
+                    </Route>
+                    <Route path="events" element={<EventPage />} />
+                    <Route path="support" element={<SupportPage />} />
+                    <Route path="profile">
+                      <Route index element={<ProfilePage />} />
+                      <Route path="edit" element={<EditPage />} />
+                      <Route path="interest" element={<InterestPage />} />
+                      <Route path="chat" element={<ChatPage />} />
+                      <Route path="point" element={<PointPage />} />
+                      <Route path="myreviews" element={<MyReviewPage />} />
+                      <Route path="favorite" element={<FavoritePage />} />
+                      <Route path="recentmatching" element={<RecentMatchingPage />} />
+                      <Route path="block" element={<BlockPage />} />
+                    </Route>
                   </Route>
-                  <Route path="community">
-                    <Route index element={<CommunityPage />} />
-                    <Route path="write" element={<CommunityWritePage />} />
-                    <Route path="detail/:id" element={<CommunityDetailPage />} />
-                    <Route path="edit/:id" element={<CommunityEditPage />} />
-                  </Route>
-                  <Route path="reviews">
-                    <Route index element={<ReviewsPage />} />
-                    <Route path=":id" element={<ReviewDetailPage />} />
-                  </Route>
-                  <Route path="events" element={<EventPage />} />
-                  <Route path="support" element={<SupportPage />} />
-                  <Route path="profile">
-                    <Route index element={<ProfilePage />} />
-                    <Route path="edit" element={<EditPage />} />
-                    <Route path="interest" element={<InterestPage />} />
-                    <Route path="chat" element={<ChatPage />} />
-                    <Route path="point" element={<PointPage />} />
-                    <Route path="myreviews" element={<MyReviewPage />} />
-                    <Route path="favorite" element={<FavoritePage />} />
-                    <Route path="recentmatching" element={<RecentMatchingPage />} />
-                    <Route path="block" element={<BlockPage />} />
-                  </Route>
-                </Route>
 
-                {/* 이용약관/개인정보처리방침 */}
-                <Route path="/" element={<MemberLayout />}>
-                  <Route path="privacy" element={<TermsofServicePage />} />
-                  <Route path="perpolicy" element={<PersonalPolicyPage />} />
-                </Route>
+                  {/* 이용약관/개인정보처리방침 */}
+                  <Route path="/" element={<MemberLayout />}>
+                    <Route path="privacy" element={<TermsofServicePage />} />
+                    <Route path="perpolicy" element={<PersonalPolicyPage />} />
+                  </Route>
 
-                {/* 소셜 */}
-                <Route path="/instar" element={<InsratgramPage />} />
-                <Route path="/kakao" element={<KaKaoPage />} />
+                  {/* 소셜 */}
+                  <Route path="/instar" element={<InsratgramPage />} />
+                  <Route path="/kakao" element={<KaKaoPage />} />
 
-                {/* 헤더없는 화면 */}
-                <Route element={<BareLayout />}>
-                  <Route path="member/login" element={<MemberLoginPage />} />
-                  <Route path="member/signup" element={<MemberSignupPage />} />
-                  <Route path="partner/login" element={<PartnerLoginPage />} />
+                  {/* 헤더없는 화면 */}
+                  <Route element={<BareLayout />}>
+                    <Route path="member/login" element={<MemberLoginPage />} />
+                    <Route path="member/signup" element={<MemberSignupPage />} />
+                    <Route path="partner/login" element={<PartnerLoginPage />} />
+                    <Route
+                      path="partner/signup"
+                      element={
+                        <PartnerSignupProvider>
+                          <PartnerSignupPage />
+                        </PartnerSignupProvider>
+                      }
+                    />
+                  </Route>
+
+                  {/* Partner */}
                   <Route
-                    path="partner/signup"
+                    path="/partner"
                     element={
-                      <PartnerSignupProvider>
-                        <PartnerSignupPage />
-                      </PartnerSignupProvider>
+                      <ProtectedRoute allowedRoles={['partner', 'admin']}>
+                        {' '}
+                        <PartnerLayout />
+                      </ProtectedRoute>
                     }
-                  />
-                </Route>
+                  >
+                    <Route index element={<DashboardPage />} />
+                    <Route path="restaurant" element={<RestaurantPage />} />
+                    <Route path="menus" element={<MenusPage />} />
+                    <Route path="orders" element={<OrdersPage />} />
+                    <Route path="sale" element={<SalesPage />} />
+                    <Route path="review" element={<ReviewPage />} />
+                    <Route path="notification" element={<NotificationPage />} />
+                    <Route path="settings" element={<SettingsPage />} />
+                  </Route>
 
-                {/* Partner */}
-                <Route
-                  path="/partner"
-                  element={
-                    <ProtectedRoute allowedRoles={['partner', 'admin']}>
-                      {' '}
-                      <PartnerLayout />
-                    </ProtectedRoute>
-                  }
-                >
-                  <Route index element={<DashboardPage />} />
-                  <Route path="restaurant" element={<RestaurantPage />} />
-                  <Route path="menus" element={<MenusPage />} />
-                  <Route path="orders" element={<OrdersPage />} />
-                  <Route path="sale" element={<SalesPage />} />
-                  <Route path="review" element={<ReviewPage />} />
-                  <Route path="notification" element={<NotificationPage />} />
-                  <Route path="settings" element={<SettingsPage />} />
-                </Route>
+                  {/* Admin */}
+                  <Route
+                    path="/admin"
+                    element={
+                      <ProtectedRoute allowedRoles={['admin']}>
+                        <AdminLayout />
+                      </ProtectedRoute>
+                    }
+                  >
+                    <Route index element={<AdminMembersPage />} />
+                    <Route path="partners" element={<AdminPartnersPage />} />
+                    <Route path="matching" element={<AdminMatchingPage />} />
+                    <Route path="reports" element={<AdminReportsPage />} />
+                    <Route path="settings" element={<AdminSettingsPage />} />
+                  </Route>
 
-                {/* Admin */}
-                <Route
-                  path="/admin"
-                  element={
-                    <ProtectedRoute allowedRoles={['admin']}>
-                      <AdminLayout />
-                    </ProtectedRoute>
-                  }
-                >
-                  <Route index element={<AdminMembersPage />} />
-                  <Route path="partners" element={<AdminPartnersPage />} />
-                  <Route path="matching" element={<AdminMatchingPage />} />
-                  <Route path="reports" element={<AdminReportsPage />} />
-                  <Route path="settings" element={<AdminSettingsPage />} />
-                </Route>
-
-                {/* Not Found */}
-                <Route path="*" element={<NotFound />} />
-              </Routes>
-            </Router>
+                  {/* Not Found */}
+                  <Route path="*" element={<NotFound />} />
+                </Routes>
+              </Router>
+            </MatchingProvider>
           </MatchingProvider>
         </PointProvider>
       </DirectChatProider>
