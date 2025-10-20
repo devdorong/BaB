@@ -1,16 +1,17 @@
 import { RiAlarmWarningLine, RiCalendarLine, RiMapPinLine, RiCloseLine } from 'react-icons/ri';
 import { ButtonFillMd, ButtonLineMd } from '../../../ui/button';
 import { useNavigate } from 'react-router-dom';
-import { useState } from 'react';
+import { useEffect, useState } from 'react';
 import { ConfigProvider, DatePicker, TimePicker } from 'antd';
 import dayjs from 'dayjs';
 import 'dayjs/locale/ko';
 import locale from 'antd/locale/ko_KR';
 import MapSearchModal from '../../../components/member/MapSearchModal';
 import { useKakaoLoader } from '../../../hooks/useKakaoLoader';
+import { useMatching } from '../../../contexts/MatchingContext';
 dayjs.locale('ko');
 
-const days = ['2', '3', '4', '5 이상'];
+const headCounts = ['2', '3', '4', '5'];
 
 interface SelectedPlace {
   id: string;
@@ -22,21 +23,59 @@ interface SelectedPlace {
 
 const MatchingWritePage = () => {
   const navigate = useNavigate();
-  const [title, setTitle] = useState('');
-  const [content, setContent] = useState('');
-  const [selectDay, setSelectDay] = useState<string>('');
-  const [isMapModalOpen, setIsMapModalOpen] = useState(false);
-  const [selectedPlace, setSelectedPlace] = useState<SelectedPlace | null>(null);
+  const {
+    formData,
+    setTitle,
+    setContent,
+    setDesiredMembers,
+    setDate,
+    setTime,
+    setSelectedPlace,
+    submitMatching,
+    isLoading,
+    error,
+  } = useMatching();
 
-  const toggleDay = (day: string) => {
-    setSelectDay(day);
+  const [isMapModalOpen, setIsMapModalOpen] = useState(false);
+
+  const toggleMembers = (headCount: string) => {
+    const memberMap: { [key: string]: number } = {
+      '2': 2,
+      '3': 3,
+      '4': 4,
+      '5': 5,
+    };
+    setDesiredMembers(memberMap[headCount]);
   };
 
   const handlePlaceSelect = (place: SelectedPlace) => {
     setSelectedPlace(place);
     setIsMapModalOpen(false);
   };
+
+  const handleSubmit = async () => {
+    try {
+      const matchingId = await submitMatching();
+      navigate(`/member/matching/${matchingId}`);
+    } catch (err) {
+      console.error('매칭 등록 실패:', err);
+    }
+  };
+
   useKakaoLoader();
+
+  // 선택된 인원 표시
+  const memberMap: { [key: number]: string } = {
+    2: '2',
+    3: '3',
+    4: '4',
+    5: '5',
+  };
+  const selectedHeadCounts = memberMap[formData.desiredMembers] || '';
+
+  // useEffect(() => {
+  //   console.log(formData.selectedPlace);
+  // }, [formData]);
 
   return (
     <ConfigProvider locale={locale}>
@@ -57,10 +96,13 @@ const MatchingWritePage = () => {
                 type="text"
                 maxLength={50}
                 placeholder="매칭 게시글 제목을 입력해주세요"
+                value={formData.title}
                 onChange={e => setTitle(e.target.value)}
-                className="px-4 py-3.5 rounded-3xl outline outline-1 outline-offset-[-1px] outline-babgray focus:outline-bab"
+                className="px-4 py-3.5 rounded-3xl border border-1 border-offset-[-1px] border-babgray focus:border-bab"
               />
-              <p className="flex justify-end text-babgray-500 text-xs">{title.length}/50</p>
+              <p className="flex justify-end text-babgray-500 text-xs">
+                {formData.title.length}/50
+              </p>
             </div>
           </div>
 
@@ -69,10 +111,13 @@ const MatchingWritePage = () => {
             <textarea
               maxLength={500}
               placeholder="함께 식사하고 싶은 이유나 추가 정보를 입력해주세요"
+              value={formData.content}
               onChange={e => setContent(e.target.value)}
-              className="h-24 px-4 py-3.5 rounded-3xl outline outline-1 outline-offset-[-1px] outline-babgray resize-none focus:outline-bab"
+              className="h-24 px-4 py-3.5 rounded-3xl border border-1 border-offset-[-1px] border-babgray resize-none focus:border-bab"
             />
-            <p className="flex justify-end text-babgray-500 text-xs">{content.length}/500</p>
+            <p className="flex justify-end text-babgray-500 text-xs">
+              {formData.content.length}/500
+            </p>
           </div>
 
           <div className="flex justify-between items-center gap-3.5">
@@ -81,8 +126,13 @@ const MatchingWritePage = () => {
                 <span>날짜</span>
                 <p className="text-bab">*</p>
               </div>
-              <div className="w flex items-center justify-between rounded-3xl outline outline-1 outline-offset-[-1px] outline-babgray">
-                <DatePicker placeholder="연도-월-일" className="custom-day-picker w-full" />
+              <div className="w flex items-center justify-between rounded-3xl border border-1 border-offset-[-1px] border-babgray">
+                <DatePicker
+                  placeholder="연도-월-일"
+                  value={formData.date}
+                  onChange={setDate}
+                  className="custom-day-picker w-full"
+                />
               </div>
             </div>
 
@@ -91,10 +141,12 @@ const MatchingWritePage = () => {
                 <span>시간</span>
                 <p className="text-bab">*</p>
               </div>
-              <div className=" flex items-center justify-between rounded-3xl outline outline-1 outline-offset-[-1px] outline-babgray">
+              <div className=" flex items-center justify-between rounded-3xl border border-1 border-offset-[-1px] border-babgray">
                 <TimePicker
                   format="HH:mm"
                   placeholder="00:00"
+                  value={formData.time}
+                  onChange={setTime}
                   className="custom-bab-time-picker w-full"
                   classNames={{
                     popup: { root: 'custom-bab-time-picker-panel' } as any,
@@ -110,13 +162,13 @@ const MatchingWritePage = () => {
               </div>
               <div className="flex flex-col gap-2">
                 <div className="flex justify-center gap-3">
-                  {days.map(day => {
-                    const isSelected = selectDay.includes(day);
+                  {headCounts.map(item => {
+                    const isSelected = selectedHeadCounts === item;
                     return (
                       <button
-                        key={day}
+                        key={item}
                         type="button"
-                        onClick={() => toggleDay(day)}
+                        onClick={() => toggleMembers(item)}
                         className={`min-w-10 h-10 px-2 rounded-xl flex justify-center items-center text-base font-medium transition 
                   ${
                     isSelected
@@ -124,7 +176,7 @@ const MatchingWritePage = () => {
                       : 'border border-babgray-300 text-babgray-800 hover:bg-babgray-100'
                   }`}
                       >
-                        {day}
+                        {item}
                       </button>
                     );
                   })}
@@ -140,11 +192,11 @@ const MatchingWritePage = () => {
               <span className="text-bab">*</span>
             </div>
 
-            {selectedPlace ? (
+            {formData.selectedPlace ? (
               <div className="w-full p-4 rounded-3xl border-2 border-bab bg-bab-50 flex justify-between items-center">
                 <div className="flex flex-col gap-1">
-                  <p className="font-semibold text-babgray-900">{selectedPlace.name}</p>
-                  <p className="text-xs text-babgray-600">{selectedPlace.address}</p>
+                  <p className="font-semibold text-babgray-900">{formData.selectedPlace.name}</p>
+                  <p className="text-xs text-babgray-600">{formData.selectedPlace.address}</p>
                 </div>
                 <button
                   onClick={() => setIsMapModalOpen(true)}
@@ -156,7 +208,7 @@ const MatchingWritePage = () => {
             ) : (
               <button
                 onClick={() => setIsMapModalOpen(true)}
-                className="w-full h-48 px-4 py-5 rounded-3xl outline-dashed outline-2 outline-offset-[-1px] outline-babgray flex flex-col justify-center items-center gap-4 hover:bg-babgray-50 transition"
+                className="w-full h-48 px-4 py-5 rounded-3xl border-dashed border-2 border-offset-[-1px] border-babgray flex flex-col justify-center items-center gap-4 hover:bg-babgray-50 transition"
               >
                 <RiMapPinLine className="text-bab w-6 h-6" />
                 <p className="text-babgray-600">지도에서 맛집을 선택해주세요</p>
@@ -180,13 +232,21 @@ const MatchingWritePage = () => {
 
           {/* 버튼 영역 */}
           <div className="flex p-6 border-t justify-center items-center gap-6">
-            <ButtonLineMd className="flex-1" onClick={() => navigate('/member')}>
+            <ButtonLineMd
+              className="flex-1"
+              onClick={() => navigate('/member')}
+              disabled={isLoading}
+            >
               취소
             </ButtonLineMd>
-            <ButtonFillMd className="flex-1" onClick={() => navigate('/member/matching/detail')}>
-              등록하기
+            <ButtonFillMd className="flex-1" onClick={handleSubmit} disabled={isLoading}>
+              {isLoading ? '등록 중...' : '등록하기'}
             </ButtonFillMd>
           </div>
+          {/* 에러 메시지 표시 */}
+          {error && (
+            <div className="px-3.5 py-3 bg-red-100 text-red-700 rounded-lg text-sm">{error}</div>
+          )}
         </div>
       </div>
 

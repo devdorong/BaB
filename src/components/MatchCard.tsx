@@ -2,10 +2,9 @@
 import { RiMapPinLine } from 'react-icons/ri';
 import { useNavigate } from 'react-router-dom';
 import { useAuth } from '../contexts/AuthContext';
-import Modal from '../ui/sdj/Modal';
-import { useModal, type ModalState } from '../ui/sdj/ModalState';
+import TagBadge from '../ui/TagBadge';
 
-type Badge = {
+export type Badge = {
   label: string;
   bgClass?: string; // 예: 'bg-lime-50'
   textClass?: string; // 예: 'text-lime-800'
@@ -22,6 +21,8 @@ type MatchCardProps = {
   modal: any;
   openModal: (...args: any[]) => void;
   closeModal: () => void;
+  distance: string;
+  id: number;
 };
 
 export default function MatchCard({
@@ -35,16 +36,19 @@ export default function MatchCard({
   modal,
   openModal,
   closeModal,
+  distance,
+  id,
 }: MatchCardProps) {
   const navigate = useNavigate();
   const { user } = useAuth();
+
   const handleClick = () => {
     if (!user) {
       openModal('로그인 확인', '로그인이 필요합니다.', '닫기', '로그인', () =>
         navigate('/member/login'),
       );
     } else {
-      navigate('/member/matching/detail');
+      navigate(`/member/matching/${id}`);
     }
   };
   return (
@@ -61,13 +65,9 @@ export default function MatchCard({
           {/* 배지 목록 */}
           <div className="flex items-center gap-2">
             {tags.map((t, i) => (
-              <span
-                key={i}
-                className={`h-7 px-3 inline-flex items-center justify-center rounded-2xl text-xs font-medium
-                ${t.bgClass ?? 'bg-gray-100'} ${t.textClass ?? 'text-gray-700'}`}
-              >
+              <TagBadge key={i} bgColor={`${t.bgClass}`} textColor={`${t.textClass}`}>
                 {t.label}
-              </span>
+              </TagBadge>
             ))}
           </div>
 
@@ -91,7 +91,7 @@ export default function MatchCard({
           <div className="flex items-center gap-1.5 text-sm text-gray-600">
             <RiMapPinLine className="shrink-0 w-4 h-4 text-[#FF5722]" />
             <span>
-              {distanceKm}km · {area}
+              {distance} · {area}
             </span>
           </div>
         </div>

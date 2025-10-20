@@ -1,9 +1,21 @@
 import { RiAlarmWarningLine, RiCalendarLine, RiMapPinLine } from 'react-icons/ri';
 import { ButtonFillMd, ButtonLineMd } from '../../../ui/button';
-import { useNavigate } from 'react-router-dom';
+import { useNavigate, useParams } from 'react-router-dom';
+import { useEffect } from 'react';
+import { getMatchingById } from '../../../services/matchingService';
 
-const MatchingDetailEditPage = () => {
+const MatchingEditPage = () => {
   const navigate = useNavigate();
+  const { id } = useParams<{ id: string }>();
+  const matchingId = parseInt(id || '0', 10);
+
+  useEffect(() => {
+    const fetchMatching = async () => {
+      const matching = await getMatchingById(matchingId);
+      console.log(matching);
+    };
+    fetchMatching();
+  }, [matchingId]);
 
   return (
     <div className="w-[750px] h-auto py-8 flex flex-col gap-10 mx-auto">
@@ -148,4 +160,4 @@ const MatchingDetailEditPage = () => {
   );
 };
 
-export default MatchingDetailEditPage;
+export default MatchingEditPage;
