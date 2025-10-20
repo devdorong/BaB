@@ -481,7 +481,6 @@ html {
 }
 
 
-
 @layer base {
   :root {
     --background: 0 0% 100%;
@@ -549,3 +548,15 @@ html {
   }
 }
 
+/* -------------- 커스텀 ----------------- */
+/* RangePicker 포커스 시 파란 테두리 / 밑줄 제거 */
+.ant-picker:focus,
+.ant-picker-focused {
+  border-color: #ff5722 !important;
+  box-shadow: 0 0 0 2px rgba(255, 87, 34, 0.2) !important; /* 주색상 glow */
+}
+
+/* 파란 밑줄 제거 */
+.ant-picker-active-bar {
+  display: none !important;
+}

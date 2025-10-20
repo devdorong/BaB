@@ -1,25 +1,96 @@
 import { useEffect, useState } from 'react';
-import { RiFireFill, RiShareLine } from 'react-icons/ri';
+import { RiEditLine, RiFireFill, RiShareLine } from 'react-icons/ri';
 import OkCancelModal from '../../components/member/OkCancelModal';
 import { useAuth } from '../../contexts/AuthContext';
 import { supabase } from '../../lib/supabase';
-import type { Events } from '../../types/bobType';
+import type { Database, Events } from '../../types/bobType';
 import { ButtonFillMd } from '../../ui/button';
 import { GiftFill } from '../../ui/Icon';
 import EventWriteModal from '../../ui/sdj/EventWriteModal';
 import { useModal } from '../../ui/sdj/ModalState';
 import TagBadge from '../../ui/TagBadge';
 import Modal from '../../ui/sdj/Modal';
+import dayjs from 'dayjs';
+import EventEditModal from '../../ui/sdj/EventEditModal';
+
+type EventState = Database['public']['Tables']['events']['Row']['status'];
+type EventFilterState = EventState | '전체';
 
 function EventPage() {
   const { user } = useAuth();
   const { closeModal, modal, openModal } = useModal();
-  const [events, setEvents] = useState<Events[]>([]);
   const [viewModal, setViewModal] = useState(false);
+  const [selectedEventId, setSelectedEventId] = useState<number | null>(null);
+  const [events, setEvents] = useState<Events[]>([]);
+  const [filterCategories, setFilterCategories] = useState<Events[]>([]);
+  const [selectCategories, setSelectCategories] = useState<EventFilterState>('전체');
 
   const [eventModal, setEventModal] = useState(false);
 
+  const [editPage, setEditPage] = useState(false);
+
   const [admin, setAdmin] = useState(false);
+
+  const statusTags: EventFilterState[] = ['전체', '진행중', '예정', '종료'];
+
+  const handleEditBt = (id: number) => {
+    setSelectedEventId(id);
+    setEditPage(true);
+  };
+
+  const getStatusByDate = (start: string | null, end: string | null): EventState => {
+    if (!start || !end) return '예정';
+
+    const today = dayjs().startOf('day');
+    const startDate = dayjs(start).startOf('day');
+    const endDate = dayjs(end).endOf('day');
+
+    if (today.isBefore(startDate)) return '예정';
+    if (today.isAfter(endDate)) return '종료';
+    return '진행중';
+  };
+
+  const handleJoin = async (eventId: number) => {
+    if (!user) {
+      openModal('이벤트 참여', '로그인 후 이용 가능합니다.', '닫기');
+      return;
+    }
+
+    const { data: profile, error: profileError } = await supabase
+      .from('profiles')
+      .select('role')
+      .eq('id', user.id)
+      .single();
+
+    if (profile?.role !== 'member') {
+      openModal('이벤트 참여', '회원만 이벤트에 참여할 수 있습니다.', '닫기');
+      return;
+    }
+
+    const { data: existing, error: existError } = await supabase
+      .from('event_participants')
+      .select('id')
+      .eq('event_id', eventId)
+      .eq('user_id', user.id)
+      .maybeSingle();
+
+    if (existing) {
+      openModal('이벤트 참여', '이미 참여한 이벤트입니다.', '닫기');
+      return;
+    }
+
+    const { error } = await supabase.from('event_participants').insert({
+      event_id: eventId,
+      user_id: user.id,
+    });
+
+    if (error) {
+      openModal('이벤트 참여', '참여 중 오류가 발생했습니다.', '닫기');
+      return;
+    }
+
+    openModal('이벤트 참여', '이벤트에 성공적으로 참여했습니다', '닫기');
+  };
 
   const eventData = async (): Promise<Events[]> => {
     const { data, error } = await supabase
@@ -65,58 +136,94 @@ function EventPage() {
         종료: 3,
       };
 
+      const mapped = result.map(e => ({ ...e, status: getStatusByDate(e.start_date, e.end_date) }));
+
       // 정렬
-      const sorted = result.sort((a, b) => {
+      const sorted = mapped.sort((a, b) => {
         return statusOrder[a.status] - statusOrder[b.status];
       });
-
       setEvents(sorted);
     };
     fetchData();
-  }, [events]);
+  }, [eventModal]);
 
-  const handleViewModal = () => {
+  useEffect(() => {
+    if (selectCategories === '전체') {
+      setFilterCategories(events);
+    } else {
+      setFilterCategories(events.filter(e => e.status === selectCategories));
+    }
+  }, [selectCategories, events]);
+
+  const handlePlannedModal = (startDate: string | null) => {
+    if (!startDate) return;
+    openModal(
+      '이벤트 안내',
+      `${dayjs(startDate).format('YYYY-MM-DD')} 에 시작되는 이벤트입니다.`,
+      '확인',
+    );
+  };
+
+  const handleViewModal = (id: number) => {
+    setSelectedEventId(id);
     setViewModal(true);
   };
+
   const modalText = () => {
     return (
       <>
-        <div className="w-full  bg-white border-none rounded-[16px] flex flex-col items-center gap-[17px] ">
-          <GiftFill bgColor="#FFEDD5" color="#F97A18" size={20} padding={14} />
-          <div className="w-full flex flex-col items-center gap-[15px] text-md">
-            <span>이벤트 참여</span>
-            <p className="text-babgray-600">‘신규 회원 특별 혜택’ 이벤트에 참여하시겠습니까?</p>
-
-            <div className="self-stretch w-full p-3.5 bg-bg-bg rounded-xl inline-flex flex-col justify-start items-start gap-2.5 overflow-hidden">
-              <div className="self-stretch p-3.5 flex flex-col justify-start items-start gap-2.5">
-                <div className="self-stretch justify-start">
-                  <span className="text-babgray-700 text-base font-bold font-['Noto_Sans_KR']">
-                    이벤트:
-                  </span>
-                  <span className="text-babgray-600 text-base font-normal font-['Noto_Sans_KR']">
-                    신규 회원 특별 혜택
-                  </span>
-                </div>
-                <div className="self-stretch justify-start">
-                  <span className="text-babgray-700 text-base font-bold font-['Noto_Sans_KR']">
-                    혜택:
-                  </span>
-                  <span className="text-babgray-600 text-base font-normal font-['Noto_Sans_KR']">
-                    첫 매칭 성공 시 3,000원 할인 쿠폰 증정!
-                  </span>
-                </div>
-                <div className="self-stretch justify-start">
-                  <span className="text-babgray-700 text-base font-bold font-['Noto_Sans_KR']">
-                    기간:
-                  </span>
-                  <span className="text-babgray-600 text-base font-normal font-['Noto_Sans_KR']">
-                    2025-09-15 ~ 2025-12-31
-                  </span>
+        {filterCategories
+          .filter(e => e.id === selectedEventId)
+          .map(e => (
+            <div
+              key={e.id}
+              className="w-full bg-white border-none rounded-[16px] flex flex-col items-center gap-[17px]"
+            >
+              <GiftFill bgColor="#FFEDD5" color="#F97A18" size={20} padding={14} />
+              <div className="w-full flex flex-col items-center gap-[15px] text-md">
+                <span>이벤트 참여</span>
+                <p className="text-babgray-600">‘{e.title}’ 이벤트에 참여하시겠습니까?</p>
+                {e.title}
+                <div className="self-stretch w-full p-3.5 bg-bg-bg rounded-xl inline-flex flex-col justify-start items-start gap-2.5 overflow-hidden">
+                  <div className="self-stretch p-3.5 flex flex-col justify-start items-start gap-2.5">
+                    <div className="self-stretch justify-start">
+                      <span className="text-babgray-700 text-base font-bold font-['Noto_Sans_KR']">
+                        이벤트 :{' '}
+                      </span>
+                      <span className="text-babgray-600 text-base font-normal font-['Noto_Sans_KR']">
+                        {e.title}
+                      </span>
+                    </div>
+                    <div className="self-stretch justify-start">
+                      <span className="text-babgray-700 text-base font-bold font-['Noto_Sans_KR']">
+                        혜택 :{' '}
+                      </span>
+                      <span className="text-babgray-600 text-base font-normal font-['Noto_Sans_KR']">
+                        {e.benefit}
+                      </span>
+                    </div>
+                    <div className="self-stretch justify-start">
+                      <span className="text-babgray-700 text-base font-bold font-['Noto_Sans_KR']">
+                        내용 :{' '}
+                      </span>
+                      <span className="text-babgray-600 text-base font-normal font-['Noto_Sans_KR']">
+                        {e.description}
+                      </span>
+                    </div>
+                    <div className="self-stretch justify-start">
+                      <span className="text-babgray-700 text-base font-bold font-['Noto_Sans_KR']">
+                        기간 :{' '}
+                      </span>
+                      <span className="text-babgray-600 text-base font-normal font-['Noto_Sans_KR']">
+                        {dayjs(e.start_date).format('YYYY-MM-DD')} ~{' '}
+                        {dayjs(e.end_date).format('YYYY-MM-DD')}
+                      </span>
+                    </div>
+                  </div>
                 </div>
               </div>
             </div>
-          </div>
-        </div>
+          ))}
       </>
     );
   };
@@ -132,9 +239,22 @@ function EventPage() {
       </div>
 
       <div className="flex justify-between items-center p-5 bg-white rounded-2xl shadow">
-        <button className="cursor-pointer rounded-2xl focus:bg-bab focus:text-white ">
-          <TagBadge children="전체" />
-        </button>
+        <div className="flex gap-3">
+          {statusTags.map(tag => (
+            <button
+              key={tag}
+              onClick={() => setSelectCategories(tag)}
+              className="group cursor-pointer rounded-2xl focus:bg-bab focus:text-white "
+            >
+              <TagBadge
+                bgColor="group-focus:bg-bab group-focus:text-white bg-gray-100"
+                textColor="group-focus:text-white text-gray-700"
+              >
+                {tag}
+              </TagBadge>
+            </button>
+          ))}
+        </div>
         {admin && <ButtonFillMd onClick={() => setEventModal(true)}>작성하기</ButtonFillMd>}
       </div>
       {eventModal && <EventWriteModal onSuccess={eventData} onClose={() => setEventModal(false)} />}
@@ -200,7 +320,13 @@ function EventPage() {
               <div className="flex justify-between gap-[20px] items-center">
                 <button
                   disabled={event.status === '종료'}
-                  onClick={handleViewModal}
+                  onClick={() => {
+                    if (event.status === '진행중') {
+                      handleViewModal(event.id);
+                    } else if (event.status === '예정') {
+                      handlePlannedModal(event.start_date);
+                    }
+                  }}
                   className={`px-[14px] py-[8px] w-full rounded-[8px] text-nomal font-bold flex items-center justify-center gap-1
                     ${
                       event.status === '종료'
@@ -210,24 +336,45 @@ function EventPage() {
                           : 'bg-bab-500 text-white'
                     }`}
                 >
-                  {event.participation ?? ''}
+                  {event.status === '진행중' && `참여하기`}
+                  {event.status === '예정' && dayjs(event.start_date).format('YYYY-MM-DD (ddd)')}
+                  {event.status === '종료' && `종료된 이벤트`}
                 </button>
-
-                <button className="flex-1">
-                  <RiShareLine />
-                </button>
+                {admin && (
+                  <button onClick={() => handleEditBt(event.id)} className="flex-1">
+                    <RiEditLine />
+                  </button>
+                )}
               </div>
             </div>
           </div>
         ))}
       </div>
-      {/* {modal.isOpen && <Modal />} */}
+      {editPage && (
+        <EventEditModal
+          isOpen={editPage}
+          onClose={() => setEditPage(false)}
+          eventId={selectedEventId}
+        />
+      )}
+      {modal.isOpen && (
+        <Modal
+          isOpen={modal.isOpen}
+          onClose={closeModal}
+          titleText={modal.title}
+          contentText={modal.content}
+          closeButtonText={modal.closeText}
+          submitButtonText={modal.submitText}
+          onSubmit={modal.onSubmit}
+        />
+      )}
       {viewModal && (
         <div className="w-full">
           <OkCancelModal
             isOpen={viewModal}
             onClose={() => setViewModal(false)}
             onSubmit={() => {
+              if (selectedEventId) handleJoin(selectedEventId);
               setViewModal(false);
             }}
             contentText={modalText()}
