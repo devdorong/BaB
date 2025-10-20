@@ -203,7 +203,7 @@ function ReviewsPage() {
                   key={r.id}
                   restaurantId={r.id}
                   name={r.name}
-                  category={r.interests?.name ?? ''}
+                  category={category}
                   img={r.thumbnail_url}
                   review={`리뷰 ${r.reviews.length}개`}
                   storeintro={r.storeintro ?? ''}

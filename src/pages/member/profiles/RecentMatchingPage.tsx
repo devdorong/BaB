@@ -1,5 +1,11 @@
 import { useState } from 'react';
-import { RiCalendarLine, RiHistoryLine, RiStarFill, RiStarLine } from 'react-icons/ri';
+import {
+  RiArrowRightSLine,
+  RiCalendarLine,
+  RiHistoryLine,
+  RiStarFill,
+  RiStarLine,
+} from 'react-icons/ri';
 import YetMatchingRecordItem from '../../../components/member/YetMatchingRecordItem';
 import RecentMatchingRecordItem from '../../../components/member/RecentMatchingRecordItem';
 import { useNavigate } from 'react-router-dom';
@@ -34,7 +40,9 @@ function RecentMatchingPage() {
           >
             프로필
           </div>
-          <div className="text-babgray-600 px-[5px] text-[17px]">{'>'}</div>
+          <div className="flex pt-[3px] items-center text-babgray-600 px-[5px] text-[17px]">
+            <RiArrowRightSLine />
+          </div>{' '}
           <div className="text-bab-500 text-[17px]">최근 매칭 기록</div>
         </div>
         <div className="mt-[20px] mb-[60px]">

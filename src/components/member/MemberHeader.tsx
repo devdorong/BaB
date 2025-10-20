@@ -13,6 +13,8 @@ import {
   Notification2Line,
   StarLine,
 } from '../../ui/Icon';
+import { motion, AnimatePresence } from 'framer-motion';
+import Notification from './Notification';
 
 const MemberHeader = () => {
   const navigate = useNavigate();
@@ -25,7 +27,9 @@ const MemberHeader = () => {
   const [error, setError] = useState<string>('');
   // 사용자 닉네임
   const [nickName, setNickName] = useState<string>('');
-  
+  // 알림 패널 온오프
+  const [isOpen, setIsOpen] = useState(false);
+
   const isAdmin = profileData?.role === 'admin';
   const isPartner = profileData?.role === 'partner';
 
@@ -115,9 +119,15 @@ const MemberHeader = () => {
                 </Link>
                 <div className="flex relative items-center">
                   <Notification2Line color="gray" bgColor="none" size={16} />
-                  <div className="w-5 h-5 p-1 left-[60%] bottom-[60%] absolute bg-bab-500 rounded-[10px] inline-flex justify-center items-center">
+                  <div
+                    onClick={() => setIsOpen(!isOpen)}
+                    className="w-5 h-5 p-1 left-[60%] bottom-[60%] absolute bg-bab-500 rounded-[10px] inline-flex justify-center items-center"
+                  >
                     <div className="justify-start text-white text-xs font-normal ">3</div>
                   </div>
+
+                  <Notification isOpen={isOpen} onClose={() => setIsOpen(false)} />
+
                   {isAdmin && (
                     <GrayButtonFillSm
                       style={{

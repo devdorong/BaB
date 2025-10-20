@@ -10,6 +10,10 @@ export type MyReviewData = {
   updated_at: string;
   category_id?: number | null;
   interests?: { name: string } | null;
+  profiles?: {
+    id: string;
+    nickname: string | null;
+  } | null;
   restaurants: {
     id: number;
     name: string;
@@ -38,7 +42,8 @@ export const fetchMyReviewData = async (): Promise<MyReviewData[]> => {
     rating_food,
     created_at,
     updated_at,
-    restaurants (id, name, thumbnail_url, favorite, category_id,  restaurants_category_id_fkey:interests(name), reviews(count)),
+    profiles ( id, nickname ),
+    restaurants:restaurant_id (id, name, thumbnail_url, favorite, category_id, restaurants_category_id_fkey ( name ), reviews(count)),
     review_photos (photo_id, photo_url)
     `,
     )
@@ -66,4 +71,10 @@ export const fetchMyReviewData = async (): Promise<MyReviewData[]> => {
   }));
 
   return formatted;
+};
+
+// 리뷰 삭제
+export const deleteReviewById = async (ReviewId: number): Promise<void> => {
+  const { error } = await supabase.from('reviews').delete().eq('review_id', ReviewId);
+  if (error) throw error;
 };

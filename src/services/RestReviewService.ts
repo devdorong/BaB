@@ -56,6 +56,24 @@ export const insertReview = async ({
   files,
 }: insertReviewProps): Promise<boolean> => {
   try {
+    const { data: profile } = await supabase
+      .from('profiles')
+      .select('nickname')
+      .eq('id', profileId)
+      .single();
+
+    const nickname = profile?.nickname ?? '익명';
+
+    const { data: restaurant } = await supabase
+      .from('restaurants')
+      .select('profile_id')
+      .eq('id', restaurantId)
+      .single();
+
+    if (!restaurant?.profile_id) {
+      throw new Error('레스토랑 소유자를 찾을 수 없습니다');
+    }
+
     const { data: review, error: reviewError } = await supabase
       .from('reviews')
       .insert([
@@ -71,6 +89,18 @@ export const insertReview = async ({
 
     if (reviewError || !review) throw new Error('리뷰 생성 실패');
 
+    // 리뷰 알림 추가
+    await supabase.from('notifications').insert([
+      {
+        profile_id: profileId,
+        receiver_id: restaurant.profile_id,
+        title: '새로운 리뷰가 등록되었습니다.',
+        content: `${nickname}님이 새로운 리뷰를 남겼습니다.`,
+        target: 'partner',
+        type: '리뷰',
+        restaurant_id: restaurantId,
+      },
+    ]);
     // 이미지파일 스토리지 업로드
     if (files.length > 0) {
       const uploadedUrls: string[] = [];
@@ -127,38 +157,7 @@ export const insertReview = async ({
 
     return true;
   } catch (err) {
+    console.log('리뷰작성시 오류', err);
     return false;
   }
 };
-
-// // 리뷰 사진 업로드
-// export const uploadReviewPhotos = async (file: File, reviewId: number): Promise<string | null> => {
-//   try {
-//     const allowedTypes = ['image/jpeg', 'image/png', 'image/webp', 'image/gif'];
-//     if (!allowedTypes.includes(file.type)) {
-//       throw new Error('지원하지 않는 이미지 형식');
-//     }
-
-//     const fileExt = file.name.split('.').pop();
-//     const fileName = `${reviewId}-${Date.now()}.${fileExt}`;
-//     const filePath = `reviews/${reviewId}/${fileName}`;
-
-//     const { error: uploadError } = await supabase.storage
-//       .from('review_photos')
-//       .upload(filePath, file, {
-//         cacheControl: '3600',
-//         upsert: false,
-//       });
-
-//     if (uploadError) throw new Error(`업로드 실패: ${uploadError.message}`);
-
-//     const {
-//       data: { publicUrl },
-//     } = supabase.storage.from('review_photos').getPublicUrl(filePath);
-
-//     return publicUrl;
-//   } catch (err) {
-//     console.log(err);
-//     return null;
-//   }
-// };

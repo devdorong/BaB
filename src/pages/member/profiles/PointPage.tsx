@@ -4,7 +4,7 @@ import { useAuth } from '../../../contexts/AuthContext';
 import { GetPoint, totalChangePoint } from '../../../services/PointService';
 import type { Profile } from '../../../types/bobType';
 import { usePoint } from '../../../contexts/PointContext';
-import { RiCoinLine, RiGiftLine } from 'react-icons/ri';
+import { RiArrowRightSLine, RiCoinLine, RiGiftLine } from 'react-icons/ri';
 import RewardChange from '../../../components/point/RewardChange';
 import PointRule from '../../../components/point/PointRule';
 import CouponPage from '../../../components/point/CouponSave';
@@ -40,7 +40,9 @@ function PointPage() {
             >
               프로필
             </div>
-            <div className="text-babgray-600 px-[5px] text-[17px]">{'>'}</div>
+            <div className="flex pt-[3px] items-center text-babgray-600 px-[5px] text-[17px]">
+              <RiArrowRightSLine />
+            </div>{' '}
             <div className="text-bab-500 text-[17px]">포인트</div>
           </div>
           <div className="mt-[20px] mb-[60px]">
