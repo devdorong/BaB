@@ -1,16 +1,24 @@
 import { DatePicker } from 'antd';
 import dayjs, { Dayjs } from 'dayjs';
-import { useState } from 'react';
+import { useEffect, useState } from 'react';
 import type { Database } from '../../types/bobType';
 
 const { RangePicker } = DatePicker;
 type EventState = Database['public']['Tables']['events']['Row']['status'];
-type EventDateSelectorProps = {
+export type EventDateSelectorProps = {
   onSelect: (data: { start: string; end: string; status: string }) => void;
+  startDate?: string | null;
+  endDate?: string | null;
 };
 
-export default function EventDateSelector({ onSelect }: EventDateSelectorProps) {
+export default function EventDateSelector({
+  onSelect,
+  startDate,
+  endDate,
+}: EventDateSelectorProps) {
   const [dates, setDates] = useState<[Dayjs, Dayjs] | null>(null);
+  const [selectedStart, setSelectedStart] = useState<string | null>(startDate ?? null);
+  const [selectedEnd, setSelectedEnd] = useState<string | null>(endDate ?? null);
   const today = dayjs();
 
   const handleChange = (values: [Dayjs | null, Dayjs | null] | null) => {
@@ -37,6 +45,15 @@ export default function EventDateSelector({ onSelect }: EventDateSelectorProps) 
       ? `${dates[0].format('MM-DD(dd)')}`
       : `${dates[0].format('MM-DD(dd)')} ~ ${dates[1].format('MM-DD(dd)')}`
     : '이벤트 기간을 설정해주세요';
+
+  useEffect(() => {
+    setSelectedStart(startDate ?? null);
+    setSelectedEnd(endDate ?? null);
+
+    if (startDate && endDate) {
+      setDates([dayjs(startDate), dayjs(endDate)]);
+    }
+  }, [startDate, endDate]);
 
   return (
     <div className="flex items-center gap-2 text-babgray-700">
