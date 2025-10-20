@@ -120,104 +120,115 @@ function FavoritePage() {
           <div className="flex flex-col gap-1">
             <p className="text-3xl font-bold">즐겨찾는 식당</p>
           </div>
-          {/* 검색폼,버튼 */}
-          <div className="flex gap-[8px] justify-start pb-[30px]">
-            <div className="flex gap-[8px] justify-start ">
-              <button
-                onClick={() => {
-                  setSelectedCategory('전체');
-                  setCurrentPage(1);
-                }}
-                className={`px-4 py-2 rounded-full ${
-                  selectedCategory === '전체'
-                    ? 'bg-bab-500 text-white text-[13px]'
-                    : 'bg-babgray-100 text-babgray-700 text-[13px]'
-                }`}
-              >
-                전체
-              </button>
-            </div>
 
-            <div className="flex gap-[8px] justify-start ">
-              {(interests[FOOD] ?? []).map(cat => (
+          {currentItems.length === 0 && (
+            <div className="flex justify-center items-center h-64 text-babgray-500 text-lg">
+              즐겨찾는 식당이 없습니다.
+            </div>
+          )}
+
+          {currentItems.length > 0 && (
+            <>
+              {/* 검색폼,버튼 */}
+              <div className="flex gap-[8px] justify-start pb-[30px]">
+                <div className="flex gap-[8px] justify-start ">
+                  <button
+                    onClick={() => {
+                      setSelectedCategory('전체');
+                      setCurrentPage(1);
+                    }}
+                    className={`px-4 py-2 rounded-full ${
+                      selectedCategory === '전체'
+                        ? 'bg-bab-500 text-white text-[13px]'
+                        : 'bg-babgray-100 text-babgray-700 text-[13px]'
+                    }`}
+                  >
+                    전체
+                  </button>
+                </div>
+
+                <div className="flex gap-[8px] justify-start ">
+                  {(interests[FOOD] ?? []).map(cat => (
+                    <button
+                      key={cat}
+                      onClick={() => {
+                        setSelectedCategory(cat);
+                        setCurrentPage(1);
+                      }}
+                      className={`px-4 py-2 rounded-full ${
+                        selectedCategory === cat
+                          ? 'bg-bab-500 text-white text-[13px]'
+                          : 'bg-babgray-100 text-babgray-700 text-[13px]'
+                      }`}
+                    >
+                      {cat}
+                    </button>
+                  ))}
+                </div>
+              </div>
+
+              <div className="grid grid-cols-2 gap-[34px]">
+                {currentItems.map(r => {
+                  const category = r.interests?.name ?? '';
+                  const color = categoryColors[category] || defaultCategoryColor;
+                  const distance =
+                    userPos && r.latitude && r.longitude
+                      ? getDistance(
+                          userPos.lat,
+                          userPos.lng,
+                          parseFloat(r.latitude),
+                          parseFloat(r.longitude),
+                        )
+                      : '';
+
+                  return (
+                    <ReviewCard
+                      key={r.id}
+                      restaurantId={r.id}
+                      name={r.name}
+                      category={r.interests?.name ?? ''}
+                      img={r.thumbnail_url}
+                      review={`리뷰 ${r.reviews?.[0]?.count ?? 0}개`}
+                      storeintro={r.storeintro ?? ''}
+                      rating={r.send_avg_rating ?? 0}
+                      distance={distance}
+                      tagBg={color.bg}
+                      tagText={color.text}
+                    />
+                  );
+                })}
+              </div>
+              <div className="flex justify-center gap-2 mt-6">
                 <button
-                  key={cat}
-                  onClick={() => {
-                    setSelectedCategory(cat);
-                    setCurrentPage(1);
-                  }}
-                  className={`px-4 py-2 rounded-full ${
-                    selectedCategory === cat
-                      ? 'bg-bab-500 text-white text-[13px]'
-                      : 'bg-babgray-100 text-babgray-700 text-[13px]'
-                  }`}
+                  disabled={currentPage === 1}
+                  onClick={() => setCurrentPage(p => Math.max(p - 1, 1))}
+                  className="p-2  bg-bg-bg rounded disabled:opacity-50 hover:bg-bab hover:text-white"
                 >
-                  {cat}
+                  <RiArrowLeftSLine size={16} />
                 </button>
-              ))}
-            </div>
-          </div>
 
-          <div className="grid grid-cols-2 gap-[34px]">
-            {currentItems.map(r => {
-              const category = r.interests?.name ?? '';
-              const color = categoryColors[category] || defaultCategoryColor;
-              const distance =
-                userPos && r.latitude && r.longitude
-                  ? getDistance(
-                      userPos.lat,
-                      userPos.lng,
-                      parseFloat(r.latitude),
-                      parseFloat(r.longitude),
-                    )
-                  : '';
+                {Array.from({ length: totalPages }).map((_, idx) => (
+                  <button
+                    key={idx + 1}
+                    onClick={() => setCurrentPage(idx + 1)}
+                    className={`p-2 py-0 rounded hover:bg-bab hover:text-white ${
+                      currentPage === idx + 1 ? 'text-bab' : 'bg-bg-bg'
+                    }`}
+                  >
+                    {idx + 1}
+                  </button>
+                ))}
 
-              return (
-                <ReviewCard
-                  key={r.id}
-                  restaurantId={r.id}
-                  name={r.name}
-                  category={r.interests?.name ?? ''}
-                  img={r.thumbnail_url}
-                  review={`리뷰 ${r.reviews?.[0]?.count ?? 0}개`}
-                  storeintro={r.storeintro ?? ''}
-                  rating={r.send_avg_rating ?? 0}
-                  distance={distance}
-                  tagBg={color.bg}
-                  tagText={color.text}
-                />
-              );
-            })}
-          </div>
-          <div className="flex justify-center gap-2 mt-6">
-            <button
-              disabled={currentPage === 1}
-              onClick={() => setCurrentPage(p => Math.max(p - 1, 1))}
-              className="p-2  bg-bg-bg rounded disabled:opacity-50 hover:bg-bab hover:text-white"
-            >
-              <RiArrowLeftSLine size={16} />
-            </button>
-
-            {Array.from({ length: totalPages }).map((_, idx) => (
-              <button
-                key={idx + 1}
-                onClick={() => setCurrentPage(idx + 1)}
-                className={`p-2 py-0 rounded hover:bg-bab hover:text-white ${
-                  currentPage === idx + 1 ? 'text-bab' : 'bg-bg-bg'
-                }`}
-              >
-                {idx + 1}
-              </button>
-            ))}
-
-            <button
-              disabled={currentPage === totalPages}
-              onClick={() => setCurrentPage(p => Math.min(p + 1, totalPages))}
-              className="p-2 bg-bg-bg rounded disabled:opacity-50 hover:bg-bab hover:text-white"
-            >
-              <RiArrowRightSLine size={16} />
-            </button>
-          </div>
+                <button
+                  disabled={currentPage === totalPages}
+                  onClick={() => setCurrentPage(p => Math.min(p + 1, totalPages))}
+                  className="p-2 bg-bg-bg rounded disabled:opacity-50 hover:bg-bab hover:text-white"
+                >
+                  <RiArrowRightSLine size={16} />
+                </button>
+              </div>
+            </>
+          )}
         </div>
       </div>
     </div>

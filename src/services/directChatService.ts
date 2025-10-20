@@ -372,6 +372,28 @@ export async function sendMessage(
       return { success: false, error: `메시지를 전송할 수 없습니다: ${messageError.message}` };
     }
 
+    // ============================ 추가부문 ===============================
+    try {
+      const receiverId = chat.user1_id === currentUser.id ? chat.user2_id : chat.user1_id;
+
+      const { error: notificationError } = await supabase.from('notifications').insert({
+        profile_id: currentUser.id, // 보낸 사람
+        receiver_id: receiverId, // 받는 사람
+        title: '새로운 메시지가 도착했습니다 💬',
+        content: messageData.content.slice(0, 50),
+        target: 'member', // or 'partner' (상황에 맞게)
+        type: '채팅',
+      });
+
+      if (notificationError) {
+        console.error('채팅 알림 생성 실패:', notificationError.message);
+      }
+    } catch (err) {
+      console.error('알림 생성 중 오류:', err);
+    }
+
+    // ============================ 추가부문 끝 ========================
+
     // 2단계: 채팅방의 마지막 메시지 시간 업데이트
     const { error: updateError } = await supabase
       .from('direct_chats')
@@ -1022,4 +1044,3 @@ export async function restoreDirectChat(chatId: string): Promise<ChatApiResponse
     };
   }
 }
-

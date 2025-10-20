@@ -1,4 +1,4 @@
-import { RiSearchLine } from 'react-icons/ri';
+import { RiArrowRightSLine, RiSearchLine } from 'react-icons/ri';
 import { ButtonFillMd } from '../../../ui/button';
 import { useNavigate } from 'react-router-dom';
 import DirectChatList from '../../../components/member/chat/DirectChatList';
@@ -37,7 +37,9 @@ function ChatPage() {
         >
           프로필
         </div>
-        <div className="text-babgray-600 px-[5px] text-[17px]">{'>'}</div>
+        <div className="flex pt-[3px] items-center text-babgray-600 px-[5px] text-[17px]">
+          <RiArrowRightSLine />
+        </div>{' '}
         <div className="text-bab-500 text-[17px]">1:1채팅</div>
       </div>
       {/* 메인 채팅 컨테이너 - 사이드바와 메인 영역으로 구성 */}
