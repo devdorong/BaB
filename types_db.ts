@@ -295,19 +295,19 @@ export type Database = {
           event_id: number
           id: number
           joined_at: string | null
-          user_id: string
+          profile_id: string
         }
         Insert: {
           event_id: number
           id?: never
           joined_at?: string | null
-          user_id: string
+          profile_id: string
         }
         Update: {
           event_id?: number
           id?: never
           joined_at?: string | null
-          user_id?: string
+          profile_id?: string
         }
         Relationships: [
           {
@@ -318,15 +318,15 @@ export type Database = {
             referencedColumns: ["id"]
           },
           {
-            foreignKeyName: "event_participants_user_id_fkey"
-            columns: ["user_id"]
+            foreignKeyName: "event_participants_profile_id_fkey"
+            columns: ["profile_id"]
             isOneToOne: false
             referencedRelation: "nickname_profiles"
             referencedColumns: ["id"]
           },
           {
-            foreignKeyName: "event_participants_user_id_fkey"
-            columns: ["user_id"]
+            foreignKeyName: "event_participants_profile_id_fkey"
+            columns: ["profile_id"]
             isOneToOne: false
             referencedRelation: "profiles"
             referencedColumns: ["id"]
@@ -865,29 +865,55 @@ export type Database = {
       profile_blocks: {
         Row: {
           block_date: string
-          blocked_profile_id: number
+          blocked_profile_id: string
           id: number
-          is_active: boolean | null
-          nickname: string
-          profile_id: number
+          is_active: boolean
+          profile_id: string
         }
         Insert: {
-          block_date: string
-          blocked_profile_id: number
+          block_date?: string
+          blocked_profile_id: string
           id?: number
-          is_active?: boolean | null
-          nickname: string
-          profile_id: number
+          is_active?: boolean
+          profile_id: string
         }
         Update: {
           block_date?: string
-          blocked_profile_id?: number
+          blocked_profile_id?: string
           id?: number
-          is_active?: boolean | null
-          nickname?: string
-          profile_id?: number
+          is_active?: boolean
+          profile_id?: string
         }
-        Relationships: []
+        Relationships: [
+          {
+            foreignKeyName: "fk_blocked"
+            columns: ["blocked_profile_id"]
+            isOneToOne: false
+            referencedRelation: "nickname_profiles"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "fk_blocked"
+            columns: ["blocked_profile_id"]
+            isOneToOne: false
+            referencedRelation: "profiles"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "fk_blocker"
+            columns: ["profile_id"]
+            isOneToOne: false
+            referencedRelation: "nickname_profiles"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "fk_blocker"
+            columns: ["profile_id"]
+            isOneToOne: false
+            referencedRelation: "profiles"
+            referencedColumns: ["id"]
+          },
+        ]
       }
       profile_coupons: {
         Row: {
