@@ -119,7 +119,7 @@ const MachingIndex = () => {
   useEffect(() => {
     const fetchMatching = async () => {
       const matching = await getMatchings();
-      console.log(matching);
+      // console.log(matching);
       setMatchingList(matching);
     };
     fetchMatching();

@@ -290,6 +290,49 @@ export type Database = {
           },
         ]
       }
+      event_participants: {
+        Row: {
+          event_id: number
+          id: number
+          joined_at: string | null
+          user_id: string
+        }
+        Insert: {
+          event_id: number
+          id?: never
+          joined_at?: string | null
+          user_id: string
+        }
+        Update: {
+          event_id?: number
+          id?: never
+          joined_at?: string | null
+          user_id?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "event_participants_event_id_fkey"
+            columns: ["event_id"]
+            isOneToOne: false
+            referencedRelation: "events"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "event_participants_user_id_fkey"
+            columns: ["user_id"]
+            isOneToOne: false
+            referencedRelation: "nickname_profiles"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "event_participants_user_id_fkey"
+            columns: ["user_id"]
+            isOneToOne: false
+            referencedRelation: "profiles"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
       events: {
         Row: {
           badge: Database["public"]["Enums"]["event_badge_enum"] | null
@@ -410,18 +453,21 @@ export type Database = {
           joined_at: string | null
           matching_id: number
           profile_id: string
+          role: string
         }
         Insert: {
           id?: number
           joined_at?: string | null
           matching_id: number
           profile_id: string
+          role?: string
         }
         Update: {
           id?: number
           joined_at?: string | null
           matching_id?: number
           profile_id?: string
+          role?: string
         }
         Relationships: [
           {
@@ -554,25 +600,37 @@ export type Database = {
           content: string
           created_at: string
           id: number
+          is_read: boolean
           profile_id: string
+          receiver_id: string
+          restaurant_id: number | null
           target: Database["public"]["Enums"]["notification_target_enum"]
           title: string
+          type: string | null
         }
         Insert: {
           content: string
           created_at?: string
           id?: number
+          is_read?: boolean
           profile_id: string
+          receiver_id: string
+          restaurant_id?: number | null
           target: Database["public"]["Enums"]["notification_target_enum"]
           title: string
+          type?: string | null
         }
         Update: {
           content?: string
           created_at?: string
           id?: number
+          is_read?: boolean
           profile_id?: string
+          receiver_id?: string
+          restaurant_id?: number | null
           target?: Database["public"]["Enums"]["notification_target_enum"]
           title?: string
+          type?: string | null
         }
         Relationships: [
           {
