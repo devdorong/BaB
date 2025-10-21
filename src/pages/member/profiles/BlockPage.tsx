@@ -12,6 +12,7 @@ import { useAuth } from '../../../contexts/AuthContext';
 import { supabase } from '../../../lib/supabase';
 import type { Profile_Blocks } from '../../../types/bobType';
 import { UserForbidLine } from '../../../ui/Icon';
+import dayjs from 'dayjs';
 
 type BlockProfile = Profile_Blocks & {
   blocked_profile: {
@@ -144,7 +145,9 @@ function BlockPage() {
                           <span className="text-base font-medium text-gray-900">
                             {item.blocked_profile?.nickname}
                           </span>
-                          <span className="text-sm text-gray-600">차단일 : {item.block_date}</span>
+                          <span className="text-sm text-gray-600">
+                            차단일 : {dayjs(item.block_date).format('YYYY-MM-DD')}
+                          </span>
                         </div>
                       </div>
 
