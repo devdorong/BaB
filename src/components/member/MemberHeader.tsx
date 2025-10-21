@@ -15,7 +15,13 @@ import {
 } from '../../ui/Icon';
 import { motion, AnimatePresence } from 'framer-motion';
 import Notification from './Notification';
-import { handleReadNotification } from '../../lib/notification';
+import {
+  fetchNotificationProfileData,
+  handleReadNotification,
+  type NotificationsProps,
+} from '../../lib/notification';
+import { notification } from 'antd/lib';
+import { supabase } from '../../lib/supabase';
 
 const MemberHeader = () => {
   const navigate = useNavigate();
@@ -30,9 +36,14 @@ const MemberHeader = () => {
   const [nickName, setNickName] = useState<string>('');
   // 알림 패널 온오프
   const [isOpen, setIsOpen] = useState(false);
+  // 알림 개수
+  const [notification, setNotification] = useState<NotificationsProps[]>([]);
 
   const isAdmin = profileData?.role === 'admin';
   const isPartner = profileData?.role === 'partner';
+
+  // 안읽은 알림 개수
+  const notificationUnReadCount = notification.filter(n => !n.is_read).length;
 
   // 사용자 프로필 정보
   const loadProfile = async () => {
@@ -58,6 +69,45 @@ const MemberHeader = () => {
       setLoading(false);
     }
   };
+
+  useEffect(() => {
+    const loadNotification = async () => {
+      const data = await fetchNotificationProfileData();
+      setNotification(data);
+    };
+    loadNotification();
+
+    const channel = supabase
+      .channel('notifications-realtime')
+      .on('postgres_changes', { event: '*', schema: 'public', table: 'notifications' }, payload => {
+        if (payload.eventType === 'INSERT') {
+          // 새 알림 추가 시
+          setNotification(prev => {
+            const updated = [payload.new as NotificationsProps, ...prev];
+            return updated.sort((a, b) => {
+              if (a.is_read !== b.is_read) return a.is_read ? 1 : -1;
+              return new Date(b.created_at).getTime() - new Date(a.created_at).getTime();
+            });
+          });
+        } else if (payload.eventType === 'UPDATE') {
+          // 읽음 상태 변경 시
+          setNotification(prev => {
+            const updated = prev.map(n =>
+              n.id === payload.new.id ? (payload.new as NotificationsProps) : n,
+            );
+            return updated.sort((a, b) => {
+              if (a.is_read !== b.is_read) return a.is_read ? 1 : -1;
+              return new Date(b.created_at).getTime() - new Date(a.created_at).getTime();
+            });
+          });
+        }
+      })
+      .subscribe();
+
+    return () => {
+      supabase.removeChannel(channel);
+    };
+  }, []);
 
   // id로 닉네임을 받아옴
   useEffect(() => {
@@ -118,14 +168,17 @@ const MemberHeader = () => {
                 <Link to={'/member/profile'}>
                   <span>{profileData?.nickname}님</span>
                 </Link>
-                <div className="flex relative items-center">
+                <div onClick={() => setIsOpen(!isOpen)} className="flex relative items-center">
                   <Notification2Line color="gray" bgColor="none" size={16} />
-                  <div
-                    onClick={() => setIsOpen(!isOpen)}
-                    className="w-5 h-5 p-1 left-[60%] bottom-[60%] absolute bg-bab-500 rounded-[10px] inline-flex justify-center items-center"
-                  >
-                    <div className="justify-start text-white text-xs font-normal ">3</div>
-                  </div>
+                  {notificationUnReadCount > 0 ? (
+                    <div className="w-5 h-5 p-1 left-[60%] bottom-[60%] absolute bg-bab-500 rounded-[10px] inline-flex justify-center items-center">
+                      <div className="justify-start text-white text-xs font-normal ">
+                        {notificationUnReadCount}
+                      </div>
+                    </div>
+                  ) : (
+                    <div></div>
+                  )}
 
                   <Notification
                     isOpen={isOpen}

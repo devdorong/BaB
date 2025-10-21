@@ -45,7 +45,7 @@ const NotificationList = ({
   }, []);
 
   if (loading) {
-    // ✅ 스켈레톤 UI
+    // 스켈레톤 UI
     return (
       <div className="space-y-3">
         {[...Array(3)].map((_, i) => (

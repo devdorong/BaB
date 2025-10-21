@@ -19,9 +19,9 @@ export const badgeColors: Record<NotificationsProps['type'], string> = {
 };
 
 export const borderColors: Record<NotificationsProps['type'], string> = {
-  주문: 'bg-bab-500',
-  리뷰: 'bg-yellow-400',
-  시스템: 'bg-babbutton-blue',
+  주문: 'bg-bab-500 border-[#FF5722] border-l-[#FF5722]',
+  리뷰: 'bg-yellow-400 border-yellow-400 border-l-yellow-400',
+  시스템: 'bg-babbutton-blue border-blue-400 border-l-blue-400 ',
   채팅: 'border border-yellow-400 border-l-yellow-400 text-yellow-600',
   매칭완료: 'border border-[#FF5722] border-l-[#FF5722] text-[#FF5722]',
   댓글: 'border border-green-400 border-l-green-400 text-green-600',
