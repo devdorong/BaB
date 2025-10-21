@@ -637,7 +637,7 @@ export async function searchUsers(searchTerm: string): Promise<ChatApiResponse<C
       });
     }
 
-    console.log('이미 채팅 중인 사용자들:', Array.from(existingUserIds));
+    // console.log('이미 채팅 중인 사용자들:', Array.from(existingUserIds));
 
     // 사용자 검색 (profiles 테이블에서 검색, 현재 사용자와 이미 채팅중인 사용자 제외)
 
@@ -663,8 +663,8 @@ export async function searchUsers(searchTerm: string): Promise<ChatApiResponse<C
     // 이미 채팅 중인 사용자들을 제외하고 필터링
     const filteredProfiles = profiles.filter(profile => !existingUserIds.has(profile.id));
 
-    console.log('검색된 사용자 수:', profiles.length);
-    console.log('필터링 후 사용자 수:', filteredProfiles.length);
+    // console.log('검색된 사용자 수:', profiles.length);
+    // console.log('필터링 후 사용자 수:', filteredProfiles.length);
 
     // 사용자 데이터를 ChatUser 형태로 변환 (최대 10명)
     const chatUsers: ChatUser[] = filteredProfiles.slice(0, 10).map(profile => ({
