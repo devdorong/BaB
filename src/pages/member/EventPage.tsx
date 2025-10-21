@@ -244,11 +244,11 @@ function EventPage() {
             <button
               key={tag}
               onClick={() => setSelectCategories(tag)}
-              className="group cursor-pointer rounded-2xl focus:bg-bab focus:text-white "
+              className="rounded-2xl cursor-pointer"
             >
               <TagBadge
-                bgColor="group-focus:bg-bab group-focus:text-white bg-gray-100"
-                textColor="group-focus:text-white text-gray-700"
+                bgColor={selectCategories === tag ? 'bg-bab' : 'bg-gray-100'}
+                textColor={selectCategories === tag ? 'text-white' : 'text-gray-700'}
               >
                 {tag}
               </TagBadge>
@@ -261,7 +261,7 @@ function EventPage() {
 
       {/* 이벤트 카드 리스트 */}
       <div className="grid grid-cols-2 gap-[25px]">
-        {events.map(event => (
+        {filterCategories.map(event => (
           <div
             key={event.id}
             className="flex flex-col overflow-hidden rounded-[16px] shadow-[0px_4px_4px_0px_rgba(0,0,0,0.02)] bg-white"
