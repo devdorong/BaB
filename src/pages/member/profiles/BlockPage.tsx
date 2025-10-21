@@ -1,45 +1,51 @@
-import { useContext, useEffect, useState } from 'react';
+import { useEffect, useState } from 'react';
 import {
   RiArrowRightSLine,
   RiCalendarLine,
   RiErrorWarningLine,
-  RiStarFill,
-  RiStarLine,
   RiUserForbidLine,
   RiUserUnfollowLine,
 } from 'react-icons/ri';
 import { useNavigate } from 'react-router-dom';
 import OkCancelModal from '../../../components/member/OkCancelModal';
-import { UserForbidLine } from '../../../ui/Icon';
+import { useAuth } from '../../../contexts/AuthContext';
 import { supabase } from '../../../lib/supabase';
+import type { Profile_Blocks } from '../../../types/bobType';
+import { UserForbidLine } from '../../../ui/Icon';
 
-const blockedUsers = [
-  { id: 1, name: '도로롱', date: '2025-09-24' },
-  { id: 2, name: '스팸두개', date: '2025-09-24' },
-  { id: 3, name: '스팸세개', date: '2025-09-24' },
-  { id: 4, name: '스팸네개', date: '2025-09-24' },
-];
+type BlockProfile = Profile_Blocks & {
+  blocked_profile: {
+    id: string;
+    nickname: string;
+  } | null;
+};
 
 function BlockPage() {
+  const { user } = useAuth();
   const navigate = useNavigate();
+  const [blockedList, setBlockedList] = useState<BlockProfile[]>([]);
   const [viewModal, setViewModal] = useState(false);
 
   useEffect(() => {
     const fetchData = async () => {
       const { data, error } = await supabase
         .from('profile_blocks')
-        .select(`*, blocked_profile:blocked_profile_id ( id, nickname )`);
+        .select(`*, blocked_profile:blocked_profile_id ( id, nickname )`)
+        .eq('profile_id', user?.id);
+
       if (error) {
         console.log(`유저정보를 불러오는데 실패했습니다. : ${error.message}`);
       }
-      console.log(data);
-      return data || [];
+      return setBlockedList(data || []);
     };
-    fetchData();
-  }, []);
+    if (user?.id) fetchData();
+  }, [user?.id]);
 
-  const handleViewModal = () => {
-    setViewModal(true);
+  const handleUnblock = async (blockId: number) => {
+    const { error } = await supabase.from('profile_blocks').delete().eq('id', blockId);
+
+    if (error) console.error('차단 해제 실패:', error.message);
+    else setBlockedList(prev => prev.filter(b => b.id !== blockId));
   };
 
   const modalText = () => {
@@ -119,7 +125,7 @@ function BlockPage() {
               <div className="inline-flex w-full p-[25px] flex-col justify-center bg-white rounded-[16px] shadow-[0px_4px_4px_0px_rgba(0,0,0,0.02)]">
                 {/* 차단자 */}
                 <div className="flex flex-col gap-[20px]">
-                  {blockedUsers.map(item => (
+                  {blockedList.map(item => (
                     <div
                       key={item.id}
                       className="flex justify-between items-center p-5 bg-white rounded-xl border border-gray-200"
@@ -135,14 +141,16 @@ function BlockPage() {
 
                         {/* 이름 + 차단일 */}
                         <div className="flex flex-col">
-                          <span className="text-base font-medium text-gray-900">{item.name}</span>
-                          <span className="text-sm text-gray-600">차단일 : {item.date}</span>
+                          <span className="text-base font-medium text-gray-900">
+                            {item.blocked_profile?.nickname}
+                          </span>
+                          <span className="text-sm text-gray-600">차단일 : {item.block_date}</span>
                         </div>
                       </div>
 
                       {/* 차단 해제 버튼 */}
                       <button
-                        onClick={handleViewModal}
+                        onClick={() => handleUnblock(item.id)}
                         className="flex items-center gap-2 px-4 py-2 bg-gray-100 text-gray-700 rounded-lg hover:bg-gray-200 transition"
                       >
                         <RiUserUnfollowLine className="w-4 h-4" />
