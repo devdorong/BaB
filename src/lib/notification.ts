@@ -20,11 +20,23 @@ export const fetchNotificationData = async (): Promise<NotificationsProps[]> => 
   const { data, error } = await supabase
     .from('notifications')
     .select('*')
-    .eq('target', 'partner')
+    .eq('target', ['all', 'partner'])
     .order('created_at', { ascending: false });
 
   if (error) throw error;
 
+  return data ?? [];
+};
+
+// 슈퍼베이스에서 회원 알림목록 불러오기
+export const fetchNotificationProfileData = async (): Promise<NotificationsProps[]> => {
+  const { data, error } = await supabase
+    .from('notifications')
+    .select('*')
+    .eq('target', ['all', 'profile'])
+    .order('created_at', { ascending: false });
+
+  if (error) throw error;
   return data ?? [];
 };
 

@@ -304,7 +304,7 @@ function ProfilePage() {
                     편집
                   </ButtonFillMd>
                 </div>
-                <div className="flex gap-[12px] mt-[12px] mb-[25px]">
+                <div className="flex gap-[12px] flex-wrap mt-[12px] mb-[25px]">
                   {interests.length === 0 ? (
                     <span className="text-babgray-500 text-[13px]">
                       아직 선택된 관심사가 없어요

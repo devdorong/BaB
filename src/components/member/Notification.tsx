@@ -1,7 +1,7 @@
 import { motion, AnimatePresence } from 'framer-motion';
-import { useEffect, useRef } from 'react';
+import { useEffect, useRef, useState } from 'react';
 import { RiCloseLine } from 'react-icons/ri';
-import type { NotificationsProps } from '../../lib/notification';
+import { fetchNotificationProfileData, type NotificationsProps } from '../../lib/notification';
 import {
   CheckboxCircleLine,
   CheckDoubleLine,
@@ -15,6 +15,7 @@ import {
   StarFill,
 } from '../../ui/Icon';
 import { CheckCheckIcon } from 'lucide-react';
+import { supabase } from '../../lib/supabase';
 
 export const badgeColors: Record<NotificationsProps['type'], string> = {
   주문: 'bg-bab-500',
@@ -54,71 +55,41 @@ interface NotificationProps {
   onClose: () => void;
 }
 
-export const notifications = [
-  {
-    id: 1,
-    profile_id: '11111111-aaaa-bbbb-cccc-222222222222', // 알림 보낸 회원
-    receiver_id: '99999999-aaaa-bbbb-cccc-000000000000', // 알림 받는 파트너
-    title: '새로운 채팅이 도착했습니다 💬',
-    content: '회원 dorong님이 새로운 메시지를 보냈습니다.',
-    time: '1분 전',
-    target: 'profiles',
-    type: '채팅',
-    restaurant_id: null,
-    is_read: false,
-  },
-  {
-    id: 2,
-    profile_id: '33333333-aaaa-bbbb-cccc-444444444444',
-    receiver_id: '99999999-aaaa-bbbb-cccc-000000000000',
-    title: '매칭이 완료되었습니다 🤝',
-    content: '"로제파스타 매칭"이 성공적으로 완료되었습니다!',
-    time: '10분 전',
-    target: 'profiles',
-    type: '매칭완료',
-    restaurant_id: null,
-    is_read: false,
-  },
-  {
-    id: 3,
-    profile_id: '55555555-aaaa-bbbb-cccc-666666666666',
-    receiver_id: '99999999-aaaa-bbbb-cccc-000000000000',
-    title: '이벤트가 시작되었습니다 🎉',
-    content: '"10월 한정 1+1 쿠폰 이벤트"가 시작되었습니다!',
-    time: '1시간 전',
-    target: 'profiles',
-    type: '이벤트',
-    restaurant_id: null,
-    is_read: false,
-  },
-  {
-    id: 4,
-    profile_id: '55555555-aaaa-bbbb-cccc-666666666666',
-    receiver_id: '99999999-aaaa-bbbb-cccc-000000000000',
-    title: '이벤트가 시작되었습니다 🎉',
-    content: '"10월 한정 1+1 쿠폰 이벤트"가 시작되었습니다!',
-    time: '1시간 전',
-    target: 'profiles',
-    type: '매칭취소',
-    restaurant_id: null,
-    is_read: false,
-  },
-  {
-    id: 5,
-    profile_id: '55555555-aaaa-bbbb-cccc-666666666666',
-    receiver_id: '99999999-aaaa-bbbb-cccc-000000000000',
-    title: '이벤트가 시작되었습니다 🎉',
-    content: '"10월 한정 1+1 쿠폰 이벤트"가 시작되었습니다!',
-    time: '1시간 전',
-    target: 'profiles',
-    type: '댓글',
-    restaurant_id: null,
-    is_read: false,
-  },
-];
-
 export default function Notification({ isOpen, onClose }: NotificationProps) {
+  const [notification, setNotification] = useState<NotificationsProps[]>([]);
+
   const panelRef = useRef<HTMLDivElement>(null);
+
+  const loadNotification = async () => {
+    const data = await fetchNotificationProfileData();
+    setNotification(data);
+  };
+
+  useEffect(() => {
+    loadNotification();
+
+    const notificationChannel = supabase
+      .channel('notifications-realtime')
+      .on(
+        'postgres_changes',
+        { event: 'INSERT', schema: 'public', table: 'notifications' },
+        payload => {
+          if (payload.eventType === 'INSERT') {
+            setNotification(prev => [payload.new as NotificationsProps, ...prev]);
+          } else if (payload.eventType === 'UPDATE') {
+            setNotification(prev =>
+              prev.map(n => (n.id === payload.new.id ? (payload.new as NotificationsProps) : n)),
+            );
+          }
+        },
+      )
+      .subscribe();
+
+    // 클린업 함수
+    return () => {
+      supabase.removeChannel(notificationChannel);
+    };
+  }, []);
 
   // 패널 바깥 클릭 시 닫기
   useEffect(() => {
@@ -165,43 +136,51 @@ export default function Notification({ isOpen, onClose }: NotificationProps) {
 
             {/* 알림 목록 */}
             <div className="flex flex-col mt-5 gap-3 overflow-y-auto scrollbar-hide">
-              {notifications.map(n => {
-                return (
-                  <>
-                    <motion.div
-                      key={n.id}
-                      initial={{ opacity: 0, y: 20 }}
-                      animate={{ opacity: 1, y: 0 }}
-                      whileHover={{
-                        opacity: 0.7,
-                        transition: { duration: 0.6, ease: 'easeInOut' },
-                      }}
-                      className={`flex bg-white items-start gap-3 cursor-pointer border rounded-lg p-4 border-l-4 ${n.is_read === true ? ' border border-babgray border-l-4' : ` ${borderColors[n.type as NotificationsProps['type']].split(' ')[2]} ${borderColors[n.type as NotificationsProps['type']].split(' ')[1]}`}`}
-                    >
-                      <div
-                        className={`flex items-center justify-center w-10 h-10 rounded-md  ${IconColors[n.type as NotificationsProps['type']]}`}
-                      >
-                        {n.type === '매칭완료' ? (
-                          <CheckLine size={20} bgColor="none" />
-                        ) : n.type === '채팅' ? (
-                          <Message2Fill bgColor="none" size={20} />
-                        ) : n.type === '이벤트' ? (
-                          <GiftFill bgColor="#4382e7" size={20} />
-                        ) : n.type === '매칭취소' ? (
-                          <CloseFill bgColor="none" size={20} />
-                        ) : (
-                          <QuestionAnswerFill bgColor="none" size={20} />
-                        )}
-                      </div>
-                      {/* <div className="text-lg">{n.title}</div> */}
-                      <div className="flex-1">
-                        <p className="text-sm text-gray-900 font-medium">{n.title}</p>
-                        <p className="text-xs text-gray-400">{n.time}</p>
-                      </div>
-                    </motion.div>
-                  </>
-                );
-              })}
+              {notification.length > 0 ? (
+                <>
+                  {notification.map(n => {
+                    return (
+                      <>
+                        <motion.div
+                          key={n.id}
+                          initial={{ opacity: 0, y: 20 }}
+                          animate={{ opacity: 1, y: 0 }}
+                          whileHover={{
+                            opacity: 0.7,
+                            transition: { duration: 0.6, ease: 'easeInOut' },
+                          }}
+                          className={`relative z-10 flex bg-white items-start gap-3 cursor-pointer border rounded-lg p-4 border-l-4 ${n.is_read === true ? ' border border-babgray border-l-4' : ` ${borderColors[n.type as NotificationsProps['type']].split(' ')[2]} ${borderColors[n.type as NotificationsProps['type']].split(' ')[1]}`}`}
+                        >
+                          <div
+                            className={`flex items-center justify-center w-10 h-10 rounded-md  ${IconColors[n.type as NotificationsProps['type']]}`}
+                          >
+                            {n.type === '매칭완료' ? (
+                              <CheckLine size={20} bgColor="none" />
+                            ) : n.type === '채팅' ? (
+                              <Message2Fill bgColor="none" size={20} />
+                            ) : n.type === '이벤트' ? (
+                              <GiftFill bgColor="#4382e7" size={20} />
+                            ) : n.type === '매칭취소' ? (
+                              <CloseFill bgColor="none" size={20} />
+                            ) : (
+                              <QuestionAnswerFill bgColor="none" size={20} />
+                            )}
+                          </div>
+                          {/* <div className="text-lg">{n.title}</div> */}
+                          <div className="flex-1">
+                            <p className="text-sm text-gray-900 font-medium">{n.title}</p>
+                            <p className="text-xs text-gray-400">{n.created_at}</p>
+                          </div>
+                        </motion.div>
+                      </>
+                    );
+                  })}
+                </>
+              ) : (
+                <div className="flex justify-center items-start min-h-[378px] text-babgray-500">
+                  현재 알림이 없습니다.
+                </div>
+              )}
             </div>
           </motion.div>
         </>

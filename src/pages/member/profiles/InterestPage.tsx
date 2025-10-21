@@ -112,7 +112,7 @@ function InterestPage() {
                         저장
                       </ButtonFillMd>
                     </div>
-                    <div className="flex gap-[12px]">
+                    <div className="flex flex-wrap  gap-[12px] ">
                       {selected.length === 0 ? (
                         <span className="text-babgray-500 text-[13px]">
                           아직 선택된 관심사가 없어요
