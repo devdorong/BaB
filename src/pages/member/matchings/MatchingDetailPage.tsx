@@ -31,6 +31,7 @@ import { categoryColors, defaultCategoryColor } from '../../../ui/jy/categoryCol
 import { StarRating } from '../../../components/member/StarRating';
 import { supabase } from '../../../lib/supabase';
 import { useAuth } from '../../../contexts/AuthContext';
+import KkoMapMatching from '../../../ui/dorong/KaKaoMapMatching';
 
 type ProcessedMatching = Matchings & {
   tags: Badge[];
@@ -60,6 +61,7 @@ const MatchingDetailPage = () => {
   const matchingId = parseInt(id || '0', 10);
 
   const [matchingData, setMatchingData] = useState<ProcessedMatching | null>(null);
+  const [matchingDatas, setMatchingDatas] = useState<ProcessedMatching[] | null>(null);
   const [loading, setLoading] = useState(true);
   const [userData, setUserData] = useState<Profile>();
   const [headCount, setHeadCount] = useState(0);
@@ -542,14 +544,12 @@ const MatchingDetailPage = () => {
               {/* 지도 프리뷰 */}
               <div className="inline-flex w-[400px] p-[25px] flex-col justify-center items-start bg-white rounded-[16px] shadow-[0px_4px_4px_0px_rgba(0,0,0,0.02)]">
                 <div className="flex w-full flex-col">
-                  <div className="text-babgray-900 text-[20px] mb-[10px] font-bold">지도</div>
-
                   <div className="h-[200px] rounded-2xl overflow-hidden">
                     {/* 지도 */}
                     <div>
                       <h3 className="text-[18px] font-semibold text-babgray-900 mb-3">지도</h3>
                       {isMapLoaded ? (
-                        <KkoMapDetail
+                        <KkoMapMatching
                           lat={restaurant.latitude?.toString()}
                           lng={restaurant.longitude?.toString()}
                         />
@@ -563,7 +563,17 @@ const MatchingDetailPage = () => {
 
                   <p className="text-gray-600 text-[15px] mb-5 mt-3">{restaurant.address}</p>
 
-                  <ButtonLineMd style={{ fontWeight: 600 }}>길찾기</ButtonLineMd>
+                  <ButtonLineMd
+                    style={{ fontWeight: 600 }}
+                    onClick={() =>
+                      window.open(
+                        `https://map.kakao.com/link/to/${restaurant.name},${restaurant.latitude},${restaurant.longitude}`,
+                        '_blank',
+                      )
+                    }
+                  >
+                    길찾기
+                  </ButtonLineMd>
                 </div>
               </div>
 
