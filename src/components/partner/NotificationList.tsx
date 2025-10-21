@@ -23,6 +23,8 @@ const NotificationList = ({
   onRead,
 }: selectedTypeCategoriesProps) => {
   const navigate = useNavigate();
+  const [loading, setLoading] = useState(true);
+
   // 카테고리 필터 적용
   const filtered =
     selectedTypeCategories === '전체'
@@ -30,13 +32,42 @@ const NotificationList = ({
       : notification.filter(item => item.type === selectedTypeCategories);
 
   const loadNotification = async () => {
-    const Notification = await fetchNotificationData();
-    console.log(Notification);
+    try {
+      await fetchNotificationData();
+      // console.log(Notification);
+    } finally {
+      setLoading(false);
+    }
   };
 
   useEffect(() => {
     loadNotification();
   }, []);
+
+  if (loading) {
+    // ✅ 스켈레톤 UI
+    return (
+      <div className="space-y-3">
+        {[...Array(3)].map((_, i) => (
+          <div
+            key={i}
+            className="flex items-start gap-3 border border-gray-200 rounded-lg p-4 animate-pulse bg-white"
+          >
+            {/* 아이콘 자리 */}
+            <div className="w-10 h-10 rounded-md bg-gray-200 flex-shrink-0" />
+            {/* 텍스트 */}
+            <div className="flex-1 space-y-3">
+              <div className="w-3/4 h-6 bg-gray-200 rounded" />
+              <div className="w-5/6 h-4 bg-gray-200 rounded" />
+              <div className="w-1/3 h-3 bg-gray-200 rounded" />
+            </div>
+            {/* 배지 */}
+            <div className="w-12 h-5 bg-gray-200 rounded-full" />
+          </div>
+        ))}
+      </div>
+    );
+  }
 
   const handleClick = async (item: NotificationsProps) => {
     try {

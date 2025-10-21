@@ -14,6 +14,7 @@ import {
   GetOrCreatePoint,
   GetPoint,
   givePoint,
+  giveReviewPoint,
   totalAddPoint,
   totalChangePoint,
 } from '../services/PointService';

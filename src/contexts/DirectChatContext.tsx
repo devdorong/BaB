@@ -56,7 +56,8 @@ interface DirectChatContextType {
   // action ========================
   loadChats: () => Promise<void>; // 채팅 목록 로딩 상태관리
   loadInactiveChats: () => Promise<void>; // 비활성화된 채팅방 목록 로딩
-  loadMessages: (chatId: string) => Promise<void>; // 특정 채팅방의 메시지 조회
+  loadMessages: (chatId: string, isInitialLoad?: boolean) => Promise<void>; // 특정 채팅방의 메시지 조회
+  // 2025-10-21 수정: isInitialLoad 매개변수 추가 - 초기 로딩과 실시간 업데이트 구분하여 로딩 상태 최적화
   // 메시지가 제대로 전송되었는지 아닌지 체크를 위해서 boolean 리턴 타입
   sendMessage: (messageData: CreateMessageData) => Promise<boolean>; // 메시지 전송
   searchUsers: (searchTerm: string) => Promise<void>; // 검색어(닉네임)롤 사용자 검색
@@ -140,11 +141,15 @@ export const DirectChatProider: React.FC<DirectChatProiderProps> = ({ children }
   );
 
   // 선택된 채팅방의 모든 메시지 가져오기
+  // 2025-10-21 수정: isInitialLoad 매개변수 추가로 초기 로딩과 실시간 업데이트 구분하여 UX 개선
   const loadMessages = useCallback(
-    async (chatId: string) => {
+    async (chatId: string, isInitialLoad: boolean = false) => {
       try {
-        setLoading(true);
-        // 메시지 로드 시에는 전역 로딩 상태를 사용하지 않음 (사용자 경험 개선)
+        // 초기 로딩일 때만 로딩 상태 표시
+        if (isInitialLoad) {
+          setLoading(true);
+        }
+
         // 현재 활성화된 채팅방 ID 보관
         currentChatId.current = chatId;
 
@@ -172,7 +177,9 @@ export const DirectChatProider: React.FC<DirectChatProiderProps> = ({ children }
       } catch (err) {
         handleError('메시지 로드 중 오류가 발생했습니다.');
       } finally {
-        setLoading(false);
+        if (isInitialLoad) {
+          setLoading(false);
+        }
       }
     },
     [handleError, loadChats],

@@ -15,6 +15,7 @@ import {
 } from '../../ui/Icon';
 import { motion, AnimatePresence } from 'framer-motion';
 import Notification from './Notification';
+import { handleReadNotification } from '../../lib/notification';
 
 const MemberHeader = () => {
   const navigate = useNavigate();
@@ -126,7 +127,11 @@ const MemberHeader = () => {
                     <div className="justify-start text-white text-xs font-normal ">3</div>
                   </div>
 
-                  <Notification isOpen={isOpen} onClose={() => setIsOpen(false)} />
+                  <Notification
+                    isOpen={isOpen}
+                    onClose={() => setIsOpen(false)}
+                    onRead={handleReadNotification}
+                  />
 
                   {isAdmin && (
                     <GrayButtonFillSm

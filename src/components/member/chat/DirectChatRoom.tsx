@@ -94,7 +94,7 @@ function DirectChatRoom({ chatId }: DirectChatRoomProps) {
           filter: `chat_id=eq.${chatId}`,
         },
         payload => {
-          loadMessages(chatId); // 변경사항이 있을 때만 새로고침
+          loadMessages(chatId); // 2025-10-21 수정: 실시간 업데이트는 로딩 상태 표시 안함
         },
       )
       .subscribe();
@@ -104,12 +104,13 @@ function DirectChatRoom({ chatId }: DirectChatRoomProps) {
     };
   }, [chatId, loadMessages]);
 
-  // 채팅방 ID가 변경이 되면 메시지를 다시 로드
+  // 채팅방 ID가 변경이 되면 메시지를 다시 로드 (초기 로딩)
+  // 2025-10-21 수정: 초기 로딩 시에만 로딩 상태 표시하도록 isInitialLoad: true 전달
   useEffect(() => {
     if (chatId) {
-      loadMessages(chatId);
+      loadMessages(chatId, true); // 초기 로딩으로 표시
     }
-  }, [chatId]);
+  }, [chatId, loadMessages]);
 
   // 메시지 시간 포맷팅 함수 : HH:MM:DD 형식 반환
   const formatTime = (dateString: string) => {
@@ -212,8 +213,9 @@ function DirectChatRoom({ chatId }: DirectChatRoomProps) {
     );
   }
 
-  // 로딩 상태일 때 로딩 메세지 표현
-  if (loading) {
+  // 2025-10-21 수정: 초기 로딩 상태일 때만 로딩 메세지 표현 (메시지가 없을 때만)
+  // 기존 메시지가 있을 때는 로딩 화면을 표시하지 않아 UX 개선
+  if (loading && messages.length === 0) {
     return (
       <div className="chat-room">
         <div className="loading justify-center mt-10 items-center text-babgray-600">

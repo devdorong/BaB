@@ -40,6 +40,44 @@ const ruleLabels: Record<string, { title: string; description: string; icon: JSX
   },
 };
 
+const RuleSkeleton = () => {
+  return (
+    <div className="flex flex-col w-full gap-[30px] animate-pulse">
+      <div className="flex flex-col w-full gap-[10px] animate-pulse">
+        {Array(4)
+          .fill(0)
+          .map((_, i) => (
+            <div
+              key={i}
+              className="flex w-full gap-[17px] p-[20px] justify-start items-center rounded-[12px] border border-gray-100 bg-white"
+            >
+              <div className="w-[48px] h-[50px] bg-gray-200 rounded-xl" />
+              <div className="flex w-full justify-between items-center">
+                <div className="flex flex-col gap-[5px] w-[70%]">
+                  <div className="h-[18px] w-[60%] bg-gray-200 rounded"></div>
+                  <div className="h-[14px] w-[40%] bg-gray-100 rounded"></div>
+                </div>
+                <div className="h-[18px] w-[40px] bg-gray-200 rounded"></div>
+              </div>
+            </div>
+          ))}
+      </div>
+      <div className="flex flex-col gap-[16px] px-[20px] py-[15px] rounded-[12px] border border-gray-200 bg-gray-50">
+        <div className="flex gap-[9px] items-center">
+          <div className="w-[30px] h-[30px] bg-gray-200 rounded-full"></div>
+          <div className="h-[30px] w-[100px] bg-gray-200 rounded"></div>
+        </div>
+        <div className="flex flex-col gap-[5px]">
+          <div className="h-[18px] w-[80%] bg-gray-100 rounded"></div>
+          <div className="h-[18px] w-[70%] bg-gray-100 rounded"></div>
+          <div className="h-[18px] w-[90%] bg-gray-100 rounded"></div>
+          <div className="h-[18px] w-[60%] bg-gray-100 rounded"></div>
+        </div>
+      </div>
+    </div>
+  );
+};
+
 const PointRule = () => {
   const { user } = useAuth();
   const { point, addPoint } = usePoint();
@@ -61,6 +99,17 @@ const PointRule = () => {
     };
     pointrules();
   }, [user?.id]);
+
+  if (loading) {
+    return (
+      <div className="flex flex-col justify-center items-self gap-[25px]">
+        <div className="text-babgray-900 text-[18px] font-bold">
+          <div>포인트 적립 방법</div>
+        </div>
+        <RuleSkeleton />
+      </div>
+    );
+  }
 
   return (
     <div className="flex flex-col justify-center items-self gap-[25px]">

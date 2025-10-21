@@ -1,7 +1,11 @@
 import { motion, AnimatePresence } from 'framer-motion';
 import { useEffect, useRef, useState } from 'react';
 import { RiCloseLine } from 'react-icons/ri';
-import { fetchNotificationProfileData, type NotificationsProps } from '../../lib/notification';
+import {
+  fetchNotificationProfileData,
+  handleReadNotification,
+  type NotificationsProps,
+} from '../../lib/notification';
 import {
   CheckboxCircleLine,
   CheckDoubleLine,
@@ -16,6 +20,7 @@ import {
 } from '../../ui/Icon';
 import { CheckCheckIcon } from 'lucide-react';
 import { supabase } from '../../lib/supabase';
+import { useNavigate } from 'react-router-dom';
 
 export const badgeColors: Record<NotificationsProps['type'], string> = {
   주문: 'bg-bab-500',
@@ -53,10 +58,12 @@ export const IconColors: Record<NotificationsProps['type'], string> = {
 interface NotificationProps {
   isOpen: boolean;
   onClose: () => void;
+  onRead: (id: number) => void;
 }
 
-export default function Notification({ isOpen, onClose }: NotificationProps) {
+export default function Notification({ isOpen, onClose, onRead }: NotificationProps) {
   const [notification, setNotification] = useState<NotificationsProps[]>([]);
+  const navigate = useNavigate();
 
   const panelRef = useRef<HTMLDivElement>(null);
 
@@ -107,6 +114,23 @@ export default function Notification({ isOpen, onClose }: NotificationProps) {
     };
   }, [isOpen, onClose]);
 
+  // 읽음처리
+  const handleClick = async (item: NotificationsProps) => {
+    try {
+      // 읽음 처리
+      await handleReadNotification(item.id);
+
+      setNotification(prev => prev.map(n => (n.id === item.id ? { ...n, is_read: true } : n)));
+      onRead(item.id);
+      onClose();
+      if (item.profile_id) {
+        navigate(`/member/profile/chat`);
+      }
+    } catch (err) {
+      console.log(err);
+    }
+  };
+
   return (
     <AnimatePresence>
       {isOpen && (
@@ -137,45 +161,44 @@ export default function Notification({ isOpen, onClose }: NotificationProps) {
             {/* 알림 목록 */}
             <div className="flex flex-col mt-5 gap-3 overflow-y-auto scrollbar-hide">
               {notification.length > 0 ? (
-                <>
-                  {notification.map(n => {
-                    return (
-                      <>
-                        <motion.div
-                          key={n.id}
-                          initial={{ opacity: 0, y: 20 }}
-                          animate={{ opacity: 1, y: 0 }}
-                          whileHover={{
-                            opacity: 0.7,
-                            transition: { duration: 0.6, ease: 'easeInOut' },
-                          }}
-                          className={`relative z-10 flex bg-white items-start gap-3 cursor-pointer border rounded-lg p-4 border-l-4 ${n.is_read === true ? ' border border-babgray border-l-4' : ` ${borderColors[n.type as NotificationsProps['type']].split(' ')[2]} ${borderColors[n.type as NotificationsProps['type']].split(' ')[1]}`}`}
-                        >
-                          <div
-                            className={`flex items-center justify-center w-10 h-10 rounded-md  ${IconColors[n.type as NotificationsProps['type']]}`}
-                          >
-                            {n.type === '매칭완료' ? (
-                              <CheckLine size={20} bgColor="none" />
-                            ) : n.type === '채팅' ? (
-                              <Message2Fill bgColor="none" size={20} />
-                            ) : n.type === '이벤트' ? (
-                              <GiftFill bgColor="#4382e7" size={20} />
-                            ) : n.type === '매칭취소' ? (
-                              <CloseFill bgColor="none" size={20} />
-                            ) : (
-                              <QuestionAnswerFill bgColor="none" size={20} />
-                            )}
-                          </div>
-                          {/* <div className="text-lg">{n.title}</div> */}
-                          <div className="flex-1">
-                            <p className="text-sm text-gray-900 font-medium">{n.title}</p>
-                            <p className="text-xs text-gray-400">{n.created_at}</p>
-                          </div>
-                        </motion.div>
-                      </>
-                    );
-                  })}
-                </>
+                <div className="flex flex-col gap-3">
+                  {notification.map(n => (
+                    <motion.div
+                      key={n.id}
+                      initial={{ opacity: 0, y: 20 }}
+                      animate={{ opacity: 1, y: 0 }}
+                      whileHover={{
+                        opacity: 0.7,
+                        transition: { duration: 0.6, ease: 'easeInOut' },
+                      }}
+                      className={`relative flex bg-white items-start gap-3 cursor-pointer border rounded-lg p-4 border-l-4 ${n.is_read === true ? ' border border-babgray border-l-4' : ` ${borderColors[n.type as NotificationsProps['type']].split(' ')[2]} ${borderColors[n.type as NotificationsProps['type']].split(' ')[1]}`}`}
+                      onClick={() => handleClick(n)}
+                    >
+                      <div
+                        className={`flex items-center justify-center w-10 h-10 rounded-md  ${IconColors[n.type as NotificationsProps['type']]}`}
+                      >
+                        {n.type === '매칭완료' ? (
+                          <CheckLine size={20} bgColor="none" />
+                        ) : n.type === '채팅' ? (
+                          <Message2Fill bgColor="none" size={20} />
+                        ) : n.type === '이벤트' ? (
+                          <GiftFill bgColor="#4382e7" size={20} />
+                        ) : n.type === '매칭취소' ? (
+                          <CloseFill bgColor="none" size={20} />
+                        ) : (
+                          <QuestionAnswerFill bgColor="none" size={20} />
+                        )}
+                      </div>
+                      {/* <div className="text-lg">{n.title}</div> */}
+                      <div className="flex-1">
+                        <p className="text-sm text-gray-900 font-medium">{n.title}</p>
+                        <p className="text-xs text-gray-400">
+                          {new Date(n.created_at).toLocaleString()}
+                        </p>
+                      </div>
+                    </motion.div>
+                  ))}
+                </div>
               ) : (
                 <div className="flex justify-center items-start min-h-[378px] text-babgray-500">
                   현재 알림이 없습니다.

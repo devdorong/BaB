@@ -20,7 +20,8 @@ export const fetchNotificationData = async (): Promise<NotificationsProps[]> => 
   const { data, error } = await supabase
     .from('notifications')
     .select('*')
-    .eq('target', ['all', 'partner'])
+    .in('target', ['all', 'partner'])
+    .order('is_read', { ascending: true })
     .order('created_at', { ascending: false });
 
   if (error) throw error;
@@ -33,7 +34,8 @@ export const fetchNotificationProfileData = async (): Promise<NotificationsProps
   const { data, error } = await supabase
     .from('notifications')
     .select('*')
-    .eq('target', ['all', 'profile'])
+    .in('target', ['all', 'profiles'])
+    .order('is_read', { ascending: true })
     .order('created_at', { ascending: false });
 
   if (error) throw error;
@@ -56,7 +58,7 @@ export const handleReadNotification = async (id: number) => {
 // 3일 지난 (읽은) 알림은 삭제
 export const deleteReadNotification = async () => {
   const threeDaysAgo = new Date();
-  threeDaysAgo.setDate(threeDaysAgo.getDate() - 3);
+  threeDaysAgo.setDate(threeDaysAgo.getDate() - 1);
 
   const { error } = await supabase
     .from('notifications')
