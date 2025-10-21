@@ -22,6 +22,7 @@ import TagBadge from '../../../ui/TagBadge';
 import { ButtonFillLG, ButtonLineLg, ButtonLineMd } from '../../../ui/button';
 import KkoMapDetail from '../../../ui/jy/Kakaomapdummy';
 import { categoryColors, defaultCategoryColor } from '../../../ui/jy/categoryColors';
+import { StarRating } from '../../../components/member/StarRating';
 
 type ProcessedMatching = Matchings & {
   tags: Badge[];
@@ -77,6 +78,12 @@ const MatchingDetailPage = () => {
     if (diffHours < 24) return `${diffHours}시간 전`;
     if (diffDays < 7) return `${diffDays}일 전`;
     return created.toLocaleDateString();
+  };
+
+  const formatTime = (timeString: string | null | undefined): string => {
+    if (!timeString) return '';
+    // 초 단위를 잘라내고 시:분까지만 반환
+    return timeString.slice(0, 5);
   };
 
   const formatMeetingDate = (isoString: string): string => {
@@ -294,15 +301,17 @@ const MatchingDetailPage = () => {
                       {/* 평점 */}
                       <div className="mt-2 flex items-center gap-2">
                         <div className="flex items-center">
-                          <RiStarSFill className="w-4 h-4 md:w-5 md:h-5 text-yellow-400" />
-                          <RiStarSFill className="w-4 h-4 md:w-5 md:h-5 text-yellow-400" />
-                          <RiStarSFill className="w-4 h-4 md:w-5 md:h-5 text-yellow-400" />
-                          <RiStarSFill className="w-4 h-4 md:w-5 md:h-5 text-yellow-400" />
-                          <RiStarHalfSFill className="w-4 h-4 md:w-5 md:h-5 text-yellow-400" />
+                          <StarRating rating={rating?.averageRating ?? 0} />
                         </div>
                         <p className="text-sm text-gray-700">
-                          <span className="font-medium">{rating?.averageRating}</span>
-                          <span className="text-gray-500">({rating?.reviewCount}개)</span>
+                          <span className="font-medium">
+                            {rating?.averageRating
+                              ? rating.averageRating
+                              : '아직 등록된 리뷰가 없습니다.'}
+                          </span>
+                          <span className="text-gray-500 font-medium ">
+                            {rating?.reviewCount ? `  (${rating.reviewCount}개)` : ''}
+                          </span>
                         </p>
                       </div>
 
@@ -321,13 +330,16 @@ const MatchingDetailPage = () => {
                       {/* 영업시간 */}
                       <p className="mt-1 flex items-center gap-2 text-sm text-gray-700 leading-6">
                         <RiTimeLine className="mt-[2px] w-4 h-4 text-babbutton-blue flex-shrink-0" />
-                        {restaurant.opentime} - {restaurant.closetime}
-                        <span className="text-gray-500 ml-1">(라스트 오더 22:00)</span>
+                        {formatTime(restaurant.opentime)} - {formatTime(restaurant.closetime)}
+                        <span className="text-gray-500 ml-1">{`(라스트 오더 ${formatTime(restaurant.closetime)})`}</span>
                       </p>
                     </div>
                   </div>
 
-                  <ButtonLineLg style={{ fontWeight: 600, marginTop: 30 }}>
+                  <ButtonLineLg
+                    style={{ fontWeight: 600, marginTop: 30 }}
+                    onClick={() => navigate(`/member/reviews/${restaurant.id}`)}
+                  >
                     식당 상세정보 보기
                   </ButtonLineLg>
                 </div>

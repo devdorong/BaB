@@ -40,7 +40,7 @@ export const createMatching = async (newMatching: MatchingsInsert): Promise<numb
 
   // Host를 자동으로 참가자에 추가
   if (data?.id) {
-    await addMatchingParticipant(data.id, newMatching.host_profile_id);
+    await addMatchingParticipant(data.id, newMatching.host_profile_id, 'host');
   }
 
   return data?.id;
@@ -69,6 +69,7 @@ export const deleteMatching = async (matchingId: number): Promise<void> => {
 export const addMatchingParticipant = async (
   matchingId: number,
   profileId: string,
+  role: 'host' | 'member' = 'member',
 ): Promise<void> => {
   // 1. 매칭 정보와 현재 참가자 수 확인
   const { data: matching, error: matchingError } = await supabase
@@ -105,7 +106,7 @@ export const addMatchingParticipant = async (
   // 3. 참가자 추가
   const { error: insertError } = await supabase
     .from('matching_participants')
-    .insert({ matching_id: matchingId, profile_id: profileId });
+    .insert({ matching_id: matchingId, profile_id: profileId, role });
 
   if (insertError) {
     if (insertError.code === '23505') {
