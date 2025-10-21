@@ -18,6 +18,12 @@ import type { Profile } from '../types/bobType';
 import { RestaurantFill, UserLine } from '../ui/Icon';
 import { useModal } from '../ui/sdj/ModalState';
 import Modal from '../ui/sdj/Modal';
+import {
+  fetchNotificationData,
+  fetchNotificationProfileData,
+  type NotificationsProps,
+} from '../lib/notification';
+import { supabase } from '../lib/supabase';
 
 const PartnerHeader = () => {
   const { restaurant } = useRestaurant();
@@ -34,6 +40,84 @@ const PartnerHeader = () => {
   // 사용자 닉네임
   const [nickName, setNickName] = useState<string>('');
   const { closeModal, modal, openModal } = useModal();
+  // 알림 개수
+  const [notification, setNotification] = useState<NotificationsProps[]>([]);
+
+  // 안읽은 알림 개수
+  const notificationUnReadCount = notification.filter(n => !n.is_read).length;
+
+  useEffect(() => {
+    const loadNotification = async () => {
+      const data = await fetchNotificationData();
+      setNotification(data);
+    };
+    loadNotification();
+
+    let notificationChannel: ReturnType<typeof supabase.channel> | null = null;
+
+    const setupRealtimeSubscription = async () => {
+      // 현재 사용자 ID 가져오기
+      const {
+        data: { user },
+      } = await supabase.auth.getUser();
+
+      if (!user) {
+        console.error('사용자 ID를 찾을 수 없습니다.');
+        return;
+      }
+
+      // console.log('현재 사용자 ID:', user.id);
+
+      // receiver_id로 필터링
+      notificationChannel = supabase
+        .channel(`notifications-${user.id}`)
+        .on(
+          'postgres_changes',
+          {
+            event: '*',
+            schema: 'public',
+            table: 'notifications',
+            filter: `receiver_id=eq.${user.id}`,
+          },
+          payload => {
+            // console.log('Realtime 이벤트 수신:', payload);
+
+            if (payload.eventType === 'INSERT') {
+              setNotification(prev => {
+                const updated = [payload.new as NotificationsProps, ...prev];
+                return updated.sort((a, b) => {
+                  if (a.is_read !== b.is_read) return a.is_read ? 1 : -1;
+                  return new Date(b.created_at).getTime() - new Date(a.created_at).getTime();
+                });
+              });
+            } else if (payload.eventType === 'UPDATE') {
+              setNotification(prev => {
+                const updated = prev.map(n =>
+                  n.id === payload.new.id ? (payload.new as NotificationsProps) : n,
+                );
+                return updated.sort((a, b) => {
+                  if (a.is_read !== b.is_read) return a.is_read ? 1 : -1;
+                  return new Date(b.created_at).getTime() - new Date(a.created_at).getTime();
+                });
+              });
+            }
+          },
+        )
+        .subscribe(status => {
+          // console.log('Realtime 구독 상태:', status);
+        });
+    };
+
+    setupRealtimeSubscription();
+
+    // 클린업 함수
+    return () => {
+      if (notificationChannel) {
+        supabase.removeChannel(notificationChannel);
+        // console.log('Realtime 채널 정리 완료');
+      }
+    };
+  }, []);
 
   useEffect(() => {
     const handleClickOutside = (e: MouseEvent) => {
@@ -303,9 +387,13 @@ const PartnerHeader = () => {
             <div className="w-8 h-8 relative flex items-center justify-center bg-gray-200 rounded-full">
               <UserLine size={20} bgColor="#e5e7eb" color="#1f2937" />
               <Link to={'/partner/notification'}>
-                <div className="absolute -right-1.5 -top-1.5 flex w-4 justify-center items-center rounded-full bg-bab text-white text-xs">
-                  3
-                </div>
+                {notificationUnReadCount > 0 ? (
+                  <div className="absolute -right-1.5 -top-1.5 flex w-4 justify-center items-center rounded-full bg-bab text-white text-xs">
+                    {notificationUnReadCount}
+                  </div>
+                ) : (
+                  <div></div>
+                )}
               </Link>
             </div>
             <div className="flex flex-col">
