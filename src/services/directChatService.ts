@@ -381,7 +381,7 @@ export async function sendMessage(
         receiver_id: receiverId, // 받는 사람
         title: '새로운 메시지가 도착했습니다 💬',
         content: messageData.content.slice(0, 50),
-        target: 'member', // or 'partner' (상황에 맞게)
+        target: ['all', 'profile'], // or 'partner' (상황에 맞게)
         type: '채팅',
       });
 
