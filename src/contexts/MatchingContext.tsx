@@ -154,7 +154,7 @@ export const MatchingProvider = ({ children }: MatchingProviderProps) => {
 
       // 5. Host를 자동으로 참가자에 추가
       try {
-        await addMatchingParticipant(matchingId, user.id);
+        await addMatchingParticipant(matchingId, user.id, 'host');
       } catch (participantError) {
         console.error('참가자 추가 실패:', participantError);
         // 참가자 추가 실패해도 매칭은 생성됨

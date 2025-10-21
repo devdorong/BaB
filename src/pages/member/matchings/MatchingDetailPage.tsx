@@ -15,7 +15,11 @@ import { useNavigate, useParams } from 'react-router-dom';
 import type { Badge } from '../../../components/MatchCard';
 import { useKakaoLoader } from '../../../hooks/useKakaoLoader';
 import { getProfile } from '../../../lib/propile';
-import { getMatchings, getParticipantCount } from '../../../services/matchingService';
+import {
+  getMatchingParticipants,
+  getMatchings,
+  getParticipantCount,
+} from '../../../services/matchingService';
 import { getRestaurantById, getRestaurantReviewStats } from '../../../services/restaurants';
 import type { Matchings, Profile, Restaurants } from '../../../types/bobType';
 import TagBadge from '../../../ui/TagBadge';
@@ -23,6 +27,8 @@ import { ButtonFillLG, ButtonLineLg, ButtonLineMd } from '../../../ui/button';
 import KkoMapDetail from '../../../ui/jy/Kakaomapdummy';
 import { categoryColors, defaultCategoryColor } from '../../../ui/jy/categoryColors';
 import { StarRating } from '../../../components/member/StarRating';
+import { supabase } from '../../../lib/supabase';
+import { useAuth } from '../../../contexts/AuthContext';
 
 type ProcessedMatching = Matchings & {
   tags: Badge[];
@@ -34,8 +40,18 @@ type ProcessedMatching = Matchings & {
   latitude?: number;
   longitude?: number;
 };
+interface MemberWithProfile {
+  id: number;
+  profile_id: string;
+  joined_at: string | null;
+  role: string;
+  profile: Profile;
+}
+
+const DEFAULT_AVATAR = 'https://www.gravatar.com/avatar/?d=mp&s=200';
 
 const MatchingDetailPage = () => {
+  const { user } = useAuth();
   const navigate = useNavigate();
   const isMapLoaded = useKakaoLoader();
   const { id } = useParams<{ id: string }>();
@@ -43,9 +59,17 @@ const MatchingDetailPage = () => {
 
   const [matchingData, setMatchingData] = useState<ProcessedMatching | null>(null);
   const [loading, setLoading] = useState(true);
-  const [user, setUser] = useState<Profile>();
+  const [userData, setUserData] = useState<Profile>();
   const [headCount, setHeadCount] = useState(0);
   const [restaurant, setRestaurant] = useState<Restaurants | null>(null);
+  const [members, setMembers] = useState<
+    {
+      id: any;
+      profile_id: any;
+      joined_at: any;
+      role: any;
+    }[]
+  >([]);
   const [rating, setRating] = useState<
     | {
         restaurantId: number;
@@ -60,6 +84,7 @@ const MatchingDetailPage = () => {
         message?: undefined;
       }
   >();
+  const [membersWithProfiles, setMembersWithProfiles] = useState<MemberWithProfile[]>([]);
 
   const getColorByCategory = (interestName: string): { bg: string; text: string } => {
     return categoryColors[interestName] || defaultCategoryColor;
@@ -109,6 +134,8 @@ const MatchingDetailPage = () => {
     const fetchMatchingDetail = async () => {
       try {
         setLoading(true);
+        const data = await getParticipantCount(matchingId);
+        setHeadCount(data);
 
         // 1단계: 모든 매칭 데이터 가져오기
         const matchings = await getMatchings();
@@ -160,7 +187,7 @@ const MatchingDetailPage = () => {
         // 6단계: 호스트 프로필 가져오기
         const userProfile = await getProfile(currentMatching.host_profile_id);
         if (userProfile) {
-          setUser(userProfile);
+          setUserData(userProfile);
         }
       } catch (error) {
         console.error('매칭 상세 데이터 로드 중 에러:', error);
@@ -174,20 +201,40 @@ const MatchingDetailPage = () => {
     }
   }, [matchingId]);
 
-  // 참여자 수 로드
   useEffect(() => {
-    if (matchingId <= 0) return;
-
-    const fetchMembers = async () => {
+    const fetchMatchingMembers = async () => {
       try {
-        const data = await getParticipantCount(matchingId);
-        setHeadCount(data);
-      } catch (error) {
-        console.error('참여자 수 조회 중 에러:', error);
+        const participants = await getMatchingParticipants(matchingId);
+        setMembers(participants);
+
+        const detailed = await Promise.all(
+          participants.map(async p => {
+            const { data: profile, error } = await supabase
+              .from('profiles')
+              .select('*')
+              .eq('id', p.profile_id)
+              .single();
+
+            if (error) {
+              console.error(`프로필(${p.profile_id}) 조회 에러:`, error.message);
+              return { ...p, profile: null };
+            }
+
+            return { ...p, profile };
+          }),
+        );
+
+        setMembersWithProfiles(detailed);
+        console.log('프로필 포함 참가자:', detailed);
+        console.log('로그인한 정보', user);
+      } catch (err) {
+        console.error('참가자 상세정보 불러오기 실패:', err);
       }
     };
 
-    fetchMembers();
+    if (matchingId > 0) {
+      fetchMatchingMembers();
+    }
   }, [matchingId]);
 
   useEffect(() => {
@@ -235,9 +282,18 @@ const MatchingDetailPage = () => {
                 {/* 글 작성자 프로필 */}
                 <div className="flex my-[20px] gap-[20px] items-center">
                   <div className="flex w-[60px] h-[60px] rounded-full overflow-hidden">
-                    <img src={user?.avatar_url} alt={user?.nickname} />
+                    <img
+                      src={
+                        userData?.avatar_url === 'guest_image' || !userData?.avatar_url
+                          ? DEFAULT_AVATAR
+                          : userData.avatar_url
+                      }
+                      alt={userData?.nickname}
+                    />
                   </div>
-                  <div className="text-[20px] font-semibold text-babgray-800">{user?.nickname}</div>
+                  <div className="text-[20px] font-semibold text-babgray-800">
+                    {userData?.nickname}
+                  </div>
                 </div>
 
                 {/* 모임일시 및 인원 */}
@@ -355,48 +411,47 @@ const MatchingDetailPage = () => {
                   {/* 참여자 리스트 */}
                   <div className="flex flex-col gap-[20px]">
                     <ul className="space-y-3">
-                      <li className="flex items-center gap-3">
-                        <div className="flex w-[60px] h-[60px] rounded-full overflow-hidden">
-                          <img
-                            src="https://i.namu.wiki/i/6oaSnC5nakWcmlgWXeNsU0vGH6XtsL3ulvZhuYrCLmzZMwGjofEuQUxsqM_VpbJIm8i7uSGyu6MWdumTaJnmEQ.webp"
-                            alt="도도롱"
-                          />
-                        </div>
-                        <div>
-                          <div className="flex items-center gap-1">
-                            <div className="text-[16px] font-semibold text-babgray-800">도도롱</div>
+                      {membersWithProfiles.map(p => (
+                        <li key={p.id} className="flex items-center gap-3">
+                          {/* 프로필 이미지 */}
+                          <div className="flex w-[60px] h-[60px] rounded-full overflow-hidden">
+                            <img
+                              src={
+                                p.profile.avatar_url === 'guest_image' || !p.profile.avatar_url
+                                  ? DEFAULT_AVATAR
+                                  : p.profile.avatar_url
+                              }
+                              alt={p.profile.nickname}
+                            />
                           </div>
-                          <p className="text-gray-500 text-[13px] leading-6">모집자</p>
-                        </div>
-                      </li>
-                    </ul>
 
-                    <ul className="space-y-3">
-                      <li className="flex items-center gap-3">
-                        <div className="flex w-[60px] h-[60px] rounded-full overflow-hidden">
-                          <img
-                            src="https://i.namu.wiki/i/Zx1CeetT0kkr1GFJCYzoHpxlG2BjllrZCjXOYz_OIHAVnSmKPq5c1nDF3R_3K0h0NyBkMdzXy35QFx-XmxWHEw.webp"
-                            alt="도로롱"
-                          />
-                        </div>
-                        <div>
-                          <div className="flex items-center gap-1">
-                            <div className="text-[16px] font-semibold text-babbutton-red">
-                              도로롱
+                          {/* 이름 및 역할 */}
+                          <div>
+                            <div className="flex items-center gap-1">
+                              <div className={`text-[16px] font-semibold text-babgray-800`}>
+                                {p.profile.name}
+                              </div>
+                              {/* 차단 추가시 사용하기 */}
+                              {/* {p.role === 'member' && (
+                                <RiErrorWarningLine className="w-4 h-4 text-babbutton-red flex-shrink-0" />
+                              )} */}
                             </div>
-                            <RiErrorWarningLine className="w-4 h-4 text-babbutton-red flex-shrink-0" />
+                            <p className="text-gray-500 text-[13px] leading-6">
+                              {p.role === 'host' ? '모집자' : '참여자'}
+                            </p>
                           </div>
-                          <p className="text-gray-500 text-[13px] leading-6">참여자</p>
-                        </div>
-                      </li>
+                        </li>
+                      ))}
                     </ul>
                   </div>
                 </div>
 
                 {/* 남은 자리 안내 */}
                 <div className="mt-5 rounded-xl bg-gray-50 text-gray-600 text-sm text-center py-4">
-                  아직 {matchingData.desired_members && matchingData.desired_members - headCount}
-                  자리가 남아있어요!
+                  {matchingData.desired_members && matchingData.desired_members - headCount > 0
+                    ? `아직 ${matchingData.desired_members && matchingData.desired_members - headCount}
+                  자리가 남아있어요!`
+                    : '모집이 완료되었습니다.'}
                 </div>
               </div>
             </div>
@@ -406,12 +461,25 @@ const MatchingDetailPage = () => {
               {/* 액션 버튼 */}
               <div className="inline-flex w-[400px] p-[25px] flex-col justify-center items-center bg-white rounded-[16px] shadow-[0px_4px_4px_0px_rgba(0,0,0,0.02)]">
                 <section className="w-full space-y-3">
-                  <ButtonFillLG
-                    className="w-full"
-                    style={{ fontWeight: 600, borderRadius: '12px' }}
-                  >
-                    모집종료
-                  </ButtonFillLG>
+                  {user?.id === userData?.id ? (
+                    <>
+                      <ButtonFillLG
+                        className="w-full"
+                        style={{ fontWeight: 600, borderRadius: '12px' }}
+                      >
+                        모집종료
+                      </ButtonFillLG>
+                    </>
+                  ) : (
+                    <>
+                      <ButtonFillLG
+                        className="w-full"
+                        style={{ fontWeight: 600, borderRadius: '12px' }}
+                      >
+                        참여 신청하기
+                      </ButtonFillLG>
+                    </>
+                  )}
 
                   <ButtonLineLg
                     className="w-full"

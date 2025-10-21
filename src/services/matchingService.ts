@@ -71,6 +71,7 @@ export const addMatchingParticipant = async (
   profileId: string,
   role: 'host' | 'member' = 'member',
 ): Promise<void> => {
+  console.log('addMatchingParticipant 호출:', { matchingId, profileId, role });
   // 1. 매칭 정보와 현재 참가자 수 확인
   const { data: matching, error: matchingError } = await supabase
     .from('matchings')
@@ -104,9 +105,12 @@ export const addMatchingParticipant = async (
   }
 
   // 3. 참가자 추가
-  const { error: insertError } = await supabase
+  const { data, error: insertError } = await supabase
     .from('matching_participants')
-    .insert({ matching_id: matchingId, profile_id: profileId, role });
+    .insert({ matching_id: matchingId, profile_id: profileId, role })
+    .select();
+
+  console.log('삽입된 데이터:', data);
 
   if (insertError) {
     if (insertError.code === '23505') {
@@ -153,7 +157,7 @@ export const removeMatchingParticipant = async (
 export const getMatchingParticipants = async (matchingId: number) => {
   const { data, error } = await supabase
     .from('matching_participants')
-    .select('id, profile_id, joined_at')
+    .select('id, profile_id, joined_at,role')
     .eq('matching_id', matchingId);
 
   if (error) {

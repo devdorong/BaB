@@ -92,6 +92,7 @@ export const AuthProvider = ({ children }: AuthProviderProps) => {
         let nickname = '';
         let name = '';
         let phone = meta?.phone ?? '소셜로그인 사용자입니다';
+        let avatar_url = ''; // 추가
 
         if (provider === 'kakao') {
           nickname =
@@ -101,9 +102,11 @@ export const AuthProvider = ({ children }: AuthProviderProps) => {
             meta.email?.split('@')[0] ||
             '카카오 사용자';
           name = meta.name || meta.nickname || '카카오 사용자';
+          avatar_url = meta.avatar_url || meta.picture || '';
         } else if (provider === 'google') {
           nickname = meta.full_name || meta.name || meta.email?.split('@')[0] || '구글 사용자';
           name = meta.full_name || meta.name || '구글 사용자';
+          avatar_url = meta.avatar_url || meta.picture || '';
         } else {
           nickname = meta.nickName ?? meta.name ?? user.email?.split('@')[0] ?? '회원';
           name = meta.name ?? '';
@@ -116,6 +119,7 @@ export const AuthProvider = ({ children }: AuthProviderProps) => {
           phone,
           gender: meta?.gender ?? true,
           birth: meta?.birth ?? '2000-01-01',
+          avatar_url: avatar_url || undefined,
         };
 
         await createProfile(newProfile);

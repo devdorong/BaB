@@ -206,7 +206,7 @@ const MachingIndex = () => {
             </>
           ) : (
             <>
-              {processedMatchings.map((item, index) => {
+              {processedMatchings.slice(0, 4).map((item, index) => {
                 const distance =
                   userPos && item.latitude && item.longitude
                     ? getDistance(userPos.lat, userPos.lng, item.latitude, item.longitude)
