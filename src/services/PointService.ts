@@ -211,7 +211,7 @@ export const totalAddPoint = async (): Promise<number> => {
       .from('point_changes')
       .select('*')
       .eq('profile_id', user.id)
-      .eq('change_type', 'daily_login');
+      .in('change_type', ['daily_login', 'review']);
     if (error) throw error;
 
     // 합계 계산
@@ -361,6 +361,69 @@ export const givePoint = async (): Promise<boolean> => {
     return true;
   } catch (err) {
     console.log('출석체크 중 오류:', err);
+    return false;
+  }
+};
+
+// 리뷰 쓸때마다 포인트 적립
+export const giveReviewPoint = async (): Promise<boolean> => {
+  try {
+    const {
+      data: { user },
+    } = await supabase.auth.getUser();
+    if (!user) {
+      throw new Error();
+    }
+
+    const { data: reviewData, error: reviewError } = await supabase
+      .from('reviews')
+      .select('profile_id')
+      .eq('profile_id', user.id)
+      .order('created_at', { ascending: false })
+      .limit(1)
+      .single();
+
+    if (reviewError) throw reviewError;
+
+    const reviewProfile = reviewData.profile_id;
+
+    const { data, error } = await supabase
+      .from('point_changes')
+      .select('id, created_at')
+      .eq('profile_id', user.id)
+      .eq('change_type', 'review')
+      .limit(1)
+      .single();
+
+    if (error) throw new Error(`리뷰포인트 적립 실패 : ${error.message}`);
+
+    const amount = 50;
+    const { error: addReviewPointError } = await supabase
+      .from('point_changes')
+      .insert([{ profile_id: user.id, change_type: 'review', amount }]);
+
+    if (addReviewPointError) throw addReviewPointError;
+
+    // 2. profile_points 존재 확인 및 생성 (필요시)
+    const profilePoint = await GetOrCreatePoint();
+    if (!profilePoint) {
+      throw new Error('profile_points 생성/조회 실패');
+    }
+
+    const { error: updateError } = await supabase
+      .from('profile_points')
+      .update({ point: profilePoint.point + amount })
+      .eq('profile_id', user.id)
+      .select('*')
+      .single();
+
+    if (updateError) {
+      console.log('포인트 업데이트 실패 :', updateError);
+      throw updateError;
+    }
+    console.log('리뷰작성포인트 완료, 50포인트 적립');
+    return true;
+  } catch (err) {
     return false;
   }
 };

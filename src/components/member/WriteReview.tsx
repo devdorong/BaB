@@ -12,6 +12,8 @@ import { useAuth } from '../../contexts/AuthContext';
 import { getProfile } from '../../lib/propile';
 import type { Profile } from '../../types/bobType';
 import { insertReview } from '../../services/RestReviewService';
+import { supabase } from '../../lib/supabase';
+import { giveReviewPoint } from '../../services/PointService';
 
 type Props = {
   restaurantId: number;
@@ -136,6 +138,15 @@ function WriteReview({ open, onClose, onSubmit, onSuccess, restaurantId }: Props
   const submit = async () => {
     if (!user) {
       return;
+    }
+
+    try {
+      await giveReviewPoint();
+      console.log('리뷰 작성 포인트 지급 완료');
+
+      alert('리뷰가 등록되었습니다!');
+    } catch (err) {
+      console.error('리뷰 등록 중 오류:', err);
     }
 
     const success = await insertReview({

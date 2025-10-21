@@ -8,9 +8,9 @@ import { Settings5Fill, ShoppingCartFill, StarFill } from '../../ui/Icon';
 import { supabase } from '../../lib/supabase';
 
 export const badgeColors: Record<NotificationsProps['type'], string> = {
-  주문: 'bg-bab-500',
-  리뷰: 'bg-yellow-400',
-  시스템: 'bg-babbutton-blue',
+  주문: 'bg-bab-500 text-white',
+  리뷰: 'bg-yellow-400 text-white',
+  시스템: 'bg-babbutton-blue text-white',
   채팅: 'bg-yellow-100 text-yellow-700',
   매칭완료: 'bg-[#FFF1E6] text-[#FF5722]',
   댓글: 'bg-green-100 text-green-700',

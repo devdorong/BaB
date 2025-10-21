@@ -11,6 +11,50 @@ import CouponPage from '../../../components/point/CouponSave';
 
 type TabType = 'reward' | 'coupon' | 'rule';
 
+function PointSkeleton() {
+  return (
+    <div id="root" className="flex flex-col min-h-screen">
+      <div className="flex-1 bg-bg-bg ">
+        <div className="flex flex-col w-[1280px] m-auto animate-pulse">
+          <div className="flex py-[15px]">
+            <div className="h-5 w-16 bg-gray-200 rounded"></div>
+            <div className="flex pt-[3px] items-center px-[5px]">
+              <RiArrowRightSLine className="text-gray-300" />
+            </div>
+            <div className="h-5 w-10 bg-gray-200 rounded"></div>
+          </div>
+
+          <div className="mt-[25px] mb-[60px] flex gap-[40px]">
+            {/* 왼쪽 카드 */}
+            <div className="w-[260px] h-[323px] bg-white rounded-[16px] shadow-[0px_4px_4px_rgba(0,0,0,0.02)] flex flex-col items-center justify-center">
+              <div className="w-[80px] h-[80px] bg-gray-200 rounded-full mb-8"></div>
+              <div className="h-9 w-[100px] bg-gray-200 rounded mb-2"></div>
+              <div className="h-5 w-[60px] bg-gray-100 rounded"></div>
+              <div className="w-full border-t border-gray-100 mt-4 mb-4"></div>
+              <div className="flex w-[172px] justify-between">
+                <div className="flex flex-col gap-3">
+                  <div className="h-8 w-[60px] bg-gray-200 rounded"></div>
+                  <div className="h-3 w-[60px] bg-gray-200 rounded"></div>
+                </div>
+                <div className="flex flex-col gap-3">
+                  <div className="h-8 w-[60px] bg-gray-200 rounded"></div>
+                  <div className="h-3 w-[60px] bg-gray-200 rounded"></div>
+                </div>
+              </div>
+            </div>
+
+            {/* 오른쪽 카드 */}
+            <div className="flex flex-col gap-[25px] flex-1">
+              <div className="h-[50px] w-[400px] bg-white rounded-[10px] shadow-[0px_4px_4px_rgba(0,0,0,0.02)]"></div>
+              <div className="h-[400px] w-full bg-white rounded-[16px] shadow-[0px_4px_4px_rgba(0,0,0,0.02)]"></div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  );
+}
+
 function PointPage() {
   const { user } = useAuth();
   const navigate = useNavigate();
@@ -26,7 +70,12 @@ function PointPage() {
     refreshPoint();
   }, [user]);
 
-  if (loading) return <p>포인트 불러오는 중..</p>;
+  if (loading)
+    return (
+      <div className="flex flex-col min-h-screen bg-bg-bg">
+        <PointSkeleton />
+      </div>
+    );
 
   return (
     <div id="root" className="flex flex-col min-h-screen">

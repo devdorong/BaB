@@ -379,9 +379,9 @@ export async function sendMessage(
       const { error: notificationError } = await supabase.from('notifications').insert({
         profile_id: currentUser.id, // 보낸 사람
         receiver_id: receiverId, // 받는 사람
-        title: '새로운 메시지가 도착했습니다 💬',
+        title: '새로운 메시지가 도착했습니다.',
         content: messageData.content.slice(0, 50),
-        target: ['all', 'profile'], // or 'partner' (상황에 맞게)
+        target: 'profiles', // or 'partner' (상황에 맞게)
         type: '채팅',
       });
 
