@@ -12,6 +12,9 @@ import { useAuth } from '../../../contexts/AuthContext';
 import { supabase } from '../../../lib/supabase';
 import type { Profile_Blocks } from '../../../types/bobType';
 import { UserForbidLine } from '../../../ui/Icon';
+import dayjs from 'dayjs';
+import { useModal } from '../../../ui/sdj/ModalState';
+import Modal from '../../../ui/sdj/Modal';
 
 type BlockProfile = Profile_Blocks & {
   blocked_profile: {
@@ -21,6 +24,7 @@ type BlockProfile = Profile_Blocks & {
 };
 
 function BlockPage() {
+  const { closeModal, modal, openModal } = useModal();
   const { user } = useAuth();
   const navigate = useNavigate();
   const [blockedList, setBlockedList] = useState<BlockProfile[]>([]);
@@ -39,13 +43,16 @@ function BlockPage() {
       return setBlockedList(data || []);
     };
     if (user?.id) fetchData();
-  }, [user?.id]);
+  }, [user?.id, modal]);
 
-  const handleUnblock = async (blockId: number) => {
-    const { error } = await supabase.from('profile_blocks').delete().eq('id', blockId);
+  const handleUnblock = async (blockId: number, nickname: string) => {
+    openModal('차단 해제', `${nickname}님의 차단을 해제하시겠습니까?`, '취소', '해제', async () => {
+      const { error } = await supabase.from('profile_blocks').delete().eq('id', blockId);
 
-    if (error) console.error('차단 해제 실패:', error.message);
-    else setBlockedList(prev => prev.filter(b => b.id !== blockId));
+      if (error) console.error('차단 해제 실패:', error.message);
+      else setBlockedList(prev => prev.filter(b => b.id !== blockId));
+      closeModal();
+    });
   };
 
   const modalText = () => {
@@ -144,13 +151,17 @@ function BlockPage() {
                           <span className="text-base font-medium text-gray-900">
                             {item.blocked_profile?.nickname}
                           </span>
-                          <span className="text-sm text-gray-600">차단일 : {item.block_date}</span>
+                          <span className="text-sm text-gray-600">
+                            차단일 : {dayjs(item.block_date).format('YYYY-MM-DD')}
+                          </span>
                         </div>
                       </div>
 
                       {/* 차단 해제 버튼 */}
                       <button
-                        onClick={() => handleUnblock(item.id)}
+                        onClick={() =>
+                          handleUnblock(item.id, item.blocked_profile?.nickname ?? '사용자')
+                        }
                         className="flex items-center gap-2 px-4 py-2 bg-gray-100 text-gray-700 rounded-lg hover:bg-gray-200 transition"
                       >
                         <RiUserUnfollowLine className="w-4 h-4" />
@@ -164,6 +175,17 @@ function BlockPage() {
           </div>
         </div>
       </div>
+      {modal.isOpen && (
+        <Modal
+          isOpen={modal.isOpen}
+          onClose={closeModal}
+          titleText={modal.title}
+          contentText={modal.content}
+          closeButtonText={modal.closeText}
+          submitButtonText={modal.submitText}
+          onSubmit={modal.onSubmit}
+        />
+      )}
       {viewModal && (
         <div className="w-full">
           <OkCancelModal

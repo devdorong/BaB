@@ -1,4 +1,4 @@
-import { useState } from 'react';
+import { useEffect, useState } from 'react';
 import type { ReportsType } from '../../pages/member/communitys/CommunityDetailPage';
 import { ButtonFillMd } from '../button';
 import Modal, { type ModalProps } from './Modal';
@@ -64,6 +64,20 @@ const ReportsModal = ({
       setReports(false);
     });
   };
+
+  useEffect(() => {
+    if (modal) {
+      document.body.style.overflowX = 'hidden';
+      document.body.style.overflowY = 'hidden';
+    } else {
+      document.body.style.overflowX = 'hidden';
+      document.body.style.overflowY = 'auto';
+    }
+    return () => {
+      document.body.style.overflowX = 'hidden';
+      document.body.style.overflowY = 'auto';
+    };
+  }, [modal]);
 
   return (
     <div className="fixed inset-0 flex items-center justify-center bg-black bg-opacity-10 z-50">
