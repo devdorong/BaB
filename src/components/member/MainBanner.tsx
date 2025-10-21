@@ -33,7 +33,7 @@ const MainBanner = () => {
   if (isLoading) {
     return (
       <div className="relative">
-        <div className="w-[1280px] h-[320px] rounded-[20px] bg-gray-200 animate-pulse mb-[50px] flex items-center justify-center ">
+        <div className="w-[1280px] h-[320px] rounded-b-[20px] bg-gray-200 animate-pulse mb-[50px] flex items-center justify-center ">
           <span className="text-gray-500">배너 로딩 중...</span>
         </div>
         <div className="absolute left-[50%] z-[100] translate-x-[-50%] translate-y-[-75%]">
