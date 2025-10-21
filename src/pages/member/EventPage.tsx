@@ -92,6 +92,53 @@ function EventPage() {
     openModal('이벤트 참여', '이벤트에 성공적으로 참여했습니다', '닫기');
   };
 
+  const addBadges = async (events: Events[]) => {
+    // 각 이벤트 참여자 수 가져오기
+    const { error, data: participants } = await supabase
+      .from('event_participants')
+      .select('*,events(id,start_date)');
+
+    if (error) {
+      console.error('참여자 데이터 불러오기 실패:', error.message);
+      return [];
+    }
+
+    const grouped = participants.reduce(
+      (acc, cur) => {
+        const id = cur.event_id;
+
+        // 해당 event_id가 accumulator에 없으면 초기화
+        if (!acc[id]) {
+          acc[id] = {
+            count: 0,
+            start_date: cur.events?.start_date || null,
+          };
+        }
+
+        // 같은 event_id가 나오면 count 증가
+        acc[id].count++;
+
+        return acc; // 누적 결과 반환
+      },
+      {} as Record<number, { count: number; start_date: string | null }>,
+    );
+
+    return events.map(e => {
+      const count = grouped[e.id]?.count ?? 0;
+      const start = e.start_date ? dayjs(e.start_date) : null;
+      const now = dayjs();
+
+      let badge: 'HOT' | '신규' | null = null;
+      if (count >= 2) badge = 'HOT';
+      else if (start) {
+        const diffDays = now.diff(start, 'day');
+        if (diffDays >= 0 && diffDays <= 3) badge = '신규';
+      }
+
+      return { ...e, badge };
+    });
+  };
+
   const eventData = async (): Promise<Events[]> => {
     const { data, error } = await supabase
       .from('events')
@@ -128,6 +175,7 @@ function EventPage() {
   useEffect(() => {
     const fetchData = async () => {
       const result = await eventData();
+      const withBadge = await addBadges(result);
 
       // 상태별 우선순위 부여
       const statusOrder: Record<string, number> = {
@@ -136,7 +184,10 @@ function EventPage() {
         종료: 3,
       };
 
-      const mapped = result.map(e => ({ ...e, status: getStatusByDate(e.start_date, e.end_date) }));
+      const mapped = withBadge.map(e => ({
+        ...e,
+        status: getStatusByDate(e.start_date, e.end_date),
+      }));
 
       // 정렬
       const sorted = mapped.sort((a, b) => {
@@ -145,7 +196,7 @@ function EventPage() {
       setEvents(sorted);
     };
     fetchData();
-  }, [eventModal]);
+  }, [eventModal, editPage]);
 
   useEffect(() => {
     if (selectCategories === '전체') {
@@ -273,15 +324,20 @@ function EventPage() {
                 alt={event.title ?? ''}
                 className="w-full h-full object-cover"
               />
-              {/* HOT 뱃지 */}
-              {event.badge === 'HOT' && (
+              {event.badge === 'HOT' ? (
                 <span className="absolute top-[12px] left-[12px] px-[10px] py-[4px] text-white text-xs rounded-[8px] flex items-center gap-1">
                   <TagBadge bgColor="bg-red-500" textColor="text-white">
-                    <RiFireFill />
                     HOT
                   </TagBadge>
                 </span>
-              )}
+              ) : event.badge === '신규' ? (
+                <span className="absolute top-[12px] left-[12px] px-[10px] py-[4px] text-white text-xs rounded-[8px] flex items-center gap-1">
+                  <TagBadge bgColor="bg-blue-500" textColor="text-white">
+                    NEW
+                  </TagBadge>
+                </span>
+              ) : null}
+
               {/* 진행 상태 */}
               <span className="absolute top-[12px] right-[12px] px-[10px] py-[4px] text-xs rounded-[8px]">
                 <TagBadge
