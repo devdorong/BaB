@@ -27,6 +27,16 @@ function CommunityWritePage() {
   const [activeCategory, setActiveCategory] = useState<CategoriesType>('자유게시판');
 
   const handleCancel = () => {
+    if (!title.trim() || !content.trim()) {
+      openModal(
+        '등록 취소',
+        '작성중인 게시글 내용을 저장하지않고 나가시겠습니까?',
+        '취소',
+        '확인',
+        () => navigate('/member/community'),
+      );
+      return;
+    }
     if (title.trim() || content.trim()) {
       openModal(
         '등록 취소',
