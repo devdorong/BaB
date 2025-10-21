@@ -1,4 +1,4 @@
-import { useContext, useState } from 'react';
+import { useContext, useEffect, useState } from 'react';
 import {
   RiArrowRightSLine,
   RiCalendarLine,
@@ -11,6 +11,7 @@ import {
 import { useNavigate } from 'react-router-dom';
 import OkCancelModal from '../../../components/member/OkCancelModal';
 import { UserForbidLine } from '../../../ui/Icon';
+import { supabase } from '../../../lib/supabase';
 
 const blockedUsers = [
   { id: 1, name: '도로롱', date: '2025-09-24' },
@@ -22,6 +23,20 @@ const blockedUsers = [
 function BlockPage() {
   const navigate = useNavigate();
   const [viewModal, setViewModal] = useState(false);
+
+  useEffect(() => {
+    const fetchData = async () => {
+      const { data, error } = await supabase
+        .from('profile_blocks')
+        .select(`*, blocked_profile:blocked_profile_id ( id, nickname )`);
+      if (error) {
+        console.log(`유저정보를 불러오는데 실패했습니다. : ${error.message}`);
+      }
+      console.log(data);
+      return data || [];
+    };
+    fetchData();
+  }, []);
 
   const handleViewModal = () => {
     setViewModal(true);
