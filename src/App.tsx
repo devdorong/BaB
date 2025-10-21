@@ -66,6 +66,12 @@ import { MatchingProvider } from './contexts/MatchingContext';
 import MatchingEditPage from './pages/member/matchings/MatchingEditPage';
 
 function App() {
+  supabase.auth.onAuthStateChange((_event, session) => {
+    if (session) {
+      console.log('🔑 Realtime 인증 토큰 갱신됨');
+      supabase.realtime.setAuth(session.access_token);
+    }
+  });
   // 인증 메일 확인후, 프로필 생성
   useEffect(() => {
     const handleAuthChange = async (event: string, session: Session | null) => {

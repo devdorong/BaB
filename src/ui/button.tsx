@@ -53,6 +53,7 @@ export const ButtonLineLg = styled.button`
   flex-shrink: 0;
   border-radius: 8px;
   border: 1px solid #ff5722;
+  color: #5c5c5c;
   &:hover {
     background-color: #ff5722;
     color: #fff;

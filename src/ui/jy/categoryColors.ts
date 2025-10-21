@@ -28,4 +28,4 @@ export const spaceEnvColors: Record<string, { bg: string; text: string }> = {
   반려동물: { bg: 'bg-fuchsia-100', text: 'text-fuchsia-800' },
 };
 
-export const defaultCategoryColor = { bg: 'bg-gray-100', text: 'text-gray-700' };
+export const defaultCategoryColor = { bg: 'bg-yellow-100', text: 'text-yellow-700' };

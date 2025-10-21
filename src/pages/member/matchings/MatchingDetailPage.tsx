@@ -1,9 +1,11 @@
 import { useEffect, useState } from 'react';
 import {
   RiCalendarLine,
+  RiChat3Line,
   RiCloseFill,
   RiEditLine,
   RiErrorWarningLine,
+  RiFlagLine,
   RiGroupLine,
   RiMapPinLine,
   RiPhoneLine,
@@ -481,26 +483,59 @@ const MatchingDetailPage = () => {
                     </>
                   )}
 
-                  <ButtonLineLg
-                    className="w-full"
-                    style={{ fontWeight: 600, borderRadius: '12px' }}
-                    onClick={() => navigate(`/member/matching/edit/${id}`)}
-                  >
-                    <div className="flex gap-[5px] justify-center items-center">
-                      수정하기
-                      <RiEditLine className="w-4 h-4 shrink-0 relative top-[1px]" />
-                    </div>
-                  </ButtonLineLg>
+                  {user?.id === userData?.id ? (
+                    <>
+                      <ButtonLineLg
+                        className="w-full"
+                        style={{ fontWeight: 600, borderRadius: '12px' }}
+                        onClick={() => navigate(`/member/matching/edit/${id}`)}
+                      >
+                        <div className="flex gap-[5px] justify-center items-center">
+                          수정하기
+                          <RiEditLine className="w-4 h-4 shrink-0 relative top-[1px]" />
+                        </div>
+                      </ButtonLineLg>
+                    </>
+                  ) : (
+                    <>
+                      <ButtonLineLg
+                        className="w-full"
+                        style={{ fontWeight: 600, borderRadius: '12px' }}
+                        onClick={() => navigate(`/member/matching/edit/${id}`)}
+                      >
+                        <div className="flex gap-[5px] justify-center items-center">
+                          1:1 채팅
+                          <RiChat3Line className="w-4 h-4 shrink-0 relative top-[1px]" />
+                        </div>
+                      </ButtonLineLg>
+                    </>
+                  )}
 
-                  <ButtonLineLg
-                    className="w-full"
-                    style={{ fontWeight: 600, borderRadius: '12px' }}
-                  >
-                    <div className="inline-flex items-center justify-center gap-1.5 font-semibold rounded-[12px] leading-none">
-                      삭제하기
-                      <RiCloseFill className="w-4 h-4 shrink-0 relative top-[1px]" />
-                    </div>
-                  </ButtonLineLg>
+                  {user?.id === userData?.id ? (
+                    <>
+                      <ButtonLineLg
+                        className="w-full"
+                        style={{ fontWeight: 600, borderRadius: '12px' }}
+                      >
+                        <div className="inline-flex items-center justify-center gap-1.5 font-semibold rounded-[12px] leading-none">
+                          삭제하기
+                          <RiCloseFill className="w-4 h-4 shrink-0 relative top-[1px]" />
+                        </div>
+                      </ButtonLineLg>
+                    </>
+                  ) : (
+                    <>
+                      <ButtonLineLg
+                        className="w-full"
+                        style={{ fontWeight: 600, borderRadius: '12px' }}
+                      >
+                        <div className="inline-flex items-center justify-center gap-1.5 font-semibold rounded-[12px] leading-none">
+                          <RiFlagLine className="w-4 h-4 shrink-0 relative top-[1px]" />
+                          신고하기
+                        </div>
+                      </ButtonLineLg>
+                    </>
+                  )}
                 </section>
               </div>
 
@@ -510,13 +545,20 @@ const MatchingDetailPage = () => {
                   <div className="text-babgray-900 text-[20px] mb-[10px] font-bold">지도</div>
 
                   <div className="h-[200px] rounded-2xl overflow-hidden">
-                    {isMapLoaded ? (
-                      <KkoMapDetail />
-                    ) : (
-                      <div className="flex items-center justify-center h-full bg-gray-100">
-                        지도를 불러오는 중입니다...
-                      </div>
-                    )}
+                    {/* 지도 */}
+                    <div>
+                      <h3 className="text-[18px] font-semibold text-babgray-900 mb-3">지도</h3>
+                      {isMapLoaded ? (
+                        <KkoMapDetail
+                          lat={restaurant.latitude?.toString()}
+                          lng={restaurant.longitude?.toString()}
+                        />
+                      ) : (
+                        <div className="py-10 text-center text-babgray-600 max-w-[1280px] mx-auto">
+                          지도를 불러오는 중입니다...
+                        </div>
+                      )}
+                    </div>
                   </div>
 
                   <p className="text-gray-600 text-[15px] mb-5 mt-3">{restaurant.address}</p>

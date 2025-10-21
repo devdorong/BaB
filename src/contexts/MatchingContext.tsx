@@ -121,8 +121,41 @@ export const MatchingProvider = ({ children }: MatchingProviderProps) => {
       } else {
         // 시연용: 레스토랑이 없으면 목업 ID 사용 (1번 레스토랑이 존재한다고 가정 우리의 경우 제일 상위레스토랑이 8번 샐러디)
         // 실제 운영 시: 새 레스토랑 생성 로직 추가 필요
-        restaurantId = 8;
-        console.warn(`레스토랑 미등재: "${formData.selectedPlace.name}" - 목업 ID 사용`);
+        console.log(`레스토랑 미등재: "${formData.selectedPlace.name}" - 자동 생성`);
+        // 새 레스토랑 생성 (관리자 계정으로)
+        console.log(`레스토랑 미등재: "${formData.selectedPlace.name}" - 자동 생성`);
+        const ADMIN_PROFILE_ID = '9a6b3286-408c-49d3-8224-450792a1a624';
+        const { data: newRestaurant, error: createError } = await supabase
+          .from('restaurants')
+          .insert({
+            profile_id: ADMIN_PROFILE_ID,
+            name: formData.selectedPlace.name,
+            address: formData.selectedPlace.address,
+            phone: '053-9999-9999', // 필수값
+            kakao_place_id: formData.selectedPlace.id,
+            latitude: formData.selectedPlace.lat,
+            longitude: formData.selectedPlace.lng,
+            status: 'approved', // 자동 승인
+            storeintro: '카카오맵에서 가져온 레스토랑입니다.',
+            opentime: '08:00:00',
+            closetime: '20:00:00',
+            closeday: [],
+            category_id: 23,
+            thumbnail_url:
+              'https://images.unsplash.com/photo-1514933651103-005eec06c04b?ixlib=rb-4.1.0&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D&auto=format&fit=crop&q=80&w=1074',
+          })
+          .select('id')
+          .single();
+
+        if (createError) {
+          console.error('레스토랑 생성 실패:', createError);
+          // 실패 시 fallback ID 사용
+          restaurantId = 8;
+          console.warn('레스토랑 생성 실패 - 목업 ID 8번 사용');
+        } else {
+          restaurantId = newRestaurant.id;
+          console.log(`새 레스토랑 생성 완료: ID ${restaurantId}`);
+        }
       }
 
       // 4. 매칭 생성

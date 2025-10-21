@@ -69,7 +69,7 @@ const MachingIndex = () => {
 
           if (restaurant) {
             // 카테고리 색상 가져오기
-            const categoryName = restaurant.interests?.name || '기타';
+            const categoryName = restaurant.interests?.name || '카카오 등록';
             const categoryColor = getColorByCategory(categoryName);
 
             // 태그 배열 생성 (카테고리 + 추가 태그)
