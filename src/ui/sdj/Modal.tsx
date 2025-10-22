@@ -23,8 +23,9 @@ export interface ModalProps {
   submitButtonBgColor?: string;
   closeButtonTextColor?: string;
   submitButtonTextColor?: string;
-  submitButtonText?: string;
-  closeButtonText?: string;
+  submitButtonText?: React.ReactNode;
+  closeButtonText?: React.ReactNode;
+  onX?: () => void;
 }
 
 const Modal: React.FC<ModalProps> = ({
@@ -39,6 +40,7 @@ const Modal: React.FC<ModalProps> = ({
   submitButtonBgColor = '#ff5722',
   closeButtonTextColor = '#5C5C5C',
   submitButtonTextColor = '#ffffff',
+  onX,
 }) => {
   if (!isOpen) return null;
 
@@ -63,7 +65,10 @@ const Modal: React.FC<ModalProps> = ({
         <div className="flex items-center justify-between p-8 border-b border-b-babgray ">
           <p className="font-bold">{titleText}</p>
           <div>
-            <RiCloseFill onClick={onClose} className="text-babgray-300 cursor-pointer" />
+            <RiCloseFill
+              onClick={onX ? onX : onClose}
+              className="text-babgray-300 cursor-pointer"
+            />
           </div>
         </div>
         <div className="flex justify-center items-center">

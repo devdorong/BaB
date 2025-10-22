@@ -760,6 +760,54 @@ export type Database = {
           },
         ]
       }
+      payment_methods: {
+        Row: {
+          brand: string
+          created_at: string | null
+          description: string | null
+          expire: string | null
+          id: number
+          is_default: boolean | null
+          number: string
+          profile_id: string
+        }
+        Insert: {
+          brand: string
+          created_at?: string | null
+          description?: string | null
+          expire?: string | null
+          id?: number
+          is_default?: boolean | null
+          number: string
+          profile_id: string
+        }
+        Update: {
+          brand?: string
+          created_at?: string | null
+          description?: string | null
+          expire?: string | null
+          id?: number
+          is_default?: boolean | null
+          number?: string
+          profile_id?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "payment_methods_profile_id_fkey"
+            columns: ["profile_id"]
+            isOneToOne: false
+            referencedRelation: "nickname_profiles"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "payment_methods_profile_id_fkey"
+            columns: ["profile_id"]
+            isOneToOne: false
+            referencedRelation: "profiles"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
       point_changes: {
         Row: {
           amount: number
@@ -1308,6 +1356,52 @@ export type Database = {
             isOneToOne: false
             referencedRelation: "restaurants"
             referencedColumns: ["id"]
+          },
+        ]
+      }
+      review_comments: {
+        Row: {
+          content: string
+          created_at: string
+          id: number
+          profile_id: string
+          review_id: number
+        }
+        Insert: {
+          content: string
+          created_at?: string
+          id?: number
+          profile_id: string
+          review_id: number
+        }
+        Update: {
+          content?: string
+          created_at?: string
+          id?: number
+          profile_id?: string
+          review_id?: number
+        }
+        Relationships: [
+          {
+            foreignKeyName: "review_comments_profile_id_fkey"
+            columns: ["profile_id"]
+            isOneToOne: false
+            referencedRelation: "nickname_profiles"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "review_comments_profile_id_fkey"
+            columns: ["profile_id"]
+            isOneToOne: false
+            referencedRelation: "profiles"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "review_comments_review_id_fkey"
+            columns: ["review_id"]
+            isOneToOne: false
+            referencedRelation: "reviews"
+            referencedColumns: ["review_id"]
           },
         ]
       }

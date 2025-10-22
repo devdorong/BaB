@@ -48,9 +48,9 @@ export const createMatching = async (newMatching: MatchingsInsert): Promise<numb
 
 export const updateMatching = async (
   matchingId: number,
-  updatedMenu: MatchingsUpdate,
+  updatedMatching: MatchingsUpdate,
 ): Promise<void> => {
-  const { error } = await supabase.from('matchings').update(updatedMenu).eq('id', matchingId);
+  const { error } = await supabase.from('matchings').update(updatedMatching).eq('id', matchingId);
   if (error) {
     console.log('updateMatching 에러 : ', error.message);
     throw new Error(error.message);
@@ -195,4 +195,127 @@ export const getParticipantCount = async (matchingId: number): Promise<number> =
   }
 
   return count ?? 0;
+};
+
+type SimilarMatchingWithRestaurant = Matchings & {
+  restaurants: {
+    id: number;
+    name: string;
+    address: string;
+    latitude: number | null;
+    longitude: number | null;
+    category_id: number | null;
+    interests: { name: string } | null;
+  };
+};
+
+export const getSimilarMatchings = async (
+  currentMatchingId: number,
+  restaurantId: number,
+  limit: number = 3,
+): Promise<Matchings[]> => {
+  try {
+    // 1. 현재 레스토랑의 카테고리 ID 조회
+    const { data: currentRestaurant, error: restaurantError } = await supabase
+      .from('restaurants')
+      .select('category_id')
+      .eq('id', restaurantId)
+      .single();
+
+    if (restaurantError || !currentRestaurant?.category_id) {
+      console.log('레스토랑 카테고리 조회 실패:', restaurantError?.message);
+      return [];
+    }
+
+    // 2. 같은 카테고리를 가진 레스토랑들의 ID 조회
+    const { data: similarRestaurants, error: similarRestError } = await supabase
+      .from('restaurants')
+      .select('id')
+      .eq('category_id', currentRestaurant.category_id)
+      .neq('id', restaurantId); // 현재 레스토랑 제외
+
+    if (similarRestError) {
+      console.log('비슷한 레스토랑 조회 실패:', similarRestError.message);
+      return [];
+    }
+
+    const restaurantIds = similarRestaurants?.map(r => r.id) || [];
+
+    if (restaurantIds.length === 0) {
+      return [];
+    }
+
+    // 3. 해당 레스토랑들의 매칭 조회 (현재 매칭 제외, 최신순, 대기중인것만)
+    const { data: matchings, error: matchingsError } = await supabase
+      .from('matchings')
+      .select('*')
+      .in('restaurant_id', restaurantIds)
+      .neq('id', currentMatchingId)
+      .eq('status', 'waiting')
+      .order('created_at', { ascending: false })
+      .limit(limit);
+
+    if (matchingsError) {
+      console.log('비슷한 매칭 조회 실패:', matchingsError.message);
+      return [];
+    }
+
+    return matchings || [];
+  } catch (error) {
+    console.error('getSimilarMatchings 에러:', error);
+    return [];
+  }
+};
+
+// 비슷한 매칭을 레스토랑 정보와 함께 조회
+export const getSimilarMatchingsWithRestaurant = async (
+  currentMatchingId: number,
+  restaurantId: number,
+  limit: number = 3,
+): Promise<SimilarMatchingWithRestaurant[]> => {
+  try {
+    // 1. 현재 레스토랑의 카테고리 ID 조회
+    const { data: currentRestaurant, error: restaurantError } = await supabase
+      .from('restaurants')
+      .select('category_id, interests(name)')
+      .eq('id', restaurantId)
+      .single();
+
+    if (restaurantError || !currentRestaurant?.category_id) {
+      return [];
+    }
+
+    // 2. 같은 카테고리의 다른 매칭들을 레스토랑 정보와 함께 조회
+    const { data: matchings, error: matchingsError } = await supabase
+      .from('matchings')
+      .select(
+        `
+        *,
+        restaurants!inner(
+          id,
+          name,
+          address,
+          latitude,
+          longitude,
+          category_id,
+          interests(name)
+        )
+      `,
+      )
+      .neq('id', currentMatchingId)
+      .eq('status', 'waiting')
+      .eq('restaurants.category_id', currentRestaurant.category_id)
+      .order('created_at', { ascending: false })
+      .limit(limit);
+
+    if (matchingsError) {
+      console.log('비슷한 매칭 조회 실패:', matchingsError.message);
+      return [];
+    }
+
+    return (matchings as SimilarMatchingWithRestaurant[]) || [];
+  } catch (error) {
+    console.error('getSimilarMatchingsWithRestaurant 에러:', error);
+    return [];
+  }
 };

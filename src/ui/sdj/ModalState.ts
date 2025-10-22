@@ -4,10 +4,11 @@ export type ModalState = {
   isOpen: boolean;
   title: string;
   content: string;
-  closeText?: string;
-  submitText?: string;
+  closeText?: React.ReactNode;
+  submitText?: React.ReactNode;
   onSubmit?: () => void;
   onCloseAction?: () => void;
+  onX?: () => void;
 };
 
 export const useModal = () => {
@@ -22,10 +23,11 @@ export const useModal = () => {
   const openModal = (
     title: string,
     content: string,
-    closeText?: string,
-    submitText?: string,
+    closeText?: React.ReactNode,
+    submitText?: React.ReactNode,
     onSubmit?: () => void,
     onCloseAction?: () => void,
+    onX?: () => void,
   ) => {
     setModal({
       isOpen: true,
@@ -35,6 +37,7 @@ export const useModal = () => {
       submitText,
       onSubmit,
       onCloseAction,
+      onX,
     });
   };
 
@@ -46,5 +49,10 @@ export const useModal = () => {
       return { ...prev, isOpen: false };
     });
   };
-  return { modal, openModal, closeModal };
+  const x = () => {
+    setModal(prev => {
+      return { ...prev, isOpen: false };
+    });
+  };
+  return { modal, openModal, closeModal, x };
 };
