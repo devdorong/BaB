@@ -43,10 +43,17 @@ const Modal: React.FC<ModalProps> = ({
   if (!isOpen) return null;
 
   useEffect(() => {
-    document.body.style.overflow = isOpen ? 'hidden' : 'auto';
+    if (isOpen) {
+      document.body.style.overflowX = 'hidden'; // X 스크롤 막기
+      document.body.style.overflowY = 'hidden'; // Y 스크롤 막기
+    } else {
+      document.body.style.overflowX = 'hidden'; // X는 항상 막기
+      document.body.style.overflowY = 'auto'; // Y는 원상복구
+    }
 
     return () => {
-      document.body.style.overflow = 'auto';
+      document.body.style.overflowX = 'hidden'; // X는 계속 막기
+      document.body.style.overflowY = 'auto'; // Y는 복원
     };
   }, [isOpen]);
 
@@ -69,12 +76,10 @@ const Modal: React.FC<ModalProps> = ({
             </ButtonFillMd>
           )}
           {closeButtonText && (
-
             <ButtonFillMd
               onClick={onClose}
               className="w-full flex-1 !text-babgray-700 !bg-babgray-200"
             >
-
               {closeButtonText}
             </ButtonFillMd>
           )}
