@@ -412,6 +412,13 @@ function ProfilePage() {
                     <RiArrowRightSLine />
                   </Link>
                   <Link
+                    to={'/member/profile/helps'}
+                    className="flex text-babgray-900 justify-between items-center border border-babgray-150 rounded-[12px] bg-bg-bg p-[20px]"
+                  >
+                    문의 내용
+                    <RiArrowRightSLine />
+                  </Link>
+                  <Link
                     to={'/member/profile/block'}
                     className="flex text-babgray-900 justify-between items-center border border-babgray-150 rounded-[12px] bg-bg-bg p-[20px]"
                   >

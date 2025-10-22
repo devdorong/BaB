@@ -381,11 +381,11 @@ export const giveReviewPoint = async (): Promise<boolean> => {
       .eq('profile_id', user.id)
       .order('created_at', { ascending: false })
       .limit(1)
-      .single();
+      .maybeSingle();
 
     if (reviewError) throw reviewError;
 
-    const reviewProfile = reviewData.profile_id;
+    const reviewProfile = reviewData?.profile_id;
 
     const { data, error } = await supabase
       .from('point_changes')
@@ -393,7 +393,7 @@ export const giveReviewPoint = async (): Promise<boolean> => {
       .eq('profile_id', user.id)
       .eq('change_type', 'review')
       .limit(1)
-      .single();
+      .maybeSingle();
 
     if (error) throw new Error(`리뷰포인트 적립 실패 : ${error.message}`);
 
