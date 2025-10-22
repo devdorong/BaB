@@ -143,7 +143,6 @@ function WriteReview({ open, onClose, onSubmit, onSuccess, restaurantId }: Props
     try {
       await giveReviewPoint();
       console.log('리뷰 작성 포인트 지급 완료');
-
       alert('리뷰가 등록되었습니다!');
     } catch (err) {
       console.error('리뷰 등록 중 오류:', err);

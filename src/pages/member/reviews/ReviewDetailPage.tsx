@@ -18,14 +18,13 @@ import {
   fetchRestaurants,
   getFavoriteCount,
   type RestaurantsDetailType,
-  type RestaurantsType,
   type RestaurantTypeRatingAvg,
   type ReviewWithPhotos,
 } from '../../../lib/restaurants';
+import { toggleFavorite } from '../../../services/RestReviewService';
 import { ButtonFillLG, ButtonLineLg } from '../../../ui/button';
 import { categoryColors, defaultCategoryColor } from '../../../ui/jy/categoryColors';
 import { InterestBadge } from '../../../ui/tag';
-import { toggleFavorite } from '../../../services/RestReviewService';
 
 type TabKey = 'review' | 'info';
 const FOOD = '음식 종류';
