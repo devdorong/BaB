@@ -21,9 +21,11 @@ import {
   getMatchingParticipants,
   getMatchings,
   getParticipantCount,
+  getSimilarMatchingsWithRestaurant,
+  updateMatching,
 } from '../../../services/matchingService';
 import { getRestaurantById, getRestaurantReviewStats } from '../../../services/restaurants';
-import type { Matchings, Profile, Restaurants } from '../../../types/bobType';
+import type { Matchings, MatchingsUpdate, Profile, Restaurants } from '../../../types/bobType';
 import TagBadge from '../../../ui/TagBadge';
 import { ButtonFillLG, ButtonLineLg, ButtonLineMd } from '../../../ui/button';
 import KkoMapDetail from '../../../ui/jy/Kakaomapdummy';
@@ -32,6 +34,13 @@ import { StarRating } from '../../../components/member/StarRating';
 import { supabase } from '../../../lib/supabase';
 import { useAuth } from '../../../contexts/AuthContext';
 import KkoMapMatching from '../../../ui/dorong/KaKaoMapMatching';
+import { useModal } from '../../../ui/sdj/ModalState';
+import Modal from '../../../ui/sdj/Modal';
+// ===== 결제 시스템 관련 import =====
+import type { PGProvider } from '../../../components/payment/paymentService'; // PG사 타입
+import PaymentModal from '../../../components/payment/PaymentModal'; // 결제 모달 컴포넌트
+import { BankCardLine } from '../../../ui/Icon';
+import { InterestBadge } from '../../../ui/tag';
 
 type ProcessedMatching = Matchings & {
   tags: Badge[];
@@ -50,6 +59,30 @@ interface MemberWithProfile {
   role: string;
   profile: Profile;
 }
+type ProcessedMatchingData = Matchings & {
+  label: string;
+  bgClass?: string;
+  textClass?: string;
+  title: string;
+  description: string;
+  distanceKm: number;
+  area: string;
+  timeAgo: string;
+  latitude?: number;
+  longitude?: number;
+};
+
+type SimilarMatchingWithRestaurant = Matchings & {
+  restaurants: {
+    id: number;
+    name: string;
+    address: string;
+    latitude: number | null;
+    longitude: number | null;
+    category_id: number | null;
+    interests: { name: string } | null;
+  };
+};
 
 const DEFAULT_AVATAR = 'https://www.gravatar.com/avatar/?d=mp&s=200';
 
@@ -59,12 +92,15 @@ const MatchingDetailPage = () => {
   const isMapLoaded = useKakaoLoader();
   const { id } = useParams<{ id: string }>();
   const matchingId = parseInt(id || '0', 10);
-
+  const [originMatch, setOriginMatch] = useState<Matchings | null>(null);
   const [matchingData, setMatchingData] = useState<ProcessedMatching | null>(null);
-  const [matchingDatas, setMatchingDatas] = useState<ProcessedMatching[] | null>(null);
+  const [dumy, setDumy] = useState<ProcessedMatchingData | null>(null);
+  const [similarMatchings, setSimilarMatchings] = useState<SimilarMatchingWithRestaurant[]>([]);
   const [loading, setLoading] = useState(true);
   const [userData, setUserData] = useState<Profile>();
   const [headCount, setHeadCount] = useState(0);
+
+  const { closeModal, modal, openModal, x } = useModal();
   const [restaurant, setRestaurant] = useState<Restaurants | null>(null);
   const [members, setMembers] = useState<
     {
@@ -89,6 +125,24 @@ const MatchingDetailPage = () => {
       }
   >();
   const [membersWithProfiles, setMembersWithProfiles] = useState<MemberWithProfile[]>([]);
+
+  /** 결제 모달 열림/닫힘 상태 */
+  const [isPaymentModalOpen, setIsPaymentModalOpen] = useState(false);
+
+  /** 선택된 PG사 (기본값: 토스페이먼츠) */
+  const [selectedPG, setSelectedPG] = useState<PGProvider>('toss');
+
+  // ===== 샘플 주문 데이터 =====
+  // TODO: 실제 운영 시에는 장바구니나 주문 페이지에서 동적으로 가져와야 함
+
+  /** 샘플 주문 상품 목록 */
+  const sampleOrderItems = [
+    { id: '1', name: '마르게리타 피자', price: 25000, quantity: 1 },
+    { id: '2', name: '콜라', price: 2000, quantity: 2 },
+  ];
+
+  /** 총 결제 금액 계산 (상품별 가격 × 수량의 합계) */
+  const totalAmount = sampleOrderItems.reduce((sum, item) => sum + item.price * item.quantity, 0);
 
   const getColorByCategory = (interestName: string): { bg: string; text: string } => {
     return categoryColors[interestName] || defaultCategoryColor;
@@ -131,6 +185,36 @@ const MatchingDetailPage = () => {
     return `${month}월 ${day < 10 ? `0${day}` : day}일 (${dayOfWeek}) ${period} ${hours}시${
       minutes > 0 ? ` ${minutes}분` : ''
     }`;
+  };
+
+  useEffect(() => {
+    const fetchSimilarMatchings = async () => {
+      if (matchingId && restaurant?.id) {
+        try {
+          const similar = await getSimilarMatchingsWithRestaurant(matchingId, restaurant.id, 2);
+          setSimilarMatchings(similar);
+          console.log('비슷한 매칭:', similar);
+        } catch (error) {
+          console.error('비슷한 매칭 로드 실패:', error);
+        }
+      }
+    };
+
+    fetchSimilarMatchings();
+  }, [matchingId, restaurant?.id]);
+
+  const calculateDistance = (lat1: number, lon1: number, lat2: number, lon2: number): number => {
+    const R = 6371; // 지구 반지름 (km)
+    const dLat = ((lat2 - lat1) * Math.PI) / 180;
+    const dLon = ((lon2 - lon1) * Math.PI) / 180;
+    const a =
+      Math.sin(dLat / 2) * Math.sin(dLat / 2) +
+      Math.cos((lat1 * Math.PI) / 180) *
+        Math.cos((lat2 * Math.PI) / 180) *
+        Math.sin(dLon / 2) *
+        Math.sin(dLon / 2);
+    const c = 2 * Math.atan2(Math.sqrt(a), Math.sqrt(1 - a));
+    return R * c;
   };
 
   // 메인 데이터 로드 - 매칭, 레스토랑, 유저 프로필을 한 번에 처리
@@ -184,9 +268,26 @@ const MatchingDetailPage = () => {
           latitude: restaurantData.latitude || 0,
           longitude: restaurantData.longitude || 0,
         };
+        const processedMatch: Matchings = { ...currentMatching };
+
+        const processedMatchingData: ProcessedMatchingData = {
+          ...currentMatching,
+          label: categoryName,
+          bgClass: categoryColor.bg,
+          textClass: categoryColor.text,
+          title: currentMatching.title || restaurantData.name,
+          description: currentMatching.description || restaurantData.storeintro || '',
+          distanceKm: 0,
+          area: restaurantData.address || '위치 정보 없음',
+          timeAgo: currentMatching.created_at ? formatTimeAgo(currentMatching.created_at) : '',
+          latitude: restaurantData.latitude || 0,
+          longitude: restaurantData.longitude || 0,
+        };
 
         setMatchingData(processedMatching);
         setRestaurant(restaurantData);
+        setDumy(processedMatchingData);
+        setOriginMatch(processedMatch);
 
         // 6단계: 호스트 프로필 가져오기
         const userProfile = await getProfile(currentMatching.host_profile_id);
@@ -251,6 +352,30 @@ const MatchingDetailPage = () => {
     };
     fetchData();
   }, [matchingData]);
+  const handlecomplete = async () => {
+    openModal(
+      '매칭 결제',
+      '선결제를 진행 하시겠습니까?',
+      '아니오',
+
+      <div className="flex items-center gap-2">
+        <BankCardLine color="none" bgColor="none" size={16} />
+        <p>결제하기</p>
+      </div>,
+      // 결제 진행시
+      () => {
+        (closeModal(), setIsPaymentModalOpen(true));
+      },
+      // 결제 미진행시
+      async () => {
+        const updated: MatchingsUpdate = {
+          ...originMatch,
+          status: 'completed',
+        };
+        await updateMatching(matchingId, updated);
+      },
+    );
+  };
 
   if (loading || !matchingData || !restaurant) {
     return <div className="flex items-center justify-center min-h-screen">불러오는 중...</div>;
@@ -269,18 +394,23 @@ const MatchingDetailPage = () => {
                   {/* 음식태그 및 작성 시간 */}
                   <div className="flex justify-between">
                     <div className="flex gap-[10px]">
-                      <TagBadge
+                      <InterestBadge
                         bgColor={matchingData.tags[0].bgClass}
                         textColor={matchingData.tags[0].textClass}
                       >
                         {matchingData.tags[0].label}
-                      </TagBadge>
+                      </InterestBadge>
                     </div>
                     <div className="text-[14px] text-babgray-500">{matchingData.timeAgo}</div>
                   </div>
 
                   {/* 제목 */}
-                  <div className="text-[32px] font-bold">{matchingData.title}</div>
+                  <div
+                    className={`text-[32px] font-bold flex items-center  ${matchingData ? 'gap-5' : ''}`}
+                  >
+                    {matchingData.title}{' '}
+                    {matchingData.status !== 'waiting' && <TagBadge>종료된 매칭</TagBadge>}
+                  </div>
                 </div>
 
                 {/* 글 작성자 프로필 */}
@@ -470,6 +600,7 @@ const MatchingDetailPage = () => {
                       <ButtonFillLG
                         className="w-full"
                         style={{ fontWeight: 600, borderRadius: '12px' }}
+                        onClick={handlecomplete}
                       >
                         모집종료
                       </ButtonFillLG>
@@ -503,7 +634,7 @@ const MatchingDetailPage = () => {
                       <ButtonLineLg
                         className="w-full"
                         style={{ fontWeight: 600, borderRadius: '12px' }}
-                        onClick={() => navigate(`/member/matching/edit/${id}`)}
+                        onClick={() => navigate(`/member/profile/chat`)}
                       >
                         <div className="flex gap-[5px] justify-center items-center">
                           1:1 채팅
@@ -578,53 +709,102 @@ const MatchingDetailPage = () => {
               </div>
 
               {/* 비슷한 모집글 */}
+
               <div className="inline-flex w-[400px] p-[25px] flex-col justify-center items-start bg-white rounded-[16px] shadow-[0px_4px_4px_0px_rgba(0,0,0,0.02)]">
                 <div className="flex w-full flex-col">
                   <div className="text-babgray-900 text-[20px] mb-[10px] font-bold">
                     비슷한 모집글
                   </div>
 
-                  <ul className="space-y-3">
-                    <li className="rounded-2xl border border-gray-100 bg-white px-4 py-3">
-                      <div className="flex items-center gap-2">
-                        <div className="flex gap-[10px]">
-                          <TagBadge bgColor="bg-[#F1F8E9]" textColor="text-[#33691E]">
-                            양식
-                          </TagBadge>
-                          <TagBadge bgColor="bg-[#FCE4EC]" textColor="text-[#AD1457]">
-                            실내
-                          </TagBadge>
-                        </div>
-                      </div>
-                      <p className="mt-2 text-[15px] font-semibold text-gray-900">
-                        강남 오마카세 같이 가요
-                      </p>
-                      <p className="mt-1 text-sm text-gray-500">1.5km · 2시간 전</p>
-                    </li>
+                  {similarMatchings.length === 0 ? (
+                    <div className="py-8 text-center text-gray-500">비슷한 모집글이 없습니다</div>
+                  ) : (
+                    <ul className="space-y-3">
+                      {similarMatchings.map(similar => {
+                        const categoryName = similar.restaurants.interests?.name || '기타';
+                        const categoryColor = getColorByCategory(categoryName);
 
-                    <li className="rounded-2xl border border-gray-100 bg-white px-4 py-3">
-                      <div className="flex items-center gap-2">
-                        <div className="flex gap-[10px]">
-                          <TagBadge bgColor="bg-[#F1F8E9]" textColor="text-[#33691E]">
-                            양식
-                          </TagBadge>
-                          <TagBadge bgColor="bg-[#FCE4EC]" textColor="text-[#AD1457]">
-                            실내
-                          </TagBadge>
-                        </div>
-                      </div>
-                      <p className="mt-2 text-[15px] font-semibold text-gray-900">
-                        이탈리안 레스토랑 모집
-                      </p>
-                      <p className="mt-1 text-sm text-gray-500">2.1km · 3시간 전</p>
-                    </li>
-                  </ul>
+                        // 거리 계산 - null 체크를 명확히
+                        let distance: number | null = null;
+                        if (
+                          restaurant.latitude != null &&
+                          restaurant.longitude != null &&
+                          similar.restaurants.latitude != null &&
+                          similar.restaurants.longitude != null
+                        ) {
+                          distance = calculateDistance(
+                            restaurant.latitude,
+                            restaurant.longitude,
+                            similar.restaurants.latitude,
+                            similar.restaurants.longitude,
+                          );
+                        }
+
+                        return (
+                          <li
+                            key={similar.id}
+                            className="rounded-2xl border border-gray-100 bg-white px-4 py-3 cursor-pointer hover:border-gray-300 transition-colors"
+                            onClick={() => navigate(`/member/matching/${similar.id}`)}
+                          >
+                            <div className="flex items-center gap-2">
+                              <TagBadge bgColor={categoryColor.bg} textColor={categoryColor.text}>
+                                {categoryName}
+                              </TagBadge>
+                            </div>
+                            <p className="mt-2 text-[15px] font-semibold text-gray-900 line-clamp-1">
+                              {similar.title || similar.restaurants.name}
+                            </p>
+                            <p className="mt-1 text-sm text-gray-500">
+                              {distance !== null ? `${distance.toFixed(1)}km` : '거리 정보 없음'} ·{' '}
+                              {formatTimeAgo(similar.created_at || '')}
+                            </p>
+                          </li>
+                        );
+                      })}
+                    </ul>
+                  )}
                 </div>
               </div>
             </div>
           </div>
         </div>
       </div>
+      {modal.isOpen && (
+        <Modal
+          isOpen={modal.isOpen}
+          onClose={closeModal}
+          titleText={modal.title}
+          contentText={modal.content}
+          closeButtonText={modal.closeText}
+          submitButtonText={modal.submitText}
+          onSubmit={modal.onSubmit}
+          onX={x}
+        />
+      )}
+      {/* ===== 결제 모달 컴포넌트 ===== */}
+      <PaymentModal
+        isOpen={isPaymentModalOpen} // 모달 열림/닫힘 상태
+        onClose={() => setIsPaymentModalOpen(false)} // 모달 닫기 핸들러
+        onSuccess={result => {
+          // ===== 결제 완료 시 실행되는 핵심 콜백 함수 =====
+          console.log('결제 성공:', result);
+
+          // TODO: 실제 운영 시에는 여기에 추가 작업을 구현해야 합니다
+          // - 주문 데이터베이스 저장
+          // - 결제 내역 저장
+          // - 사용자 알림 발송
+          // - 재고 차감
+          // - 주문 상태 업데이트
+          // - 이메일/SMS 알림 발송
+          // - 포인트 적립 처리
+
+          setIsPaymentModalOpen(false); // 결제 완료 후 모달 닫기
+        }}
+        selectedPG={selectedPG} // 선택된 PG사
+        amount={totalAmount} // 총 결제 금액
+        orderItems={sampleOrderItems} // 주문 상품 목록
+        orderName="도로롱의 피자 주문" // 주문명
+      />
     </div>
   );
 };

@@ -1,162 +1,343 @@
-import { RiAlarmWarningLine, RiCalendarLine, RiMapPinLine } from 'react-icons/ri';
+import { RiAlarmWarningLine, RiMapPinLine } from 'react-icons/ri';
 import { ButtonFillMd, ButtonLineMd } from '../../../ui/button';
 import { useNavigate, useParams } from 'react-router-dom';
-import { useEffect } from 'react';
-import { getMatchingById } from '../../../services/matchingService';
+import { useEffect, useState } from 'react';
+import { ConfigProvider, DatePicker, TimePicker } from 'antd';
+import dayjs from 'dayjs';
+import 'dayjs/locale/ko';
+import locale from 'antd/locale/ko_KR';
+import MapSearchModal from '../../../components/member/MapSearchModal';
+import { useKakaoLoader } from '../../../hooks/useKakaoLoader';
+import { getMatchingById, updateMatching } from '../../../services/matchingService';
+import { getRestaurantById } from '../../../services/restaurants';
+dayjs.locale('ko');
+
+const headCounts = ['2', '3', '4', '5'];
+
+interface SelectedPlace {
+  id: string;
+  name: string;
+  address: string;
+  lat: number;
+  lng: number;
+}
 
 const MatchingEditPage = () => {
   const navigate = useNavigate();
   const { id } = useParams<{ id: string }>();
   const matchingId = parseInt(id || '0', 10);
 
+  const [isMapModalOpen, setIsMapModalOpen] = useState(false);
+  const [isLoading, setIsLoading] = useState(false);
+  const [error, setError] = useState('');
+
+  // 폼 데이터 상태
+  const [title, setTitle] = useState('');
+  const [content, setContent] = useState('');
+  const [desiredMembers, setDesiredMembers] = useState(2);
+  const [date, setDate] = useState<dayjs.Dayjs | null>(null);
+  const [time, setTime] = useState<dayjs.Dayjs | null>(null);
+  const [selectedPlace, setSelectedPlace] = useState<SelectedPlace | null>(null);
+
+  useKakaoLoader();
+
+  // 기존 매칭 데이터 불러오기
   useEffect(() => {
     const fetchMatching = async () => {
-      const matching = await getMatchingById(matchingId);
-      console.log(matching);
+      try {
+        const matching = await getMatchingById(matchingId);
+        console.log('매칭 데이터:', matching);
+
+        // 기본값 설정
+        setTitle(matching.title || '');
+        setContent(matching.description || '');
+        setDesiredMembers(matching.desired_members || 2);
+
+        // 날짜 설정
+        if (matching.met_at) {
+          const metAt = dayjs(matching.met_at);
+          setDate(metAt);
+          setTime(metAt);
+        }
+
+        // 레스토랑 정보 불러오기
+        if (matching.restaurant_id) {
+          const restaurant = await getRestaurantById(matching.restaurant_id);
+          if (restaurant) {
+            setSelectedPlace({
+              id: restaurant.id.toString(),
+              name: restaurant.name,
+              address: restaurant.address || '',
+              lat: restaurant.latitude || 0,
+              lng: restaurant.longitude || 0,
+            });
+          }
+        }
+      } catch (err) {
+        console.error('매칭 데이터 불러오기 실패:', err);
+        setError('매칭 정보를 불러오는데 실패했습니다.');
+      }
     };
-    fetchMatching();
+
+    if (matchingId) {
+      fetchMatching();
+    }
   }, [matchingId]);
 
+  const toggleMembers = (headCount: string) => {
+    const memberMap: { [key: string]: number } = {
+      '2': 2,
+      '3': 3,
+      '4': 4,
+      '5': 5,
+    };
+    setDesiredMembers(memberMap[headCount]);
+  };
+
+  const handlePlaceSelect = (place: SelectedPlace) => {
+    setSelectedPlace(place);
+    setIsMapModalOpen(false);
+  };
+
+  const handleSubmit = async () => {
+    try {
+      setIsLoading(true);
+      setError('');
+
+      // 유효성 검사
+      if (!title.trim()) {
+        setError('매칭 제목을 입력해주세요.');
+        return;
+      }
+      if (!date) {
+        setError('날짜를 선택해주세요.');
+        return;
+      }
+      if (!time) {
+        setError('시간을 선택해주세요.');
+        return;
+      }
+      if (!selectedPlace) {
+        setError('맛집을 선택해주세요.');
+        return;
+      }
+
+      // 날짜와 시간 합치기
+      const metAt = date
+        .hour(time.hour())
+        .minute(time.minute())
+        .second(0)
+        .millisecond(0)
+        .toISOString();
+
+      const updateData = {
+        title: title.trim(),
+        description: content.trim(),
+        desired_members: desiredMembers,
+        met_at: metAt,
+        restaurant_id: parseInt(selectedPlace.id),
+      };
+
+      await updateMatching(matchingId, updateData);
+      navigate(`/member/matching/${matchingId}`);
+    } catch (err) {
+      console.error('매칭 수정 실패:', err);
+      setError('매칭 수정에 실패했습니다.');
+    } finally {
+      setIsLoading(false);
+    }
+  };
+
+  // 선택된 인원 표시
+  const memberMap: { [key: number]: string } = {
+    2: '2',
+    3: '3',
+    4: '4',
+    5: '5',
+  };
+  const selectedHeadCounts = memberMap[desiredMembers] || '';
+
   return (
-    <div className="w-[750px] h-auto py-8 flex flex-col gap-10 mx-auto">
-      <div className="flex flex-col gap-2.5">
-        <p className="text-babgray-900 text-3xl font-bold">매칭 등록</p>
-        <p className="text-babgray-600">함께 식사할 친구를 찾아보세요.</p>
-      </div>
+    <ConfigProvider locale={locale}>
+      <div className="w-[750px] h-auto py-8 flex flex-col gap-10 mx-auto">
+        <div className="flex flex-col gap-2.5">
+          <p className="text-babgray-900 text-3xl font-bold">매칭 수정</p>
+          <p className="text-babgray-600">매칭 정보를 수정할 수 있습니다.</p>
+        </div>
 
-      <div className="flex flex-col text-babgray-800 p-8 bg-white rounded-2xl shadow-[0px_4px_4px_0px_rgba(0,0,0,0.02)] gap-8">
-        <div className="flex flex-col gap-3">
-          <div className="flex gap-1">
-            <span>매칭 제목</span>
-            <p className="text-bab">*</p>
+        <div className="flex flex-col text-babgray-800 p-8 bg-white rounded-2xl shadow-[0px_4px_4px_0px_rgba(0,0,0,0.02)] gap-8">
+          <div className="flex flex-col gap-3">
+            <div className="flex gap-1">
+              <span>매칭 제목</span>
+              <p className="text-bab">*</p>
+            </div>
+            <div className="flex flex-col gap-1">
+              <input
+                type="text"
+                maxLength={50}
+                placeholder="매칭 게시글 제목을 입력해주세요"
+                value={title}
+                onChange={e => setTitle(e.target.value)}
+                className="px-4 py-3.5 rounded-3xl border border-1 border-offset-[-1px] border-babgray focus:border-bab"
+              />
+              <p className="flex justify-end text-babgray-500 text-xs">
+                {title.length}/50
+              </p>
+            </div>
           </div>
-          <div className="flex flex-col gap-1">
-            {/* 원본 게시글 제목 */}
-            <input
-              type="text"
-              maxLength={50}
-              placeholder="매칭 게시글 제목을 입력해주세요"
-              className="px-4 py-3.5 rounded-3xl outline outline-1 outline-offset-[-1px] outline-babgray focus:outline-bab"
+
+          <div className="flex flex-col gap-3.5">
+            <p>상세 설명</p>
+            <textarea
+              maxLength={500}
+              placeholder="함께 식사하고 싶은 이유나 추가 정보를 입력해주세요"
+              value={content}
+              onChange={e => setContent(e.target.value)}
+              className="h-24 px-4 py-3.5 rounded-3xl border border-1 border-offset-[-1px] border-babgray resize-none focus:border-bab"
             />
-            <p className="flex justify-end text-babgray-500 text-xs">0/50</p>
+            <p className="flex justify-end text-babgray-500 text-xs">
+              {content.length}/500
+            </p>
           </div>
-        </div>
 
-        {/* 상세 설명 */}
-        <div className="flex flex-col gap-3.5">
-          <p>상세 설명</p>
-          {/* 원본 게시글 내용 */}
-          <textarea
-            maxLength={500}
-            placeholder="함께 식사하고 싶은 이유나 추가 정보를 입력해주세요"
-            className="h-24 px-4 py-3.5 rounded-3xl outline outline-1 outline-offset-[-1px] outline-babgray resize-none focus:outline-bab"
-          >
-            안녕하세요! 이태원에 정말 맛있는 스테이크 맛집을 발견했는데, 혼자 가기엔 너무 아쉬워서
-            함께 가실 분들을 찾고있어요. 이 식당은 미디움 레어로 구워주는 스테이크가 정말 일품이고,
-            와인 페어링도 훌륭해요. 분위기도 좋아서 즐거운 대화를 나누며 식사하기에 완벽한 곳입니다.
-            20-30대 직장인분들 환영하며, 맛있는 음식과 함께 좋은 인연도 만들어가요! 참여하고 싶으신
-            분들은 댓글이나 채팅으로 연락 주세요.
-          </textarea>
-          <p className="flex justify-end text-babgray-500 text-xs">0/500</p>
-        </div>
+          <div className="flex justify-between items-center gap-3.5">
+            <div className="w-1/3 flex flex-col gap-3.5">
+              <div className="flex gap-1">
+                <span>날짜</span>
+                <p className="text-bab">*</p>
+              </div>
+              <div className="w flex items-center justify-between rounded-3xl border border-1 border-offset-[-1px] border-babgray">
+                <DatePicker
+                  placeholder="연도-월-일"
+                  value={date}
+                  onChange={setDate}
+                  className="custom-day-picker w-full"
+                />
+              </div>
+            </div>
 
-        {/* 원본 날짜 + 시간 */}
-        <div className="flex justify-between gap-3.5">
-          <div className="flex flex-col gap-3.5">
+            <div className="flex flex-col gap-3.5 w-1/3">
+              <div className=" flex gap-1">
+                <span>시간</span>
+                <p className="text-bab">*</p>
+              </div>
+              <div className=" flex items-center justify-between rounded-3xl border border-1 border-offset-[-1px] border-babgray">
+                <TimePicker
+                  format="HH:mm"
+                  placeholder="00:00"
+                  value={time}
+                  onChange={setTime}
+                  className="custom-bab-time-picker w-full"
+                  classNames={{
+                    popup: { root: 'custom-bab-time-picker-panel' } as any,
+                  }}
+                />
+              </div>
+            </div>
+
+            <div className="w-1/3 flex flex-col items-start gap-4">
+              <div className=" flex gap-1">
+                <span>희망 인원수 (본인 포함)</span>
+                <p className="text-bab">*</p>
+              </div>
+              <div className="flex flex-col gap-2">
+                <div className="flex justify-center gap-3">
+                  {headCounts.map(item => {
+                    const isSelected = selectedHeadCounts === item;
+                    return (
+                      <button
+                        key={item}
+                        type="button"
+                        onClick={() => toggleMembers(item)}
+                        className={`min-w-10 h-10 px-2 rounded-xl flex justify-center items-center text-base font-medium transition 
+                  ${
+                    isSelected
+                      ? 'bg-bab text-white border border-bab'
+                      : 'border border-babgray-300 text-babgray-800 hover:bg-babgray-100'
+                  }`}
+                      >
+                        {item}
+                      </button>
+                    );
+                  })}
+                </div>
+              </div>
+            </div>
+          </div>
+
+          {/* 맛집 선택 */}
+          <div className="flex flex-col items-start gap-3.5">
             <div className="flex gap-1">
-              <span>날짜</span>
-              <p className="text-bab">*</p>
+              <span>맛집 선택</span>
+              <span className="text-bab">*</span>
             </div>
-            <div className="w-[330px] flex items-center justify-between px-4 py-3.5 rounded-3xl outline outline-1 outline-offset-[-1px] outline-babgray">
-              {/* 원본 날짜 불러오기 */}
-              <div className="flex text-babgray-800 font-semibold">2025-12-25</div>
-              <RiCalendarLine />
-            </div>
+
+            {selectedPlace ? (
+              <div className="w-full p-4 rounded-3xl border-2 border-bab bg-bab-50 flex justify-between items-center">
+                <div className="flex flex-col gap-1">
+                  <p className="font-semibold text-babgray-900">{selectedPlace.name}</p>
+                  <p className="text-xs text-babgray-600">{selectedPlace.address}</p>
+                </div>
+                <button
+                  onClick={() => setIsMapModalOpen(true)}
+                  className="text-bab hover:text-bab-600 transition"
+                >
+                  변경
+                </button>
+              </div>
+            ) : (
+              <button
+                onClick={() => setIsMapModalOpen(true)}
+                className="w-full h-48 px-4 py-5 rounded-3xl border-dashed border-2 border-offset-[-1px] border-babgray flex flex-col justify-center items-center gap-4 hover:bg-babgray-50 transition"
+              >
+                <RiMapPinLine className="text-bab w-6 h-6" />
+                <p className="text-babgray-600">지도에서 맛집을 선택해주세요</p>
+              </button>
+            )}
           </div>
 
-          <div className="flex flex-col gap-3.5">
-            <div className="flex gap-1">
-              <span>시간</span>
-              <p className="text-bab">*</p>
+          {/* 매칭 이용 안내 */}
+          <div className="px-3.5 py-4 bg-bab-100 text-bab rounded-lg flex flex-col items-start gap-2.5">
+            <div className="flex items-center gap-1.5">
+              <RiAlarmWarningLine />
+              <p>매칭 이용 안내</p>
             </div>
-            <div className="w-[330px] flex items-center justify-between px-4 py-3.5 rounded-3xl outline outline-1 outline-offset-[-1px] outline-babgray">
-              {/* 원본 시간 불러오기 */}
-              <div className="flex text-babgray-800 font-semibold">19 : 00</div>
-              <RiCalendarLine />
-            </div>
+            <ul className="flex flex-col list-disc text-xs gap-1 px-6">
+              <li>실제 만남 시 안전을 위해 공공장소에서 만나주세요</li>
+              <li>개인정보 보호를 위해 연락처는 매칭 후 공유해주세요</li>
+              <li>노쇼나 갑작스러운 취소는 다른 이용자에게 피해가 됩니다</li>
+              <li>매너있는 만남 문화를 만들어가요</li>
+            </ul>
           </div>
-        </div>
 
-        {/* 희망 인원수 */}
-        <div className="flex flex-col items-start gap-4">
-          <p>희망 인원수 (본인 포함)</p>
-          {/* 원본 선택 상태 불러오기 이후 선택한 인원수 만큼의 방 만들기 */}
-          <div className="flex items-center gap-3">
-            <div className="bg-bab px-3.5 py-2 rounded-lg flex justify-center items-center">
-              <p className="text-white font-medium">2명</p>
-            </div>
-            <div className="bg-babgray px-3.5 py-2 rounded-lg flex justify-center items-center">
-              <p className="text-babgray-700 font-medium">3명</p>
-            </div>
-            <div className="bg-babgray px-3.5 py-2 rounded-lg flex justify-center items-center">
-              <p className="text-babgray-700 font-medium">4명</p>
-            </div>
-            <div className="bg-babgray px-3.5 py-2 rounded-lg flex justify-center items-center">
-              <p className="text-babgray-700 font-medium">5명</p>
-            </div>
-            <div className="bg-babgray px-3.5 py-2 rounded-lg flex justify-center items-center">
-              <p className="text-babgray-700 font-medium">6명 이상</p>
-            </div>
+          {/* 버튼 영역 */}
+          <div className="flex p-6 border-t justify-center items-center gap-6">
+            <ButtonLineMd
+              className="flex-1"
+              onClick={() => navigate(`/member/matching/${matchingId}`)}
+              disabled={isLoading}
+            >
+              취소
+            </ButtonLineMd>
+            <ButtonFillMd className="flex-1" onClick={handleSubmit} disabled={isLoading}>
+              {isLoading ? '수정 중...' : '수정하기'}
+            </ButtonFillMd>
           </div>
-        </div>
 
-        {/* 맛집 선택 */}
-        {/* 영역 클릭시 카카오 지도 */}
-        <div className="flex flex-col items-start gap-3.5">
-          <div className="flex gap-1">
-            <span>맛집 선택</span>
-            <span className="text-bab">*</span>
-          </div>
-          <div className="w-full h-48 px-4 py-5 rounded-3xl outline-dashed outline-2 outline-offset-[-1px] outline-babgray flex flex-col justify-center items-center gap-4">
-            <RiMapPinLine className="text-bab w-6 h-6" />
-            <p className="text-babgray-600">지도에서 맛집을 선택해주세요</p>
-          </div>
-        </div>
-
-        {/* 매칭 이용 안내 */}
-        <div className="px-3.5 py-4 bg-bab-100 text-bab rounded-lg flex flex-col items-start gap-2.5">
-          <div className="flex items-center gap-1.5">
-            <RiAlarmWarningLine />
-            <p>매칭 이용 안내</p>
-          </div>
-          <ul className="flex flex-col list-disc text-xs gap-1 px-6">
-            <li>실제 만남 시 안전을 위해 공공장소에서 만나주세요</li>
-            <li>개인정보 보호를 위해 연락처는 매칭 후 공유해주세요</li>
-            <li>노쇼나 갑작스러운 취소는 다른 이용자에게 피해가 됩니다</li>
-            <li>매너있는 만남 문화를 만들어가요</li>
-          </ul>
-        </div>
-
-        {/* 버튼 영역 */}
-        <div className="flex p-6 border-t justify-center items-center gap-6">
-          {/* 삭제하기 눌렀을때 확인모달 */}
-          <ButtonFillMd
-            className="flex-1 !bg-babbutton-red"
-            onClick={() => navigate('/member/matching')}
-          >
-            삭제하기
-          </ButtonFillMd>
-          {/* 취소하기 눌렀을때 취소확인 모달 */}
-          <ButtonLineMd className="flex-1" onClick={() => navigate('/member')}>
-            취소
-          </ButtonLineMd>
-          {/* 수정하기 눌렀을때 확인모달 */}
-          <ButtonFillMd className="flex-1" onClick={() => navigate('/member/matching/detail')}>
-            수정하기
-          </ButtonFillMd>
+          {/* 에러 메시지 표시 */}
+          {error && (
+            <div className="px-3.5 py-3 bg-red-100 text-red-700 rounded-lg text-sm">{error}</div>
+          )}
         </div>
       </div>
-    </div>
+
+      {/* 지도 모달 */}
+      <MapSearchModal
+        isOpen={isMapModalOpen}
+        onClose={() => setIsMapModalOpen(false)}
+        onSelectPlace={handlePlaceSelect}
+      />
+    </ConfigProvider>
   );
 };
 
