@@ -14,13 +14,14 @@ import { getProfile } from '../../../lib/propile';
 import { supabase } from '../../../lib/supabase';
 import type { Database, Posts } from '../../../types/bobType';
 import { ButtonFillMd } from '../../../ui/button';
+import CommunityCardSkeleton from '../../../ui/sdj/CommunityCardSkeleton';
 import Modal from '../../../ui/sdj/Modal';
 import { BlueTag, GreenTag, PurpleTag } from '../../../ui/tag';
 
 type CategoriesType = Database['public']['Tables']['posts']['Row']['post_category'];
 type CategoryTagType = Database['public']['Tables']['posts']['Row']['tag'];
 
-type PostWithProfile = Posts & {
+export type PostWithProfile = Posts & {
   profiles: { id: string; nickname: string } | null;
   comments: { id: number }[];
 };
@@ -30,7 +31,7 @@ dayjs.locale('ko');
 
 function CommunityPage() {
   const navigate = useNavigate();
-  const { signIn, session, user } = useAuth();
+  const { session, user } = useAuth();
   const [isOpen, setIsOpen] = useState(false);
   const [activeCategory, setActiveCategory] = useState<UiCategory>('전체');
   const [posts, setPosts] = useState<PostWithProfile[]>([]);
@@ -41,7 +42,7 @@ function CommunityPage() {
   const [pageCount, setPageCount] = useState(0);
   const [itemOffset, setItemOffset] = useState(0);
   const [currentPage, setCurrentPage] = useState(0);
-  const itemsPerPage = 4;
+  const itemsPerPage = 10;
   const blockSize = 10;
   const currentBlock = Math.floor(currentPage / blockSize);
   const startPage = currentBlock * blockSize;
@@ -221,7 +222,7 @@ function CommunityPage() {
                   <div
                     key={item.id}
                     onClick={() => handlePostClick(item.id)}
-                    className="w-full h-auto flex flex-col gap-4 bg-white shadow-card rounded-xl2 py-6 px-8 cursor-pointer"
+                    className="w-full h-auto flex flex-col gap-4 bg-white shadow rounded-xl2 py-6 px-8 cursor-pointer"
                   >
                     <div className="flex justify-between">
                       <div>{tagComponents[item.tag as FilteredTag] ?? item.tag}</div>
@@ -245,7 +246,11 @@ function CommunityPage() {
                   </div>
                 ))
               ) : (
-                <p className="text-gray-500 text-center">게시글이 없습니다.</p>
+                <>
+                  {[...Array(10)].map((_, i) => (
+                    <CommunityCardSkeleton key={i} />
+                  ))}
+                </>
               )}
             </div>
           </div>

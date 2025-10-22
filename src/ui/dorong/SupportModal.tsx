@@ -3,9 +3,11 @@ import { ButtonFillMd } from '../button';
 import Modal from '../sdj/Modal';
 import { InputField, TextAreaCustom } from '../../components/InputField';
 import { useAuth } from '../../contexts/AuthContext';
-import type { Profile } from '../../types/bobType';
+import type { HelpInsert, Profile } from '../../types/bobType';
 import { getProfile } from '../../lib/propile';
 import { RiArrowDownSLine } from 'react-icons/ri';
+import { useModal } from '../sdj/ModalState';
+import { supabase } from '../../lib/supabase';
 
 type SupportModalProps = {
   setOpenModal: React.Dispatch<React.SetStateAction<boolean>>;
@@ -23,7 +25,7 @@ const categorys = [
 
 const SupportModal = ({ setOpenModal }: SupportModalProps) => {
   const { user } = useAuth();
-  const [isOpen, setIsOpen] = useState(false);
+  const { closeModal, modal, openModal } = useModal();
   const [title, setTitle] = useState('');
   const [content, setContent] = useState('');
   const [category, setCategory] = useState('');
@@ -33,7 +35,6 @@ const SupportModal = ({ setOpenModal }: SupportModalProps) => {
   const [profileData, setProfileData] = useState<Profile | null>(null);
   // 에러메세지
   const [error, setError] = useState<string>('');
-
 
   // 사용자 프로필 정보
   const loadProfile = async () => {
@@ -59,6 +60,51 @@ const SupportModal = ({ setOpenModal }: SupportModalProps) => {
       setLoading(false);
     }
   };
+
+  const handleSubmit = async () => {
+    try {
+      const {
+        data: { user },
+      } = await supabase.auth.getUser();
+      if (!user) {
+        console.error('로그인된 사용자가 없습니다.');
+        return;
+      }
+
+      const { data: profileData, error: profileError } = await supabase
+        .from('profiles')
+        .select('id, nickname, email')
+        .eq('id', user.id)
+        .single();
+
+      if (profileError || !profileData) {
+        console.error('프로필 정보를 불러오지 못했습니다:', profileError?.message);
+        return;
+      }
+
+      const newHelp = {
+        profile_id: profileData.id,
+        help_type,
+        title,
+        contents: content,
+      };
+
+      const { data, error } = await supabase.from('helps').insert([newHelp]);
+
+      if (error) {
+        console.error('신고 등록 실패:', error.message);
+        return;
+      }
+
+      console.log('신고가 접수되었습니다.', data);
+      // 성공 후 모달 닫기 등 추가 동작
+      closeModal();
+    } catch (err) {
+      console.error('handleSubmit 오류:', err);
+    }
+  };
+
+  // useEffect(() => {}, []);
 
   // id로 닉네임을 받아옴
   useEffect(() => {
@@ -138,26 +184,18 @@ const SupportModal = ({ setOpenModal }: SupportModalProps) => {
               취소
             </ButtonFillMd>
             {/* 누르면 문의 제출 확인 모달 */}
-            <ButtonFillMd
-              className="flex-1 bg-bab hover:bg-bab-600"
-              onClick={() => setIsOpen(true)}
-            >
-              문의하기
-            </ButtonFillMd>
-            {/* 모달의 문의하기 눌렀을때 완료모달 */}
-            <Modal
-              isOpen={isOpen}
-              onClose={() => setIsOpen(false)}
-              titleText="문의하기"
-              contentText="작성된 내용으로 문의 하시겠습니까?"
-              submitButtonText="문의하기"
-              closeButtonText="닫기"
-              submitButtonBgColor="#ff5722"
-              onSubmit={() => {
-                setIsOpen(false);
-                setOpenModal(false);
-              }}
-            />
+            <ButtonFillMd className="flex-1 bg-bab hover:bg-bab-600">문의하기</ButtonFillMd>
+            {modal.isOpen && (
+              <Modal
+                isOpen={modal.isOpen}
+                onClose={closeModal}
+                titleText={modal.title}
+                contentText={modal.content}
+                closeButtonText={modal.closeText}
+                submitButtonText={modal.submitText}
+                onSubmit={modal.onSubmit}
+              />
+            )}
           </div>
         </div>
       </div>

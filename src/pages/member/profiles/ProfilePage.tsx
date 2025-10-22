@@ -390,9 +390,8 @@ function ProfilePage() {
                     내가 쓴 리뷰
                     <RiArrowRightSLine />
                   </Link>
-                  {/* 동재님 링크 수정할부분 */}
                   <Link
-                    to={'/member/profile/myreviews'}
+                    to={'/member/profile/mywrite'}
                     className="flex text-babgray-900 justify-between items-center border border-babgray-150 rounded-[12px] bg-bg-bg p-[20px]"
                   >
                     내가 쓴 게시글

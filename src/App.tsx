@@ -64,6 +64,7 @@ import CommunityEditPage from './pages/member/communitys/CommunityEditPage';
 import MyReviewPage from './pages/member/profiles/MyReviewPage';
 import { MatchingProvider } from './contexts/MatchingContext';
 import MatchingEditPage from './pages/member/matchings/MatchingEditPage';
+import MyWritePage from './pages/member/profiles/MyWritePage';
 
 function App() {
   // supabase.auth.onAuthStateChange((_event, session) => {
@@ -166,6 +167,7 @@ function App() {
                       <Route path="chat" element={<ChatPage />} />
                       <Route path="point" element={<PointPage />} />
                       <Route path="myreviews" element={<MyReviewPage />} />
+                      <Route path="mywrite" element={<MyWritePage />} />
                       <Route path="favorite" element={<FavoritePage />} />
                       <Route path="recentmatching" element={<RecentMatchingPage />} />
                       <Route path="block" element={<BlockPage />} />
