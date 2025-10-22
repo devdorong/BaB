@@ -121,6 +121,43 @@ function FavoritePage() {
             <p className="text-3xl font-bold">즐겨찾는 식당</p>
           </div>
 
+          {/* 검색폼,버튼 */}
+          <div className="flex gap-[8px] justify-start pb-[30px]">
+            <div className="flex gap-[8px] justify-start ">
+              <button
+                onClick={() => {
+                  setSelectedCategory('전체');
+                  setCurrentPage(1);
+                }}
+                className={`px-4 py-2 rounded-full ${
+                  selectedCategory === '전체'
+                    ? 'bg-bab-500 text-white text-[13px]'
+                    : 'bg-babgray-100 text-babgray-700 text-[13px]'
+                }`}
+              >
+                전체
+              </button>
+            </div>
+            <div className="flex gap-[8px] justify-start ">
+              {(interests[FOOD] ?? []).map(cat => (
+                <button
+                  key={cat}
+                  onClick={() => {
+                    setSelectedCategory(cat);
+                    setCurrentPage(1);
+                  }}
+                  className={`px-4 py-2 rounded-full ${
+                    selectedCategory === cat
+                      ? 'bg-bab-500 text-white text-[13px]'
+                      : 'bg-babgray-100 text-babgray-700 text-[13px]'
+                  }`}
+                >
+                  {cat}
+                </button>
+              ))}
+            </div>
+          </div>
+
           {currentItems.length === 0 && (
             <div className="flex justify-center items-center h-64 text-babgray-500 text-lg">
               즐겨찾는 식당이 없습니다.
@@ -129,44 +166,6 @@ function FavoritePage() {
 
           {currentItems.length > 0 && (
             <>
-              {/* 검색폼,버튼 */}
-              <div className="flex gap-[8px] justify-start pb-[30px]">
-                <div className="flex gap-[8px] justify-start ">
-                  <button
-                    onClick={() => {
-                      setSelectedCategory('전체');
-                      setCurrentPage(1);
-                    }}
-                    className={`px-4 py-2 rounded-full ${
-                      selectedCategory === '전체'
-                        ? 'bg-bab-500 text-white text-[13px]'
-                        : 'bg-babgray-100 text-babgray-700 text-[13px]'
-                    }`}
-                  >
-                    전체
-                  </button>
-                </div>
-
-                <div className="flex gap-[8px] justify-start ">
-                  {(interests[FOOD] ?? []).map(cat => (
-                    <button
-                      key={cat}
-                      onClick={() => {
-                        setSelectedCategory(cat);
-                        setCurrentPage(1);
-                      }}
-                      className={`px-4 py-2 rounded-full ${
-                        selectedCategory === cat
-                          ? 'bg-bab-500 text-white text-[13px]'
-                          : 'bg-babgray-100 text-babgray-700 text-[13px]'
-                      }`}
-                    >
-                      {cat}
-                    </button>
-                  ))}
-                </div>
-              </div>
-
               <div className="grid grid-cols-2 gap-[34px]">
                 {currentItems.map(r => {
                   const category = r.interests?.name ?? '';

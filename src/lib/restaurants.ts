@@ -335,3 +335,62 @@ export const getRestaurantById = async (
     return null;
   }
 };
+
+// 사장님 리뷰 댓글 불러오기
+export const fetchReviewComments = async (reviewId: number) => {
+  const { data, error } = await supabase
+    .from('review_comments')
+    .select(
+      `
+      id,
+      review_id,
+      content,
+      created_at,
+      profiles (
+        id,
+        nickname,
+        avatar_url
+      )
+    `,
+    )
+    .eq('review_id', reviewId)
+    .order('created_at', { ascending: true });
+
+  if (error) throw new Error(`댓글 불러오기 실패: ${error.message}`);
+  return data;
+};
+
+// 사장님 리뷰 댓글 작성
+export const insertReviewComment = async (reviewId: number, content: string) => {
+  const {
+    data: { user },
+  } = await supabase.auth.getUser();
+
+  if (!user) return;
+
+  // 리뷰에 댓글이 있는지 확인
+  const { data: existing, error: checkError } = await supabase
+    .from('review_comments')
+    .select('id')
+    .eq('review_id', reviewId)
+    .eq('profile_id', user.id)
+    .maybeSingle();
+
+  if (checkError) throw new Error('댓글 중복 확인 실패');
+  if (existing) throw new Error('이미 댓글 존재');
+  // 새 댓글 작성
+  const { data, error } = await supabase
+    .from('review_comments')
+    .insert({ review_id: reviewId, profile_id: user.id, content })
+    .select(`id,content,created_at,profiles(id,nickname, avatar_url)`)
+    .single();
+
+  if (error) throw new Error(`댓글 작성 실패 : ${error.message}`);
+  return data;
+};
+
+export const deleteReviewComment = async (commentId: number) => {
+  const { error } = await supabase.from('review_comments').delete().eq('id', commentId);
+
+  if (error) throw new Error(`댓글 삭제 실패 ${error.message}`);
+};

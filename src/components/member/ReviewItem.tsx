@@ -37,7 +37,7 @@ function ReviewItem({ restaurantId, reviews }: ReviewItemProps) {
           {/* 상단 헤더 */}
           <div className="flex items-start justify-between">
             <div className="flex items-center gap-3">
-              <div className="w-9 h-9 rounded-full bg-gray-100 overflow-hidden">
+              <div className="w-12 h-12 rounded-full bg-gray-100 overflow-hidden">
                 {review.profiles?.avatar_url && (
                   <img
                     src={

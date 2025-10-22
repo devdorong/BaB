@@ -55,6 +55,7 @@ function PointSkeleton() {
   );
 }
 
+
 function PointPage() {
   const { user } = useAuth();
   const navigate = useNavigate();
