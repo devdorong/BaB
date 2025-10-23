@@ -698,7 +698,7 @@ const MatchingDetailPage = () => {
                           <div>
                             <div className="flex items-center gap-1">
                               <div className={`text-[16px] font-semibold text-babgray-800`}>
-                                {p.profile.name}
+                                {p.profile.nickname}
                               </div>
                               {/* 차단 추가시 사용하기 */}
                               {/* {p.role === 'member' && (

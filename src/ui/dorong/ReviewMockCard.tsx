@@ -153,7 +153,7 @@ export const ReviewCard = ({
           {/* 상단: 태그 + 제목 */}
           <div className="flex flex-col items-start gap-2">
             <TagBadge bgColor={tagBg || 'bg-babgray-100'} textColor={tagText || 'text-babgray-700'}>
-              {category || "카카오등록"}
+              {category || "기타"}
             </TagBadge>
             <Title>{name}</Title>
           </div>

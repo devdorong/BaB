@@ -195,18 +195,48 @@ export const getMatchingParticipants = async (matchingId: number) => {
 };
 
 // 사용자가 참여한 매칭 조회
-export const getUserMatchings = async (profileId: string) => {
-  const { data, error } = await supabase
+// export const getUserMatchings = async (profileId: string) => {
+//   const { data, error } = await supabase
+//     .from('matching_participants')
+//     .select('matchings(*)')
+//     .eq('profile_id', profileId);
+
+//   if (error) {
+//     console.log('getUserMatchings 에러 : ', error.message);
+//     throw new Error(error.message);
+//   }
+
+//   return data ?? [];
+// };
+export const getUserMatchings = async (profileId: string): Promise<Matchings[]> => {
+  const { data: participants, error: partError } = await supabase
     .from('matching_participants')
-    .select('matchings(*)')
+    .select('matching_id')
     .eq('profile_id', profileId);
 
-  if (error) {
-    console.log('getUserMatchings 에러 : ', error.message);
-    throw new Error(error.message);
+  if (partError) {
+    console.error('참여 매칭 조회 실패:', partError.message);
+    throw new Error(partError.message);
   }
 
-  return data ?? [];
+  // 매칭 ID 배열 만들기
+  const matchingIds = participants?.map(p => p.matching_id) ?? [];
+
+  if (matchingIds.length === 0) {
+    return [];
+  }
+
+  const { data: matchings, error: matchError } = await supabase
+    .from('matchings')
+    .select('*')
+    .in('id', matchingIds);
+
+  if (matchError) {
+    console.error('매칭 데이터 조회 실패:', matchError.message);
+    throw new Error(matchError.message);
+  }
+
+  return matchings ?? [];
 };
 
 // 참가자 수 조회

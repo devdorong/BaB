@@ -1,4 +1,4 @@
-import { useState } from 'react';
+import { useEffect, useState } from 'react';
 import {
   RiArrowRightSLine,
   RiCalendarLine,
@@ -9,12 +9,39 @@ import {
 import YetMatchingRecordItem from '../../../components/member/YetMatchingRecordItem';
 import RecentMatchingRecordItem from '../../../components/member/RecentMatchingRecordItem';
 import { useNavigate } from 'react-router-dom';
+import { useAuth } from '../../../contexts/AuthContext';
+import { getUserMatchings } from '../../../services/matchingService';
+import type { Matchings } from '../../../types/bobType';
 
 type TabKey = 'recent' | 'yet';
 
 function RecentMatchingPage() {
   const [tab, setTab] = useState<TabKey>('yet');
   const navigate = useNavigate();
+  const { user } = useAuth();
+  const [matchings, setMatchings] = useState<Matchings[]>([]);
+  const [expectedMatchings, setExpectedMatchings] = useState<Matchings[]>([]);
+  const [endMatchings, setEndMatchings] = useState<Matchings[]>([]);
+
+  useEffect(() => {
+    const fetchUserMatchings = async () => {
+      if (!user) return;
+
+      try {
+        const userMatchings = await getUserMatchings(user.id);
+        const endMatching = userMatchings.filter(item => item.status !== 'waiting');
+        const expectedMatching = userMatchings.filter(item => item.status === 'waiting');
+        console.log('사용자 매칭:', userMatchings);
+        console.log('종료된 매칭:', endMatching);
+        console.log('예정된 매칭:', expectedMatching);
+        setMatchings(userMatchings);
+      } catch (err) {
+        console.error('매칭 불러오기 실패:', err);
+      }
+    };
+
+    fetchUserMatchings();
+  }, [user]);
 
   const base = 'group relative px-4 py-2 pb-3 transition-colors outline-none';
   const active = 'text-bab-500';
