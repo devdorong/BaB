@@ -1,6 +1,6 @@
 import type { Session } from '@supabase/supabase-js';
 import { useEffect } from 'react';
-import { Route, BrowserRouter as Router, Routes } from 'react-router-dom';
+import { Outlet, Route, BrowserRouter as Router, Routes } from 'react-router-dom';
 import ProtectedRoute from './components/ProtectedRoute';
 import { AuthProvider } from './contexts/AuthContext';
 import { PointProvider } from './contexts/PointContext';
@@ -70,6 +70,7 @@ import MyWritePage from './pages/member/profiles/MyWritePage';
 import HelpPage from './pages/member/profiles/HelpPage';
 import { PartnerRestaurantProvider } from './contexts/PartnerRestaurantContext';
 import { MenusProvider } from './contexts/MenuContext';
+import { ProtectedMemberRoute } from './components/ProtectedMemberRoute';
 
 function App() {
   // supabase.auth.onAuthStateChange((_event, session) => {
@@ -166,7 +167,14 @@ function App() {
                       </Route>
                       <Route path="events" element={<EventPage />} />
                       <Route path="support" element={<SupportPage />} />
-                      <Route path="profile">
+                      <Route
+                        path="profile/*"
+                        element={
+                          <ProtectedMemberRoute>
+                            <Outlet />
+                          </ProtectedMemberRoute>
+                        }
+                      >
                         <Route index element={<ProfilePage />} />
                         <Route path="edit" element={<EditPage />} />
                         <Route path="interest" element={<InterestPage />} />

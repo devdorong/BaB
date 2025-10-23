@@ -1,3 +1,10 @@
+@font-face {
+  font-family: 'Noto Sans KR';
+  src: url('/fonts/NotoSansKR.woff2') format('woff2');
+  font-weight: 100 900;
+  font-display: swap;
+}
+
 @tailwind base;
 @tailwind components;
 @tailwind utilities;
@@ -480,7 +487,6 @@ html {
   background-color: #fff !important;
 }
 
-
 @layer base {
   :root {
     --background: 0 0% 100%;
@@ -536,8 +542,6 @@ html {
     --chart-5: 340 75% 55%;
   }
 }
-
-
 
 @layer base {
   * {
