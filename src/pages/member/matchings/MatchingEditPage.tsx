@@ -10,6 +10,7 @@ import MapSearchModal from '../../../components/member/MapSearchModal';
 import { useKakaoLoader } from '../../../hooks/useKakaoLoader';
 import { getMatchingById, updateMatching } from '../../../services/matchingService';
 import { getRestaurantById } from '../../../services/restaurants';
+import { supabase } from '../../../lib/supabase';
 dayjs.locale('ko');
 
 const headCounts = ['2', '3', '4', '5'];
@@ -122,6 +123,12 @@ const MatchingEditPage = () => {
         return;
       }
 
+      const { data: restaurant, error: restError } = await supabase
+        .from('restaurants')
+        .select('id')
+        .eq('kakao_place_id', selectedPlace.id)
+        .single();
+
       // 날짜와 시간 합치기
       const metAt = date
         .hour(time.hour())
@@ -135,8 +142,9 @@ const MatchingEditPage = () => {
         description: content.trim(),
         desired_members: desiredMembers,
         met_at: metAt,
-        restaurant_id: parseInt(selectedPlace.id),
+        restaurant_id: restaurant?.id,
       };
+      console.log(parseInt(selectedPlace.id));
 
       await updateMatching(matchingId, updateData);
       navigate(`/member/matching/${matchingId}`);
@@ -180,9 +188,7 @@ const MatchingEditPage = () => {
                 onChange={e => setTitle(e.target.value)}
                 className="px-4 py-3.5 rounded-3xl border border-1 border-offset-[-1px] border-babgray focus:border-bab"
               />
-              <p className="flex justify-end text-babgray-500 text-xs">
-                {title.length}/50
-              </p>
+              <p className="flex justify-end text-babgray-500 text-xs">{title.length}/50</p>
             </div>
           </div>
 
@@ -195,9 +201,7 @@ const MatchingEditPage = () => {
               onChange={e => setContent(e.target.value)}
               className="h-24 px-4 py-3.5 rounded-3xl border border-1 border-offset-[-1px] border-babgray resize-none focus:border-bab"
             />
-            <p className="flex justify-end text-babgray-500 text-xs">
-              {content.length}/500
-            </p>
+            <p className="flex justify-end text-babgray-500 text-xs">{content.length}/500</p>
           </div>
 
           <div className="flex justify-between items-center gap-3.5">

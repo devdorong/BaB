@@ -206,22 +206,25 @@ const MachingIndex = () => {
             </>
           ) : (
             <>
-              {processedMatchings.slice(0, 4).map((item, index) => {
-                const distance =
-                  userPos && item.latitude && item.longitude
-                    ? getDistance(userPos.lat, userPos.lng, item.latitude, item.longitude)
-                    : '';
-                return (
-                  <MatchCard
-                    key={index}
-                    distance={distance}
-                    {...item}
-                    modal={modal}
-                    openModal={openModal}
-                    closeModal={closeModal}
-                  />
-                );
-              })}
+              {processedMatchings
+                ?.filter(item => item.status === 'waiting')
+                .slice(0, 4)
+                .map((item, index) => {
+                  const distance =
+                    userPos && item.latitude && item.longitude
+                      ? getDistance(userPos.lat, userPos.lng, item.latitude, item.longitude)
+                      : '';
+                  return (
+                    <MatchCard
+                      key={index}
+                      distance={distance}
+                      {...item}
+                      modal={modal}
+                      openModal={openModal}
+                      closeModal={closeModal}
+                    />
+                  );
+                })}
             </>
           )}
         </ul>

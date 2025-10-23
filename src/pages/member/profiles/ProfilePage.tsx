@@ -166,6 +166,10 @@ function ProfilePage() {
     navigate('/member');
   };
 
+  if (!user) {
+    setTimeout(() => navigate('/member'), 0);
+  }
+
   return (
     <div className="flex bg-bg-bg ">
       {/* 프로필 헤더 링크 */}

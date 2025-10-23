@@ -68,7 +68,7 @@ const AddMenuModal = ({ open, onClose, modal, openModal, closeModal }: AddMenuPr
 
   const handleSubmit = async () => {
     try {
-      if (!title.trim() || price <= 0 || !file) {
+      if (!title.trim() || price <= 0) {
         openModal('메뉴추가', '데이터를 모두 채워주세요!', '', '확인', () => closeModal());
         return;
       }

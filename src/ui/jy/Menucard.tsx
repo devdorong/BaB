@@ -78,9 +78,8 @@ export default function MenuCard({
         </div>
 
         {/* 설명 */}
-        {description && (
-          <p className="h-[40px] mt-1 text-[13px] text-gray-600 line-clamp-2">{description}</p>
-        )}
+
+        <p className="h-[40px] mt-1 text-[13px] text-gray-600 line-clamp-2">{description || ''}</p>
 
         {/* 가격 + 태그 */}
         <div className="mt-2 flex items-center justify-between">

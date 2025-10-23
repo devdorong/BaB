@@ -10,6 +10,7 @@ import type { Matchings } from '../../../types/bobType';
 import MatchCardSkeleton from '../../../ui/dorong/MatchCardSkeleton';
 import { categoryColors, defaultCategoryColor } from '../../../ui/jy/categoryColors';
 import { useModal } from '../../../ui/sdj/ModalState';
+import Modal from '../../../ui/sdj/Modal';
 
 dayjs.extend(relativeTime);
 dayjs.locale('ko');
@@ -175,11 +176,12 @@ const MatchingListPage = () => {
     fetchAndProcessMatchings();
   }, [userPos]);
 
+  const waitingMatchings = processedMatchings.filter(item => item.status === 'waiting');
   // 필터링 및 정렬 로직
   const filteredMatchings =
     selectedCategory === '전체'
-      ? processedMatchings
-      : processedMatchings.filter(m => m.category === selectedCategory);
+      ? waitingMatchings
+      : waitingMatchings.filter(m => m.category === selectedCategory);
 
   const sortedMatchings =
     sortOption === '거리순'
@@ -368,6 +370,17 @@ const MatchingListPage = () => {
           </div>
         )}
       </div>
+      {modal.isOpen && (
+        <Modal
+          isOpen={modal.isOpen}
+          onClose={closeModal}
+          titleText={modal.title}
+          contentText={modal.content}
+          closeButtonText={modal.closeText}
+          submitButtonText={modal.submitText}
+          onSubmit={modal.onSubmit}
+        />
+      )}
     </div>
   );
 };

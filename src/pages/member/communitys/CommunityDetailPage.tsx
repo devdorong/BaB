@@ -67,16 +67,14 @@ function CommunityDetailPage() {
   };
 
   const fetchPost = async () => {
+    setLoading(true);
     const { data, error } = await supabase
       .from('posts')
-      .select(
-        `*,
-      profiles (id, nickname, avatar_url)
-    )`,
-      )
+      .select(`*, profiles (id, nickname, avatar_url)`)
       .eq('id', id)
       .single();
-    if (!error && data) setPost(data as unknown as PostWithProfile);
+    if (!error && data) setPost(data);
+    setLoading(false);
   };
 
   const handleSubmit = async (e: React.FormEvent) => {
@@ -215,24 +213,11 @@ function CommunityDetailPage() {
     checkAdmin();
   }, [user, post]);
 
-  const loadPost = async () => {
-    if (!id) return;
-    const { data, error } = await supabase.from('posts').select('*').eq('id', id).single();
-
-    if (error) console.log(error);
-    else setPost(data);
-    setLoading(false);
-  };
-
   useEffect(() => {
     if (post?.id) {
       handleViewCount(post.id);
     }
   }, [post?.id]);
-
-  useEffect(() => {
-    loadPost();
-  }, [id]);
 
   useEffect(() => {
     fetchPost();
