@@ -5,16 +5,12 @@ import { MenusProvider } from '../contexts/MenuContext';
 
 function PartnerLayout() {
   return (
-    <PartnerRestaurantProvider>
-      <MenusProvider>
-        <div className="relative">
-          <PartnerHeader />
-          <main className="ml-[256px] px-[32px] bg-bg-bg py-[141px] pb-[32px] min-h-[calc(100vh/0.9)]">
-            <Outlet />
-          </main>
-        </div>
-      </MenusProvider>
-    </PartnerRestaurantProvider>
+    <div className="relative">
+      <PartnerHeader />
+      <main className="ml-[256px] px-[32px] bg-bg-bg py-[141px] pb-[32px] min-h-[calc(100vh/0.9)]">
+        <Outlet />
+      </main>
+    </div>
   );
 }
 

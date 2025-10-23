@@ -2,6 +2,7 @@ import { motion, AnimatePresence } from 'framer-motion';
 import { useEffect, useRef, useState } from 'react';
 import { RiCloseLine } from 'react-icons/ri';
 import {
+  deleteReadNotification,
   fetchNotificationProfileData,
   handleReadNotification,
   type NotificationsProps,
@@ -34,9 +35,9 @@ export const badgeColors: Record<NotificationsProps['type'], string> = {
 };
 
 export const borderColors: Record<NotificationsProps['type'], string> = {
-  주문: 'bg-bab-500',
-  리뷰: 'bg-yellow-400',
-  시스템: 'bg-babbutton-blue',
+  주문: 'border border-bab-500 border-l-bab-500 text-bab-500',
+  리뷰: 'border border-yellow-400 border-l-yellow-400 text-yellow-600',
+  시스템: 'border border-babbutton-blue border-l-babbutton-blue text-babbutton-blue',
   채팅: 'border border-yellow-400 border-l-yellow-400 text-yellow-600',
   매칭완료: 'border border-[#FF5722] border-l-[#FF5722] text-[#FF5722]',
   댓글: 'border border-green-400 border-l-green-400 text-green-600',
@@ -116,6 +117,7 @@ export default function Notification({ isOpen, onClose, onRead }: NotificationPr
                 const updated = prev.map(n =>
                   n.id === payload.new.id ? (payload.new as NotificationsProps) : n,
                 );
+
                 return updated.sort((a, b) => {
                   if (a.is_read !== b.is_read) return a.is_read ? 1 : -1;
                   return new Date(b.created_at).getTime() - new Date(a.created_at).getTime();
@@ -140,6 +142,19 @@ export default function Notification({ isOpen, onClose, onRead }: NotificationPr
     };
   }, []);
 
+  // 알림창 열때 3일지난 읽은 알림
+  useEffect(() => {
+    if (!isOpen) return;
+    const cleanup = async () => {
+      try {
+        await deleteReadNotification();
+      } catch (err) {
+        console.error('알림 자동 정리 실패:', err);
+      }
+    };
+    cleanup();
+  }, [isOpen]);
+
   // 패널 바깥 클릭 시 닫기
   useEffect(() => {
     const handleClickOutside = (e: MouseEvent) => {
@@ -156,6 +171,26 @@ export default function Notification({ isOpen, onClose, onRead }: NotificationPr
     };
   }, [isOpen, onClose]);
 
+  // 전체 읽음 처리
+  const handleAllClick = async () => {
+    try {
+      // 비동기: 모든 알림 읽음 처리
+      await Promise.all(
+        notification.map(async n => {
+          if (!n.is_read) {
+            await handleReadNotification(n.id);
+          }
+        }),
+      );
+      // 상태 업데이트 (전부 is_read = true)
+      setNotification(prev => prev.map(n => ({ ...n, is_read: true })));
+      // // 상위 콜백 (onRead) 에 전체 처리 알림
+      // onRead?.('all');
+    } catch (err) {
+      console.error('전체 읽음 처리 실패:', err);
+    }
+  };
+
   // 읽음처리
   const handleClick = async (item: NotificationsProps) => {
     try {
@@ -165,8 +200,26 @@ export default function Notification({ isOpen, onClose, onRead }: NotificationPr
       setNotification(prev => prev.map(n => (n.id === item.id ? { ...n, is_read: true } : n)));
       onRead(item.id);
       onClose();
-      if (item.profile_id) {
-        navigate(`/member/profile/chat`);
+      switch (item.type) {
+        case '채팅':
+          navigate(`/member/profile/chat`);
+          break;
+        case '리뷰':
+          if (item.restaurant_id) {
+            navigate(`/partner/review`);
+          }
+          break;
+        case '매칭완료':
+          if (item.restaurant_id) {
+            navigate(`/member/matching/${item.restaurant_id}`);
+          }
+          break;
+        case '이벤트':
+          navigate(`/member/event`);
+          break;
+        default:
+          console.log('알 수 없는 알림 타입:', item.type);
+          break;
       }
     } catch (err) {
       console.log(err);
@@ -192,7 +245,15 @@ export default function Notification({ isOpen, onClose, onRead }: NotificationPr
           >
             {/* 상단 타이틀 */}
             <div className="flex justify-between items-center mb-5">
-              <h2 className="text-lg font-semibold text-bab-500">알림</h2>
+              <div className="flex items-center gap-3">
+                <h2 className="text-lg font-semibold text-bab-500">알림</h2>
+                <span
+                  onClick={handleAllClick}
+                  className="hover:text-bab hover:bg-bab-100 border rounded-full px-2 py-0.5 text-[13px] cursor-pointer"
+                >
+                  모두읽기
+                </span>
+              </div>
               <button onClick={onClose} className="text-gray-400 hover:text-gray-600 transition">
                 <RiCloseLine size={22} />
               </button>
@@ -227,8 +288,10 @@ export default function Notification({ isOpen, onClose, onRead }: NotificationPr
                             <GiftFill bgColor="#4382e7" size={20} />
                           ) : n.type === '매칭취소' ? (
                             <CloseFill bgColor="none" size={20} />
-                          ) : (
+                          ) : n.type === '댓글' ? (
                             <QuestionAnswerFill bgColor="none" size={20} />
+                          ) : (
+                            <StarFill bgColor="none" size={20} />
                           )}
                         </div>
                         {/* <div className="text-lg">{n.title}</div> */}

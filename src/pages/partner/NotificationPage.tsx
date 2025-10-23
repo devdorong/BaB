@@ -41,7 +41,6 @@ export const IconColors: Record<NotificationsProps['type'], string> = {
 };
 
 function NotificationPage() {
-  const [active, setActive] = useState('all');
   const [selectedTypeCategories, setSelectedTypeCategories] = useState<TabId>('전체');
   const [notification, setNotification] = useState<NotificationsProps[]>([]);
 

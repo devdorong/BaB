@@ -84,7 +84,7 @@ export const insertReview = async ({
           rating_food,
         },
       ])
-      .select('review_id')
+      .select('*')
       .single();
 
     if (reviewError || !review) throw new Error('리뷰 생성 실패');
@@ -96,7 +96,7 @@ export const insertReview = async ({
         receiver_id: restaurant.profile_id,
         title: '새로운 리뷰가 등록되었습니다.',
         content: `${nickname}님이 새로운 리뷰를 남겼습니다.`,
-        target: 'partner',
+        target: 'all',
         type: '리뷰',
         restaurant_id: restaurantId,
       },
