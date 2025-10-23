@@ -62,6 +62,25 @@ export const updateMatching = async (
 };
 // 매칭 삭제 (soft delete)
 export const deleteMatching = async (matchingId: number): Promise<void> => {
+  const {
+    data: { user },
+    error: userError,
+  } = await supabase.auth.getUser();
+
+  if (userError) throw userError;
+  if (!user) throw new Error('로그인 상태가 아닙니다.');
+
+  // 매칭 참가자 정보 불러오기
+  const { data: matchingUser, error: matchingUserError } = await supabase
+    .from('matching_participants')
+    .select('profile_id')
+    .eq('matching_id', matchingId);
+
+  if (matchingUserError || !matchingUser?.length) {
+    console.error('매칭 참가자 정보 불러올 수 없음');
+    return;
+  }
+
   const { data: matching, error: matchingError } = await supabase
     .from('matchings')
     .select('id, status')
@@ -86,6 +105,24 @@ export const deleteMatching = async (matchingId: number): Promise<void> => {
   if (updateError) {
     console.error('매칭 상태 업데이트 실패:', updateError.message);
     throw new Error(updateError.message);
+  }
+
+  const notification = matchingUser
+    .filter(u => u.profile_id !== user.id)
+    .map(u => ({
+      profile_id: user.id,
+      receiver_id: u.profile_id,
+      title: '매칭연결이 취소되었습니다.',
+      content: '',
+      target: 'all',
+      type: '매칭취소',
+    }));
+
+  if (notification.length > 0) {
+    const { error: notificationError } = await supabase.from('notifications').insert(notification);
+    if (notificationError) {
+      console.log(notificationError.message);
+    }
   }
 
   console.log(`매칭 ${matchingId} → cancel 처리 완료`);
@@ -148,6 +185,31 @@ export const addMatchingParticipant = async (
   // 4. 정원 도달 시 상태 업데이트
   if (currentCount + 1 === matching.desired_members) {
     await updateMatching(matchingId, { status: 'completed' });
+
+    // 매칭 참가자 정보 불러오기
+    const { data: matchingUser, error: matchingUserError } = await supabase
+      .from('matching_participants')
+      .select('profile_id')
+      .eq('matching_id', matchingId);
+
+    if (matchingUserError || !matchingUser?.length) {
+      console.error('매칭 참가자 정보 불러올 수 없음');
+      return;
+    }
+
+    const notification = matchingUser.map(u => ({
+      profile_id: profileId,
+      receiver_id: u.profile_id,
+      title: '매칭연결이 완료되었습니다.',
+      content: '',
+      target: 'all',
+      type: '매칭완료',
+    }));
+    const { error: notificationError } = await supabase.from('notifications').insert(notification);
+
+    if (notificationError) {
+      console.log(notificationError.message);
+    }
   }
 };
 
