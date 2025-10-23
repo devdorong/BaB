@@ -1,4 +1,5 @@
-import { useEffect, useMemo, useState } from 'react';
+import dayjs from 'dayjs';
+import { useEffect, useState } from 'react';
 import {
   RiArrowRightSLine,
   RiCalendarLine,
@@ -11,10 +12,9 @@ import OkCancelModal from '../../../components/member/OkCancelModal';
 import { useAuth } from '../../../contexts/AuthContext';
 import { supabase } from '../../../lib/supabase';
 import type { Profile_Blocks } from '../../../types/bobType';
-import { UserForbidLine } from '../../../ui/Icon';
-import dayjs from 'dayjs';
-import { useModal } from '../../../ui/sdj/ModalState';
+import CommunityCardSkeleton from '../../../ui/sdj/CommunityCardSkeleton';
 import Modal from '../../../ui/sdj/Modal';
+import { useModal } from '../../../ui/sdj/ModalState';
 
 type BlockProfile = Profile_Blocks & {
   blocked_profile: {
@@ -27,20 +27,23 @@ function BlockPage() {
   const { closeModal, modal, openModal } = useModal();
   const { user } = useAuth();
   const navigate = useNavigate();
-  const [blockedList, setBlockedList] = useState<BlockProfile[]>([]);
-  const [viewModal, setViewModal] = useState(false);
 
+  const [blockedList, setBlockedList] = useState<BlockProfile[]>([]);
+  const [loading, setLoading] = useState(true);
+  const [viewModal, setViewModal] = useState(false);
   const [thisMonthCount, setThisMonthCount] = useState(0);
 
   useEffect(() => {
     const fetchData = async () => {
+      setLoading(true);
       const { data, error } = await supabase
         .from('profile_blocks')
         .select(`*, blocked_profile:blocked_profile_id ( id, nickname )`)
         .eq('profile_id', user?.id);
 
       if (error) {
-        console.log(`유저정보를 불러오는데 실패했습니다. : ${error.message}`);
+        console.error(`유저정보를 불러오는데 실패했습니다: ${error.message}`);
+        setLoading(false);
         return;
       }
 
@@ -55,11 +58,13 @@ function BlockPage() {
       });
 
       setThisMonthCount(filtered?.length ?? 0);
+      setLoading(false);
     };
 
     if (user?.id) fetchData();
   }, [user?.id, modal]);
 
+  // 차단 해제
   const handleUnblock = async (blockId: number, nickname: string) => {
     openModal('차단 해제', `${nickname}님의 차단을 해제하시겠습니까?`, '취소', '해제', async () => {
       const { error } = await supabase.from('profile_blocks').delete().eq('id', blockId);
@@ -71,7 +76,7 @@ function BlockPage() {
   };
 
   return (
-    <div id="root" className="min-h-screen bg-bg-bg ">
+    <div id="root" className="min-h-screen bg-bg-bg">
       {/* 프로필 헤더 링크 */}
       <div className="flex flex-col w-[1280px] m-auto">
         <div className="flex py-[15px]">
@@ -83,13 +88,15 @@ function BlockPage() {
           </div>
           <div className="flex pt-[3px] items-center text-babgray-600 px-[5px] text-[17px]">
             <RiArrowRightSLine />
-          </div>{' '}
+          </div>
           <div className="text-bab-500 text-[17px]">차단</div>
         </div>
+
         <div className="mt-[20px] mb-[60px]">
           <div className="flex gap-[40px] items-start">
-            {/* 왼쪽 카드 */}
+            {/* 왼쪽 카드 영역 */}
             <div className="flex flex-col gap-[20px] items-center justify-center">
+              {/* 총 차단 사용자 */}
               <div className="inline-flex w-[260px] p-[25px] flex-col justify-center items-center bg-white rounded-[16px] shadow-[0px_4px_4px_0px_rgba(0,0,0,0.02)]">
                 <div className="flex gap-[15px] flex-col items-center justify-center">
                   <div className="flex w-[40px] h-[40px] p-[10px] bg-red-100 rounded-[12px] justify-center items-center">
@@ -99,6 +106,8 @@ function BlockPage() {
                   <p className="text-[16px] text-babgray-800">총 차단 사용자</p>
                 </div>
               </div>
+
+              {/* 이번 달 차단 */}
               <div className="inline-flex w-[260px] p-[25px] flex-col justify-center items-center bg-white rounded-[16px] shadow-[0px_4px_4px_0px_rgba(0,0,0,0.02)]">
                 <div className="flex gap-[15px] flex-col items-center justify-center">
                   <div className="flex w-[40px] h-[40px] p-[10px] bg-[#FFEEE8] rounded-[12px] justify-center items-center">
@@ -109,8 +118,10 @@ function BlockPage() {
                 </div>
               </div>
             </div>
-            {/* 오른쪽 카드 */}
+
+            {/* 오른쪽 카드 영역 */}
             <div className="flex flex-col w-full gap-[30px] justify-center">
+              {/* 안내 카드 */}
               <div className="inline-flex w-full p-[25px] flex-col justify-center bg-white rounded-[16px] shadow-[0px_4px_4px_0px_rgba(0,0,0,0.02)]">
                 <div className="flex gap-[20px]">
                   <div className="flex w-[40px] h-[40px] p-[10px] bg-red-100 rounded-[12px] justify-center items-center">
@@ -127,10 +138,13 @@ function BlockPage() {
                   </div>
                 </div>
               </div>
+
+              {/* 차단자 목록 */}
               <div className="inline-flex w-full p-[25px] flex-col justify-center bg-white rounded-[16px] shadow-[0px_4px_4px_0px_rgba(0,0,0,0.02)]">
-                {/* 차단자 */}
                 <div className="flex flex-col gap-[20px]">
-                  {blockedList && blockedList.length > 0 ? (
+                  {loading ? (
+                    [...Array(1)].map((_, i) => <CommunityCardSkeleton key={i} />)
+                  ) : blockedList.length > 0 ? (
                     blockedList.map(item => (
                       <div
                         key={item.id}
@@ -138,14 +152,12 @@ function BlockPage() {
                       >
                         {/* 왼쪽 사용자 정보 */}
                         <div className="flex items-center gap-5">
-                          {/* 프로필 이미지/아이콘 */}
                           <div className="w-12 h-12 flex items-center justify-center bg-gray-100 rounded-full">
                             <span className="text-xl text-gray-700">
                               <RiUserForbidLine />
                             </span>
                           </div>
 
-                          {/* 이름 + 차단일 */}
                           <div className="flex flex-col">
                             <span className="text-base font-medium text-gray-900">
                               {item.blocked_profile?.nickname}
@@ -177,6 +189,8 @@ function BlockPage() {
           </div>
         </div>
       </div>
+
+      {/* 모달 */}
       {modal.isOpen && (
         <Modal
           isOpen={modal.isOpen}
@@ -188,6 +202,7 @@ function BlockPage() {
           onSubmit={modal.onSubmit}
         />
       )}
+
       {viewModal && (
         <div className="w-full">
           <OkCancelModal

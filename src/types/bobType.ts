@@ -60,6 +60,11 @@ export type Help = Database['public']['Tables']['helps']['Row'];
 export type HelpInsert = Database['public']['Tables']['helps']['Insert'];
 export type HelpUpdate = Database['public']['Tables']['helps']['Update'];
 
+// 1대1 문의 답변 테이블
+export type HelpComment = Database['public']['Tables']['help_comments']['Row'];
+export type HelpCommentInsert = Database['public']['Tables']['help_comments']['Insert'];
+export type HelpCommentUpdate = Database['public']['Tables']['help_comments']['Update'];
+
 // 배너 테이블
 export type Banner = Database['public']['Tables']['banners']['Row'];
 export type BannerInsert = Database['public']['Tables']['banners']['Insert'];
@@ -560,6 +565,52 @@ export type Database = {
         };
         Relationships: [];
       };
+      help_comments: {
+        Row: {
+          content: string;
+          created_at: string;
+          help_id: number;
+          id: number;
+          profile_id: string;
+        };
+        Insert: {
+          content: string;
+          created_at?: string;
+          help_id: number;
+          id?: number;
+          profile_id: string;
+        };
+        Update: {
+          content?: string;
+          created_at?: string;
+          help_id?: number;
+          id?: number;
+          profile_id?: string;
+        };
+        Relationships: [
+          {
+            foreignKeyName: 'help_comments_help_id_fkey';
+            columns: ['help_id'];
+            isOneToOne: false;
+            referencedRelation: 'helps';
+            referencedColumns: ['help_id'];
+          },
+          {
+            foreignKeyName: 'help_comments_profile_id_fkey';
+            columns: ['profile_id'];
+            isOneToOne: false;
+            referencedRelation: 'nickname_profiles';
+            referencedColumns: ['id'];
+          },
+          {
+            foreignKeyName: 'help_comments_profile_id_fkey';
+            columns: ['profile_id'];
+            isOneToOne: false;
+            referencedRelation: 'profiles';
+            referencedColumns: ['id'];
+          },
+        ];
+      };
       helps: {
         Row: {
           contents: string;
@@ -567,6 +618,7 @@ export type Database = {
           help_id: number;
           help_type: Database['public']['Enums']['help_type_enum'];
           profile_id: string;
+          status: boolean | null;
           title: string;
           updated_at: string | null;
         };
@@ -576,6 +628,7 @@ export type Database = {
           help_id?: number;
           help_type: Database['public']['Enums']['help_type_enum'];
           profile_id: string;
+          status?: boolean | null;
           title: string;
           updated_at?: string | null;
         };
@@ -585,6 +638,7 @@ export type Database = {
           help_id?: number;
           help_type?: Database['public']['Enums']['help_type_enum'];
           profile_id?: string;
+          status?: boolean | null;
           title?: string;
           updated_at?: string | null;
         };
@@ -1723,10 +1777,7 @@ export type Database = {
       };
     };
     Functions: {
-      check_email_exists: {
-        Args: { p_email: string };
-        Returns: boolean;
-      };
+      check_email_exists: { Args: { p_email: string }; Returns: boolean };
     };
     Enums: {
       event_badge_enum: 'HOT' | '신규';
