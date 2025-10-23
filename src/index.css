@@ -1,24 +1,19 @@
 @font-face {
   font-family: 'Noto Sans KR';
-  src: url('NotoSansKR-Medium.woff2') format('woff2');
+  src: url('/fonts/NotoSansKR-Regular.woff2') format('woff2');
+  font-weight: 400;
+  font-display: swap;
+}
+@font-face {
+  font-family: 'Noto Sans KR';
+  src: url('/fonts/NotoSansKR-Medium.woff2') format('woff2');
   font-weight: 500;
-  font-style: normal;
   font-display: swap;
 }
-
 @font-face {
   font-family: 'Noto Sans KR';
-  src: url('NotoSansKR-Bold.woff2') format('woff2');
-  font-weight: bold;
-  font-style: normal;
-  font-display: swap;
-}
-
-@font-face {
-  font-family: 'Noto Sans KR';
-  src: url('NotoSansKR-Regular.woff2') format('woff2');
-  font-weight: normal;
-  font-style: normal;
+  src: url('/fonts/NotoSansKR-Bold.woff2') format('woff2');
+  font-weight: 700;
   font-display: swap;
 }
 
@@ -41,7 +36,7 @@ html,
 body,
 #root {
   height: 100%;
-  font-family: 'NotoSansKR-VariableFont_wght';
+  font-family: 'Noto Sans KR', sans-serif;
 }
 html {
   zoom: 0.9;
@@ -94,12 +89,6 @@ html {
   --border: 0 0% 0%;
   --primary: 62 100% 50%; /* 노랑 */
   --primary-fg: 0 0% 0%;
-}
-
-@font-face {
-  font-family: 'NotoSansKR-VariableFont_wght';
-  font-weight: normal;
-  src: url('./fonts/NotoSansKR-VariableFont_wght.ttf') format('truetype');
 }
 
 /* src/index.css 같은 곳에 */

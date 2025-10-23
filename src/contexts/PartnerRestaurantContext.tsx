@@ -1,18 +1,16 @@
-import { createContext, useContext, useState, useEffect } from 'react';
-import type { Database } from '../types/bobType';
+import { createContext, useContext, useEffect, useState } from 'react';
 import { getMyRestaurant } from '../services/restaurants';
-
-type Restaurant = Database['public']['Tables']['restaurants']['Row'];
+import type { Restaurants } from '../types/bobType';
 
 interface PartnerRestaurantContextType {
-  restaurant: Restaurant | null;
+  restaurant: Restaurants | null;
   refreshRestaurant: () => Promise<void>;
 }
 
 const PartnerRestaurantContext = createContext<PartnerRestaurantContextType | undefined>(undefined);
 
 export const PartnerRestaurantProvider = ({ children }: { children: React.ReactNode }) => {
-  const [restaurant, setRestaurant] = useState<Restaurant | null>(null);
+  const [restaurant, setRestaurant] = useState<Restaurants | null>(null);
 
   const refreshRestaurant = async () => {
     const data = await getMyRestaurant();

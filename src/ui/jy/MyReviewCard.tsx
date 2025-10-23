@@ -55,7 +55,7 @@ export default function MyreviewCard({
         <div className="flex flex-col gap-1">
           <span className="flex">
             <TagBadge bgColor={tagBg || 'bg-babgray-100'} textColor={tagText || 'text-babgray-700'}>
-              {category || '카카오등록'}
+              {category || '기타'}
             </TagBadge>
           </span>
           <h3 className="text-[20px] md:text-[22px] font-semibold tracking-tight text-black line-clamp-1">

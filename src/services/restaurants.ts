@@ -1,10 +1,8 @@
 import { supabase } from '../lib/supabase';
-import type { Database, Interests } from '../types/bobType';
-
-type Restaurant = Database['public']['Tables']['restaurants']['Row'];
+import type { Database, Interests, Restaurants } from '../types/bobType';
 
 // 레스토랑 불러오기
-export const getMyRestaurant = async (): Promise<Restaurant | null> => {
+export const getMyRestaurant = async (): Promise<Restaurants | null> => {
   try {
     const {
       data: { user },
@@ -17,7 +15,7 @@ export const getMyRestaurant = async (): Promise<Restaurant | null> => {
       .from('restaurants')
       .select('*')
       .eq('profile_id', user.id)
-      .single();
+      .maybeSingle();
 
     if (error && error.code !== 'PGRST116') throw error;
     return data ?? null;
@@ -29,7 +27,7 @@ export const getMyRestaurant = async (): Promise<Restaurant | null> => {
 
 export const getRestaurantById = async (
   restaurantId: number,
-): Promise<(Restaurant & { interests?: Interests | null }) | null> => {
+): Promise<(Restaurants & { interests?: Interests | null }) | null> => {
   const { data, error } = await supabase
     .from('restaurants')
     .select('*')
