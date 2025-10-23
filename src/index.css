@@ -1,7 +1,24 @@
 @font-face {
   font-family: 'Noto Sans KR';
-  src: url('/fonts/NotoSansKR.woff2') format('woff2');
-  font-weight: 100 900;
+  src: url('NotoSansKR-Medium.woff2') format('woff2');
+  font-weight: 500;
+  font-style: normal;
+  font-display: swap;
+}
+
+@font-face {
+  font-family: 'Noto Sans KR';
+  src: url('NotoSansKR-Bold.woff2') format('woff2');
+  font-weight: bold;
+  font-style: normal;
+  font-display: swap;
+}
+
+@font-face {
+  font-family: 'Noto Sans KR';
+  src: url('NotoSansKR-Regular.woff2') format('woff2');
+  font-weight: normal;
+  font-style: normal;
   font-display: swap;
 }
 
