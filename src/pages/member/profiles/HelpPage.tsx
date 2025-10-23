@@ -134,7 +134,7 @@ function HelpPage() {
                           )}
 
                           <div className="flex flex-col">
-                            <span className="text-base font-medium text-gray-900">
+                            <span className="text-base font-medium truncate w-[70vh] text-gray-900">
                               {item.title}
                             </span>
                             <span className="text-sm text-gray-600">
@@ -162,8 +162,8 @@ function HelpPage() {
           </div>
         </div>
       </div>
-      {helpDetailModal && <HelpDetailModal />}
-      {modal.isOpen && (
+      {helpDetailModal && <HelpDetailModal isOpen={() => setHelpDetailModal(false)} />}
+      {/* {modal.isOpen && (
         <Modal
           isOpen={modal.isOpen}
           onClose={closeModal}
@@ -173,7 +173,7 @@ function HelpPage() {
           submitButtonText={modal.submitText}
           onSubmit={modal.onSubmit}
         />
-      )}
+      )} */}
     </div>
   );
 }
