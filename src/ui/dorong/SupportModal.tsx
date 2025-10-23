@@ -59,7 +59,7 @@ const SupportModal = ({ setOpenModal }: SupportModalProps) => {
   };
 
   const handleCancel = () => {
-    if (!title.trim() || !content.trim() || !category) {
+    if (title.trim() || content.trim() || category) {
       openModal(
         '문의 취소',
         '작성중인 문의내용을 저장하지않고 닫으시겠습니까?',
@@ -70,6 +70,8 @@ const SupportModal = ({ setOpenModal }: SupportModalProps) => {
           setOpenModal(false);
         },
       );
+    } else {
+      setOpenModal(false);
     }
   };
 
