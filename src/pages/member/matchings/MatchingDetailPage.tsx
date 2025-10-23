@@ -18,14 +18,24 @@ import type { Badge } from '../../../components/MatchCard';
 import { useKakaoLoader } from '../../../hooks/useKakaoLoader';
 import { getProfile } from '../../../lib/propile';
 import {
+  addMatchingParticipant,
+  deleteMatching,
   getMatchingParticipants,
   getMatchings,
   getParticipantCount,
   getSimilarMatchingsWithRestaurant,
+  removeMatchingParticipant,
   updateMatching,
 } from '../../../services/matchingService';
 import { getRestaurantById, getRestaurantReviewStats } from '../../../services/restaurants';
-import type { Matchings, MatchingsUpdate, Profile, Restaurants } from '../../../types/bobType';
+import type {
+  Database,
+  Matching_Participants,
+  Matchings,
+  MatchingsUpdate,
+  Profile,
+  Restaurants,
+} from '../../../types/bobType';
 import TagBadge from '../../../ui/TagBadge';
 import { ButtonFillLG, ButtonLineLg, ButtonLineMd } from '../../../ui/button';
 import KkoMapDetail from '../../../ui/jy/Kakaomapdummy';
@@ -41,6 +51,7 @@ import type { PGProvider } from '../../../components/payment/paymentService'; //
 import PaymentModal from '../../../components/payment/PaymentModal'; // 결제 모달 컴포넌트
 import { BankCardLine } from '../../../ui/Icon';
 import { InterestBadge } from '../../../ui/tag';
+import ReportsModal from '../../../ui/sdj/ReportsModal';
 
 type ProcessedMatching = Matchings & {
   tags: Badge[];
@@ -83,6 +94,7 @@ type SimilarMatchingWithRestaurant = Matchings & {
     interests: { name: string } | null;
   };
 };
+export type ReportsType = Database['public']['Tables']['reports']['Insert']['report_type'];
 
 const DEFAULT_AVATAR = 'https://www.gravatar.com/avatar/?d=mp&s=200';
 
@@ -92,24 +104,24 @@ const MatchingDetailPage = () => {
   const isMapLoaded = useKakaoLoader();
   const { id } = useParams<{ id: string }>();
   const matchingId = parseInt(id || '0', 10);
+
+  useEffect(() => {
+    if (!user) {
+      navigate('/member/matching', { replace: true });
+    }
+  }, [user, navigate]);
+
   const [originMatch, setOriginMatch] = useState<Matchings | null>(null);
   const [matchingData, setMatchingData] = useState<ProcessedMatching | null>(null);
-  const [dumy, setDumy] = useState<ProcessedMatchingData | null>(null);
   const [similarMatchings, setSimilarMatchings] = useState<SimilarMatchingWithRestaurant[]>([]);
   const [loading, setLoading] = useState(true);
   const [userData, setUserData] = useState<Profile>();
   const [headCount, setHeadCount] = useState(0);
 
   const { closeModal, modal, openModal, x } = useModal();
+
   const [restaurant, setRestaurant] = useState<Restaurants | null>(null);
-  const [members, setMembers] = useState<
-    {
-      id: any;
-      profile_id: any;
-      joined_at: any;
-      role: any;
-    }[]
-  >([]);
+  const [members, setMembers] = useState<Omit<Matching_Participants, 'matching_id'>[]>([]);
   const [rating, setRating] = useState<
     | {
         restaurantId: number;
@@ -125,7 +137,17 @@ const MatchingDetailPage = () => {
       }
   >();
   const [membersWithProfiles, setMembersWithProfiles] = useState<MemberWithProfile[]>([]);
-
+  const [reports, setReports] = useState(false);
+  const [reportInfo, setReportInfo] = useState<{
+    type: ReportsType;
+    nickname: string | null;
+    targetProfileId?: string;
+  }>({
+    type: '매칭',
+    nickname: null,
+    targetProfileId: undefined,
+  });
+  const [isParticipant, setIsParticipant] = useState(false);
   /** 결제 모달 열림/닫힘 상태 */
   const [isPaymentModalOpen, setIsPaymentModalOpen] = useState(false);
 
@@ -232,10 +254,22 @@ const MatchingDetailPage = () => {
         const currentMatching = matchings.find(m => m.id === matchingId);
 
         if (!currentMatching) {
-          setLoading(false);
+          console.warn(`존재하지 않는 매칭 ID 접근: ${matchingId}`);
+          navigate('/member/matching', { replace: true });
+          return; // ← 바로 중단
+        }
+
+        if (currentMatching.status !== 'waiting') {
+          console.warn(`취소된 매칭 접근: ${matchingId}`);
+          navigate('/member/matching', { replace: true });
           return;
         }
 
+        if (currentMatching.id !== matchingId) {
+          console.warn(`잘못된 매칭 ID 접근: param=${matchingId}, data=${currentMatching.id}`);
+          navigate('/member/matching', { replace: true });
+          return;
+        }
         // 3단계: 레스토랑 정보 가져오기
         const restaurantData = await getRestaurantById(currentMatching.restaurant_id);
 
@@ -270,23 +304,8 @@ const MatchingDetailPage = () => {
         };
         const processedMatch: Matchings = { ...currentMatching };
 
-        const processedMatchingData: ProcessedMatchingData = {
-          ...currentMatching,
-          label: categoryName,
-          bgClass: categoryColor.bg,
-          textClass: categoryColor.text,
-          title: currentMatching.title || restaurantData.name,
-          description: currentMatching.description || restaurantData.storeintro || '',
-          distanceKm: 0,
-          area: restaurantData.address || '위치 정보 없음',
-          timeAgo: currentMatching.created_at ? formatTimeAgo(currentMatching.created_at) : '',
-          latitude: restaurantData.latitude || 0,
-          longitude: restaurantData.longitude || 0,
-        };
-
         setMatchingData(processedMatching);
         setRestaurant(restaurantData);
-        setDumy(processedMatchingData);
         setOriginMatch(processedMatch);
 
         // 6단계: 호스트 프로필 가져오기
@@ -296,6 +315,7 @@ const MatchingDetailPage = () => {
         }
       } catch (error) {
         console.error('매칭 상세 데이터 로드 중 에러:', error);
+        navigate('/member/matching', { replace: true });
       } finally {
         setLoading(false);
       }
@@ -330,6 +350,8 @@ const MatchingDetailPage = () => {
         );
 
         setMembersWithProfiles(detailed);
+        const joined = detailed.some(p => p.profile_id === user?.id);
+        setIsParticipant(joined);
         console.log('프로필 포함 참가자:', detailed);
         console.log('로그인한 정보', user);
       } catch (err) {
@@ -375,6 +397,119 @@ const MatchingDetailPage = () => {
         await updateMatching(matchingId, updated);
       },
     );
+  };
+
+  const handleDeleteMatching = async () => {
+    openModal('매칭 삭제', '매칭을 정말 삭제하시겠습니까?', '취소', '삭제하기', async () => {
+      try {
+        await deleteMatching(matchingId);
+        closeModal();
+        openModal(
+          '삭제 완료',
+          '매칭이 성공적으로 삭제되었습니다.',
+          '닫기',
+          '',
+          () => {},
+          () =>
+            setTimeout(() => {
+              navigate('/member/matching');
+            }, 0),
+        );
+      } catch (error) {
+        console.error('매칭 삭제 중 오류:', error);
+        openModal('오류 발생', '매칭을 삭제하는 중 문제가 발생했습니다.', '닫기');
+      }
+    });
+  };
+
+  const handleParticipation = async () => {
+    openModal(
+      '매칭 참여',
+      '매칭에 참여하시겠습니까?',
+      ' 취소',
+      '참가하기',
+      // 참가 신청시
+      async () => {
+        try {
+          await addMatchingParticipant(matchingId, user!.id);
+          closeModal();
+          openModal(
+            '매칭 참여',
+            '매칭에 참여했습니다. 자세한 설명은 호스트에게 1대1 문의해주세요.',
+            '',
+            '확인',
+            () => navigate('/member/profile/recentmatching'),
+          );
+        } catch (error) {
+          console.log('매칭 참가중 오류 발생: ', error);
+          openModal('오류 발생', '매칭 참가에 실패하였습니다. 다시 시도해주세요.', '닫기');
+        }
+      },
+      // 취소 버튼 누를시
+      () => {},
+    );
+  };
+  const handleLeave = async () => {
+    openModal(
+      '매칭 참여',
+      '참가한 매칭에서 나가시겠습니까?',
+      '취소',
+      '나가기',
+      // 나가기 클릭시
+      async () => {
+        try {
+          if (!user) {
+            return;
+          }
+          await removeMatchingParticipant(matchingId, user!.id);
+          setMembersWithProfiles(prev => prev.filter(p => p.profile_id !== user.id));
+          setHeadCount(prev => prev - 1);
+          setIsParticipant(false);
+          closeModal();
+          openModal('매칭 참여', '참가된 매칭에서 나왔습니다.', '', '확인', () => {
+            closeModal();
+          });
+        } catch (error) {
+          console.log('매칭 참가중 오류 발생: ', error);
+          openModal('오류 발생', '매칭 참가에 실패하였습니다. 다시 시도해주세요.', '닫기');
+        }
+      },
+      // 취소 버튼 누를시
+      () => {},
+    );
+  };
+
+  const handleReport = async (
+    type: ReportsType,
+    title: string,
+    reason: string,
+    targetProfileId: string | undefined,
+  ) => {
+    if (!user) {
+      openModal('로그인 확인', '로그인이 필요합니다.', '닫기');
+      return;
+    }
+
+    if (!targetProfileId) {
+      openModal('사용자 정보', '신고 대상 정보를 불러오는데 실패했습니다.', '닫기');
+      return;
+    }
+
+    const { error } = await supabase.from('reports').insert([
+      {
+        reporter_id: user.id,
+        accused_profile_id: targetProfileId,
+        reason: `${title.trim()} - ${reason.trim()}`,
+        report_type: type,
+      },
+    ]);
+
+    if (error) {
+      console.error('신고 실패:', error);
+      openModal('오류', '신고 중 오류가 발생했습니다.', '닫기');
+    } else {
+      openModal('신고완료', '신고가 접수되었습니다.', '닫기');
+    }
   };
 
   if (loading || !matchingData || !restaurant) {
@@ -607,12 +742,27 @@ const MatchingDetailPage = () => {
                     </>
                   ) : (
                     <>
-                      <ButtonFillLG
-                        className="w-full"
-                        style={{ fontWeight: 600, borderRadius: '12px' }}
-                      >
-                        참여 신청하기
-                      </ButtonFillLG>
+                      {isParticipant ? (
+                        <>
+                          <ButtonFillLG
+                            className="w-full"
+                            style={{ fontWeight: 600, borderRadius: '12px' }}
+                            onClick={handleLeave}
+                          >
+                            참여 취소하기
+                          </ButtonFillLG>
+                        </>
+                      ) : (
+                        <>
+                          <ButtonFillLG
+                            className="w-full"
+                            style={{ fontWeight: 600, borderRadius: '12px' }}
+                            onClick={handleParticipation}
+                          >
+                            참여 신청하기
+                          </ButtonFillLG>
+                        </>
+                      )}
                     </>
                   )}
 
@@ -649,6 +799,7 @@ const MatchingDetailPage = () => {
                       <ButtonLineLg
                         className="w-full"
                         style={{ fontWeight: 600, borderRadius: '12px' }}
+                        onClick={handleDeleteMatching}
                       >
                         <div className="inline-flex items-center justify-center gap-1.5 font-semibold rounded-[12px] leading-none">
                           삭제하기
@@ -661,8 +812,16 @@ const MatchingDetailPage = () => {
                       <ButtonLineLg
                         className="w-full"
                         style={{ fontWeight: 600, borderRadius: '12px' }}
+                        onClick={() => {
+                          setReportInfo({
+                            type: '매칭',
+                            nickname: userData?.nickname ?? null, // 매칭 작성자
+                            targetProfileId: userData?.id, // 호스트 프로필 ID
+                          });
+                          setReports(true);
+                        }}
                       >
-                        <div className="inline-flex items-center justify-center gap-1.5 font-semibold rounded-[12px] leading-none">
+                        <div className="inline-flex items-center justify-center gap-1.5 font-semibold rounded-[12px] leading-none ">
                           <RiFlagLine className="w-4 h-4 shrink-0 relative top-[1px]" />
                           신고하기
                         </div>
@@ -769,6 +928,16 @@ const MatchingDetailPage = () => {
           </div>
         </div>
       </div>
+      {reports && (
+        <ReportsModal
+          setReports={setReports}
+          targetNickname={reportInfo.nickname ?? ''}
+          handleReport={(type, title, reason) =>
+            handleReport(type, title, reason, reportInfo.targetProfileId)
+          }
+          reportType={reportInfo.type}
+        />
+      )}
       {modal.isOpen && (
         <Modal
           isOpen={modal.isOpen}

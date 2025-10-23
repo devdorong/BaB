@@ -1,6 +1,7 @@
 import { supabase } from '../lib/supabase';
 import type { Matchings, MatchingsInsert, MatchingsUpdate } from '../types/bobType';
 
+// 모든 매칭 불러오기
 export const getMatchings = async (): Promise<Matchings[]> => {
   const { data, error } = await supabase
     .from('matchings')
@@ -13,6 +14,7 @@ export const getMatchings = async (): Promise<Matchings[]> => {
   return data ?? [];
 };
 
+// 매칭 아이디로 매칭 정보 불러오기
 export const getMatchingById = async (matchingId: number): Promise<Matchings> => {
   const { data, error } = await supabase
     .from('matchings')
@@ -26,6 +28,7 @@ export const getMatchingById = async (matchingId: number): Promise<Matchings> =>
   return data ?? null;
 };
 
+// 매칭 생성
 export const createMatching = async (newMatching: MatchingsInsert): Promise<number> => {
   const { data, error } = await supabase
     .from('matchings')
@@ -46,6 +49,7 @@ export const createMatching = async (newMatching: MatchingsInsert): Promise<numb
   return data?.id;
 };
 
+// 매칭 업데이트
 export const updateMatching = async (
   matchingId: number,
   updatedMatching: MatchingsUpdate,
@@ -56,13 +60,35 @@ export const updateMatching = async (
     throw new Error(error.message);
   }
 };
-
+// 매칭 삭제 (soft delete)
 export const deleteMatching = async (matchingId: number): Promise<void> => {
-  const { error } = await supabase.from('matchings').delete().eq('id', matchingId);
-  if (error) {
-    console.log('deleteMatching 에러 : ', error.message);
-    throw new Error(error.message);
+  const { data: matching, error: matchingError } = await supabase
+    .from('matchings')
+    .select('id, status')
+    .eq('id', matchingId)
+    .single();
+
+  if (matchingError) {
+    console.error('매칭 삭제 에러:', matchingError.message);
+    throw new Error(matchingError.message);
   }
+
+  if (matching.status === 'cancel') {
+    console.warn('이미 취소된 매칭입니다.');
+    return;
+  }
+
+  const { error: updateError } = await supabase
+    .from('matchings')
+    .update({ status: 'cancel' })
+    .eq('id', matchingId);
+
+  if (updateError) {
+    console.error('매칭 상태 업데이트 실패:', updateError.message);
+    throw new Error(updateError.message);
+  }
+
+  console.log(`매칭 ${matchingId} → cancel 처리 완료`);
 };
 
 // 참가자 추가
@@ -209,6 +235,7 @@ type SimilarMatchingWithRestaurant = Matchings & {
   };
 };
 
+// 비슷한 매칭 찾기
 export const getSimilarMatchings = async (
   currentMatchingId: number,
   restaurantId: number,
