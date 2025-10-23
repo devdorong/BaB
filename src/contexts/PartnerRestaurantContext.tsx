@@ -1,6 +1,7 @@
 import { createContext, useContext, useEffect, useState } from 'react';
 import { getMyRestaurant } from '../services/restaurants';
 import type { Restaurants } from '../types/bobType';
+import { useAuth } from './AuthContext';
 
 interface PartnerRestaurantContextType {
   restaurant: Restaurants | null;
@@ -11,13 +12,14 @@ const PartnerRestaurantContext = createContext<PartnerRestaurantContextType | un
 
 export const PartnerRestaurantProvider = ({ children }: { children: React.ReactNode }) => {
   const [restaurant, setRestaurant] = useState<Restaurants | null>(null);
-
+  const { user } = useAuth();
   const refreshRestaurant = async () => {
     const data = await getMyRestaurant();
     setRestaurant(data);
   };
 
   useEffect(() => {
+    if (!user) return;
     refreshRestaurant();
   }, []);
 

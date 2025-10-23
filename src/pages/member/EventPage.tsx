@@ -169,7 +169,8 @@ function EventPage() {
       }
       setAdmin(data.role === 'admin');
     };
-    checkAdmin(user?.id);
+    if (!user) return;
+    checkAdmin(user.id);
   }, [user, events]);
 
   useEffect(() => {
