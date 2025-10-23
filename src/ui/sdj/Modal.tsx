@@ -23,8 +23,9 @@ export interface ModalProps {
   submitButtonBgColor?: string;
   closeButtonTextColor?: string;
   submitButtonTextColor?: string;
-  submitButtonText?: string;
-  closeButtonText?: string;
+  submitButtonText?: React.ReactNode;
+  closeButtonText?: React.ReactNode;
+  onX?: () => void;
 }
 
 const Modal: React.FC<ModalProps> = ({
@@ -39,14 +40,22 @@ const Modal: React.FC<ModalProps> = ({
   submitButtonBgColor = '#ff5722',
   closeButtonTextColor = '#5C5C5C',
   submitButtonTextColor = '#ffffff',
+  onX,
 }) => {
   if (!isOpen) return null;
 
   useEffect(() => {
-    document.body.style.overflow = isOpen ? 'hidden' : 'auto';
+    if (isOpen) {
+      document.body.style.overflowX = 'hidden'; // X 스크롤 막기
+      document.body.style.overflowY = 'hidden'; // Y 스크롤 막기
+    } else {
+      document.body.style.overflowX = 'hidden'; // X는 항상 막기
+      document.body.style.overflowY = 'auto'; // Y는 원상복구
+    }
 
     return () => {
-      document.body.style.overflow = 'auto';
+      document.body.style.overflowX = 'hidden'; // X는 계속 막기
+      document.body.style.overflowY = 'auto'; // Y는 복원
     };
   }, [isOpen]);
 
@@ -56,7 +65,10 @@ const Modal: React.FC<ModalProps> = ({
         <div className="flex items-center justify-between p-8 border-b border-b-babgray ">
           <p className="font-bold">{titleText}</p>
           <div>
-            <RiCloseFill onClick={onClose} className="text-babgray-300 cursor-pointer" />
+            <RiCloseFill
+              onClick={onX ? onX : onClose}
+              className="text-babgray-300 cursor-pointer"
+            />
           </div>
         </div>
         <div className="flex justify-center items-center">
@@ -69,12 +81,10 @@ const Modal: React.FC<ModalProps> = ({
             </ButtonFillMd>
           )}
           {closeButtonText && (
-
             <ButtonFillMd
               onClick={onClose}
               className="w-full flex-1 !text-babgray-700 !bg-babgray-200"
             >
-
               {closeButtonText}
             </ButtonFillMd>
           )}

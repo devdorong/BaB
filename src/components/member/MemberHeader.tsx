@@ -185,23 +185,25 @@ const MemberHeader = () => {
                     onClose={() => setIsOpen(false)}
                     onRead={handleReadNotification}
                   />
-
+                </div>
+                <div className="flex relative items-center">
                   {isAdmin && (
                     <GrayButtonFillSm
                       style={{
                         position: 'absolute',
-                        left: '50px',
+                        left: '30px',
                         fontSize: '13px',
                       }}
                     >
                       <Link to={'/admin'}>관리자</Link>
                     </GrayButtonFillSm>
                   )}
+
                   {isPartner && (
                     <ButtonFillSm
                       style={{
                         position: 'absolute',
-                        left: '50px',
+                        left: '30px',
                         fontSize: '13px',
                       }}
                     >

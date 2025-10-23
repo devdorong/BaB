@@ -1,4 +1,4 @@
-import { useEffect, useState } from 'react';
+import { useEffect, useMemo, useState } from 'react';
 import {
   RiArrowRightSLine,
   RiCalendarLine,
@@ -13,6 +13,11 @@ import { supabase } from '../../../lib/supabase';
 import type { Profile_Blocks } from '../../../types/bobType';
 import { UserForbidLine } from '../../../ui/Icon';
 import dayjs from 'dayjs';
+<<<<<<< HEAD
+=======
+import { useModal } from '../../../ui/sdj/ModalState';
+import Modal from '../../../ui/sdj/Modal';
+>>>>>>> a81aa2b59ab9c434fb24f529ba38ef75ee34866f
 
 type BlockProfile = Profile_Blocks & {
   blocked_profile: {
@@ -22,10 +27,13 @@ type BlockProfile = Profile_Blocks & {
 };
 
 function BlockPage() {
+  const { closeModal, modal, openModal } = useModal();
   const { user } = useAuth();
   const navigate = useNavigate();
   const [blockedList, setBlockedList] = useState<BlockProfile[]>([]);
   const [viewModal, setViewModal] = useState(false);
+
+  const [thisMonthCount, setThisMonthCount] = useState(0);
 
   useEffect(() => {
     const fetchData = async () => {
@@ -36,34 +44,33 @@ function BlockPage() {
 
       if (error) {
         console.log(`유저정보를 불러오는데 실패했습니다. : ${error.message}`);
+        return;
       }
-      return setBlockedList(data || []);
+
+      setBlockedList(data || []);
+
+      const currentMonth = dayjs().month() + 1;
+      const currentYear = dayjs().year();
+
+      const filtered = data?.filter(item => {
+        const d = dayjs(item.block_date);
+        return d.year() === currentYear && d.month() + 1 === currentMonth;
+      });
+
+      setThisMonthCount(filtered?.length ?? 0);
     };
+
     if (user?.id) fetchData();
-  }, [user?.id]);
+  }, [user?.id, modal]);
 
-  const handleUnblock = async (blockId: number) => {
-    const { error } = await supabase.from('profile_blocks').delete().eq('id', blockId);
+  const handleUnblock = async (blockId: number, nickname: string) => {
+    openModal('차단 해제', `${nickname}님의 차단을 해제하시겠습니까?`, '취소', '해제', async () => {
+      const { error } = await supabase.from('profile_blocks').delete().eq('id', blockId);
 
-    if (error) console.error('차단 해제 실패:', error.message);
-    else setBlockedList(prev => prev.filter(b => b.id !== blockId));
-  };
-
-  const modalText = () => {
-    return (
-      <div className="w-full  bg-white border-none rounded-[16px] flex flex-col items-center gap-[13px] ">
-        <UserForbidLine bgColor="#FFEDD5" color="#ff5722" size={20} padding={14} />
-        <span>차단 해제</span>
-        <div className="flex flex-col items-center">
-          <span className="text-babgray-600 text-[14px] font-normal ">
-            도로롱님의 차단을 해제하시겠습니까?
-          </span>
-          <span className="text-babgray-600 text-[14px] font-normal">
-            차단 해제 후 해당 사용자가 다시 메시지를 보낼 수 있습니다.
-          </span>
-        </div>
-      </div>
-    );
+      if (error) console.error('차단 해제 실패:', error.message);
+      else setBlockedList(prev => prev.filter(b => b.id !== blockId));
+      closeModal();
+    });
   };
 
   return (
@@ -91,7 +98,7 @@ function BlockPage() {
                   <div className="flex w-[40px] h-[40px] p-[10px] bg-red-100 rounded-[12px] justify-center items-center">
                     <RiUserForbidLine className="w-[20px] h-[20px] text-babbutton-red" />
                   </div>
-                  <p className="text-[24px] font-bold">4</p>
+                  <p className="text-[24px] font-bold">{blockedList.length}</p>
                   <p className="text-[16px] text-babgray-800">총 차단 사용자</p>
                 </div>
               </div>
@@ -100,7 +107,7 @@ function BlockPage() {
                   <div className="flex w-[40px] h-[40px] p-[10px] bg-[#FFEEE8] rounded-[12px] justify-center items-center">
                     <RiCalendarLine className="w-[20px] h-[20px] text-[#EA580C]" />
                   </div>
-                  <p className="text-[24px] font-bold">4</p>
+                  <p className="text-[24px] font-bold">{thisMonthCount}</p>
                   <p className="text-[16px] text-babgray-800">이번 달 차단</p>
                 </div>
               </div>
@@ -126,6 +133,7 @@ function BlockPage() {
               <div className="inline-flex w-full p-[25px] flex-col justify-center bg-white rounded-[16px] shadow-[0px_4px_4px_0px_rgba(0,0,0,0.02)]">
                 {/* 차단자 */}
                 <div className="flex flex-col gap-[20px]">
+<<<<<<< HEAD
                   {blockedList.map(item => (
                     <div
                       key={item.id}
@@ -155,18 +163,66 @@ function BlockPage() {
                       <button
                         onClick={() => handleUnblock(item.id)}
                         className="flex items-center gap-2 px-4 py-2 bg-gray-100 text-gray-700 rounded-lg hover:bg-gray-200 transition"
+=======
+                  {blockedList && blockedList.length > 0 ? (
+                    blockedList.map(item => (
+                      <div
+                        key={item.id}
+                        className="flex justify-between items-center p-5 bg-white rounded-xl border border-gray-200"
+>>>>>>> a81aa2b59ab9c434fb24f529ba38ef75ee34866f
                       >
-                        <RiUserUnfollowLine className="w-4 h-4" />
-                        <span className="text-sm font-medium">차단 해제</span>
-                      </button>
-                    </div>
-                  ))}
+                        {/* 왼쪽 사용자 정보 */}
+                        <div className="flex items-center gap-5">
+                          {/* 프로필 이미지/아이콘 */}
+                          <div className="w-12 h-12 flex items-center justify-center bg-gray-100 rounded-full">
+                            <span className="text-xl text-gray-700">
+                              <RiUserForbidLine />
+                            </span>
+                          </div>
+
+                          {/* 이름 + 차단일 */}
+                          <div className="flex flex-col">
+                            <span className="text-base font-medium text-gray-900">
+                              {item.blocked_profile?.nickname}
+                            </span>
+                            <span className="text-sm text-gray-600">
+                              차단일 : {dayjs(item.block_date).format('YYYY-MM-DD')}
+                            </span>
+                          </div>
+                        </div>
+
+                        {/* 차단 해제 버튼 */}
+                        <button
+                          onClick={() =>
+                            handleUnblock(item.id, item.blocked_profile?.nickname ?? '사용자')
+                          }
+                          className="flex items-center gap-2 px-4 py-2 bg-gray-100 text-gray-700 rounded-lg hover:bg-gray-200 transition"
+                        >
+                          <RiUserUnfollowLine className="w-4 h-4" />
+                          <span className="text-sm font-medium">차단 해제</span>
+                        </button>
+                      </div>
+                    ))
+                  ) : (
+                    <p className="text-gray-600 text-center py-5">차단된 사용자가 없습니다.</p>
+                  )}
                 </div>
               </div>
             </div>
           </div>
         </div>
       </div>
+      {modal.isOpen && (
+        <Modal
+          isOpen={modal.isOpen}
+          onClose={closeModal}
+          titleText={modal.title}
+          contentText={modal.content}
+          closeButtonText={modal.closeText}
+          submitButtonText={modal.submitText}
+          onSubmit={modal.onSubmit}
+        />
+      )}
       {viewModal && (
         <div className="w-full">
           <OkCancelModal
@@ -175,7 +231,6 @@ function BlockPage() {
             onSubmit={() => {
               setViewModal(false);
             }}
-            contentText={modalText()}
             submitButtonText="해제"
             closeButtonText="취소"
           />

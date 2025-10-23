@@ -38,23 +38,32 @@ function CommunityEditPage() {
       return;
     }
 
-    const { data, error } = await supabase
-      .from('posts')
-      .update({
-        post_category: activeCategory,
-        tag: categoryBadgeMap[activeCategory as CategoriesType],
-        title,
-        content,
-      })
-      .eq('id', id);
+    if (title || content) {
+      openModal(
+        '수정 확인',
+        '수정된 내용으로 게시글을 수정하시겠습니까?',
+        '취소',
+        '수정',
+        async () => {
+          const { data, error } = await supabase
+            .from('posts')
+            .update({
+              post_category: activeCategory,
+              tag: categoryBadgeMap[activeCategory as CategoriesType],
+              title,
+              content,
+            })
+            .eq('id', id);
 
-    if (error) {
-      openModal('수정 실패', '게시글 수정 중 오류가 발생했습니다.', '닫기');
-      return;
-    } else {
-      openModal('수정 완료', '게시글이 성공적으로 수정되었습니다.', '', '확인', () => {
-        navigate(-1);
-      });
+          if (error) {
+            openModal('수정 실패', '게시글 수정 중 오류가 발생했습니다.', '닫기');
+            return;
+          }
+          openModal('수정 완료', '게시글이 성공적으로 수정되었습니다.', '닫기', '', () => {
+            navigate(-1);
+          });
+        },
+      );
     }
   };
 
