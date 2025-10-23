@@ -3,7 +3,7 @@ import { ButtonFillMd } from '../button';
 import Modal from '../sdj/Modal';
 import { InputField, TextAreaCustom } from '../../components/InputField';
 import { useAuth } from '../../contexts/AuthContext';
-import type { HelpInsert, Profile } from '../../types/bobType';
+import type { Database, HelpInsert, Profile } from '../../types/bobType';
 import { getProfile } from '../../lib/propile';
 import { RiArrowDownSLine } from 'react-icons/ri';
 import { useModal } from '../sdj/ModalState';
@@ -13,7 +13,10 @@ type SupportModalProps = {
   setOpenModal: React.Dispatch<React.SetStateAction<boolean>>;
 };
 
-const categorys = [
+export type HelpCategory = Database['public']['Tables']['helps']['Row']['help_type'];
+export type HelpCategoryWithEmpty = HelpCategory | '';
+
+const categorys: HelpCategory[] = [
   '계정 관련',
   '결제/환불 관련',
   '매칭/이용 관련',
@@ -28,36 +31,45 @@ const SupportModal = ({ setOpenModal }: SupportModalProps) => {
   const { closeModal, modal, openModal } = useModal();
   const [title, setTitle] = useState('');
   const [content, setContent] = useState('');
-  const [category, setCategory] = useState('');
-  const [nickname, setNickname] = useState(''); // 로딩
+  const [category, setCategory] = useState<HelpCategoryWithEmpty>('');
+  const [nickname, setNickname] = useState('');
   const [loading, setLoading] = useState<boolean>(true);
-  // 사용자 프로필
-  const [profileData, setProfileData] = useState<Profile | null>(null);
-  // 에러메세지
-  const [error, setError] = useState<string>('');
 
-  // 사용자 프로필 정보
+  const [profileData, setProfileData] = useState<Profile | null>(null);
+
   const loadProfile = async () => {
     if (!user?.id) {
-      setError('사용자정보 없음');
+      openModal('사용자 정보', '사용자 정보 없음', '닫기');
       setLoading(false);
       return;
     }
     try {
-      // 사용자 정보 가져오기
       const tempData = await getProfile(user?.id);
       if (!tempData) {
-        // null의 경우
-        setError('사용자 프로필 정보 찾을 수 없음');
+        openModal('사용자 정보', '사용자 프로필 정보 찾을 수 없음', '닫기');
         return;
       }
-      // 사용자 정보 유효함
       setNickname(tempData.nickname || '');
       setProfileData(tempData);
     } catch (error) {
-      setError('프로필 호출 오류');
+      console.log('프로필 호출 오류 : ', error);
     } finally {
       setLoading(false);
+    }
+  };
+
+  const handleCancel = () => {
+    if (!title.trim() || !content.trim() || !category) {
+      openModal(
+        '문의 취소',
+        '작성중인 문의내용을 저장하지않고 닫으시겠습니까?',
+        '취소',
+        '확인',
+        () => {
+          closeModal();
+          setOpenModal(false);
+        },
+      );
     }
   };
 
@@ -67,46 +79,68 @@ const SupportModal = ({ setOpenModal }: SupportModalProps) => {
         data: { user },
       } = await supabase.auth.getUser();
       if (!user) {
-        console.error('로그인된 사용자가 없습니다.');
+        openModal('사용자 정보', '로그인된 사용자가 없습니다.', '닫기');
         return;
       }
 
       const { data: profileData, error: profileError } = await supabase
         .from('profiles')
-        .select('id, nickname, email')
+        .select('*')
         .eq('id', user.id)
         .single();
 
       if (profileError || !profileData) {
+        openModal('사용자 정보', '프로필 정보를 불러오지 못했습니다.', '닫기');
         console.error('프로필 정보를 불러오지 못했습니다:', profileError?.message);
         return;
       }
+      openModal('문의 확인', '작성된 내용으로 문의하시겠습니까?', '취소', '확인', async () => {
+        if (!category.trim()) {
+          openModal('문의 확인', '문의 유형을 선택 해주세요.', '확인');
+          return;
+        }
+        if (!title.trim() || !content.trim()) {
+          openModal('문의 확인', '제목 또는 문의내용을 입력 해주세요.', '확인');
+          return;
+        }
+        const newHelp: HelpInsert = {
+          profile_id: profileData.id,
+          help_type: category as HelpCategory,
+          title,
+          contents: content,
+        };
 
-      const newHelp = {
-        profile_id: profileData.id,
-        help_type,
-        title,
-        contents: content,
-      };
+        const { error } = await supabase.from('helps').insert([newHelp]);
 
-      const { data, error } = await supabase.from('helps').insert([newHelp]);
+        if (error) {
+          openModal('문의 실패', '문의 등록 실패.', '닫기');
+          console.error('문의 등록 실패 : ', error.message);
+          return;
+        }
 
-      if (error) {
-        console.error('신고 등록 실패:', error.message);
-        return;
-      }
-
-      console.log('신고가 접수되었습니다.', data);
-      // 성공 후 모달 닫기 등 추가 동작
-      closeModal();
+        openModal('문의 완료', '문의가 완료되었습니다.', '닫기');
+        closeModal();
+        setOpenModal(false);
+      });
     } catch (err) {
       console.error('handleSubmit 오류:', err);
     }
   };
 
-  // useEffect(() => {}, []);
+  useEffect(() => {
+    if (modal) {
+      document.body.style.overflowX = 'hidden';
+      document.body.style.overflowY = 'hidden';
+    } else {
+      document.body.style.overflowX = 'hidden';
+      document.body.style.overflowY = 'auto';
+    }
+    return () => {
+      document.body.style.overflowX = 'hidden';
+      document.body.style.overflowY = 'auto';
+    };
+  }, [modal]);
 
-  // id로 닉네임을 받아옴
   useEffect(() => {
     loadProfile();
   }, [user?.id]);
@@ -137,11 +171,13 @@ const SupportModal = ({ setOpenModal }: SupportModalProps) => {
             <div className="w-full h-12 bg-white items-center relative">
               <select
                 value={category}
-                onChange={e => setCategory(e.target.value)}
+                onChange={e => setCategory(e.target.value as HelpCategoryWithEmpty)}
                 required
                 className="w-full h-[50px] rounded-[25px] border border-gray-300 px-3 pr-10 text-gray-700 focus:outline-none focus:ring-2 focus:ring-bab-500 appearance-none"
               >
-                <option value="">문의 유형</option>
+                <option value="" disabled>
+                  문의 유형을 선택해주세요.
+                </option>
                 {categorys.map(y => (
                   <option key={y} value={y}>
                     {y}
@@ -175,16 +211,16 @@ const SupportModal = ({ setOpenModal }: SupportModalProps) => {
           </div>
 
           <div className="w-full inline-flex items-center gap-4">
-            {/* 취소 버튼 클릭시 확인모달 */}
             <ButtonFillMd
               style={{ backgroundColor: '#e5e7eb', color: '#5C5C5C' }}
               className="flex-1 hover:!bg-gray-300"
-              onClick={() => setOpenModal(false)}
+              onClick={handleCancel}
             >
               취소
             </ButtonFillMd>
-            {/* 누르면 문의 제출 확인 모달 */}
-            <ButtonFillMd className="flex-1 bg-bab hover:bg-bab-600">문의하기</ButtonFillMd>
+            <ButtonFillMd onClick={handleSubmit} className="flex-1 bg-bab hover:bg-bab-600">
+              문의하기
+            </ButtonFillMd>
             {modal.isOpen && (
               <Modal
                 isOpen={modal.isOpen}
