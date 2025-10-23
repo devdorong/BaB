@@ -25,8 +25,10 @@ import { toggleFavorite } from '../../../services/RestReviewService';
 import { ButtonFillLG, ButtonLineLg } from '../../../ui/button';
 import { categoryColors, defaultCategoryColor } from '../../../ui/jy/categoryColors';
 import { InterestBadge } from '../../../ui/tag';
+import ReviewMenu from '../../../components/member/ReviewMenu';
+import WriteReviewDetailComment from '../../../components/member/WriteReviewDetailComment';
 
-type TabKey = 'review' | 'info';
+type TabKey = 'review' | 'info' | 'menus';
 const FOOD = '음식 종류';
 
 function ReviewDetailPage() {
@@ -181,7 +183,6 @@ function ReviewDetailPage() {
   // 리뷰 등록 후 새로고침
   const loadReviews = async () => {
     const data = await fetchRestaurantReviews(restaurant!.id);
-    setReviews(data);
 
     const avg =
       data.length > 0 ? data.reduce((sum, r) => sum + (r.rating_food ?? 0), 0) / data.length : 0;
@@ -337,6 +338,17 @@ function ReviewDetailPage() {
             정보
             <span className={underlineClass(tab === 'info')} />
           </button>
+
+          {/* 메뉴 */}
+          <button
+            role="menus"
+            aria-selected={tab === 'menus'}
+            onClick={() => setTab('menus')}
+            className={`${base} ${tab === 'menus' ? active : inactive}`}
+          >
+            메뉴
+            <span className={underlineClass(tab === 'menus')} />
+          </button>
         </nav>
 
         {/* 탭 콘텐츠 */}
@@ -344,7 +356,7 @@ function ReviewDetailPage() {
           <section className="mt-10 space-y-4">
             {restaurant && <ReviewItem restaurantId={restaurant.id} reviews={reviews} />}
           </section>
-        ) : (
+        ) : tab === 'info' ? (
           <InfoSection
             restPhone={restaurant?.phone}
             restAddress={restaurant?.address}
@@ -354,6 +366,8 @@ function ReviewDetailPage() {
             lat={restaurant?.latitude}
             lng={restaurant?.longitude}
           />
+        ) : (
+          restaurant && <ReviewMenu restaurantId={restaurant.id} />
         )}
       </div>
       {restaurant && (
@@ -361,9 +375,6 @@ function ReviewDetailPage() {
           restaurantId={restaurant.id}
           open={writeOpen}
           onClose={() => setWriteOpen(false)}
-          onSubmit={data => {
-            console.log('리뷰 제출', data);
-          }}
           onSuccess={() => loadReviews()}
         />
       )}

@@ -68,9 +68,14 @@ function ReviewPage() {
       ? localReviews
       : localReviews.filter(r => Number(r.rating_food ?? 0) === Number(selectedRating));
 
-  const sortedReviews = [...filteredReviews]
-    .filter(r => r.rating_food !== null)
-    .sort((a, b) => Number(b.rating_food ?? 0) - Number(a.rating_food ?? 0));
+  const sortedReviews =
+    selectedRating === '전체'
+      ? [...filteredReviews].sort(
+          (a, b) => new Date(b.created_at).getTime() - new Date(a.created_at).getTime(),
+        ) // 전체일 땐 날짜순
+      : [...filteredReviews].sort(
+          (a, b) => Number(b.rating_food ?? 0) - Number(a.rating_food ?? 0),
+        ); // 평점 선택 시 별점순
 
   return (
     <>

@@ -25,12 +25,6 @@ const NotificationList = ({
   const navigate = useNavigate();
   const [loading, setLoading] = useState(true);
 
-  // 카테고리 필터 적용
-  const filtered =
-    selectedTypeCategories === '전체'
-      ? notification
-      : notification.filter(item => item.type === selectedTypeCategories);
-
   const loadNotification = async () => {
     try {
       await fetchNotificationData();

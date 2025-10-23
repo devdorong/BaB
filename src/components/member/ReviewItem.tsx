@@ -2,6 +2,9 @@ import React, { useEffect, useState } from 'react';
 import { RiChatSmile3Line, RiHeart3Line, RiStarFill } from 'react-icons/ri';
 import { fetchRestaurantReviews, type ReviewWithPhotos } from '../../lib/restaurants';
 import ReviewContent from './ReviewContent';
+import WriteReviewComment from '../partner/WriteReviewComment';
+import { useRestaurant } from '../../contexts/PartnerRestaurantContext';
+import WriteReviewDetailComment from './WriteReviewDetailComment';
 
 interface ReviewItemProps {
   restaurantId: number;
@@ -12,6 +15,8 @@ function ReviewItem({ restaurantId, reviews }: ReviewItemProps) {
   const [localReviews, setLocalReviews] = useState<ReviewWithPhotos[]>([]);
 
   useEffect(() => {
+    if (!restaurantId) return;
+
     if (reviews && reviews.length > 0) {
       setLocalReviews(reviews);
       return;
@@ -72,11 +77,12 @@ function ReviewItem({ restaurantId, reviews }: ReviewItemProps) {
           </div>
 
           {/* 내용 */}
+
           <ReviewContent comment={review.comment ?? ''} />
 
           {/* 이미지 섹션 */}
           {review.review_photos?.length > 0 && (
-            <div className="mt-4 flex flex-wrap gap-5">
+            <div className="flex flex-wrap gap-5">
               {review.review_photos.map(photo => (
                 <div
                   key={photo.photo_id}
@@ -91,6 +97,7 @@ function ReviewItem({ restaurantId, reviews }: ReviewItemProps) {
               ))}
             </div>
           )}
+          <WriteReviewDetailComment reviewId={review.review_id} />
         </div>
       ))}
     </>

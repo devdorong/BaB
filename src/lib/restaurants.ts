@@ -386,6 +386,48 @@ export const insertReviewComment = async (reviewId: number, content: string) => 
     .single();
 
   if (error) throw new Error(`댓글 작성 실패 : ${error.message}`);
+
+  // 리뷰 작성자 가져오기
+  const { data: reviewData, error: reviewError } = await supabase
+    .from('reviews')
+    .select('profile_id, restaurant_id')
+    .eq('review_id', reviewId)
+    .single();
+
+  if (reviewError || !reviewData) {
+    console.error('리뷰 작성자 정보를 불러올 수 없습니다.');
+    return;
+  }
+
+  const { data: restaurantData, error: restError } = await supabase
+    .from('restaurants')
+    .select('name')
+    .eq('id', reviewData.restaurant_id)
+    .single();
+
+  if (restError || !restaurantData) {
+    return;
+  }
+
+  const reviewAuthorId = reviewData.profile_id;
+  const restaurantName = restaurantData.name;
+
+  // 댓글 알림 추가
+  const { error: notificationError } = await supabase.from('notifications').insert([
+    {
+      profile_id: user.id,
+      receiver_id: reviewAuthorId,
+      title: `${restaurantName}사장님이 리뷰에 답글을 남기셨습니다.`,
+      content: `답글등록됨`,
+      target: 'all',
+      type: '댓글',
+    },
+  ]);
+
+  if (notificationError) {
+    console.log(notificationError.message);
+  }
+
   return data;
 };
 
@@ -393,4 +435,33 @@ export const deleteReviewComment = async (commentId: number) => {
   const { error } = await supabase.from('review_comments').delete().eq('id', commentId);
 
   if (error) throw new Error(`댓글 삭제 실패 ${error.message}`);
+};
+
+export interface RestaurantMenusProps {
+  id: number;
+  name: string;
+  description: string | null;
+  price: number;
+  image_url: string | null;
+  category: string;
+  is_active: boolean;
+  restaurants: {
+    id: number;
+    name: string;
+  }[];
+}
+
+// 레스토랑 메뉴 불러오기
+export const fetchRestaurantMenus = async (
+  restaurantId: number,
+): Promise<RestaurantMenusProps[]> => {
+  const { data, error } = await supabase
+    .from('menus')
+    .select(`id,name,description,price,image_url,category,is_active,restaurants(id, name)`)
+    .eq('restaurant_id', restaurantId)
+    .eq('is_active', true);
+  // .order('id', { ascending: true });
+
+  if (error) throw new Error(`메뉴 불러오기 실패: ${error.message}`);
+  return data ?? [];
 };
