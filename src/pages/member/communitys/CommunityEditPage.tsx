@@ -15,7 +15,7 @@ export const categoryBadgeMap: Record<CategoriesType, string> = {
 
 function CommunityEditPage() {
   const { id } = useParams();
-  const { modal, closeModal, openModal } = useModal();
+  const { modal, closeModal, openModal, x } = useModal();
   const navigate = useNavigate();
 
   const [activeCategory, setActiveCategory] = useState<CategoriesType | null>(null);
@@ -45,7 +45,7 @@ function CommunityEditPage() {
         '취소',
         '수정',
         async () => {
-          const { data, error } = await supabase
+          const { error } = await supabase
             .from('posts')
             .update({
               post_category: activeCategory,
@@ -59,9 +59,22 @@ function CommunityEditPage() {
             openModal('수정 실패', '게시글 수정 중 오류가 발생했습니다.', '닫기');
             return;
           }
-          openModal('수정 완료', '게시글이 성공적으로 수정되었습니다.', '닫기', '', () => {
-            navigate(-1);
-          });
+
+          setTimeout(() => {
+            openModal(
+              '수정 완료',
+              '게시글이 성공적으로 수정되었습니다.',
+              '',
+              '확인',
+              () => {
+                navigate(`/member/community/detail/${id}`);
+              },
+              () => {
+                navigate(`/member/community/detail/${id}`);
+                closeModal();
+              },
+            );
+          }, 0);
         },
       );
     }
@@ -171,6 +184,7 @@ function CommunityEditPage() {
           closeButtonText={modal.closeText}
           submitButtonText={modal.submitText}
           onSubmit={modal.onSubmit}
+          onX={modal.onX}
         />
       )}
     </div>

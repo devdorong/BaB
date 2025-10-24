@@ -1,17 +1,18 @@
+import dayjs from 'dayjs';
 import { useEffect, useState } from 'react';
-import { RiEditLine, RiFireFill, RiShareLine } from 'react-icons/ri';
+import { RiEditLine } from 'react-icons/ri';
 import OkCancelModal from '../../components/member/OkCancelModal';
 import { useAuth } from '../../contexts/AuthContext';
 import { supabase } from '../../lib/supabase';
 import type { Database, Events } from '../../types/bobType';
 import { ButtonFillMd } from '../../ui/button';
 import { GiftFill } from '../../ui/Icon';
+import EventCardSkeleton from '../../ui/sdj/EventCardSkeleton';
+import EventEditModal from '../../ui/sdj/EventEditModal';
 import EventWriteModal from '../../ui/sdj/EventWriteModal';
+import Modal from '../../ui/sdj/Modal';
 import { useModal } from '../../ui/sdj/ModalState';
 import TagBadge from '../../ui/TagBadge';
-import Modal from '../../ui/sdj/Modal';
-import dayjs from 'dayjs';
-import EventEditModal from '../../ui/sdj/EventEditModal';
 
 type EventState = Database['public']['Tables']['events']['Row']['status'];
 type EventFilterState = EventState | '전체';
@@ -24,6 +25,7 @@ function EventPage() {
   const [events, setEvents] = useState<Events[]>([]);
   const [filterCategories, setFilterCategories] = useState<Events[]>([]);
   const [selectCategories, setSelectCategories] = useState<EventFilterState>('전체');
+  const [loading, setLoading] = useState(true);
 
   const [eventModal, setEventModal] = useState(false);
 
@@ -93,7 +95,7 @@ function EventPage() {
   };
 
   const addBadges = async (events: Events[]) => {
-    // 각 이벤트 참여자 수 가져오기
+    setLoading(true);
     const { error, data: participants } = await supabase
       .from('event_participants')
       .select('*,events(id,start_date)');
@@ -135,11 +137,13 @@ function EventPage() {
         if (diffDays >= 0 && diffDays <= 3) badge = '신규';
       }
 
+      setLoading(false);
       return { ...e, badge };
     });
   };
 
   const eventData = async (): Promise<Events[]> => {
+    setLoading(true);
     const { data, error } = await supabase
       .from('events')
       .select('*')
@@ -147,7 +151,9 @@ function EventPage() {
 
     if (error) {
       console.log('이벤트 불러오기 에러', error.message);
+      setLoading(false);
     }
+    setLoading(false);
     return data || [];
   };
 
@@ -311,80 +317,82 @@ function EventPage() {
       </div>
       {eventModal && <EventWriteModal onSuccess={eventData} onClose={() => setEventModal(false)} />}
 
-      {/* 이벤트 카드 리스트 */}
-      <div className="grid grid-cols-2 gap-[25px]">
-        {filterCategories.map(event => (
-          <div
-            key={event.id}
-            className="flex flex-col overflow-hidden rounded-[16px] shadow-[0px_4px_4px_0px_rgba(0,0,0,0.02)] bg-white"
-          >
-            {/* 이미지 */}
-            <div className="relative w-full h-[200px] overflow-hidden">
-              <img
-                src={event.image_url ?? ''}
-                alt={event.title ?? ''}
-                className="w-full h-full object-cover"
-              />
-              {event.badge === 'HOT' ? (
-                <span className="absolute top-[12px] left-[12px] px-[10px] py-[4px] text-white text-xs rounded-[8px] flex items-center gap-1">
-                  <TagBadge bgColor="bg-red-500" textColor="text-white">
-                    HOT
+      {loading ? (
+        [...Array(1)].map((_, i) => <EventCardSkeleton key={i} />)
+      ) : events.length > 0 ? (
+        <div className="grid grid-cols-2 gap-[25px]">
+          {filterCategories.map(event => (
+            <div
+              key={event.id}
+              className="flex flex-col overflow-hidden rounded-[16px] shadow-[0px_4px_4px_0px_rgba(0,0,0,0.02)] bg-white"
+            >
+              {/* 이미지 */}
+              <div className="relative w-full h-[200px] overflow-hidden">
+                <img
+                  src={event.image_url ?? ''}
+                  alt={event.title ?? ''}
+                  className="w-full h-full object-cover"
+                />
+                {event.badge === 'HOT' ? (
+                  <span className="absolute top-[12px] left-[12px] px-[10px] py-[4px] text-white text-xs rounded-[8px] flex items-center gap-1">
+                    <TagBadge bgColor="bg-red-500" textColor="text-white">
+                      HOT
+                    </TagBadge>
+                  </span>
+                ) : event.badge === '신규' ? (
+                  <span className="absolute top-[12px] left-[12px] px-[10px] py-[4px] text-white text-xs rounded-[8px] flex items-center gap-1">
+                    <TagBadge bgColor="bg-blue-500" textColor="text-white">
+                      NEW
+                    </TagBadge>
+                  </span>
+                ) : null}
+
+                {/* 진행 상태 */}
+                <span className="absolute top-[12px] right-[12px] px-[10px] py-[4px] text-xs rounded-[8px]">
+                  <TagBadge
+                    bgColor={
+                      event.status === '종료'
+                        ? 'bg-babbutton-black_back'
+                        : event.status === '예정'
+                          ? 'bg-babbutton-blue_back'
+                          : 'bg-babbutton-green_back'
+                    }
+                    textColor={
+                      event.status === '종료'
+                        ? 'text-babbutton-black'
+                        : event.status === '예정'
+                          ? 'text-babbutton-blue'
+                          : 'text-babbutton-green'
+                    }
+                  >
+                    {event.status}
                   </TagBadge>
-                </span>
-              ) : event.badge === '신규' ? (
-                <span className="absolute top-[12px] left-[12px] px-[10px] py-[4px] text-white text-xs rounded-[8px] flex items-center gap-1">
-                  <TagBadge bgColor="bg-blue-500" textColor="text-white">
-                    NEW
-                  </TagBadge>
-                </span>
-              ) : null}
-
-              {/* 진행 상태 */}
-              <span className="absolute top-[12px] right-[12px] px-[10px] py-[4px] text-xs rounded-[8px]">
-                <TagBadge
-                  bgColor={
-                    event.status === '종료'
-                      ? 'bg-babbutton-black_back'
-                      : event.status === '예정'
-                        ? 'bg-babbutton-blue_back'
-                        : 'bg-babbutton-green_back'
-                  }
-                  textColor={
-                    event.status === '종료'
-                      ? 'text-babbutton-black'
-                      : event.status === '예정'
-                        ? 'text-babbutton-blue'
-                        : 'text-babbutton-green'
-                  }
-                >
-                  {event.status}
-                </TagBadge>
-              </span>
-            </div>
-
-            {/* 본문 */}
-            <div className="flex flex-col gap-[10px] p-[18px]">
-              <h3 className="text-[18px] font-bold">{event.title ?? ''}</h3>
-              <p className="text-[14px] text-bab">{event.description ?? ''}</p>
-              <p className="text-[14px] text-babgray-600">{event.benefit ?? ''}</p>
-
-              <div className="flex justify-between items-center text-sm text-babgray-500">
-                <span>
-                  {event.start_date ?? ''} ~ {event.end_date ?? ''}
                 </span>
               </div>
 
-              <div className="flex justify-between gap-[20px] items-center">
-                <button
-                  disabled={event.status === '종료'}
-                  onClick={() => {
-                    if (event.status === '진행중') {
-                      handleViewModal(event.id);
-                    } else if (event.status === '예정') {
-                      handlePlannedModal(event.start_date);
-                    }
-                  }}
-                  className={`px-[14px] py-[8px] w-full rounded-[8px] text-nomal font-bold flex items-center justify-center gap-1
+              {/* 본문 */}
+              <div className="flex flex-col gap-[10px] p-[18px]">
+                <h3 className="text-[18px] font-bold">{event.title ?? ''}</h3>
+                <p className="text-[14px] text-bab">{event.description ?? ''}</p>
+                <p className="text-[14px] text-babgray-600">{event.benefit ?? ''}</p>
+
+                <div className="flex justify-between items-center text-sm text-babgray-500">
+                  <span>
+                    {event.start_date ?? ''} ~ {event.end_date ?? ''}
+                  </span>
+                </div>
+
+                <div className="flex justify-between gap-[20px] items-center">
+                  <button
+                    disabled={event.status === '종료'}
+                    onClick={() => {
+                      if (event.status === '진행중') {
+                        handleViewModal(event.id);
+                      } else if (event.status === '예정') {
+                        handlePlannedModal(event.start_date);
+                      }
+                    }}
+                    className={`px-[14px] py-[8px] w-full rounded-[8px] text-nomal font-bold flex items-center justify-center gap-1
                     ${
                       event.status === '종료'
                         ? 'bg-babgray-150 text-babgray-600 opacity-50 cursor-not-allowed'
@@ -392,21 +400,26 @@ function EventPage() {
                           ? 'bg-babbutton-blue text-white'
                           : 'bg-bab-500 text-white'
                     }`}
-                >
-                  {event.status === '진행중' && `참여하기`}
-                  {event.status === '예정' && dayjs(event.start_date).format('YYYY-MM-DD (ddd)')}
-                  {event.status === '종료' && `종료된 이벤트`}
-                </button>
-                {admin && (
-                  <button onClick={() => handleEditBt(event.id)} className="flex-1">
-                    <RiEditLine />
+                  >
+                    {event.status === '진행중' && `참여하기`}
+                    {event.status === '예정' && dayjs(event.start_date).format('YYYY-MM-DD (ddd)')}
+                    {event.status === '종료' && `종료된 이벤트`}
                   </button>
-                )}
+                  {admin && (
+                    <button onClick={() => handleEditBt(event.id)} className="flex-1">
+                      <RiEditLine />
+                    </button>
+                  )}
+                </div>
               </div>
             </div>
-          </div>
-        ))}
-      </div>
+          ))}
+        </div>
+      ) : (
+        <p className="text-gray-600 text-center py-5">이벤트 목록을 불러오는데 실패했습니다.</p>
+      )}
+      {/* 이벤트 카드 리스트 */}
+
       {editPage && (
         <EventEditModal
           isOpen={editPage}

@@ -22,6 +22,7 @@ function HelpPage() {
   const navigate = useNavigate();
   const { closeModal, modal, openModal } = useModal();
   const [csList, setCsList] = useState<Help[]>([]);
+  const [selectedHelp, setSelectedHelp] = useState<Help | null>(null);
   const [loading, setLoading] = useState(true);
   const [helpDetailModal, setHelpDetailModal] = useState(false);
 
@@ -145,7 +146,10 @@ function HelpPage() {
 
                         {/* 상세보기 버튼 */}
                         <button
-                          onClick={() => setHelpDetailModal(true)}
+                          onClick={() => {
+                            setSelectedHelp(item);
+                            setHelpDetailModal(true);
+                          }}
                           className="flex items-center gap-2 px-4 py-2 bg-gray-100 text-gray-700 rounded-lg hover:bg-gray-200 transition"
                         >
                           <RiFileListLine className="w-4 h-4" />
@@ -162,8 +166,10 @@ function HelpPage() {
           </div>
         </div>
       </div>
-      {helpDetailModal && <HelpDetailModal isOpen={() => setHelpDetailModal(false)} />}
-      {/* {modal.isOpen && (
+      {helpDetailModal && selectedHelp && (
+        <HelpDetailModal help={selectedHelp} isOpen={() => setHelpDetailModal(false)} />
+      )}
+      {modal.isOpen && (
         <Modal
           isOpen={modal.isOpen}
           onClose={closeModal}
@@ -173,7 +179,7 @@ function HelpPage() {
           submitButtonText={modal.submitText}
           onSubmit={modal.onSubmit}
         />
-      )} */}
+      )}
     </div>
   );
 }
