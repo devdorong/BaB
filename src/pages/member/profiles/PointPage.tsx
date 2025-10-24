@@ -15,7 +15,7 @@ function PointSkeleton() {
   return (
     <div id="root" className="flex flex-col min-h-screen">
       <div className="flex-1 bg-bg-bg ">
-        <div className="flex flex-col w-[1280px] m-auto animate-pulse">
+        <div className="flex flex-col w-[1280px] m-auto animate-pulse px-4 sm:px-6 lg:px-8 xl:px-0">
           <div className="flex py-[15px]">
             <div className="h-5 w-16 bg-gray-200 rounded"></div>
             <div className="flex pt-[3px] items-center px-[5px]">
@@ -55,7 +55,6 @@ function PointSkeleton() {
   );
 }
 
-
 function PointPage() {
   const { user } = useAuth();
   const navigate = useNavigate();
@@ -82,7 +81,7 @@ function PointPage() {
     <div id="root" className="flex flex-col min-h-screen">
       <div className="flex-1 bg-bg-bg ">
         {/* 프로필 헤더 링크 */}
-        <div className="flex flex-col w-[1280px] m-auto">
+        <div className="flex flex-col w-[1280px] m-auto px-4 sm:px-6 lg:px-8 xl:px-0">
           <div className="flex py-[15px]">
             <div
               onClick={() => navigate('/member/profile')}
