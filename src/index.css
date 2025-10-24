@@ -570,3 +570,90 @@ html {
 .ant-picker-active-bar {
   display: none !important;
 }
+
+/* ====================== sonner 스타일 ========================== */
+/* Toaster 컨테이너 (필요 시 전체 위치, 간격 조정) */
+.sonner-toaster {
+  position: fixed !important;
+  top: 20px !important;
+  width: 100% !important;
+  display: flex !important;
+  justify-content: center !important;
+  pointer-events: none !important;
+}
+
+/* 개별 토스트 카드 */
+[data-sonner-toast] {
+  width: auto !important;
+  max-width: none !important;
+  background-color: #fff !important;
+  border: 1.5px solid #ff5722 !important;
+  color: #ff5722 !important;
+  box-shadow: none !important;
+  border-radius: 12px !important;
+  display: flex !important;
+  align-items: center !important;
+  gap: 8px !important;
+  padding: 10px 14px !important;
+  line-height: 1.4 !important;
+  height: 46px !important;
+
+  /* transform: none !important;
+  transition: none !important; */
+  pointer-events: auto !important;
+  cursor: pointer !important;
+  /* will-change: auto !important; */
+}
+
+/* 내부 모든 요소 애니메이션 제거 */
+[data-sonner-toast] *,
+[data-sonner-toast]:hover *,
+[data-sonner-toast]:active * {
+  /* transform: none !important;
+  transition: none !important; */
+  will-change: auto !important;
+}
+
+/* hover 시 스타일 변화 완전 차단 */
+[data-sonner-toast]:hover,
+[data-sonner-toast]:active {
+  border-color: #ff5722 !important;
+  box-shadow: none !important;
+  transform: none !important;
+  transition: none !important;
+}
+
+/* success */
+[data-sonner-toast][data-type='success'] {
+  background-color: #fff8f6 !important;
+  border-color: #ffa88e !important;
+  color: #ff5722 !important;
+}
+
+/* info */
+[data-sonner-toast][data-type='info'] {
+  background-color: #eff6ff !important;
+  border-color: #93c5fd !important;
+  color: #1d4ed8 !important;
+}
+
+/* warning */
+[data-sonner-toast][data-type='warning'] {
+  background-color: #fefce8 !important;
+  border-color: #fde68a !important;
+  color: #854d0e !important;
+}
+
+/* error */
+[data-sonner-toast][data-type='error'] {
+  background-color: #fef2f2 !important;
+  border-color: #fca5a5 !important;
+  color: #991b1b !important;
+}
+
+/* loading */
+[data-sonner-toast][data-type='loading'] {
+  background-color: #f9fafb !important;
+  border-color: #e5e7eb !important;
+  color: #374151 !important;
+}

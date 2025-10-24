@@ -4,6 +4,7 @@ import { Outlet, Route, BrowserRouter as Router, Routes } from 'react-router-dom
 import ProtectedRoute from './components/ProtectedRoute';
 import { AuthProvider } from './contexts/AuthContext';
 import { PointProvider } from './contexts/PointContext';
+import './index.css';
 import AdminLayout from './layout/AdminLayout';
 import BareLayout from './layout/BareLayout';
 import MemberLayout from './layout/MemberLayout';
@@ -22,7 +23,6 @@ import CommunityDetailPage from './pages/member/communitys/CommunityDetailPage';
 import CommunityPage from './pages/member/communitys/CommunityPage';
 import CommunityWritePage from './pages/member/communitys/CommunityWritePage';
 import EventPage from './pages/member/EventPage';
-import MatchingDetailEditPage from './pages/member/matchings/MatchingEditPage';
 import MatchingDetailPage from './pages/member/matchings/MatchingDetailPage';
 import MatchingListPage from './pages/member/matchings/MatchingListPage';
 import MatchingWritePage from './pages/member/matchings/MatchingWritePage';
@@ -60,17 +60,18 @@ import { PartnerSignupProvider } from './contexts/PartnerSignupContext';
 
 import './components/member/chat/chat.css';
 import { DirectChatProider } from './contexts/DirectChatContext';
-import CommunityEditPage from './pages/member/communitys/CommunityEditPage';
-import MyReviewPage from './pages/member/profiles/MyReviewPage';
 import { MatchingProvider } from './contexts/MatchingContext';
+import CommunityEditPage from './pages/member/communitys/CommunityEditPage';
 import MatchingEditPage from './pages/member/matchings/MatchingEditPage';
+import MyReviewPage from './pages/member/profiles/MyReviewPage';
 
 import MyWritePage from './pages/member/profiles/MyWritePage';
 
-import HelpPage from './pages/member/profiles/HelpPage';
-import { PartnerRestaurantProvider } from './contexts/PartnerRestaurantContext';
-import { MenusProvider } from './contexts/MenuContext';
 import { ProtectedMemberRoute } from './components/ProtectedMemberRoute';
+import { MenusProvider } from './contexts/MenuContext';
+import { PartnerRestaurantProvider } from './contexts/PartnerRestaurantContext';
+import HelpPage from './pages/member/profiles/HelpPage';
+import { Toaster } from './components/ui/sonner';
 
 function App() {
   // supabase.auth.onAuthStateChange((_event, session) => {
@@ -80,6 +81,7 @@ function App() {
   //   }
   // });
   // 인증 메일 확인후, 프로필 생성
+
   useEffect(() => {
     const handleAuthChange = async (event: string, session: Session | null) => {
       if (event === 'SIGNED_IN' && session?.user) {
