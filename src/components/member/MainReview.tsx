@@ -52,19 +52,22 @@ export default function MainReview() {
   }, [reviews]);
 
   return (
-    <section className="relative">
-      <div className="mb-6 flex items-center justify-between">
-        <h2 className="text-3xl font-bold">최근 올라온 리뷰</h2>
+    <section className="relative w-full">
+      {/* 상단 타이틀 */}
+      <div className="mb-6 flex flex-col sm:flex-row items-center justify-between gap-4 sm:gap-0">
+        <h2 className="text-2xl sm:text-3xl font-bold text-center sm:text-left">
+          최근 올라온 리뷰
+        </h2>
       </div>
-      
+
+      {/* 리뷰 슬라이드 */}
       <Swiper
         modules={[Navigation, Pagination, A11y]}
-        slidesPerView={4}
-        slidesPerGroup={4}
+        slidesPerView={1}
+        slidesPerGroup={1}
         spaceBetween={16}
         speed={450}
         breakpoints={{
-          0: { slidesPerView: 1.1, slidesPerGroup: 1, spaceBetween: 16 },
           640: { slidesPerView: 2, slidesPerGroup: 2, spaceBetween: 20 },
           1024: { slidesPerView: 3, slidesPerGroup: 3, spaceBetween: 24 },
           1280: { slidesPerView: 4, slidesPerGroup: 4, spaceBetween: 24 },

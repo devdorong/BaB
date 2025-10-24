@@ -100,91 +100,12 @@ html {
   scrollbar-width: none; /* Firefox */
 }
 
-.ant-picker {
-  border-radius: 9999px !important; /* rounded-full */
-  height: 44px !important;
-  border-color: #d1d5db !important; /* babgray-300 */
-  padding: 0 12px !important;
-}
-.ant-picker:hover,
-.ant-picker-focused {
-  border-color: #ff5722 !important; /* bab-500 */
-  box-shadow: 0 0 0 2px rgba(255, 87, 34, 0.2) !important;
-}
-.ant-picker-now-btn:hover,
-.ant-picker-now-btn:focus {
-  color: #ff5722 !important;
-}
-
 /* ===== Custom TimePicker ===== */
 
 .bab-time-picker-panel {
   border-radius: 16px !important;
   /* overflow: hidden !important; */
   font-family: 'Noto Sans KR', sans-serif !important;
-}
-
-/* 패널 박스 전체 */
-.bab-time-picker-panel .ant-picker-time-panel {
-  width: 240px !important; /* 드롭다운 폭 고정 */
-  border-radius: 16px !important;
-}
-
-/* OK 버튼 */
-.bab-time-picker-panel .ant-picker-ok button {
-  background-color: #ff5722 !important; /* bab-500 */
-  border: none !important;
-  border-radius: 9999px !important;
-  color: #fff !important;
-  font-weight: 600 !important;
-  height: 32px !important;
-  width: 64px !important;
-}
-
-.bab-time-picker-panel .ant-picker-ok button:hover {
-  background-color: #e64a19 !important; /* hover tone */
-}
-/* 시/분 텍스트 중앙 정렬 */
-.bab-time-picker-panel .ant-picker-time-panel-cell-inner {
-  text-align: center !important;
-  justify-content: center !important;
-  display: flex !important;
-}
-
-/* 선택된 셀 강조 (선택 상태를 정렬 깨지 않게 유지) */
-.bab-time-picker-panel .ant-picker-time-panel-cell-selected .ant-picker-time-panel-cell-inner {
-  background-color: rgba(255, 87, 34, 0.15) !important;
-  border-radius: 8px !important;
-  color: #ff5722 !important; /* bab-500 */
-}
-
-/* 시/분 컬럼 전체 중앙 정렬 */
-.bab-time-picker-panel .ant-picker-time-panel-column {
-  /* width: 50% !important; */
-  font-size: 14px !important;
-  text-align: center !important;
-  align-items: center !important;
-  overflow-y: scroll !important;
-  line-height: 32px !important;
-  scrollbar-width: none;
-}
-.bab-time-picker-panel .ant-picker-time-panel-column::-webkit-scrollbar {
-  width: 0 !important; /* Chrome, Edge, Safari */
-}
-/* 각 셀 안의 숫자 정렬 */
-.bab-time-picker-panel .ant-picker-time-panel-cell-inner {
-  display: inline-block !important;
-  width: 100% !important;
-  text-align: center !important;
-  justify-content: center !important;
-}
-
-.bab-time-picker-panel .ant-picker-time-panel-cell-inner {
-  padding-inline-start: 0 !important; /* 왼쪽 여백 제거 */
-}
-
-.ant-picker-dropdown .ant-picker-panel-container {
-  box-shadow: rgba(0, 0, 0, 0.15) 1.95px 1.95px 2.6px;
 }
 
 /* === Custom Select === */
@@ -293,204 +214,6 @@ html {
   border-radius: 16px !important;
   /* overflow: hidden !important; */
   font-family: 'Noto Sans KR', sans-serif !important;
-}
-
-/* 패널 박스 전체 */
-.custom-bab-time-picker-panel .ant-picker-time-panel {
-  width: 220px !important; /* 드롭다운 폭 고정 */
-  border-radius: 16px !important;
-}
-
-/* OK 버튼 */
-.custom-bab-time-picker-panel .ant-picker-ok button {
-  background-color: #ff5722 !important; /* bab-500 */
-  border: none !important;
-  border-radius: 9999px !important;
-  color: #fff !important;
-  font-weight: 600 !important;
-  height: 32px !important;
-  width: 64px !important;
-}
-
-.custom-bab-time-picker-panel .ant-picker-ok button:hover {
-  background-color: #e64a19 !important; /* hover tone */
-}
-/* 시/분 텍스트 중앙 정렬 */
-.custom-bab-time-picker-panel .ant-picker-time-panel-cell-inner {
-  text-align: center !important;
-  justify-content: center !important;
-  display: flex !important;
-}
-
-/* 선택된 셀 강조 (선택 상태를 정렬 깨지 않게 유지) */
-.custom-bab-time-picker-panel
-  .ant-picker-time-panel-cell-selected
-  .ant-picker-time-panel-cell-inner {
-  background-color: rgba(255, 87, 34, 0.15) !important;
-  border-radius: 8px !important;
-  color: #ff5722 !important; /* bab-500 */
-}
-
-/* 시/분 컬럼 전체 중앙 정렬 */
-.custom-bab-time-picker-panel .ant-picker-time-panel-column {
-  /* width: 50% !important; */
-  font-size: 14px !important;
-  text-align: center !important;
-  align-items: center !important;
-  overflow-y: scroll !important;
-  line-height: 32px !important;
-  scrollbar-width: none;
-}
-.custom-bab-time-picker-panel .ant-picker-time-panel-column::-webkit-scrollbar {
-  width: 0 !important; /* Chrome, Edge, Safari */
-}
-/* 각 셀 안의 숫자 정렬 */
-.custom-bab-time-picker-panel .ant-picker-time-panel-cell-inner {
-  display: inline-block !important;
-  width: 100% !important;
-  text-align: center !important;
-  justify-content: center !important;
-}
-
-.custom-bab-time-picker-panel .ant-picker-time-panel-cell-inner {
-  padding-inline-start: 0 !important; /* 왼쪽 여백 제거 */
-}
-
-.ant-picker-dropdown .ant-picker-panel-container {
-  box-shadow: rgba(0, 0, 0, 0.15) 1.95px 1.95px 2.6px;
-}
-
-/* ---------- 🗓 Ant Design DatePicker 커스텀 ---------- */
-
-/* 공통 폰트/배경 */
-.ant-picker {
-  border-radius: 8px !important;
-  border-color: #ff5722 !important; /* 메인 bab 색 */
-  font-family: 'Noto Sans KR', sans-serif !important;
-}
-
-.ant-picker:hover,
-.ant-picker-focused {
-  border-color: #ff784e !important; /* hover용 살짝 밝은색 */
-  box-shadow: 0 0 0 2px rgba(255, 87, 34, 0.2) !important;
-}
-
-/* 캘린더 전체 배경 */
-.ant-picker-panel {
-  background-color: #fffaf8 !important; /* 따뜻한 톤 배경 */
-  /* border-radius: 12px !important; */
-  /* border: 1px solid #ffe0d3 !important; */
-}
-
-/* 헤더 (연/월 표시 부분) */
-.ant-picker-header {
-  background-color: #fff !important;
-  color: #ff5722 !important;
-  font-weight: 600;
-  border-bottom: 1px solid #ffe0d3 !important;
-}
-
-/* 이전/다음 월 이동 버튼 */
-.ant-picker-header-prev-btn,
-.ant-picker-header-next-btn {
-  color: #ff5722 !important;
-}
-.ant-picker-header-prev-btn:hover,
-.ant-picker-header-next-btn:hover {
-  color: #ff784e !important;
-}
-
-/* 요일 표시 (일~토) */
-.ant-picker-content th {
-  color: #ff784e !important;
-  font-weight: 600 !important;
-}
-
-/* 날짜 셀 공통 */
-.ant-picker-cell {
-  color: #444 !important;
-  border-radius: 8px !important;
-  transition: all 0.2s ease-in-out;
-}
-
-/* hover 시 날짜 */
-.ant-picker-cell:hover .ant-picker-cell-inner {
-  background-color: rgba(255, 87, 34, 0.1) !important;
-  color: #ff5722 !important;
-  border-radius: 8px !important;
-}
-
-/* 오늘 날짜 테두리 */
-.ant-picker-cell-today .ant-picker-cell-inner::before {
-  border-color: #ff5722 !important;
-}
-
-/* 선택된 날짜 */
-.ant-picker-cell-selected .ant-picker-cell-inner,
-.ant-picker-cell-range-start .ant-picker-cell-inner,
-.ant-picker-cell-range-end .ant-picker-cell-inner {
-  background-color: #ff5722 !important;
-  color: #fff !important;
-  border-radius: 8px !important;
-}
-
-/* range 사이 영역 */
-.ant-picker-cell-in-range::before {
-  background-color: rgba(255, 87, 34, 0.15) !important;
-}
-
-/* 비활성 날짜 (이전/다음 달) */
-.ant-picker-cell-in-view.ant-picker-cell-disabled .ant-picker-cell-inner {
-  color: #ccc !important;
-}
-
-/* 오늘 버튼 */
-.ant-picker-today-btn {
-  color: #ff5722 !important;
-  font-weight: 600;
-}
-.ant-picker-today-btn:hover {
-  color: #ff784e !important;
-}
-
-/* 시간 선택 패널 (TimePicker) 색상 통일 */
-.ant-picker-time-panel-column
-  > li.ant-picker-time-panel-cell-selected
-  .ant-picker-time-panel-cell-inner {
-  background-color: #ff5722 !important;
-  color: #fff !important;
-}
-.ant-picker-time-panel-column > li.ant-picker-time-panel-cell-inner:hover {
-  background-color: rgba(255, 87, 34, 0.1) !important;
-  color: #ff5722 !important;
-}
-/* 🧡 DatePicker 헤더 hover 색상 오렌지톤으로 변경 */
-.ant-picker-header-view button:hover {
-  color: #ff5722 !important; /* BaB 메인 컬러 */
-}
-
-/* 연도/월 선택 시에도 동일한 hover 색 유지 */
-.ant-picker-year-btn:hover,
-.ant-picker-month-btn:hover {
-  color: #ff5722 !important;
-}
-
-/* 좌우 화살표 버튼 hover 색상 */
-.ant-picker-header-prev-btn:hover,
-.ant-picker-header-next-btn:hover {
-  color: #ff784e !important;
-}
-
-/* 전체적으로 파란색 잔상 제거 (Ant Design 기본 테마 오버라이드) */
-:where(.css-dev-only-do-not-override-l1py5d).ant-picker-dropdown
-  .ant-picker-header-view
-  button:hover {
-  color: #ff5722 !important;
-}
-
-.ant-picker-footer {
-  /* border-top: none !important; */
-  background-color: #fff !important;
 }
 
 @layer base {
@@ -656,4 +379,212 @@ html {
   background-color: #f9fafb !important;
   border-color: #e5e7eb !important;
   color: #374151 !important;
+}
+
+/* ===========================
+   🎨 BaB Custom Ant Design
+   =========================== */
+
+/* ---------- 공통 ---------- */
+.bab-ant {
+  font-family: 'Noto Sans KR', sans-serif !important;
+}
+
+.bab-ant .ant-picker,
+.bab-ant .ant-select-selector {
+  transition: all 0.2s ease !important;
+  font-family: 'Noto Sans KR', sans-serif !important;
+}
+
+/* Hover / Focus 색상 통일 */
+.bab-ant .ant-picker:hover,
+.bab-ant .ant-picker-focused,
+.bab-ant .ant-select-selector:hover,
+.bab-ant.ant-select-focused .ant-select-selector {
+  border-color: #ff5722 !important;
+  box-shadow: 0 0 0 2px rgba(255, 87, 34, 0.2) !important;
+}
+
+/* ===========================
+   📅 DatePicker
+   =========================== */
+.bab-date-picker.ant-picker {
+  border-radius: 9999px !important;
+  height: 44px !important;
+  border-color: #d1d5db !important;
+  padding: 0 12px !important;
+  background-color: #fff !important;
+}
+
+.bab-date-picker.ant-picker:hover,
+.bab-date-picker.ant-picker-focused {
+  border-color: #ff5722 !important;
+  box-shadow: 0 0 0 2px rgba(255, 87, 34, 0.2) !important;
+}
+
+/* 패널 */
+.ant-picker-dropdown .ant-picker-panel {
+  background-color: #fffaf8 !important;
+}
+
+.ant-picker-dropdown .ant-picker-header {
+  background-color: #fff !important;
+  color: #ff5722 !important;
+  font-weight: 600 !important;
+  border-bottom: 1px solid #ffe0d3 !important;
+}
+
+.ant-picker-dropdown .ant-picker-cell:hover .ant-picker-cell-inner {
+  background-color: rgba(255, 87, 34, 0.1) !important;
+  color: #ff5722 !important;
+}
+
+.ant-picker-cell-selected .ant-picker-cell-inner {
+  background-color: #ff5722 !important;
+  color: #fff !important;
+  border-radius: 8px !important;
+}
+
+/* 오늘 버튼 */
+.ant-picker-today-btn {
+  color: #ff5722 !important;
+  font-weight: 600 !important;
+}
+.ant-picker-today-btn:hover {
+  color: #ff784e !important;
+}
+
+/* ===========================
+   ⏰ TimePicker
+   =========================== */
+.bab-time-picker.ant-picker {
+  border-radius: 9999px !important;
+  height: 44px !important;
+  border-color: #d1d5db !important;
+  padding: 0 12px !important;
+}
+
+.bab-time-picker.ant-picker:hover,
+.bab-time-picker.ant-picker-focused {
+  border-color: #ff5722 !important;
+  box-shadow: 0 0 0 2px rgba(255, 87, 34, 0.2) !important;
+}
+
+/* 패널 전체 */
+.bab-time-picker-panel {
+  border-radius: 16px !important;
+  font-family: 'Noto Sans KR', sans-serif !important;
+}
+
+/* 내부 패널 박스 */
+.bab-time-picker-panel .ant-picker-time-panel {
+  width: 220px !important;
+  border-radius: 16px !important;
+}
+
+/* OK 버튼 */
+.bab-time-picker-panel .ant-picker-ok button {
+  background-color: #ff5722 !important;
+  border: none !important;
+  border-radius: 9999px !important;
+  color: #fff !important;
+  font-weight: 600 !important;
+  height: 32px !important;
+  width: 64px !important;
+  transition: background-color 0.2s ease !important;
+}
+.bab-time-picker-panel .ant-picker-ok button:hover {
+  background-color: #e64a19 !important;
+}
+
+/* 셀 선택 색상 */
+.bab-time-picker-panel .ant-picker-time-panel-cell-selected .ant-picker-time-panel-cell-inner {
+  background-color: rgba(255, 87, 34, 0.15) !important;
+  border-radius: 8px !important;
+  color: #ff5722 !important;
+}
+
+/* 셀 기본 정렬 */
+.bab-time-picker-panel .ant-picker-time-panel-cell-inner {
+  text-align: center !important;
+  justify-content: center !important;
+  display: flex !important;
+  padding-inline-start: 0 !important;
+}
+
+/* 스크롤바 제거 */
+.bab-time-picker-panel .ant-picker-time-panel-column {
+  font-size: 14px !important;
+  text-align: center !important;
+  align-items: center !important;
+  overflow-y: scroll !important;
+  scrollbar-width: none !important;
+}
+.bab-time-picker-panel .ant-picker-time-panel-column::-webkit-scrollbar {
+  width: 0 !important;
+}
+
+/* ===========================
+   🔽 Select (Input형)
+   =========================== */
+.bab-select .ant-select-selector {
+  border-radius: 9999px !important;
+  height: 50px !important;
+  display: flex !important;
+  align-items: center !important;
+  padding: 0 16px !important;
+  border-color: #d1d5db !important;
+}
+
+/* hover / focus */
+.bab-select .ant-select-selector:hover,
+.bab-select.ant-select-focused .ant-select-selector {
+  border-color: #ff5722 !important;
+  box-shadow: 0 0 0 2px rgba(255, 87, 34, 0.2) !important;
+}
+
+/* placeholder, text */
+.bab-select .ant-select-selection-placeholder {
+  color: #9ca3af !important;
+}
+.bab-select .ant-select-selection-item {
+  color: #111827 !important;
+  font-weight: 500 !important;
+}
+
+/* dropdown */
+.bab-select-dropdown .ant-select-item {
+  font-size: 14px !important;
+  padding: 8px 16px !important;
+  border-radius: 6px !important;
+}
+.bab-select-dropdown .ant-select-item-option-active {
+  background-color: rgba(255, 87, 34, 0.1) !important;
+  color: #ff5722 !important;
+}
+.bab-select-dropdown .ant-select-item-option-selected {
+  background-color: #ff5722 !important;
+  color: #fff !important;
+  font-weight: 600 !important;
+}
+
+/* ===========================
+   🎯 RangePicker / Focus 보정
+   =========================== */
+.ant-picker:focus,
+.ant-picker-focused {
+  border-color: #ff5722 !important;
+  box-shadow: 0 0 0 2px rgba(255, 87, 34, 0.2) !important;
+}
+.ant-picker-active-bar {
+  display: none !important;
+}
+
+/* ===========================
+   ☁️ 공통 DropShadow
+   =========================== */
+.ant-picker-dropdown .ant-picker-panel-container,
+.ant-select-dropdown {
+  box-shadow: rgba(0, 0, 0, 0.15) 1.95px 1.95px 2.6px;
+  border-radius: 12px !important;
 }
