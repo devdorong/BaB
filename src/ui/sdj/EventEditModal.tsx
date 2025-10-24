@@ -6,6 +6,7 @@ import { ButtonFillMd } from '../button';
 import EventDateSelector from './EventDateSelector';
 import { RiImageLine } from 'react-icons/ri';
 import type { DateSelectType } from './EventWriteModal';
+import { AnimatePresence, motion } from 'framer-motion';
 
 interface EventEditModalProps {
   eventId: number | null;
@@ -106,79 +107,97 @@ function EventEditModal({ eventId, isOpen, onClose }: EventEditModalProps) {
   };
 
   return (
-    <div className="fixed inset-0 flex items-center justify-center bg-black bg-opacity-50 z-50">
-      <div className="flex flex-col w-[615px] min-h-[250px] bg-white text-babgray-500 rounded-[30px] overflow-hidden shadow ">
-        <div
-          onClick={handleDivClick}
-          className="w-full h-[230px] bg-babgray-200  flex justify-center items-center cursor-pointer"
+    <AnimatePresence>
+      <motion.div
+        className="fixed inset-0 flex items-center justify-center bg-black bg-opacity-50 z-50"
+        initial={{ opacity: 0 }}
+        animate={{ opacity: 1 }}
+        exit={{ opacity: 0 }}
+        transition={{ duration: 0.25 }}
+      >
+        <motion.div
+          className="flex flex-col w-[615px] min-h-[250px] bg-white text-babgray-500 rounded-[30px] overflow-hidden shadow"
+          initial={{ scale: 0.95, opacity: 0 }}
+          animate={{ scale: 1, opacity: 1 }}
+          exit={{ scale: 0.95, opacity: 0 }}
+          transition={{ duration: 0.25, ease: 'easeOut' }}
         >
-          {imagePreview ? (
-            <img src={imagePreview} alt="미리보기" className="w-full h-full object-cover" />
-          ) : (
-            <RiImageLine className="text-5xl" />
-          )}
-        </div>
-        <input
-          ref={fileInputRef}
-          type="file"
-          accept="image/*"
-          onChange={handleImageChange}
-          className="hidden"
-        />
-        <form className="flex flex-col p-6 gap-6">
-          <div className="flex flex-col gap-6">
-            <input
-              className="w-full h-[42px] p-3 border border-babgray rounded-3xl focus:ring-1 focus:ring-bab
-              "
-              type="text"
-              value={title}
-              onChange={e => setTitle(e.target.value)}
-              placeholder="제목을 입력하세요"
-            />
-            <input
-              className="w-full h-[42px] p-3 border border-babgray rounded-3xl focus:ring-1 focus:ring-bab
-              "
-              value={benefit}
-              onChange={e => setBenefit(e.target.value)}
-              type="text"
-              placeholder="혜택을 입력해주세요"
-            />
-            <input
-              type="text"
-              className="w-full h-[42px] p-3 border border-babgray rounded-3xl focus:ring-1 focus:ring-bab
-              "
-              value={content}
-              onChange={e => setContent(e.target.value)}
-              placeholder="상세 내용을 입력해주세요"
-            />
+          <div
+            onClick={handleDivClick}
+            className="w-full h-[230px] bg-babgray-200  flex justify-center items-center cursor-pointer"
+          >
+            {imagePreview ? (
+              <img src={imagePreview} alt="미리보기" className="w-full h-full object-cover" />
+            ) : (
+              <RiImageLine className="text-5xl" />
+            )}
           </div>
-          <EventDateSelector onSelect={handleDateSelect} startDate={startDate} endDate={endDate} />
-          <div className="flex w-full gap-4">
-            <ButtonFillMd className="flex flex-1" type="button" onClick={handleEditSubmit}>
-              수정하기
-            </ButtonFillMd>
-            <ButtonFillMd
-              className="flex flex-1 !text-babgray-700 !bg-babgray-200 hover:!bg-babgray-500 hover:!text-white"
-              type="button"
-              onClick={handleEditCancel}
-            >
-              취소
-            </ButtonFillMd>
-          </div>
-        </form>
-        {modal.isOpen && (
-          <Modal
-            isOpen={modal.isOpen}
-            onClose={closeModal}
-            titleText={modal.title}
-            contentText={modal.content}
-            closeButtonText={modal.closeText}
-            submitButtonText={modal.submitText}
-            onSubmit={modal.onSubmit}
+          <input
+            ref={fileInputRef}
+            type="file"
+            accept="image/*"
+            onChange={handleImageChange}
+            className="hidden"
           />
-        )}
-      </div>
-    </div>
+          <form className="flex flex-col p-6 gap-6">
+            <div className="flex flex-col gap-6">
+              <input
+                className="w-full h-[42px] p-3 border border-babgray rounded-3xl focus:ring-1 focus:ring-bab
+              "
+                type="text"
+                value={title}
+                onChange={e => setTitle(e.target.value)}
+                placeholder="제목을 입력하세요"
+              />
+              <input
+                className="w-full h-[42px] p-3 border border-babgray rounded-3xl focus:ring-1 focus:ring-bab
+              "
+                value={benefit}
+                onChange={e => setBenefit(e.target.value)}
+                type="text"
+                placeholder="혜택을 입력해주세요"
+              />
+              <input
+                type="text"
+                className="w-full h-[42px] p-3 border border-babgray rounded-3xl focus:ring-1 focus:ring-bab
+              "
+                value={content}
+                onChange={e => setContent(e.target.value)}
+                placeholder="상세 내용을 입력해주세요"
+              />
+            </div>
+            <EventDateSelector
+              onSelect={handleDateSelect}
+              startDate={startDate}
+              endDate={endDate}
+            />
+            <div className="flex w-full gap-4">
+              <ButtonFillMd className="flex flex-1" type="button" onClick={handleEditSubmit}>
+                수정하기
+              </ButtonFillMd>
+              <ButtonFillMd
+                className="flex flex-1 !text-babgray-700 !bg-babgray-200 hover:!bg-babgray-500 hover:!text-white"
+                type="button"
+                onClick={handleEditCancel}
+              >
+                취소
+              </ButtonFillMd>
+            </div>
+          </form>
+          {modal.isOpen && (
+            <Modal
+              isOpen={modal.isOpen}
+              onClose={closeModal}
+              titleText={modal.title}
+              contentText={modal.content}
+              closeButtonText={modal.closeText}
+              submitButtonText={modal.submitText}
+              onSubmit={modal.onSubmit}
+            />
+          )}
+        </motion.div>
+      </motion.div>
+    </AnimatePresence>
   );
 }
 

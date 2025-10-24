@@ -1,0 +1,99 @@
+/* CommunityPage.module.css */
+
+/* 기본 (>=1280px) */
+.pageContainer {
+  width: 1280px;
+  margin: 0 auto;
+  display: flex;
+  flex-direction: column;
+  gap: 2rem;
+  padding: 2rem 0;
+}
+
+/* 작성폼 + 버튼 묶음 */
+.writeFormWhitBt {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+}
+
+/* 1024px 이하 */
+@media (max-width: 1280px) {
+  .pageContainer {
+    width: 1024px;
+    padding: 2rem 1.5rem;
+  }
+
+  .writeFormWhitBt {
+    flex-direction: row;
+    gap: 1rem;
+  }
+}
+
+/* 768px 이하 */
+@media (max-width: 1024px) {
+  .pageContainer {
+    width: 768px;
+    padding: 1.5rem 1rem;
+  }
+
+  .writeFormWhitBt {
+    flex-direction: column;
+    align-items: stretch;
+    gap: 1.25rem;
+  }
+
+  .writeFormWhitBt input {
+    width: 100%;
+  }
+}
+
+/* 640px 이하 */
+@media (max-width: 768px) {
+  .pageContainer {
+    width: 640px;
+    padding: 1.5rem 1rem;
+    gap: 1.5rem;
+  }
+
+  .writeFormWhitBt {
+    flex-direction: column;
+    gap: 1rem;
+  }
+}
+
+/* 400px 이하 (모바일) */
+@media (max-width: 640px) {
+  .pageContainer {
+    width: 100%;
+    padding: 1rem;
+    gap: 1rem;
+  }
+
+  .writeFormWhitBt {
+    flex-direction: column;
+    align-items: stretch;
+    gap: 0.75rem;
+  }
+
+  .writeFormWhitBt input {
+    font-size: 14px;
+    padding: 0.5rem 0.75rem;
+  }
+}
+
+/* 아주 작은 기기 (400px 이하) */
+@media (max-width: 400px) {
+  .pageContainer {
+    width: 100%;
+    padding: 0.75rem;
+  }
+
+  .writeFormWhitBt {
+    gap: 0.5rem;
+  }
+
+  .writeFormWhitBt button {
+    width: 100%;
+  }
+}

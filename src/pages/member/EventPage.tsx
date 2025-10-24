@@ -13,6 +13,7 @@ import EventWriteModal from '../../ui/sdj/EventWriteModal';
 import Modal from '../../ui/sdj/Modal';
 import { useModal } from '../../ui/sdj/ModalState';
 import TagBadge from '../../ui/TagBadge';
+import styles from './EventPage.module.css';
 
 type EventState = Database['public']['Tables']['events']['Row']['status'];
 type EventFilterState = EventState | '전체';
@@ -287,17 +288,15 @@ function EventPage() {
   };
 
   return (
-    <div className="max-w-[1280px] mx-auto py-8 flex flex-col gap-[30px]">
+    <div className={`${styles.pageContainer}`}>
       {/* 상단 제목 */}
-      <div>
-        <h2 className="text-[32px] font-bold">이벤트</h2>
-        <p className="text-[16px] text-babgray-600">
-          다양한 이벤트에 참여하고 특별한 혜택을 받아보세요
-        </p>
+      <div className={styles.header}>
+        <h2 className={styles.headerTitle}>이벤트</h2>
+        <p className={styles.headerDesc}>다양한 이벤트에 참여하고 특별한 혜택을 받아보세요</p>
       </div>
 
-      <div className="flex justify-between items-center p-5 bg-white rounded-2xl shadow">
-        <div className="flex gap-3">
+      <div className={styles.filterBar}>
+        <div className={styles.filterButtons}>
           {statusTags.map(tag => (
             <button
               key={tag}
@@ -320,14 +319,11 @@ function EventPage() {
       {loading ? (
         [...Array(1)].map((_, i) => <EventCardSkeleton key={i} />)
       ) : events.length > 0 ? (
-        <div className="grid grid-cols-2 gap-[25px]">
+        <div className={styles.eventGrid}>
           {filterCategories.map(event => (
-            <div
-              key={event.id}
-              className="flex flex-col overflow-hidden rounded-[16px] shadow-[0px_4px_4px_0px_rgba(0,0,0,0.02)] bg-white"
-            >
+            <div key={event.id} className={styles.eventCard}>
               {/* 이미지 */}
-              <div className="relative w-full h-[200px] overflow-hidden">
+              <div className={styles.eventImage}>
                 <img
                   src={event.image_url ?? ''}
                   alt={event.title ?? ''}
@@ -371,18 +367,16 @@ function EventPage() {
               </div>
 
               {/* 본문 */}
-              <div className="flex flex-col gap-[10px] p-[18px]">
-                <h3 className="text-[18px] font-bold">{event.title ?? ''}</h3>
-                <p className="text-[14px] text-bab">{event.description ?? ''}</p>
-                <p className="text-[14px] text-babgray-600">{event.benefit ?? ''}</p>
+              <div className={styles.eventContent}>
+                <h3 className={styles.eventTitle}>{event.title ?? ''}</h3>
+                <p className={styles.eventDesc}>{event.description ?? ''}</p>
+                <p className={styles.eventBenefit}> {event.benefit ?? ''}</p>
 
-                <div className="flex justify-between items-center text-sm text-babgray-500">
-                  <span>
-                    {event.start_date ?? ''} ~ {event.end_date ?? ''}
-                  </span>
-                </div>
+                <p className={styles.eventDate}>
+                  {event.start_date ?? ''} ~ {event.end_date ?? ''}
+                </p>
 
-                <div className="flex justify-between gap-[20px] items-center">
+                <div className={styles.eventButtonGroup}>
                   <button
                     disabled={event.status === '종료'}
                     onClick={() => {
