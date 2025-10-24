@@ -1,11 +1,18 @@
 import dayjs from 'dayjs';
 import { useEffect, useState } from 'react';
-import { RiAlarmWarningLine, RiChat3Line, RiCloseFill, RiEyeLine } from 'react-icons/ri';
+import {
+  RiAlarmWarningLine,
+  RiChat3Line,
+  RiCloseFill,
+  RiEditLine,
+  RiEyeLine,
+  RiFlagLine,
+} from 'react-icons/ri';
 import { useNavigate, useParams } from 'react-router-dom';
 import { useAuth } from '../../../contexts/AuthContext';
 import { supabase } from '../../../lib/supabase';
 import type { Comment, Database, Posts } from '../../../types/bobType';
-import { ButtonFillMd } from '../../../ui/button';
+import { ButtonFillLG, ButtonFillMd, ButtonLineLg } from '../../../ui/button';
 import Modal from '../../../ui/sdj/Modal';
 import { useModal } from '../../../ui/sdj/ModalState';
 import ReportsModal from '../../../ui/sdj/ReportsModal';
@@ -105,6 +112,26 @@ function CommunityDetailPage() {
       }
       closeModal();
     });
+  };
+
+  const handleChatBt = () => {
+    if (!user) {
+      return;
+    }
+    if (modal) {
+      openModal(
+        '채팅',
+        '해당 게시글 작성자와 채팅을 하시겠습니까?',
+        '취소',
+        '확인',
+        () => {
+          return;
+        },
+        () => {
+          navigate(`/member/profile/chat`);
+        },
+      );
+    }
   };
 
   const handleEditSave = async (id: number) => {
@@ -232,217 +259,264 @@ function CommunityDetailPage() {
   if (!post) return <p>게시글을 찾을 수 없습니다.</p>;
 
   return (
-    <div className="w-[746px] h-full flex flex-col gap-10 py-8 mx-auto">
-      <p className="font-bold text-3xl text-babgray-900">게시글</p>
-      {/* 게시글 영역 */}
-      <div className="flex flex-col p-7 gap-6 bg-white rounded-2xl shadow-[0px_4px_4px_rgba(0,0,0,0.02)]">
-        <div className="flex items-center justify-between">
-          <div>
-            {post.post_category === '팁과노하우' && (
-              <TagBadge
-                bgColor="bg-babbutton-purple_back"
-                textColor="text-babbutton-purple"
-                children="TIP"
-              />
-            )}
-            {post.post_category === 'Q&A' && (
-              <TagBadge
-                bgColor="bg-babbutton-green_back"
-                textColor="text-babbutton-green"
-                children="Q&A"
-              />
-            )}
-            {post.post_category === '자유게시판' && (
-              <TagBadge
-                bgColor="bg-babbutton-blue_back"
-                textColor="text-babbutton-blue"
-                children="자유"
-              />
-            )}
+    <div className="w-[1280px] h-full flex justify-between py-5 mx-auto">
+      {/* <p className="font-bold text-3xl text-babgray-900">게시글</p> */}
+      <div className=" w-[844px] flex flex-col gap-10">
+        {/* 게시글 영역 */}
+        <div className="flex flex-col p-7 gap-6 bg-white rounded-2xl shadow-[0px_4px_4px_rgba(0,0,0,0.02)]">
+          <div className="flex items-center justify-between">
+            <div>
+              {post.post_category === '팁과노하우' && (
+                <TagBadge
+                  bgColor="bg-babbutton-purple_back"
+                  textColor="text-babbutton-purple"
+                  children="TIP"
+                />
+              )}
+              {post.post_category === 'Q&A' && (
+                <TagBadge
+                  bgColor="bg-babbutton-green_back"
+                  textColor="text-babbutton-green"
+                  children="Q&A"
+                />
+              )}
+              {post.post_category === '자유게시판' && (
+                <TagBadge
+                  bgColor="bg-babbutton-blue_back"
+                  textColor="text-babbutton-blue"
+                  children="자유"
+                />
+              )}
+            </div>
           </div>
-          {(isAuthor || isAdmin) && (
-            <ButtonFillMd onClick={() => navigate(`/member/community/edit/${post.id}`)}>
-              게시글 수정
-            </ButtonFillMd>
+          <div className="flex flex-col gap-8">
+            <p className="font-bold text-2xl">{post.title}</p>
+            <div className="flex items-center justify-between text-babgray-700 text-sm">
+              <div className="flex items-center gap-4">
+                <p className="font-bold text-lg">{post.profiles?.nickname || '익명'}</p>
+                <span className="flex items-center gap-1 text-babgray-600">
+                  <RiEyeLine /> <p>{post.view_count}</p>
+                </span>
+                <span className="flex items-center gap-1 text-babgray-600">
+                  <RiChat3Line /> <p>{comments.length}</p>
+                </span>
+              </div>
+              <p className="font-medium text-[12px] text-babgray-500">
+                {dayjs(post.created_at).fromNow()}
+              </p>
+            </div>
+          </div>
+          <div className="flex border-y py-4 text-babgray-700 leading-relaxed">
+            <p>{post.content}</p>
+          </div>
+        </div>
+        {/* 댓글 영역 */}
+        <div className="flex flex-col p-7 gap-6 bg-white rounded-2xl shadow-[0px_4px_4px_rgba(0,0,0,0.02)]">
+          <form className="flex flex-col gap-4" onSubmit={handleSubmit}>
+            <div className="flex justify-between items-center">
+              <div className="flex items-center text-xl font-bold gap-2">
+                <RiChat3Line className="text-black" />
+                <span className="flex items-center gap-1">
+                  댓글
+                  <div className="font-bold">{comments.length}</div>개
+                </span>
+              </div>
+              <div>
+                <ButtonFillMd type="submit">댓글 등록</ButtonFillMd>
+              </div>
+            </div>
+            <div className="flex flex-col gap-3">
+              <textarea
+                placeholder="댓글을 작성해주세요"
+                value={content}
+                maxLength={500}
+                onChange={e => setContent(e.target.value)}
+                className="w-full h-24 px-4 py-3.5 rounded-xl outline outline-1 outline-offset-[-1px] outline-babgray text-babgray-800 resize-none focus:outline-none focus:ring-1 focus:ring-bab"
+              />
+              <p className="self-stretch text-right text-babgray-500 text-xs">
+                {content.length}/500
+              </p>
+            </div>
+          </form>
+          <ul>
+            {comments.map(comment => {
+              const isAuthor = user?.id === comment.profile_id;
+              return (
+                <li
+                  key={comment.id}
+                  className="flex flex-col gap-4 border-y border-y-babgray py-5 text-babgray-700"
+                >
+                  <div className="flex justify-between items-start">
+                    <span className="text-babgray-800 font-bold">{comment.profiles?.nickname}</span>
+                    <span className="text-babgray-700 text-[12px]">
+                      {dayjs(comment.created_at).fromNow()}
+                    </span>
+                  </div>
+                  {/* 등록한 댓글 내용 */}
+                  <div className="text-babgray-700 break-words">
+                    {editingId === comment.id ? (
+                      <div className="flex gap-2 mt-1">
+                        <input
+                          type="text"
+                          value={editText}
+                          onChange={e => setEditText(e.target.value)}
+                          className="border rounded px-2 py-1 text-sm flex-1"
+                        />
+                        <button
+                          type="button"
+                          onClick={() => handleEditSave(comment.id)}
+                          className="text-bab-500 text-sm"
+                        >
+                          저장
+                        </button>
+                        <button
+                          type="button"
+                          onClick={() => setEditingId(null)}
+                          className="text-gray-500 text-sm"
+                        >
+                          취소
+                        </button>
+                      </div>
+                    ) : (
+                      <div className="text-gray-700 mt-1">{comment.content}</div>
+                    )}
+                  </div>
+                  <div className="flex justify-end items-center gap-2 text-sm">
+                    {(isAuthor || isAdmin) && (
+                      <div className="flex gap-1 items-center text-sm text-gray-500">
+                        <button
+                          onClick={() => {
+                            setEditingId(comment.id);
+                            setEditText(comment.content);
+                          }}
+                          className="hover:text-bab-500"
+                        >
+                          수정
+                        </button>
+                        <button
+                          onClick={() => handleDelete(comment.id)}
+                          className="hover:text-red-500"
+                        >
+                          삭제
+                        </button>
+                      </div>
+                    )}
+                    {!isAuthor && (
+                      <div
+                        onClick={() => {
+                          setReportInfo({
+                            type: '댓글',
+                            nickname: comment.profiles?.nickname ?? null,
+                            targetProfileId: comment.profiles?.id,
+                          });
+                          setReports(true);
+                        }}
+                        className="flex items-center gap-1 text-babbutton-red cursor-pointer"
+                      >
+                        <RiAlarmWarningLine />
+                        <p>신고하기</p>
+                      </div>
+                    )}
+                  </div>
+                </li>
+              );
+            })}
+          </ul>
+          {reports && (
+            <ReportsModal
+              setReports={setReports}
+              targetNickname={reportInfo.nickname ?? ''}
+              handleReport={(type, title, reason) =>
+                handleReport(type, title, reason, reportInfo.targetProfileId)
+              }
+              reportType={reportInfo.type}
+            />
           )}
-        </div>
-        <div className="flex flex-col gap-8">
-          <p className="font-bold text-2xl">{post.title}</p>
-          <div className="flex items-center justify-between text-babgray-700 text-sm">
-            <div className="flex items-center gap-4">
-              <p className="font-bold text-lg">{post.profiles?.nickname || '익명'}</p>
-              <span className="flex items-center gap-1 text-babgray-600">
-                <RiEyeLine /> <p>{post.view_count}</p>
-              </span>
-              <span className="flex items-center gap-1 text-babgray-600">
-                <RiChat3Line /> <p>{comments.length}</p>
-              </span>
-            </div>
-            <p className="font-medium text-[12px] text-babgray-500">
-              {dayjs(post.created_at).fromNow()}
-            </p>
-          </div>
-        </div>
-        <div className="flex border-y py-4 text-babgray-700 leading-relaxed">
-          <p>{post.content}</p>
-        </div>
-        <div className="flex justify-center items-center gap-10 py-2">
-          <div
-            onClick={() => {
-              setReportInfo({
-                type: '게시글',
-                nickname: post.profiles?.nickname ?? null,
-                targetProfileId: post.profiles?.id,
-              });
-              setReports(true);
-            }}
-            className="flex items-center gap-2 text-babbutton-red cursor-pointer"
-          >
-            <RiAlarmWarningLine />
-            <p>게시글 신고</p>
-          </div>
-          {(isAuthor || isAdmin) && (
-            <div
-              onClick={() => handlePostDelete(post.id)}
-              className="flex items-center gap-2 text-babgray-500 cursor-pointer"
-            >
-              <RiCloseFill />
-              <p>게시글 삭제</p>
-            </div>
+          {modal.isOpen && (
+            <Modal
+              isOpen={modal.isOpen}
+              onClose={closeModal}
+              onSubmit={modal.onSubmit}
+              titleText={modal.title}
+              contentText={modal.content}
+              submitButtonText={modal.submitText}
+              closeButtonText={modal.closeText}
+            />
           )}
         </div>
       </div>
-      {/* 댓글 영역 */}
-      <div className="flex flex-col p-7 gap-6 bg-white rounded-2xl shadow-[0px_4px_4px_rgba(0,0,0,0.02)]">
-        <form className="flex flex-col gap-4" onSubmit={handleSubmit}>
-          <div className="flex justify-between items-center">
-            <div className="flex items-center text-xl font-bold gap-2">
-              <RiChat3Line className="text-black" />
-              <span className="flex items-center gap-1">
-                댓글
-                <div className="font-bold">{comments.length}</div>개
-              </span>
-            </div>
-            <div>
-              <ButtonFillMd type="submit">댓글 등록</ButtonFillMd>
-            </div>
-          </div>
-          <div className="flex flex-col gap-3">
-            <textarea
-              placeholder="댓글을 작성해주세요"
-              value={content}
-              maxLength={500}
-              onChange={e => setContent(e.target.value)}
-              className="w-full h-24 px-4 py-3.5 rounded-xl outline outline-1 outline-offset-[-1px] outline-babgray text-babgray-800 resize-none focus:outline-none focus:ring-1 focus:ring-bab"
-            />
-            <p className="self-stretch text-right text-babgray-500 text-xs">{content.length}/500</p>
-          </div>
-        </form>
-        <ul>
-          {comments.map(comment => {
-            const isAuthor = user?.id === comment.profile_id;
-            return (
-              <li
-                key={comment.id}
-                className="flex flex-col gap-4 border-y border-y-babgray py-5 text-babgray-700"
+      {/* 오른쪽 카드 영역 */}
+      <div className="flex w-[400px] h-[150px] p-[25px] flex-col justify-center items-center bg-white rounded-[16px] shadow-[0px_4px_4px_0px_rgba(0,0,0,0.02)]">
+        <section className="w-full space-y-3">
+          {isAuthor || isAdmin ? (
+            <>
+              <ButtonFillLG
+                className="w-full"
+                style={{ fontWeight: 600, borderRadius: '12px' }}
+                onClick={() => navigate(`/member/community/edit/${post.id}`)}
               >
-                <div className="flex justify-between items-start">
-                  <span className="text-babgray-800 font-bold">{comment.profiles?.nickname}</span>
-                  <span className="text-babgray-700 text-[12px]">
-                    {dayjs(comment.created_at).fromNow()}
-                  </span>
+                게시글 수정
+              </ButtonFillLG>
+            </>
+          ) : (
+            ''
+          )}
+          {isAuthor || isAdmin ? (
+            <>
+              <ButtonLineLg
+                className="w-full"
+                style={{ fontWeight: 600, borderRadius: '12px' }}
+                onClick={() => handlePostDelete(post.id)}
+              >
+                <div className="flex gap-[5px] justify-center items-center">
+                  게시글 삭제
+                  <RiCloseFill className="w-4 h-4 shrink-0 relative top-[1px]" />
                 </div>
-                {/* 등록한 댓글 내용 */}
-                <div className="text-babgray-700 break-words">
-                  {editingId === comment.id ? (
-                    <div className="flex gap-2 mt-1">
-                      <input
-                        type="text"
-                        value={editText}
-                        onChange={e => setEditText(e.target.value)}
-                        className="border rounded px-2 py-1 text-sm flex-1"
-                      />
-                      <button
-                        type="button"
-                        onClick={() => handleEditSave(comment.id)}
-                        className="text-bab-500 text-sm"
-                      >
-                        저장
-                      </button>
-                      <button
-                        type="button"
-                        onClick={() => setEditingId(null)}
-                        className="text-gray-500 text-sm"
-                      >
-                        취소
-                      </button>
-                    </div>
-                  ) : (
-                    <div className="text-gray-700 mt-1">{comment.content}</div>
-                  )}
+              </ButtonLineLg>
+            </>
+          ) : (
+            ''
+          )}
+          {!isAuthor && !isAdmin ? (
+            <>
+              <ButtonLineLg
+                className="w-full"
+                style={{ fontWeight: 600, borderRadius: '12px' }}
+                onClick={() => {
+                  setReportInfo({
+                    type: '게시글',
+                    nickname: post.profiles?.nickname ?? null,
+                    targetProfileId: post.profiles?.id,
+                  });
+                  setReports(true);
+                }}
+              >
+                <div className="inline-flex items-center justify-center gap-1.5 font-semibold rounded-[12px] leading-none">
+                  신고하기
+                  <RiAlarmWarningLine className="w-4 h-4 shrink-0 relative top-[1px]" />
                 </div>
-                <div className="flex justify-end items-center gap-2 text-sm">
-                  {(isAuthor || isAdmin) && (
-                    <div className="flex gap-1 items-center text-sm text-gray-500">
-                      <button
-                        onClick={() => {
-                          setEditingId(comment.id);
-                          setEditText(comment.content);
-                        }}
-                        className="hover:text-bab-500"
-                      >
-                        수정
-                      </button>
-                      <button
-                        onClick={() => handleDelete(comment.id)}
-                        className="hover:text-red-500"
-                      >
-                        삭제
-                      </button>
-                    </div>
-                  )}
-                  {!isAuthor && (
-                    <div
-                      onClick={() => {
-                        setReportInfo({
-                          type: '댓글',
-                          nickname: comment.profiles?.nickname ?? null,
-                          targetProfileId: comment.profiles?.id,
-                        });
-                        setReports(true);
-                      }}
-                      className="flex items-center gap-1 text-babbutton-red cursor-pointer"
-                    >
-                      <RiAlarmWarningLine />
-                      <p>신고하기</p>
-                    </div>
-                  )}
+              </ButtonLineLg>
+            </>
+          ) : (
+            ''
+          )}{' '}
+          {!isAuthor && !isAdmin ? (
+            <>
+              <ButtonLineLg
+                className="w-full"
+                style={{ fontWeight: 600, borderRadius: '12px' }}
+                onClick={handleChatBt}
+              >
+                <div className="inline-flex items-center justify-center gap-1.5 font-semibold rounded-[12px] leading-none">
+                  채팅하기
+                  <RiChat3Line className="w-4 h-4 shrink-0 relative top-[1px]" />
                 </div>
-              </li>
-            );
-          })}
-        </ul>
-        {reports && (
-          <ReportsModal
-            setReports={setReports}
-            targetNickname={reportInfo.nickname ?? ''}
-            handleReport={(type, title, reason) =>
-              handleReport(type, title, reason, reportInfo.targetProfileId)
-            }
-            reportType={reportInfo.type}
-          />
-        )}
-        {modal.isOpen && (
-          <Modal
-            isOpen={modal.isOpen}
-            onClose={closeModal}
-            onSubmit={modal.onSubmit}
-            titleText={modal.title}
-            contentText={modal.content}
-            submitButtonText={modal.submitText}
-            closeButtonText={modal.closeText}
-          />
-        )}
+              </ButtonLineLg>
+            </>
+          ) : (
+            ''
+          )}
+        </section>
       </div>
     </div>
   );
