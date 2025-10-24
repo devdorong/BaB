@@ -15,7 +15,7 @@ import {
 import { Link, useNavigate } from 'react-router-dom';
 import { useAuth } from '../../../contexts/AuthContext';
 import { getProfile } from '../../../lib/propile';
-import type { Profile } from '../../../types/bobType';
+import type { Matchings, Profile } from '../../../types/bobType';
 import { ButtonFillMd } from '../../../ui/button';
 import { Cafe, ChineseFood, GrayTag, Indoor, KFood, OrangeTag } from '../../../ui/tag';
 import { usePoint } from '../../../contexts/PointContext';
@@ -35,6 +35,7 @@ import {
   type RestaurantsType,
   type RestaurantTypeRatingAvg,
 } from '../../../lib/restaurants';
+import { getUserMatchings } from '@/services/matchingService';
 
 function ProfilePage() {
   const { user, signOut } = useAuth();
@@ -59,6 +60,8 @@ function ProfilePage() {
   const [favoritesCount, setFavoritesCount] = useState(0);
   // 평점
   const [avgScore, setAvgScore] = useState<number>(0);
+  // 사용자 매칭 배열
+  const [matchings, setMatchings] = useState<Matchings[]>([]);
 
   useEffect(() => {
     const MyReviewCount = async () => {
@@ -159,6 +162,20 @@ function ProfilePage() {
     };
     loadProfileInterests();
   }, []);
+  useEffect(() => {
+    const fetchUserMatchings = async () => {
+      if (!user) return;
+
+      try {
+        const userMatchings = await getUserMatchings(user.id);
+        setMatchings(userMatchings);
+      } catch (err) {
+        console.error('매칭 불러오기 실패:', err);
+      }
+    };
+
+    fetchUserMatchings();
+  }, [user]);
 
   // 로그아웃 처리
   const handleLogout = () => {
@@ -238,7 +255,7 @@ function ProfilePage() {
                   </div>
                   <div>
                     <div className="text-[22px] sm:text-[24px] font-bold text-bab-500">
-                      매칭개수
+                      {matchings.length}
                     </div>
                     <div className="text-[13px] sm:text-[14px] text-babgray-600">매칭</div>
                   </div>
