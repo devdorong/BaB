@@ -1,0 +1,258 @@
+/* EventPage.module.css */
+
+/* 기본 (>=1280px) */
+.pageContainer {
+  max-width: 1280px;
+  margin: 0 auto;
+  padding: 2rem 0;
+  display: flex;
+  flex-direction: column;
+  gap: 2rem;
+}
+
+/* 상단 영역 */
+.header {
+  display: flex;
+  flex-direction: column;
+  gap: 0.5rem;
+}
+
+.headerTitle {
+  font-size: 32px;
+  font-weight: 700;
+}
+
+.headerDesc {
+  font-size: 16px;
+  color: var(--babgray-600, #777);
+}
+
+/* 필터 영역 */
+.filterBar {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: 1.25rem;
+  background: white;
+  border-radius: 1rem;
+  box-shadow: 0px 4px 4px rgba(0, 0, 0, 0.04);
+  flex-wrap: wrap;
+  gap: 1rem;
+}
+
+.filterButtons {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.75rem;
+}
+
+/* 이벤트 카드 리스트 */
+.eventGrid {
+  display: grid;
+  grid-template-columns: repeat(2, 1fr);
+  gap: 25px;
+}
+
+/* 카드 단위 */
+.eventCard {
+  display: flex;
+  flex-direction: column;
+  overflow: hidden;
+  border-radius: 16px;
+  background-color: white;
+  box-shadow: 0px 4px 4px rgba(0, 0, 0, 0.02);
+}
+
+.eventImage {
+  position: relative;
+  width: 100%;
+  height: 200px;
+  overflow: hidden;
+}
+
+.eventContent {
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+  padding: 18px;
+}
+
+.eventTitle {
+  font-size: 18px;
+  font-weight: 700;
+}
+
+.eventDesc {
+  font-size: 14px;
+  color: var(--bab, #ff5722);
+}
+
+.eventBenefit {
+  font-size: 14px;
+  color: var(--babgray-600, #666);
+}
+
+.eventDate {
+  font-size: 13px;
+  color: var(--babgray-500, #888);
+}
+
+.eventButtonGroup {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  gap: 20px;
+}
+
+/* ============================= */
+/* 1024px 이하 */
+/* ============================= */
+@media (max-width: 1280px) {
+  .pageContainer {
+    padding: 1.75rem 1rem;
+  }
+
+  .eventGrid {
+    grid-template-columns: repeat(2, 1fr);
+    gap: 20px;
+  }
+
+  .headerTitle {
+    font-size: 28px;
+  }
+}
+
+/* ============================= */
+/* 768px 이하 */
+/* ============================= */
+@media (max-width: 1024px) {
+  .pageContainer {
+    padding: 1.5rem 1rem;
+    gap: 1.5rem;
+  }
+
+  .filterBar {
+    flex-direction: column;
+    align-items: flex-start;
+    gap: 0.75rem;
+  }
+
+  .eventGrid {
+    grid-template-columns: 1fr;
+    gap: 20px;
+  }
+
+  .eventTitle {
+    font-size: 17px;
+  }
+
+  .eventDesc,
+  .eventBenefit {
+    font-size: 13px;
+  }
+}
+
+/* ============================= */
+/* 640px 이하 */
+/* ============================= */
+@media (max-width: 768px) {
+  .pageContainer {
+    padding: 1.25rem 0.75rem;
+    gap: 1.25rem;
+  }
+
+  .headerTitle {
+    font-size: 24px;
+  }
+
+  .filterBar {
+    padding: 1rem;
+  }
+
+  .eventImage {
+    height: 180px;
+  }
+
+  .eventContent {
+    padding: 14px;
+    gap: 8px;
+  }
+
+  .eventTitle {
+    font-size: 16px;
+  }
+
+  .eventDesc,
+  .eventBenefit {
+    font-size: 13px;
+  }
+
+  .eventDate {
+    font-size: 12px;
+  }
+}
+
+/* ============================= */
+/* 400px 이하 */
+/* ============================= */
+@media (max-width: 640px) {
+  .pageContainer {
+    width: 100%;
+    padding: 1rem;
+    gap: 1rem;
+  }
+
+  .filterBar {
+    padding: 0.75rem;
+  }
+
+  .eventImage {
+    height: 160px;
+  }
+
+  .eventTitle {
+    font-size: 15px;
+  }
+
+  .eventDesc,
+  .eventBenefit {
+    font-size: 12px;
+  }
+
+  .eventDate {
+    font-size: 11px;
+  }
+
+  .eventButtonGroup {
+    flex-direction: column;
+    gap: 0.5rem;
+  }
+
+  .eventButtonGroup button {
+    width: 100%;
+  }
+}
+
+/* 아주 작은 기기 (<=400px) */
+@media (max-width: 400px) {
+  .pageContainer {
+    padding: 0.75rem;
+  }
+
+  .eventImage {
+    height: 140px;
+  }
+
+  .eventContent {
+    padding: 12px;
+  }
+
+  .eventTitle {
+    font-size: 14px;
+  }
+
+  .eventDesc,
+  .eventBenefit {
+    font-size: 12px;
+  }
+}

@@ -17,6 +17,7 @@ import { ButtonFillMd } from '../../../ui/button';
 import CommunityCardSkeleton from '../../../ui/sdj/CommunityCardSkeleton';
 import Modal from '../../../ui/sdj/Modal';
 import { BlueTag, GreenTag, PurpleTag } from '../../../ui/tag';
+import styles from './CommunityPage.module.css';
 
 type CategoriesType = Database['public']['Tables']['posts']['Row']['post_category'];
 type CategoryTagType = Database['public']['Tables']['posts']['Row']['tag'];
@@ -154,14 +155,14 @@ function CommunityPage() {
 
   return (
     <div className="w-full bg-bg-bg">
-      <div className="w-[1280px] mx-auto flex flex-col gap-8 py-8">
+      <div className={`${styles.pageContainer} w-[1280px] mx-auto flex flex-col gap-8 py-8`}>
         {/* 타이틀 */}
         <div className="flex flex-col gap-1">
           <p className="text-3xl font-bold">커뮤니티</p>
           <p className="text-babgray-600">맛집 친구들과 소통해보세요</p>
         </div>
         {/* 검색폼,버튼 */}
-        <div className="flex justify-between items-center">
+        <div className={`${styles.writeFormWhitBt} flex justify-between items-center`}>
           <div
             onClick={() => document.getElementById('searchInput')?.focus()}
             className="flex items-center gap-3 bg-white w-[550px] h-[55px] py-3 px-3 border border-s-babgray rounded-3xl"
@@ -231,11 +232,13 @@ function CommunityPage() {
                       </span>
                     </div>
                     <div className="flex flex-col gap-2">
-                      <p className="font-bold text-xl">{item.title}</p>
-                      <p className="text-babgray-600">{item.content}</p>
+                      <p className="font-bold text-xl truncate">{item.title}</p>
+                      <p className="text-babgray-600 truncate">{item.content}</p>
                     </div>
                     <div className="flex justify-between text-babgray-600">
-                      <p className="font-semibold">{item.profiles?.nickname ?? '알수없음'}</p>
+                      <p className="font-semibold truncate">
+                        {item.profiles?.nickname ?? '알수없음'}
+                      </p>
                       <div>
                         <span className="flex items-center gap-1">
                           <RiChat3Line />

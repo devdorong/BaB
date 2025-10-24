@@ -6,6 +6,7 @@ import type { Database, PostsInsert } from '../../../types/bobType';
 import { ButtonFillMd, ButtonLineMd } from '../../../ui/button';
 import { useModal } from '../../../ui/sdj/ModalState';
 import Modal from '../../../ui/sdj/Modal';
+import styles from './CommunityWritePage.module.css';
 
 export type CategoriesType = Database['public']['Tables']['posts']['Row']['post_category'];
 export type TagFilterType = Exclude<TagType, '맛집추천요청'>;
@@ -104,14 +105,16 @@ function CommunityWritePage() {
   };
 
   return (
-    <div className="flex flex-col gap-4 w-[750px] mx-auto py-8">
+    <div className={`${styles.pageContainer} flex flex-col gap-4 w-[750px] mx-auto py-8`}>
       <p className="font-bold text-3xl">게시글 작성</p>
-      <div className="flex flex-col gap-6 p-8 bg-white shadow-sm rounded-2xl text-babgray-800">
+      <div
+        className={`${styles.writeCard} flex flex-col gap-6 p-8 bg-white shadow-sm rounded-2xl text-babgray-800`}
+      >
         <div className="flex flex-col gap-2">
           <span className="flex gap-1 font-semibold">
             카테고리 <p className="text-bab">*</p>
           </span>
-          <div className="flex gap-4">
+          <div className={`${styles.categoryList} flex gap-4`}>
             {categories.map(item => (
               <button
                 key={item}
@@ -164,8 +167,7 @@ function CommunityWritePage() {
             <li>광고성 게시글은 삭제될 수 있습니다</li>
           </ul>
         </div>
-        <div className="border-b border-b-babgray" />
-        <div className="flex justify-between">
+        <div className={`${styles.buttonGroup} flex justify-between`}>
           <ButtonLineMd onClick={handleCancel} className="w-[320px]">
             취소
           </ButtonLineMd>

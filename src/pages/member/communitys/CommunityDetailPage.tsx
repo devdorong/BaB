@@ -1,13 +1,6 @@
 import dayjs from 'dayjs';
 import { useEffect, useState } from 'react';
-import {
-  RiAlarmWarningLine,
-  RiChat3Line,
-  RiCloseFill,
-  RiEditLine,
-  RiEyeLine,
-  RiFlagLine,
-} from 'react-icons/ri';
+import { RiAlarmWarningLine, RiChat3Line, RiCloseFill, RiEyeLine } from 'react-icons/ri';
 import { useNavigate, useParams } from 'react-router-dom';
 import { useAuth } from '../../../contexts/AuthContext';
 import { supabase } from '../../../lib/supabase';
@@ -17,6 +10,7 @@ import Modal from '../../../ui/sdj/Modal';
 import { useModal } from '../../../ui/sdj/ModalState';
 import ReportsModal from '../../../ui/sdj/ReportsModal';
 import TagBadge from '../../../ui/TagBadge';
+import styles from './CommunityDetailPage.module.css';
 
 type PostWithProfile = Posts & {
   profiles: { id: string; nickname: string } | null;
@@ -118,20 +112,9 @@ function CommunityDetailPage() {
     if (!user) {
       return;
     }
-    if (modal) {
-      openModal(
-        '채팅',
-        '해당 게시글 작성자와 채팅을 하시겠습니까?',
-        '취소',
-        '확인',
-        () => {
-          return;
-        },
-        () => {
-          navigate(`/member/profile/chat`);
-        },
-      );
-    }
+    openModal('채팅', '해당 게시글 작성자와 채팅을 하시겠습니까?', '취소', '확인', async () => {
+      navigate(`/member/profile/chat`);
+    });
   };
 
   const handleEditSave = async (id: number) => {
@@ -259,9 +242,8 @@ function CommunityDetailPage() {
   if (!post) return <p>게시글을 찾을 수 없습니다.</p>;
 
   return (
-    <div className="w-[1280px] h-full flex justify-between py-5 mx-auto">
-      {/* <p className="font-bold text-3xl text-babgray-900">게시글</p> */}
-      <div className=" w-[844px] flex flex-col gap-10">
+    <div className={`${styles.pageContainer} w-[1280px] h-full flex justify-between py-5 mx-auto`}>
+      <div className={`${styles.leftSection} w-[844px] flex flex-col gap-10`}>
         {/* 게시글 영역 */}
         <div className="flex flex-col p-7 gap-6 bg-white rounded-2xl shadow-[0px_4px_4px_rgba(0,0,0,0.02)]">
           <div className="flex items-center justify-between">
@@ -432,21 +414,12 @@ function CommunityDetailPage() {
               reportType={reportInfo.type}
             />
           )}
-          {modal.isOpen && (
-            <Modal
-              isOpen={modal.isOpen}
-              onClose={closeModal}
-              onSubmit={modal.onSubmit}
-              titleText={modal.title}
-              contentText={modal.content}
-              submitButtonText={modal.submitText}
-              closeButtonText={modal.closeText}
-            />
-          )}
         </div>
       </div>
       {/* 오른쪽 카드 영역 */}
-      <div className="flex w-[400px] h-[150px] p-[25px] flex-col justify-center items-center bg-white rounded-[16px] shadow-[0px_4px_4px_0px_rgba(0,0,0,0.02)]">
+      <div
+        className={`${styles.rightSection} flex w-[400px] h-[150px] p-[25px] flex-col justify-center items-center bg-white rounded-[16px] shadow-[0px_4px_4px_0px_rgba(0,0,0,0.02)]`}
+      >
         <section className="w-full space-y-3">
           {isAuthor || isAdmin ? (
             <>
@@ -517,7 +490,18 @@ function CommunityDetailPage() {
             ''
           )}
         </section>
-      </div>
+      </div>{' '}
+      {modal.isOpen && (
+        <Modal
+          isOpen={modal.isOpen}
+          onClose={closeModal}
+          onSubmit={modal.onSubmit}
+          titleText={modal.title}
+          contentText={modal.content}
+          submitButtonText={modal.submitText}
+          closeButtonText={modal.closeText}
+        />
+      )}
     </div>
   );
 }

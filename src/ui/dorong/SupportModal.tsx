@@ -8,6 +8,7 @@ import { getProfile } from '../../lib/propile';
 import { RiArrowDownSLine } from 'react-icons/ri';
 import { useModal } from '../sdj/ModalState';
 import { supabase } from '../../lib/supabase';
+import { AnimatePresence, motion } from 'framer-motion';
 
 type SupportModalProps = {
   setOpenModal: React.Dispatch<React.SetStateAction<boolean>>;
@@ -148,96 +149,110 @@ const SupportModal = ({ setOpenModal }: SupportModalProps) => {
   }, [user?.id]);
 
   return (
-    <div className="fixed inset-0 flex items-center justify-center bg-black bg-opacity-50 z-50">
-      <div className="flex flex-col items-center justify-center gap-10 px-8 py-8 bg-white rounded-[30px] shadow-[0_4px_4px_0_rgba(0,0,0,0.02)] overflow-hidden">
-        <p className="w-full flex items-start text-xl font-bold">1:1 문의하기</p>
-        <div className="flex flex-col items-start gap-7 w-[400px] text-babgray-700">
-          <div className="w-full">
-            <p className="text-sm">이름</p>
+    <AnimatePresence>
+      <motion.div
+        className="fixed inset-0 flex items-center justify-center bg-black bg-opacity-50 z-50"
+        initial={{ opacity: 0 }}
+        animate={{ opacity: 1 }}
+        exit={{ opacity: 0 }}
+        transition={{ duration: 0.25 }}
+      >
+        <motion.div
+          className="flex flex-col items-center justify-center gap-10 px-8 py-8 bg-white rounded-[30px] shadow-[0_4px_4px_0_rgba(0,0,0,0.02)] overflow-hidden"
+          initial={{ scale: 0.95, opacity: 0 }}
+          animate={{ scale: 1, opacity: 1 }}
+          exit={{ scale: 0.95, opacity: 0 }}
+          transition={{ duration: 0.25, ease: 'easeOut' }}
+        >
+          <p className="w-full flex items-start text-xl font-bold">1:1 문의하기</p>
+          <div className="flex flex-col items-start gap-7 w-[400px] text-babgray-700">
+            <div className="w-full">
+              <p className="text-sm">이름</p>
 
-            {/* 문의하는 사람의 닉네임 */}
-            <div className="w-full h-12 px-2.5 py-3 border-b items-center">
-              <div className="font-semibold">{profileData?.nickname}</div>
-            </div>
-          </div>
-          <div className="w-full">
-            <p className="text-sm">이메일</p>
-            {/* 문의하는 사람의 이메일 */}
-            <div className="w-full h-12 px-2.5 py-3 bg-white border-b items-center">
-              <div className="font-semibold">{user?.email}</div>
-            </div>
-          </div>
-          <div className="w-full flex flex-col gap-2">
-            <p className="text-sm">문의 유형</p>
-            {/* 문의하는 사람의 이메일 */}
-            <div className="w-full h-12 bg-white items-center relative">
-              <select
-                value={category}
-                onChange={e => setCategory(e.target.value as HelpCategoryWithEmpty)}
-                required
-                className="w-full h-[50px] rounded-[25px] border border-gray-300 px-3 pr-10 text-gray-700 focus:outline-none focus:ring-2 focus:ring-bab-500 appearance-none"
-              >
-                <option value="" disabled>
-                  문의 유형을 선택해주세요.
-                </option>
-                {categorys.map(y => (
-                  <option key={y} value={y}>
-                    {y}
-                  </option>
-                ))}
-              </select>
-              <div className="pointer-events-none absolute right-3 top-1/2 -translate-y-1/2">
-                <RiArrowDownSLine color="#C2C2C2" />
+              {/* 문의하는 사람의 닉네임 */}
+              <div className="w-full h-12 px-2.5 py-3 border-b items-center">
+                <div className="font-semibold">{profileData?.nickname}</div>
               </div>
             </div>
-          </div>
+            <div className="w-full">
+              <p className="text-sm">이메일</p>
+              {/* 문의하는 사람의 이메일 */}
+              <div className="w-full h-12 px-2.5 py-3 bg-white border-b items-center">
+                <div className="font-semibold">{user?.email}</div>
+              </div>
+            </div>
+            <div className="w-full flex flex-col gap-2">
+              <p className="text-sm">문의 유형</p>
+              {/* 문의하는 사람의 이메일 */}
+              <div className="w-full h-12 bg-white items-center relative">
+                <select
+                  value={category}
+                  onChange={e => setCategory(e.target.value as HelpCategoryWithEmpty)}
+                  required
+                  className="w-full h-[50px] rounded-[25px] border border-gray-300 px-3 pr-10 text-gray-700 focus:outline-none focus:ring-2 focus:ring-bab-500 appearance-none"
+                >
+                  <option value="" disabled>
+                    문의 유형을 선택해주세요.
+                  </option>
+                  {categorys.map(y => (
+                    <option key={y} value={y}>
+                      {y}
+                    </option>
+                  ))}
+                </select>
+                <div className="pointer-events-none absolute right-3 top-1/2 -translate-y-1/2">
+                  <RiArrowDownSLine color="#C2C2C2" />
+                </div>
+              </div>
+            </div>
 
-          <InputField
-            label="제목"
-            onChange={e => setTitle(e.target.value)}
-            value={title}
-            placeholder="제목을 입력해주세요"
-            required
-            type="text"
-          />
-          <div className="w-full">
-            <TextAreaCustom
-              label="문의 내용"
-              value={content}
-              onChange={e => setContent(e.target.value)}
-              placeholder="문의내용을 자세히 입력해주세요"
-              maxLength={500}
+            <InputField
+              label="제목"
+              onChange={e => setTitle(e.target.value)}
+              value={title}
+              placeholder="제목을 입력해주세요"
               required
+              type="text"
             />
-            <p className="text-xs text-babgray-500 text-right">{content.length}/500</p>
-          </div>
-
-          <div className="w-full inline-flex items-center gap-4">
-            <ButtonFillMd
-              style={{ backgroundColor: '#e5e7eb', color: '#5C5C5C' }}
-              className="flex-1 hover:!bg-gray-300"
-              onClick={handleCancel}
-            >
-              취소
-            </ButtonFillMd>
-            <ButtonFillMd onClick={handleSubmit} className="flex-1 bg-bab hover:bg-bab-600">
-              문의하기
-            </ButtonFillMd>
-            {modal.isOpen && (
-              <Modal
-                isOpen={modal.isOpen}
-                onClose={closeModal}
-                titleText={modal.title}
-                contentText={modal.content}
-                closeButtonText={modal.closeText}
-                submitButtonText={modal.submitText}
-                onSubmit={modal.onSubmit}
+            <div className="w-full">
+              <TextAreaCustom
+                label="문의 내용"
+                value={content}
+                onChange={e => setContent(e.target.value)}
+                placeholder="문의내용을 자세히 입력해주세요"
+                maxLength={500}
+                required
               />
-            )}
+              <p className="text-xs text-babgray-500 text-right">{content.length}/500</p>
+            </div>
+
+            <div className="w-full inline-flex items-center gap-4">
+              <ButtonFillMd
+                style={{ backgroundColor: '#e5e7eb', color: '#5C5C5C' }}
+                className="flex-1 hover:!bg-gray-300"
+                onClick={handleCancel}
+              >
+                취소
+              </ButtonFillMd>
+              <ButtonFillMd onClick={handleSubmit} className="flex-1 bg-bab hover:bg-bab-600">
+                문의하기
+              </ButtonFillMd>
+              {modal.isOpen && (
+                <Modal
+                  isOpen={modal.isOpen}
+                  onClose={closeModal}
+                  titleText={modal.title}
+                  contentText={modal.content}
+                  closeButtonText={modal.closeText}
+                  submitButtonText={modal.submitText}
+                  onSubmit={modal.onSubmit}
+                />
+              )}
+            </div>
           </div>
-        </div>
-      </div>
-    </div>
+        </motion.div>
+      </motion.div>
+    </AnimatePresence>
   );
 };
 
