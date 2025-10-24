@@ -376,7 +376,9 @@ function EventPage() {
                   {event.start_date ?? ''} ~ {event.end_date ?? ''}
                 </p>
 
-                <div className={styles.eventButtonGroup}>
+                <div
+                  className={`${styles.eventButtonGroup} flex flex-col items-center justify-center`}
+                >
                   <button
                     disabled={event.status === '종료'}
                     onClick={() => {
@@ -400,8 +402,12 @@ function EventPage() {
                     {event.status === '종료' && `종료된 이벤트`}
                   </button>
                   {admin && (
-                    <button onClick={() => handleEditBt(event.id)} className="flex-1">
+                    <button
+                      onClick={() => handleEditBt(event.id)}
+                      className="flex justify-center items-center gap-2"
+                    >
                       <RiEditLine />
+                      수정하기
                     </button>
                   )}
                 </div>
