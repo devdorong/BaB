@@ -678,9 +678,11 @@ const MatchingDetailPage = () => {
                   </div>
 
                   {/* 참여자 리스트 */}
-                  <div className="flex flex-col gap-[20px]">
-                    <ul className="space-y-3">
-                      {membersWithProfiles.map(p => (
+                  <ul className="space-y-3">
+                    {membersWithProfiles
+                      .slice() // 원본 훼손 방지용 복사
+                      .sort((a, b) => (a.role === 'host' ? -1 : b.role === 'host' ? 1 : 0))
+                      .map(p => (
                         <li key={p.id} className="flex items-center gap-3">
                           {/* 프로필 이미지 */}
                           <div className="flex w-[60px] h-[60px] rounded-full overflow-hidden">
@@ -697,12 +699,13 @@ const MatchingDetailPage = () => {
                           {/* 이름 및 역할 */}
                           <div>
                             <div className="flex items-center gap-1">
-                              <div className={`text-[16px] font-semibold text-babgray-800`}>
+                              <div className="text-[16px] font-semibold text-babgray-800">
                                 {p.profile.nickname}
                               </div>
-                              {/* 차단 추가시 사용하기 */}
-                              {/* {p.role === 'member' && (
-                                <RiErrorWarningLine className="w-4 h-4 text-babbutton-red flex-shrink-0" />
+                              {/* {p.role === 'host' && (
+                                <TagBadge bgColor="bg-yellow-100" textColor="text-yellow-800">
+                                  모집자
+                                </TagBadge>
                               )} */}
                             </div>
                             <p className="text-gray-500 text-[13px] leading-6">
@@ -711,8 +714,7 @@ const MatchingDetailPage = () => {
                           </div>
                         </li>
                       ))}
-                    </ul>
-                  </div>
+                  </ul>
                 </div>
 
                 {/* 남은 자리 안내 */}

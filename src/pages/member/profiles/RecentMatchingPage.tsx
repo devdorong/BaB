@@ -6,9 +6,9 @@ import {
   RiStarFill,
   RiStarLine,
 } from 'react-icons/ri';
-import YetMatchingRecordItem from '../../../components/member/YetMatchingRecordItem';
-import RecentMatchingRecordItem from '../../../components/member/RecentMatchingRecordItem';
 import { useNavigate } from 'react-router-dom';
+import RecentMatchingRecordItem from '../../../components/member/RecentMatchingRecordItem';
+import YetMatchingRecordItem from '../../../components/member/YetMatchingRecordItem';
 import { useAuth } from '../../../contexts/AuthContext';
 import { getUserMatchings } from '../../../services/matchingService';
 import type { Matchings } from '../../../types/bobType';
@@ -20,8 +20,8 @@ function RecentMatchingPage() {
   const navigate = useNavigate();
   const { user } = useAuth();
   const [matchings, setMatchings] = useState<Matchings[]>([]);
-  const [expectedMatchings, setExpectedMatchings] = useState<Matchings[]>([]);
   const [endMatchings, setEndMatchings] = useState<Matchings[]>([]);
+  const [expectedMatchings, setExpectedMatchings] = useState<Matchings[]>([]);
 
   useEffect(() => {
     const fetchUserMatchings = async () => {
@@ -31,10 +31,12 @@ function RecentMatchingPage() {
         const userMatchings = await getUserMatchings(user.id);
         const endMatching = userMatchings.filter(item => item.status !== 'waiting');
         const expectedMatching = userMatchings.filter(item => item.status === 'waiting');
-        console.log('사용자 매칭:', userMatchings);
-        console.log('종료된 매칭:', endMatching);
-        console.log('예정된 매칭:', expectedMatching);
+        // console.log('사용자 매칭:', userMatchings);
+        // console.log('종료된 매칭:', endMatching);
+        // console.log('예정된 매칭:', expectedMatching);
         setMatchings(userMatchings);
+        setEndMatchings(endMatching);
+        setExpectedMatchings(expectedMatching);
       } catch (err) {
         console.error('매칭 불러오기 실패:', err);
       }
@@ -42,6 +44,11 @@ function RecentMatchingPage() {
 
     fetchUserMatchings();
   }, [user]);
+  const total = matchings.length;
+  const completed = endMatchings.filter(item => item.status === 'completed').length;
+
+  // 퍼센트 계산 (소수점 제거)
+  const percent = total > 0 ? Math.round((completed / total) * 100) : 0;
 
   const base = 'group relative px-4 py-2 pb-3 transition-colors outline-none';
   const active = 'text-bab-500';
@@ -81,21 +88,25 @@ function RecentMatchingPage() {
                   <p className="text-[16px] font-bold pb-[15px]">매칭 통계</p>
                   <div className="flex flex-col gap-[15px]">
                     <div className="flex flex-col rounded-[12px] w-[200px] py-[16px] justify-center items-center bg-[#DCFCE7]">
-                      <div className="text-[22px] font-bold text-babbutton-green">12</div>
+                      <div className="text-[22px] font-bold text-babbutton-green">
+                        {matchings.length}
+                      </div>
                       <div className="text-[13px] text-babgray-500">총 매칭</div>
                     </div>
                     <div className="flex flex-col rounded-[12px] w-[200px] py-[16px] justify-center items-center bg-[#DBEAFE]">
-                      <div className="text-[22px] font-bold text-babbutton-blue">9</div>
+                      <div className="text-[22px] font-bold text-babbutton-blue">
+                        {endMatchings.filter(item => item.status === 'completed').length}
+                      </div>
                       <div className="text-[13px] text-babgray-500">성공한 매칭</div>
                     </div>
                     <div className="flex flex-col rounded-[12px] w-[200px] py-[16px] justify-center items-center bg-[#FFF2EE]">
-                      <div className="text-[22px] font-bold text-bab-500">75%</div>
+                      <div className="text-[22px] font-bold text-bab-500">{percent}%</div>
                       <div className="text-[13px] text-babgray-500">성공률</div>
                     </div>
                   </div>
                 </div>
               </div>
-              <div className="inline-flex w-[260px] p-[25px] flex-col justify-center items-center bg-white rounded-[16px] shadow-[0px_4px_4px_0px_rgba(0,0,0,0.02)]">
+              {/* <div className="inline-flex w-[260px] p-[25px] flex-col justify-center items-center bg-white rounded-[16px] shadow-[0px_4px_4px_0px_rgba(0,0,0,0.02)]">
                 <div className="flex flex-col w-full">
                   <p className="text-[16px] font-bold">평균 평점</p>
                   <div className="flex flex-col items-center justify-center">
@@ -115,7 +126,7 @@ function RecentMatchingPage() {
                     <p className="text-[13px] text-babgray-700">9개의 평가기준</p>
                   </div>
                 </div>
-              </div>
+              </div> */}
             </div>
             <div className="flex flex-col w-full gap-[50px]">
               <section className="w-full px-[25px] py-[15px] bg-white rounded-[16px] shadow-[0_4px_4px_rgba(0,0,0,0.02)]">
@@ -135,7 +146,7 @@ function RecentMatchingPage() {
                     <div className="flex items-center justify-center gap-2">
                       <RiHistoryLine />
                       최근 매칭
-                      <div>(5)</div>
+                      <div>({endMatchings.length})</div>
                     </div>
                     <span className={underlineClass(tab === 'recent')} />
                   </button>
@@ -150,7 +161,7 @@ function RecentMatchingPage() {
                     <div className="flex items-center justify-center gap-2">
                       <RiCalendarLine />
                       예정된 매칭
-                      <div>(5)</div>
+                      <div>({expectedMatchings.length})</div>
                     </div>
                     <span className={underlineClass(tab === 'yet')} />
                   </button>
@@ -160,14 +171,14 @@ function RecentMatchingPage() {
               {/* 탭 콘텐츠 */}
               {tab === 'recent' ? (
                 <section className="space-y-4">
-                  {[1, 2, 3].map(i => (
-                    <RecentMatchingRecordItem key={i} />
+                  {endMatchings.map(i => (
+                    <RecentMatchingRecordItem key={i.id} endMatching={i} />
                   ))}
                 </section>
               ) : (
                 <section className="space-y-4">
-                  {[1, 2].map(i => (
-                    <YetMatchingRecordItem key={i} />
+                  {expectedMatchings.map(i => (
+                    <YetMatchingRecordItem key={i.id} matching={i} />
                   ))}
                 </section>
               )}
