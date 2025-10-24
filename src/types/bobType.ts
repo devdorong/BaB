@@ -190,6 +190,11 @@ export type Sales = Database['public']['Tables']['sales']['Row'];
 export type SalesInsert = Database['public']['Tables']['sales']['Insert'];
 export type SalesUpdate = Database['public']['Tables']['sales']['Update'];
 
+// 카드 테이블
+export type Payment_methods = Database['public']['Tables']['payment_methods']['Row'];
+export type Payment_methodsInsert = Database['public']['Tables']['payment_methods']['Insert'];
+export type Payment_methodsUpdate = Database['public']['Tables']['payment_methods']['Update'];
+
 // db 타입 불러오기
 export type Json = string | number | boolean | null | { [key: string]: Json | undefined } | Json[];
 

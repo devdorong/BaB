@@ -5,33 +5,35 @@ import MainReview from '../../components/member/MainReview';
 import { useKakaoLoader } from '../../hooks/useKakaoLoader';
 
 function MemberPage() {
-  //ts
   const isMapLoaded = useKakaoLoader();
-  //tsx
+
   return (
-    <div className="min-h-[2000px] ">
+    <div className="flex flex-col items-center bg-gray-50">
       {/* 배너 */}
-      <div className="max-w-[1280px] mx-auto">
+      <section className="w-full px-4 sm:px-6 md:px-8 lg:px-10 xl:px-0 max-w-[1280px]">
         <MainBanner />
-      </div>
-      {/* 매칭대기중 */}
-      <div className="max-w-[1280px] mx-auto">
+      </section>
+
+      {/* 매칭 대기중 */}
+      <section className="w-full px-4 sm:px-6 md:px-8 lg:px-10 xl:px-0 max-w-[1280px] mt-10 md:mt-14">
         <MachingIndex />
-      </div>
-      {/* 내주변 맛집 */}
-      <div className=" bg-white">
+      </section>
+
+      {/* 내 주변 맛집 지도 */}
+      <section className="w-full bg-white">
         {isMapLoaded ? (
           <KkoMap />
         ) : (
-          <div className="py-10 text-center text-babgray-600 max-w-[1280px] mx-auto">
+          <div className="py-10 text-center text-babgray-600 px-4 sm:px-0">
             지도를 불러오는 중입니다...
           </div>
         )}
-      </div>
+      </section>
+
       {/* 최근 올라온 리뷰 */}
-      <div className="max-w-[1280px] mx-auto py-[60px]">
+      <section className="w-full px-4 sm:px-6 md:px-8 lg:px-10 xl:px-0 max-w-[1280px] py-12 sm:py-16 md:py-20">
         <MainReview />
-      </div>
+      </section>
     </div>
   );
 }

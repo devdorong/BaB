@@ -1,5 +1,5 @@
 // MainReview.tsx
-import { useMemo } from 'react';
+import { useEffect, useMemo, useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { RiArrowRightLine } from 'react-icons/ri';
 import { Swiper, SwiperSlide } from 'swiper/react';
@@ -8,45 +8,60 @@ import 'swiper/css';
 import 'swiper/css/navigation';
 import 'swiper/css/pagination';
 
-import RestaurantCard from '../../ui/jy/RestaurantCard';
-import { mockReviews } from '../../types/review'; // ✅ 우리가 만든 목업데이터 import
-import RestaurantMockUpCard from '../../ui/dorong/RestaurantMockUpCard';
+import { fetchAllReviewData, type MyReviewData } from '@/lib/myreviews';
+import MyreviewCard from '@/ui/jy/MyReviewCard';
+import { categoryColors } from '@/ui/jy/categoryColors';
 
 export default function MainReview() {
   const navigate = useNavigate();
+  const [reviews, setReviews] = useState<MyReviewData[]>([]);
 
-  // mockReviews → RestaurantCard 형식으로 변환
-  const items = useMemo(
-    () => [
-      ...mockReviews.slice(0, 10).map(r => ({
-        imageUrl: r.img,
-        name: r.name,
-        rating: r.rating,
-        reviewCount: Math.floor(Math.random() * 200) + 10,
-        location: r.category,
-        distanceKm: parseFloat(r.distance),
-        reviewSnippet: r.review,
-        likeCount: Math.floor(Math.random() * 100),
-        category: r.category,
-        tagBg: r.tagBg!,
-        tagText: r.tagText!,
-      })),
-      { type: 'more' as const },
-    ],
-    [],
-  );
+  // 실제 데이터 가져오기
+  useEffect(() => {
+    const fetchData = async () => {
+      const data = await fetchAllReviewData();
+      setReviews(data || []);
+    };
+    fetchData();
+  }, []);
+
+  // UI 카드용 데이터 변환
+  const reviewCards = useMemo(() => {
+    return reviews.slice(0, 14).map(r => {
+      const category =
+        r.restaurants?.restaurants_category_id_fkey?.name ?? r.restaurants?.category ?? '기타';
+
+      // 카테고리에 맞는 색상 매핑 (없으면 기본 색상)
+      const colors = categoryColors[category] || {
+        bg: 'bg-babgray-100',
+        text: 'text-babgray-700',
+      };
+
+      return {
+        imageUrl: r.restaurants?.thumbnail_url ?? '',
+        name: r.restaurants?.name ?? '이름 없음',
+        rating: r.rating_food ?? 0,
+        reviewCount: r.restaurants?.reviews?.[0]?.count?.toString() ?? '0',
+        comment: r.comment ?? '',
+        category,
+        tagBg: colors.bg,
+        tagText: colors.text,
+        review_photos: r.review_photos ?? [],
+      };
+    });
+  }, [reviews]);
 
   return (
     <section className="relative">
       <div className="mb-6 flex items-center justify-between">
         <h2 className="text-3xl font-bold">최근 올라온 리뷰</h2>
       </div>
-
+      
       <Swiper
         modules={[Navigation, Pagination, A11y]}
         slidesPerView={4}
         slidesPerGroup={4}
-        spaceBetween={24}
+        spaceBetween={16}
         speed={450}
         breakpoints={{
           0: { slidesPerView: 1.1, slidesPerGroup: 1, spaceBetween: 16 },
@@ -57,28 +72,9 @@ export default function MainReview() {
         watchOverflow
         className="!px-1"
       >
-        {items.map((it, idx) => (
+        {reviewCards.map((card, idx) => (
           <SwiperSlide key={idx} className="!h-auto">
-            {'type' in it ? (
-              /* 전체보기 카드 */
-              <div className="h-full min-h-[360px] flex items-center justify-center">
-                <button
-                  type="button"
-                  onClick={() => navigate('/member/reviews')}
-                  className="group flex flex-col items-center gap-2 focus:outline-none"
-                >
-                  <span className="w-16 h-16 rounded-full border border-gray-200 bg-white flex items-center justify-center">
-                    <RiArrowRightLine className="w-6 h-6 text-gray-800" />
-                  </span>
-                  <span className="text-sm text-gray-600">전체보기</span>
-                </button>
-              </div>
-            ) : (
-              <div onClick={() => navigate('/member/reviews/detail')}>
-                {/* 기존 RestaurantCard → RestaurantMockUpCard */}
-                <RestaurantMockUpCard {...(it as any)} />
-              </div>
-            )}
+            <MyreviewCard {...card} onClick={() => navigate(`/member/reviews/${card.name}`)} />
           </SwiperSlide>
         ))}
       </Swiper>
