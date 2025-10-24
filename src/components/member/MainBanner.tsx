@@ -18,9 +18,7 @@ const MainBanner = () => {
     const getBannerData = async () => {
       try {
         const { data, error } = await supabase.from('banners').select('*');
-        if (error) {
-          throw new Error(`배너 이미지를 불러오지 못했습니다. : ${error}`);
-        }
+        if (error) throw new Error(`배너 이미지를 불러오지 못했습니다. : ${error.message}`);
         setBannerImgs(data || []);
       } catch (error) {
         console.log(error);
@@ -30,19 +28,20 @@ const MainBanner = () => {
     };
     getBannerData();
   }, []);
+
   if (isLoading) {
     return (
-      <div className="relative">
-        <div className="w-[1280px] h-[320px] rounded-b-[20px] bg-gray-200 animate-pulse mb-[50px] flex items-center justify-center ">
+      <div className="relative flex justify-center">
+        <div className="w-full max-w-[1280px] h-[180px] sm:h-[240px] md:h-[300px] lg:h-[320px] rounded-b-[20px] bg-gray-200 animate-pulse flex items-center justify-center">
           <span className="text-gray-500">배너 로딩 중...</span>
         </div>
-        <div className="absolute left-[50%] z-[100] translate-x-[-50%] translate-y-[-75%]">
+        <div className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-[45%] z-20">
           <button
             onClick={() => navigate('/member/matching')}
-            className="flex flex-col items-center justify-center gap-[20px] w-[200px] h-[200px] bg-gradient-to-br from-bab-400 to-bab-600 text-white rounded-[50%] border-[5px] border-bab-300"
+            className="flex flex-col items-center justify-center gap-3 w-[140px] h-[140px] sm:w-[180px] sm:h-[180px] md:w-[200px] md:h-[200px] bg-gradient-to-br from-bab-400 to-bab-600 text-white rounded-full border-[5px] border-bab-300 shadow-md"
           >
-            <RiRestaurantFill size={48} />
-            <span className="text-2xl ">빠른매칭</span>
+            <RiRestaurantFill size={40} className="sm:size-[48px]" />
+            <span className="text-lg sm:text-xl md:text-2xl">빠른매칭</span>
           </button>
         </div>
       </div>
@@ -50,42 +49,43 @@ const MainBanner = () => {
   }
 
   return (
-    <div className="relative">
+    <div className="relative flex justify-center">
+      {/* 배너 Swiper */}
       <div
-        className="w-[1280px] h-[320px] rounded-b-[20px] overflow-hidden"
+        className="w-full max-w-[1280px] h-[180px] sm:h-[240px] md:h-[300px] lg:h-[320px] rounded-b-[20px] overflow-hidden cursor-pointer"
         onClick={() => navigate('/member/events')}
       >
         <Swiper
           modules={[Autoplay]}
           spaceBetween={30}
-          centeredSlides={true}
+          centeredSlides
           autoplay={{
             delay: 2000,
             disableOnInteraction: false,
             pauseOnMouseEnter: true,
           }}
-          loop={true}
+          loop
         >
           {bannerImgs?.map(item => (
             <SwiperSlide key={item.id}>
-              <div className="w-[1280px] h-[320px] overflow-hidden">
-                <img
-                  src={item.thumbnail_url}
-                  alt={item.alt || ''}
-                  className="w-full h-full object-cover  rounded-b-[20px] cursor-pointer"
-                />
-              </div>
+              <img
+                src={item.thumbnail_url}
+                alt={item.alt || ''}
+                className="w-full h-full object-cover rounded-b-[20px]"
+              />
             </SwiperSlide>
           ))}
         </Swiper>
       </div>
-      <div className="absolute left-[50%] z-[20] translate-x-[-50%] translate-y-[-50%] border-[10px] rounded-[50%] bg-white border-bg-bg">
+
+      {/* 중앙 버튼 (하단 절반 걸치게) */}
+      <div className="absolute left-1/2 bottom-0 translate-x-[-50%] translate-y-[50%] z-20 border-[10px] rounded-[50%] bg-white border-bg-bg ">
         <button
           onClick={() => navigate('/member/matching')}
-          className="flex flex-col items-center justify-center gap-[20px] w-[200px] h-[200px] bg-gradient-to-br from-bab-400 to-bab-600 text-white rounded-[50%] border-[5px] border-bab-300"
+          className="flex flex-col items-center justify-center gap-3 w-[140px] h-[140px] sm:w-[180px] sm:h-[180px] md:w-[200px] md:h-[200px] bg-gradient-to-br from-bab-400 to-bab-600 text-white rounded-full border-[5px] border-bab-300 shadow-md"
         >
-          <RiRestaurantFill size={48} />
-          <span className="text-2xl ">빠른매칭</span>
+          <RiRestaurantFill size={40} className="sm:size-[48px]" />
+          <span className="text-lg sm:text-xl md:text-2xl">빠른매칭</span>
         </button>
       </div>
     </div>

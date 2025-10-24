@@ -1,5 +1,5 @@
 import { useCallback, useEffect, useMemo, useRef, useState } from 'react';
-import { RiMapPinLine } from 'react-icons/ri';
+import { RiMapPinLine, RiStore2Line, RiStoreLine } from 'react-icons/ri';
 import InfiniteScroll from 'react-infinite-scroll-component';
 import { CustomOverlayMap, Map, MapMarker, MarkerClusterer } from 'react-kakao-maps-sdk';
 import type { Place } from '../../types/place';
@@ -326,33 +326,50 @@ const KkoMap = ({ radius = 1000, onFetched }: KkoMapProps) => {
             style={{
               display: 'flex',
               flexDirection: 'column',
-              gap: '13px',
+              gap: '23px',
               overflowY: 'auto',
               overflowX: 'hidden',
+              width: '460px',
             }}
           >
             {places.map(p => (
               <button
                 key={p.id}
-                className={`flex w-[474px] h-[110px]  min-h-[110px] max-h-[110px] items-center gap-3 p-3 rounded-xl border text-left hover:shadow-sm ${
-                  selectedId === p.id ? 'border-bab-500' : 'border-babgray-200'
-                }`}
                 onClick={() => handleMarkerClick(p)}
+                className={`relative w-full rounded-2xl border transition-all duration-150 text-left
+      ${
+        selectedId === p.id
+          ? 'border-[#FF5722] bg-[#FFF8F4] shadow-[0_2px_8px_rgba(255,87,34,0.08)]'
+          : 'border-babgray-200 bg-white hover:bg-gray-50 hover:shadow-[0_1px_6px_rgba(0,0,0,0.05)]'
+      }`}
               >
-                <div className="w-12 h-12 rounded-lg overflow-hidden bg-babgray-100">
-                  {/* 썸네일 준비되면 <img src={p.thumbnail} .../> 로 교체 */}
-                  <img src="/sample.jpg" alt="" className="w-full h-full object-cover" />
-                </div>
-                <div className="flex-1">
-                  <div className="font-semibold text-sm">{p.name}</div>
-                  <div className="text-xs text-babgray-600 truncate">
-                    {p.roadAddress || p.address}
+                <div className="flex flex-col justify-between h-full px-4 py-4 gap-2">
+                  {/* 상단: 이름 + 아이콘 */}
+                  <div className="flex items-start justify-between">
+                    <p className="text-[15px] font-semibold text-babgray-900 leading-tight line-clamp-1">
+                      {p.name}
+                    </p>
+                    <RiStore2Line className="text-[#FF5722] w-[18px] h-[18px] flex-shrink-0 mt-[2px]" />
                   </div>
-                  {p.distance !== undefined && (
-                    <div className="flex items-center gap-[3px] text-xs text-babgray-500 mt-0.5">
-                      <RiMapPinLine color="#FF5722" /> {p.distance / 1} m
+
+                  {/* 중간: 카테고리 + 주소 */}
+                  <div className="mt-0.5 space-y-[2px]">
+                    <p className="text-xs text-babgray-500 font-medium">
+                      {p.category?.split('>')[1]?.trim() ?? '음식점'}
+                    </p>
+                    <div className="flex justify-between items-center">
+                      <p className="text-xs text-babgray-600 truncate">
+                        {p.roadAddress || p.address}
+                      </p>
+                      {/* 하단: 거리 */}
+                      {p.distance !== undefined && (
+                        <div className="flex items-center gap-[4px] text-xs text-babgray-500 ">
+                          <RiMapPinLine className="text-[#FF5722] w-3.5 h-3.5" />
+                          <span className="font-medium">{Math.round(p.distance)}m</span>
+                        </div>
+                      )}
                     </div>
-                  )}
+                  </div>
                 </div>
               </button>
             ))}
