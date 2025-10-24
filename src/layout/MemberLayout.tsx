@@ -7,11 +7,11 @@ function MemberLayout() {
   return (
     <PaymentProvider>
       <div className="bg-bg-bg">
-        <MemberHeader />
+        {/* <MemberHeader /> */}
         <main>
           <Outlet />
         </main>
-        <MemberFooter />
+        {/* <MemberFooter /> */}
       </div>
     </PaymentProvider>
   );

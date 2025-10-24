@@ -171,17 +171,18 @@ function ProfilePage() {
   }
 
   return (
-    <div className="flex bg-bg-bg ">
-      {/* 프로필 헤더 링크 */}
-      <div className="flex flex-col w-[1280px] m-auto">
+    <div className="flex bg-bg-bg min-h-screen justify-center">
+      <div className="flex flex-col w-full max-w-[1280px] mx-auto px-4 sm:px-6 lg:px-8 xl:px-0">
+        {/* 헤더 */}
         <div className="flex py-[15px]">
           <div className="text-babgray-600 text-[17px]">프로필</div>
         </div>
+
         <div className="mt-[20px] mb-[60px]">
-          <div className="flex gap-[40px] items-start">
+          <div className="flex flex-col lg:flex-row gap-[40px] items-start">
             {/* 왼쪽 프로필 카드 */}
-            <div className="flex flex-col gap-[20px] items-center justify-center">
-              <div className="inline-flex w-[260px] p-[25px] flex-col justify-center items-center bg-white rounded-[16px] shadow-[0px_4px_4px_0px_rgba(0,0,0,0.02)]">
+            <div className="flex flex-col gap-[20px] items-center justify-center w-full lg:w-[300px]">
+              <div className="inline-flex w-full lg:w-[260px] p-[25px] flex-col justify-center items-center bg-white rounded-[16px] shadow-[0_4px_4px_rgba(0,0,0,0.02)]">
                 {/* 프로필 및 설명 */}
                 <div className="gap-[15px] flex flex-col justify-center items-center">
                   <div className="w-[94px] h-[94px] overflow-hidden rounded-full">
@@ -198,10 +199,10 @@ function ProfilePage() {
                     )}
                   </div>
                   <div className="flex flex-col gap-[6px]">
-                    <div className="text-center text-babgray-900 text-[21px] font-bold ">
+                    <div className="text-center text-babgray-900 text-[21px] font-bold break-keep">
                       {profileData?.nickname}
                     </div>
-                    <div className="text-center text-babgray-500 text-[14px]">
+                    <div className="text-center text-babgray-500 text-[14px] break-words max-w-[200px]">
                       {profileData?.comment ? (
                         <div>{profileData.comment}</div>
                       ) : (
@@ -210,6 +211,7 @@ function ProfilePage() {
                     </div>
                   </div>
                 </div>
+
                 {/* 포인트 */}
                 <div className="text-center py-[23px]">
                   <div className="text-[28px] font-bold text-yellow-500">
@@ -217,78 +219,86 @@ function ProfilePage() {
                   </div>
                   <div className="text-[14px] text-babgray-600">포인트</div>
                 </div>
-                {/* 라인 */}
+
                 <div className="w-full border-babgray-100 border-[1px]"></div>
+
                 {/* 리뷰, 찜, 매칭, 평점 */}
-                <div className="pt-[23px] text-center grid grid-cols-2 gap-[21px]">
+                <div className="pt-[23px] w-full text-center grid grid-cols-4 lg:grid-cols-2 gap-[21px]">
                   <div>
-                    <div className="text-[24px] font-bold text-bab-500">{review.length}</div>
-                    <div className="text-[14px] text-babgray-600">리뷰</div>
+                    <div className="text-[22px] sm:text-[24px] font-bold text-bab-500">
+                      {review.length}
+                    </div>
+                    <div className="text-[13px] sm:text-[14px] text-babgray-600">리뷰</div>
                   </div>
                   <div>
-                    <div className="text-[24px] font-bold text-bab-500">{favoritesCount}</div>
-                    <div className="text-[14px] text-babgray-600">찜</div>
+                    <div className="text-[22px] sm:text-[24px] font-bold text-bab-500">
+                      {favoritesCount}
+                    </div>
+                    <div className="text-[13px] sm:text-[14px] text-babgray-600">찜</div>
                   </div>
                   <div>
-                    <div className="text-[24px] font-bold text-bab-500">매칭개수</div>
-                    <div className="text-[14px] text-babgray-600">매칭</div>
+                    <div className="text-[22px] sm:text-[24px] font-bold text-bab-500">
+                      매칭개수
+                    </div>
+                    <div className="text-[13px] sm:text-[14px] text-babgray-600">매칭</div>
                   </div>
                   <div>
-                    <div className="text-[24px] font-bold text-bab-500">{avgScore}</div>
-                    <div className="text-[14px] text-babgray-600">평점</div>
+                    <div className="text-[22px] sm:text-[24px] font-bold text-bab-500">
+                      {avgScore}
+                    </div>
+                    <div className="text-[13px] sm:text-[14px] text-babgray-600">평점</div>
                   </div>
                 </div>
-                <div></div>
               </div>
-              {/* 멤버십 가입 */}
-              <div className="flex bg-babgray-200 w-[260px] rounded-full py-[8px] justify-center items-center ">
-                <button className="text-white flex text-center justify-center items-center gap-[8px]">
-                  <RiBardFill />
-                  VIP 멤버 가입하기
-                </button>
-              </div>
+
+              {/* 멤버십 가입
+              <button className="flex bg-bab-500 hover:bg-bab-600 transition text-white w-full sm:w-[260px] rounded-full py-[10px] justify-center items-center gap-[8px] text-sm sm:text-base">
+                <RiBardFill />
+                VIP 멤버 가입하기
+              </button> */}
             </div>
-            {/* 오른쪽 프로필카드 */}
+
+            {/* 오른쪽 프로필 카드 */}
             <div className="flex flex-col w-full gap-[25px]">
               {/* 기본정보 */}
-              <div className="inline-flex w-full px-[35px] py-[25px] flex-col justify-center bg-white rounded-[16px] shadow-[0px_4px_4px_0px_rgba(0,0,0,0.02)]">
-                <div className="flex justify-between items-center">
+              <div className="w-full px-[20px] sm:px-[35px] py-[25px] flex flex-col bg-white rounded-[16px] shadow-[0_4px_4px_rgba(0,0,0,0.02)]">
+                <div className="flex flex-wrap justify-between items-center gap-3">
                   <div className="text-babgray-900 text-[18px] font-bold">기본 정보</div>
                   <ButtonFillMd
                     onClick={() => navigate('/member/profile/edit')}
-                    style={{ fontWeight: 400, justifyContent: 'center', alignItems: 'center' }}
+                    style={{ fontWeight: 400 }}
                   >
                     <RiEdit2Line />
                     편집
                   </ButtonFillMd>
                 </div>
-                <div className="flex flex-col pt-[40px] gap-[22px]">
-                  <div className="flex justify-between text-babgray-600">
-                    <div className="flex items-center gap-[10px] ">
+                <div className="flex flex-col pt-[30px] gap-[22px] text-[15px]">
+                  <div className="flex justify-between flex-wrap text-babgray-600">
+                    <div className="flex items-center gap-[10px]">
                       <RiUserLine />
                       닉네임
                     </div>
                     <div>{profileData?.nickname}</div>
                   </div>
                   <hr />
-                  <div className="flex justify-between text-babgray-600">
-                    <div className="flex items-center gap-[10px] ">
+                  <div className="flex justify-between flex-wrap text-babgray-600">
+                    <div className="flex items-center gap-[10px]">
                       <RiMailLine />
                       이메일
                     </div>
-                    <div>{user?.email}</div>
+                    <div className="break-all">{user?.email}</div>
                   </div>
                   <hr />
-                  <div className="flex justify-between text-babgray-600">
-                    <div className="flex items-center gap-[10px] ">
+                  <div className="flex justify-between flex-wrap text-babgray-600">
+                    <div className="flex items-center gap-[10px]">
                       <RiPhoneLine />
                       전화번호
                     </div>
                     <div>{maskPhone(profileData?.phone)}</div>
                   </div>
                   <hr />
-                  <div className="flex justify-between text-babgray-600">
-                    <div className="flex items-center gap-[10px] ">
+                  <div className="flex justify-between flex-wrap text-babgray-600">
+                    <div className="flex items-center gap-[10px]">
                       <RiCalendarLine />
                       가입일
                     </div>
@@ -296,19 +306,17 @@ function ProfilePage() {
                   </div>
                 </div>
               </div>
+
               {/* 관심사 */}
-              <div className="inline-flex w-full px-[35px] py-[25px] flex-col justify-center bg-white rounded-[16px] shadow-[0px_4px_4px_0px_rgba(0,0,0,0.02)]">
+              <div className="w-full px-[20px] sm:px-[35px] py-[25px] bg-white rounded-[16px] shadow-[0_4px_4px_rgba(0,0,0,0.02)]">
                 <div className="flex justify-between items-center">
                   <div className="text-babgray-900 text-[18px] font-bold">관심사</div>
-                  <ButtonFillMd
-                    onClick={() => navigate('/member/profile/interest')}
-                    style={{ fontWeight: 400, justifyContent: 'center', alignItems: 'center' }}
-                  >
+                  <ButtonFillMd onClick={() => navigate('/member/profile/interest')}>
                     <RiEdit2Line />
                     편집
                   </ButtonFillMd>
                 </div>
-                <div className="flex gap-[12px] flex-wrap mt-[12px] mb-[25px]">
+                <div className="flex gap-[10px] flex-wrap mt-[12px] mb-[25px]">
                   {interests.length === 0 ? (
                     <span className="text-babgray-500 text-[13px]">
                       아직 선택된 관심사가 없어요
@@ -321,6 +329,7 @@ function ProfilePage() {
                   관심사는 맛집 추천과 매칭에 활용됩니다
                 </p>
               </div>
+
               {/* 결제수단 */}
               <div className="inline-flex w-full px-[35px] py-[25px] gap-[25px] flex-col justify-center bg-white rounded-[16px] shadow-[0px_4px_4px_0px_rgba(0,0,0,0.02)]">
                 <div className="flex justify-between items-center">
