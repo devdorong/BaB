@@ -9,6 +9,7 @@ import { useDirectChat } from '../../../contexts/DirectChatContext';
 import { supabase } from '../../../lib/supabase';
 import type { Profile } from '../../../types/bobType';
 import type { ChatUser } from '../../../types/chatType';
+import { ChatSwiperItem } from './ChatSwiperItem';
 
 // Props 정의
 interface DirectChatListProps {
@@ -40,6 +41,7 @@ const DirectChatList = ({ onChatSelect, onCreateChat, selectedChatId }: DirectCh
   const [showUserSearch, setShowUserSearch] = useState<boolean>(false); // 사용자 검색 UI 표시 여부
   const [searchLoading, setSearchLoading] = useState<boolean>(false); // 검색 로딩 상태 (로컬 관리)
   const searchTimeoutRef = useRef<NodeJS.Timeout | null>(null); // 디바운싱을 위한 타이머 참조
+  const [openChatId, setOpenChatId] = useState<string | null>(null);
 
   const DEFAULT_AVATAR = 'https://www.gravatar.com/avatar/?d=mp&s=200';
 
@@ -144,7 +146,7 @@ const DirectChatList = ({ onChatSelect, onCreateChat, selectedChatId }: DirectCh
   }
 
   return (
-    <div className="chat-list">
+    <div className="chat-list min-h-screen flex bg-white">
       {/* 채팅 목록 헤더 - 제목과 새 채팅 버튼 */}
       <div className="chat-list-header">
         <h2>1 : 1 채팅</h2>
@@ -214,49 +216,17 @@ const DirectChatList = ({ onChatSelect, onCreateChat, selectedChatId }: DirectCh
         ) : (
           // 채팅 목록 렌더링
           chats.map(chat => (
-            // 개별 채팅 아이템
-            <div
+            <ChatSwiperItem
               key={chat.id}
-              className={`chat-item ${selectedChatId === chat.id ? 'selected' : ''}`}
-              onClick={() => onChatSelect(chat.id)}
-            >
-              {/* 채팅 상대방 아바타 */}
-              <div className="chat-avatar">
-                <img
-                  src={
-                    chat.other_user.avatar_url === 'guest_image' || !chat.other_user.avatar_url
-                      ? DEFAULT_AVATAR
-                      : chat.other_user.avatar_url
-                  }
-                  alt={chat.other_user.nickname}
-                />
-                {/* 읽지 않은 메시지 개수 배지 */}
-                {chat.unread_count > 0 && <div className="unread-badge">{chat.unread_count}</div>}
-              </div>
-
-              {/* 채팅 정보 */}
-              <div className="chat-info">
-                {/* 채팅 헤더 - 이름과 시간 */}
-                <div className="chat-header">
-                  <div className="chat-name">{chat.other_user.nickname}</div>
-                  <div className="chat-time">
-                    {chat.last_message ? formatTime(chat.last_message.created_at) : ''}
-                  </div>
-                </div>
-                {/* 마지막 메시지 미리보기 */}
-                <div className="chat-preview">
-                  {chat.last_message ? (
-                    <span className={chat.unread_count > 0 ? 'unread' : ''}>
-                      {chat.last_message.content}
-                    </span>
-                  ) : (
-                    <span className="no-message">
-                      <br />
-                    </span>
-                  )}
-                </div>
-              </div>
-            </div>
+              chat={chat}
+              isSelected={selectedChatId === chat.id}
+              onSelect={() => {
+                onChatSelect(chat.id);
+                setOpenChatId(null);
+              }}
+              openChatId={openChatId}
+              setOpenChatId={setOpenChatId}
+            />
           ))
         )}
       </div>

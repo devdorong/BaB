@@ -17,4 +17,9 @@ export const supabase = createClient(supabaseUrl, supabaseAnonKey, {
     //  URL 인증 세션을 파악해서 OAuth 로그인 등의 콜백을 처리한다.
     detectSessionInUrl: true,
   },
+  realtime: {
+    params: {
+      eventsPerSecond: 10, // 초당 이벤트 제한 설정 (권장)
+    },
+  },
 });

@@ -3,6 +3,7 @@ import { useDirectChat } from '../../../contexts/DirectChatContext';
 import { supabase } from '../../../lib/supabase';
 import type { DirectMessage } from '../../../types/chatType';
 import MessageInput from './MessageInput';
+import { RiArrowLeftLine, RiArrowLeftSLine } from 'react-icons/ri';
 
 // 날짜별 메시지 그룹 타입 정의 - 같은 날짜의 메세지들을 그룹핑
 // 원본데이터를 가공하고 마무리 별도의 파일에 type으로 정의안함.
@@ -13,11 +14,14 @@ interface MessageGroup {
 // DirectChatRoom 컴포넌트에 Props 타입 정의
 interface DirectChatRoomProps {
   chatId: string;
+  onExit?: () => void;
 }
 
-function DirectChatRoom({ chatId }: DirectChatRoomProps) {
+function DirectChatRoom({ chatId, onExit }: DirectChatRoomProps) {
   // DirectChatContext에서 필요한 상태와 함수를 가져오기
   const { messages, loading, error, loadMessages, currentChat, exitDirectChat } = useDirectChat();
+  // 현재 선택된 채팅방의 ID 상태 관리
+  const [selectedChatId, setSelectedChatId] = useState<string | null>(null);
 
   const DEFAULT_AVATAR = 'https://www.gravatar.com/avatar/?d=mp&s=200';
 
@@ -234,15 +238,25 @@ function DirectChatRoom({ chatId }: DirectChatRoomProps) {
       <div className="chat-room-header">
         {/* 채팅방 정보 */}
         <div className="chat-room-info">
-          <h3>1:1 채팅 ({currentChat?.other_user.nickname || '로딩중...'})</h3>
+          <h3>{currentChat?.other_user.nickname || '로딩중...'}</h3>
         </div>
         {/* 채팅방 액션 버튼들 */}
         <div className="chat-room-actions">
           {/* 채팅 나가기 */}
-          <button className="exit-chat-btn" onClick={handleExitChat}>
+          {/* <button className="exit-chat-btn" onClick={handleExitChat}>
             나가기
-          </button>
+          </button> */}
         </div>
+      </div>
+      {/* 모바일 뒤로가기 버튼 */}
+      <div
+        className="flex lg:hidden h-[80px] items-center gap-2 p-4
+                bg-white/80"
+      >
+        <button onClick={onExit} className="text-babgray-600">
+          <RiArrowLeftSLine size={20} />
+        </button>
+        <h2 className="font-semibold text-babgray-800">{currentChat?.other_user.nickname}</h2>
       </div>
 
       {/* 메시지 목록 영역 */}

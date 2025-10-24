@@ -1,6 +1,6 @@
 /* 채팅 페이지 전체 컨테이너 : 헤더 높이를 제외한 전체 화면 높이 사용 */
 .chat-page {
-  height: calc(100vh - 120px);
+  height: 100vh;
   display: flex;
   flex-direction: column;
 }
@@ -35,7 +35,7 @@
   display: flex;
   flex-direction: column;
   height: 100%;
-  background-color: #f8f9fa;
+  /* background-color: #f8f9fa; */
   /* border-right: 1px solid #e0e0e0; */
 }
 
@@ -340,17 +340,25 @@
 .chat-room {
   display: flex;
   flex-direction: column;
-  height: 100%;
+  height: 100vh;
+  /* background-color: beige; */
 }
 
 /* 채팅방 헤더 - 상대방 정보와 채팅 종료 버튼 */
 .chat-room-header {
-  display: flex;
+  display: none;
   justify-content: space-between;
   align-items: center;
   padding: 22px 20px;
   border-bottom: 1px solid #f0f0f0;
-  background-color: #f8f9fa;
+}
+
+/* 1024px 이상일 때 숨김 */
+@media (min-width: 1024px) {
+  .chat-room-header {
+    display: flex;
+    height: 82px;
+  }
 }
 
 /* 채팅방 정보 컨테이너 */
@@ -458,6 +466,7 @@
   /* border: 1px solid #e0e0e0; */
   position: relative;
   z-index: 2;
+  min-height: screen;
 }
 
 /* 메시지들 묶음 컨테이너 */

@@ -191,7 +191,7 @@ function ProfilePage() {
     <div className="flex bg-bg-bg min-h-screen justify-center">
       <div className="flex flex-col w-full max-w-[1280px] mx-auto px-4 sm:px-6 lg:px-8 xl:px-0">
         {/* 헤더 */}
-        <div className="flex py-[15px]">
+        <div className="hidden lg:flex py-[15px]">
           <div className="text-babgray-600 text-[17px]">프로필</div>
         </div>
 

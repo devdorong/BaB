@@ -98,7 +98,7 @@ const MessageInput = ({ chatId }: MessageInputProps) => {
             onKeyDown={handleKeyPress} // Enter 처리 (Shift + Enter 예외처리)
             className="message-textarea"
             rows={1}
-            placeholder="메시지를 입력하세요... (Enter로 전송, Shift+Enter로 줄바꿈)"
+            placeholder="메시지 입력"
             disabled={sending} // 전송 중일때 비활성
           />
           {/* 메시지 전송 버튼 */}
