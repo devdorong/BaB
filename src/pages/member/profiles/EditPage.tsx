@@ -244,10 +244,10 @@ function EditPage() {
   };
 
   return (
-    <div className="flex bg-bg-bg ">
+    <div className="flex bg-bg-bg min-h-screen justify-center">
       {/* 프로필 헤더 링크 */}
-      <div className="flex flex-col w-[1280px] m-auto">
-        <div className="flex py-[15px]">
+      <div className="flex flex-col w-full max-w-[1280px] mx-auto px-4 sm:px-6 lg:px-8 xl:px-0">
+        <div className="hidden lg:flex py-[15px]">
           <div
             onClick={() => navigate('/member/profile')}
             className="cursor-pointer hover:text-babgray-900 text-babgray-600 text-[17px]"
@@ -260,10 +260,10 @@ function EditPage() {
           <div className="text-bab-500 text-[17px]">편집</div>
         </div>
         <div className="mt-[20px] mb-[60px]">
-          <div className="flex gap-[40px] items-start">
+          <div className="flex flex-col lg:flex-row gap-[40px] items-start">
             {/* 왼쪽 프로필 카드 */}
-            <div className="flex flex-col gap-[20px] items-center justify-center">
-              <div className="inline-flex w-[260px] p-[25px] flex-col justify-center items-center bg-white rounded-[16px] shadow-[0px_4px_4px_0px_rgba(0,0,0,0.02)]">
+            <div className="flex flex-col gap-[20px] items-center justify-center w-full lg:w-[300px]">
+              <div className="inline-flex w-full lg:w-[260px] p-[25px] flex-col justify-center items-center bg-white rounded-[16px] shadow-[0_4px_4px_rgba(0,0,0,0.02)]">
                 {/* 프로필 및 설명 */}
                 <div className="gap-[15px] flex flex-col justify-center items-center">
                   <div
@@ -316,7 +316,7 @@ function EditPage() {
             {/* 오른쪽 프로필카드 */}
             <div className="flex flex-col w-full gap-[25px]">
               {/* 기본 정보 */}
-              <div className="inline-flex w-full px-[35px] py-[25px] flex-col justify-center bg-white rounded-[16px] shadow-[0_4px_4px_rgba(0,0,0,0.02)]">
+              <div className="w-full p-[20px] sm:px-[35px] lg:py-[25px] flex flex-col bg-white rounded-[16px] shadow-[0_4px_4px_rgba(0,0,0,0.02)]">
                 <div className="flex justify-between items-center">
                   <h2 className="text-babgray-900 text-[18px] font-bold">기본 정보</h2>
                 </div>
@@ -360,7 +360,7 @@ function EditPage() {
               </div>
 
               {/* 계정 정보 */}
-              <div className="w-full px-[35px] py-[25px] pb-[40px] bg-white rounded-[16px] shadow-[0_4px_4px_rgba(0,0,0,0.02)]">
+              <div className="w-full p-[20px] sm:px-[35px] lg:py-[25px] pb-[40px] bg-white rounded-[16px] shadow-[0_4px_4px_rgba(0,0,0,0.02)]">
                 <h2 className="text-babgray-900 text-[18px] font-bold pb-[20px]">계정 정보</h2>
 
                 <div className="mt-6 grid grid-cols-1 gap-[20px] items-center">
@@ -388,8 +388,8 @@ function EditPage() {
                       <>
                         {/* 현재 비밀번호 */}
                         <div className="flex justify-between items-center">
-                          <div className="text-babgray-700">현재 비밀번호</div>
-                          <div className="relative w-[500px] h-[45px] px-3.5 py-3 bg-white rounded-3xl outline outline-1 outline-offset-[-1px] outline-babgray-300 inline-flex items-center">
+                          <div className="text-babgray-700 text-nowrap">현재 비밀번호</div>
+                          <div className="relative w-[200px] lg:w-[500px] h-[45px] px-3.5 py-3 bg-white rounded-3xl outline outline-1 outline-offset-[-1px] outline-babgray-300 inline-flex items-center">
                             <input
                               type="password"
                               value={currentPassword}
@@ -411,8 +411,8 @@ function EditPage() {
 
                         {/* 새 비밀번호 */}
                         <div className="flex justify-between items-center">
-                          <div className="text-babgray-700">새 비밀번호</div>
-                          <div className="relative w-[500px] h-[45px] px-3.5 py-3 bg-white rounded-3xl outline outline-1 outline-offset-[-1px] outline-babgray-300 inline-flex items-center">
+                          <div className="text-babgray-700 text-nowrap">새 비밀번호</div>
+                          <div className="relative w-[200px] lg:w-[500px] h-[45px] px-3.5 py-3 bg-white rounded-3xl outline outline-1 outline-offset-[-1px] outline-babgray-300 inline-flex items-center">
                             <input
                               type="password"
                               value={newPassword}
@@ -420,7 +420,7 @@ function EditPage() {
                                 setNewPassword(e.target.value);
                                 setPwErr(prev => ({ ...prev, next: '' }));
                               }}
-                              className="w-[500px] text-babgray-700 outline-none text-[16px] placeholder:text-babgray-400"
+                              className="flex-1 text-babgray-700 outline-none text-[16px] placeholder:text-babgray-400"
                               placeholder="새 비밀번호"
                             />
                             {/* 새 비밀번호 */}
@@ -434,8 +434,8 @@ function EditPage() {
 
                         {/* 새 비밀번호 확인 */}
                         <div className="flex justify-between items-center">
-                          <div className="text-babgray-700">새 비밀번호 확인</div>
-                          <div className="relative w-[500px] h-[45px] px-3.5 py-3 bg-white rounded-3xl outline outline-1 outline-offset-[-1px] outline-babgray-300 inline-flex items-center">
+                          <div className="text-babgray-700 text-nowrap">새 비밀번호 확인</div>
+                          <div className="relative w-[200px] lg:w-[500px] h-[45px] px-3.5 py-3 bg-white rounded-3xl outline outline-1 outline-offset-[-1px] outline-babgray-300 inline-flex items-center">
                             <input
                               type="password"
                               value={confirmPassword}
@@ -464,7 +464,7 @@ function EditPage() {
               <div className="pt-2">
                 <button
                   type="button"
-                  className="w-full h-[46px] rounded-full bg-bab-500 text-white font-semibold shadow-[0_4px_4px_rgba(0,0,0,0.02)]"
+                  className="w-full h-[46px] rounded-xl lg:rounded-full bg-bab-500 text-white font-semibold shadow-[0_4px_4px_rgba(0,0,0,0.02)]"
                   onClick={handleSaveProfile}
                 >
                   저장
