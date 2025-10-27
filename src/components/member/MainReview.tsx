@@ -48,6 +48,7 @@ export default function MainReview() {
         tagBg: colors.bg,
         tagText: colors.text,
         review_photos: r.review_photos ?? [],
+        restaurant_id: r.restaurants?.id,
       };
     });
   }, [reviews]);
@@ -56,9 +57,7 @@ export default function MainReview() {
     <section className="relative w-full">
       {/* 상단 타이틀 */}
       <div className="mb-6 flex flex-col sm:flex-row items-start justify-between gap-4 sm:gap-0">
-        <h2 className="text-2xl sm:text-3xl font-bold text-left">
-          최근 올라온 리뷰
-        </h2>
+        <h2 className="text-2xl sm:text-3xl font-bold text-left">최근 올라온 리뷰</h2>
       </div>
 
       {/* 리뷰 슬라이드 */}
@@ -78,7 +77,10 @@ export default function MainReview() {
       >
         {reviewCards.map((card, idx) => (
           <SwiperSlide key={idx} className="!h-auto">
-            <MainReviewCard {...card} onClick={() => navigate(`/member/reviews/${card.name}`)} />
+            <MainReviewCard
+              {...card}
+              onClick={() => navigate(`/member/reviews/${card.restaurant_id}`)}
+            />
           </SwiperSlide>
         ))}
       </Swiper>

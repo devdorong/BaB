@@ -35,7 +35,7 @@ const MainBanner = () => {
         <div className="w-full max-w-[1280px] h-[180px] sm:h-[240px] md:h-[300px] lg:h-[320px] rounded-b-[20px] bg-gray-200 animate-pulse flex items-center justify-center">
           <span className="text-gray-500">배너 로딩 중...</span>
         </div>
-        <div className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-[45%] z-20">
+        <div className="absolute left-1/2 bottom-0 translate-x-[-50%] translate-y-[50%] z-20 border-[10px] rounded-[50%] bg-white border-bg-bg ">
           <button
             onClick={() => navigate('/member/matching')}
             className="flex flex-col items-center justify-center gap-3 w-[140px] h-[140px] sm:w-[180px] sm:h-[180px] md:w-[200px] md:h-[200px] bg-gradient-to-br from-bab-400 to-bab-600 text-white rounded-full border-[5px] border-bab-300 shadow-md"
@@ -79,10 +79,19 @@ const MainBanner = () => {
       </div>
 
       {/* 중앙 버튼 (하단 절반 걸치게) */}
-      <div className="absolute left-1/2 bottom-0 translate-x-[-50%] translate-y-[50%] z-20 border-[10px] rounded-[50%] bg-white border-bg-bg ">
+      <div className="absolute left-1/2 bottom-0 translate-x-[-50%] translate-y-[50%] z-20 border-[4px] rounded-[50%] bg-white border-bg-bg sm:border-[10px]">
         <button
           onClick={() => navigate('/member/matching')}
-          className="flex flex-col items-center justify-center gap-3 w-[140px] h-[140px] sm:w-[180px] sm:h-[180px] md:w-[200px] md:h-[200px] bg-gradient-to-br from-bab-400 to-bab-600 text-white rounded-full border-[5px] border-bab-300 shadow-md"
+          className=" relative flex flex-col items-center justify-center gap-3 
+             w-[140px] h-[140px] sm:w-[180px] sm:h-[180px] md:w-[200px] md:h-[200px]
+             text-white rounded-full 
+             bg-gradient-to-br from-bab-400 to-bab-600 border-[5px] border-bab-300
+             shadow-[0_6px_12px_rgba(255,87,34,0.35),_inset_0_0_0_rgba(0,0,0,0)]
+             transition-all duration-300 ease-out
+             hover:shadow-[inset_4px_4px_8px_rgba(0,0,0,0.15),_inset_-4px_-4px_8px_rgba(255,255,255,0.25)] 
+             hover:-translate-y-[2px]
+             hover:border-bab-100
+             "
         >
           <RiRestaurantFill size={40} className="sm:size-[48px]" />
           <span className="text-lg sm:text-xl md:text-2xl">빠른매칭</span>
