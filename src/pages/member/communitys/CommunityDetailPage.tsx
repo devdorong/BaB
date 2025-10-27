@@ -453,7 +453,7 @@ function CommunityDetailPage() {
           {!isAuthor && !isAdmin ? (
             <>
               <ButtonLineLg
-                className="w-full"
+                className="w-full bg-babbutton-red !text-white hover:!bg-bab-700"
                 style={{ fontWeight: 600, borderRadius: '12px' }}
                 onClick={() => {
                   setReportInfo({

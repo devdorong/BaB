@@ -161,9 +161,10 @@ const ReportsModal = ({
               </ButtonFillMd>
               <ButtonFillMd
                 className="flex-1 !bg-babbutton-red hover:!bg-bab-700"
+                disabled={isSubmitting}
                 onClick={handleConfirm}
               >
-                신고하기
+                {isSubmitting ? '처리 중...' : '신고하기'}
               </ButtonFillMd>
               {modal.isOpen && (
                 <Modal

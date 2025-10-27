@@ -1,0 +1,146 @@
+/* ================================ */
+/* 기본 (PC ≥1280px) */
+/* ================================ */
+.modalContainer {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  gap: 2.5rem; /* gap-10 */
+  padding: 2rem; /* px-8 py-8 */
+  max-height: 100vh;
+  background-color: #ffffff;
+  border-radius: 30px;
+  box-shadow: 0 4px 4px rgba(0, 0, 0, 0.02);
+  color: var(--babgray-700, #4b4b4b);
+}
+
+.modalContent {
+  display: flex;
+  flex-direction: column;
+  align-items: flex-start;
+  gap: 1.75rem; /* gap-7 */
+  width: 400px;
+  max-height: 70vh;
+  overflow-y: auto;
+  padding-right: 1rem;
+  scrollbar-gutter: stable both-edges;
+  color: var(--babgray-700, #4b4b4b);
+  box-sizing: border-box;
+}
+
+/* ================================ */
+/* 1280px 이하 (대형 태블릿) */
+/* ================================ */
+@media (max-width: 1280px) {
+  .modalContainer {
+    padding: 1.75rem;
+    border-radius: 26px;
+  }
+
+  .modalContent {
+    width: 380px;
+    gap: 1.5rem;
+  }
+}
+
+/* ================================ */
+/* 1024px 이하 (태블릿) */
+/* ================================ */
+@media (max-width: 1024px) {
+  .modalContainer {
+    padding: 1.5rem;
+    gap: 2rem;
+    border-radius: 24px;
+  }
+
+  .modalContent {
+    width: 90%;
+    max-height: 65vh;
+    padding-right: 0.75rem;
+    gap: 1.5rem;
+  }
+
+  .modalContainer p {
+    font-size: 1rem;
+  }
+}
+
+/* ================================ */
+/* 768px 이하 (작은 태블릿 / 큰 모바일) */
+/* ================================ */
+@media (max-width: 768px) {
+  .modalContainer {
+    width: 90%;
+    border-radius: 22px;
+    padding: 1.25rem;
+    gap: 1.5rem;
+  }
+
+  .modalContent {
+    width: 100%;
+    max-height: 60vh;
+    gap: 1.25rem;
+  }
+
+  .modalContainer p {
+    font-size: 0.95rem;
+  }
+
+  .modalContainer button {
+    font-size: 0.95rem;
+    padding: 0.75rem 0;
+  }
+}
+
+/* ================================ */
+/* 640px 이하 (모바일) */
+/* ================================ */
+@media (max-width: 640px) {
+  .modalContainer {
+    width: 94%;
+    border-radius: 18px;
+    padding: 1rem;
+    gap: 1.25rem;
+  }
+
+  .modalContent {
+    max-height: 55vh;
+    gap: 1rem;
+  }
+
+  .modalContainer p {
+    font-size: 0.9rem;
+  }
+
+  .modalContainer button {
+    font-size: 0.9rem;
+  }
+}
+
+/* ================================ */
+/* 400px 이하 (작은 모바일) */
+/* ================================ */
+@media (max-width: 400px) {
+  .modalContainer {
+    width: 95%;
+    border-radius: 15px;
+    padding: 0.75rem;
+    gap: 1rem;
+  }
+
+  .modalContent {
+    width: 100%;
+    gap: 0.85rem;
+    max-height: 50vh;
+  }
+
+  .modalContainer p {
+    font-size: 0.85rem;
+  }
+
+  .modalContainer button {
+    font-size: 0.85rem;
+    padding: 0.6rem 0;
+  }
+}

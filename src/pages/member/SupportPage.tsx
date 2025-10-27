@@ -5,6 +5,7 @@ import { TagButton } from '../../ui/tag';
 import TagBadge from '../../ui/TagBadge';
 import { useState } from 'react';
 import SupportModal from '../../ui/dorong/SupportModal';
+import styles from './SupportPage.module.css';
 
 function SupportPage() {
   // 목업데이터
@@ -92,7 +93,7 @@ function SupportPage() {
     activeTag === '전체' ? samplesupport : samplesupport.filter(faq => faq.tagLabel === activeTag);
 
   return (
-    <div className="max-w-[1280px] mx-auto py-8 flex flex-col gap-[35px]">
+    <div className={styles.pageContainer}>
       {/* 상단 */}
       <div>
         <div className="pb-[36px]">
@@ -101,7 +102,7 @@ function SupportPage() {
             궁금한 점이 있으시면 언제든지 문의해주세요
           </span>
         </div>
-        <div className=" flex mx-auto justify-center gap-[45px]">
+        <div className={styles.topCards}>
           <div className="w-full shadow-[0px_4px_4px_0px_rgba(0,0,0,0.02)] bg-white border-none rounded-[16px] flex flex-col items-center gap-[17px] py-[15px] px-[50px]">
             <PhoneLine bgColor="#FFEDD5" color="#F97A18" size={20} padding={14} />
             <div className="flex flex-col items-center gap-[15px] text-md">
@@ -197,7 +198,7 @@ function SupportPage() {
           <div>
             <h3 className="font-bold text-[27px]">서비스 안내</h3>
           </div>
-          <div className="flex w-full justify-center gap-[26px]">
+          <div className={styles.bottomCards}>
             {/* 왼쪽 */}
             <div className="w-[50%] flex flex-col gap-[13px]">
               <h4>이용 시간</h4>

@@ -1,6 +1,6 @@
-/* CommunityPage.module.css */
-
-/* 기본 (>=1280px) */
+/* ============================= */
+/* 기본 (≥1280px) */
+/* ============================= */
 .pageContainer {
   width: 1280px;
   margin: 0 auto;
@@ -15,9 +15,25 @@
   display: flex;
   justify-content: space-between;
   align-items: center;
+  flex-wrap: nowrap; /* ✅ 한 줄 유지 */
+  gap: 12px;
 }
 
-/* 1024px 이하 */
+/* ✅ input 스타일 안정화 */
+.writeFormWhitBt input {
+  width: 600px; /* PC에서 고정폭 */
+  max-width: 100%;
+  flex-shrink: 0; /* input 줄어듦 방지 */
+}
+
+/* ✅ 버튼이 줄어들지 않도록 */
+.writeFormWhitBt button {
+  flex-shrink: 0;
+}
+
+/* ============================= */
+/* 1280px 이하 */
+/* ============================= */
 @media (max-width: 1280px) {
   .pageContainer {
     width: 1024px;
@@ -25,12 +41,17 @@
   }
 
   .writeFormWhitBt {
-    flex-direction: row;
     gap: 1rem;
+  }
+
+  .writeFormWhitBt input {
+    width: 500px; /* 살짝 줄이기 */
   }
 }
 
-/* 768px 이하 */
+/* ============================= */
+/* 1024px 이하 (태블릿) */
+/* ============================= */
 @media (max-width: 1024px) {
   .pageContainer {
     width: 768px;
@@ -38,31 +59,50 @@
   }
 
   .writeFormWhitBt {
-    flex-direction: column;
+    flex-direction: column; /* ✅ 세로 배치 */
     align-items: stretch;
-    gap: 1.25rem;
+    gap: 1rem;
   }
 
   .writeFormWhitBt input {
     width: 100%;
+    max-width: 100%;
+  }
+
+  .writeFormWhitBt button {
+    width: 100%;
   }
 }
 
-/* 640px 이하 */
+/* ============================= */
+/* 768px 이하 (작은 태블릿 / 큰 모바일) */
+/* ============================= */
 @media (max-width: 768px) {
   .pageContainer {
-    width: 640px;
-    padding: 1.5rem 1rem;
+    width: 90%;
+    padding: 1.25rem;
     gap: 1.5rem;
   }
 
   .writeFormWhitBt {
     flex-direction: column;
-    gap: 1rem;
+    align-items: stretch;
+    gap: 0.9rem;
+  }
+
+  .writeFormWhitBt input {
+    width: 100%;
+    font-size: 15px;
+  }
+
+  .writeFormWhitBt button {
+    width: 100%;
   }
 }
 
-/* 400px 이하 (모바일) */
+/* ============================= */
+/* 640px 이하 (모바일) */
+/* ============================= */
 @media (max-width: 640px) {
   .pageContainer {
     width: 100%;
@@ -77,12 +117,19 @@
   }
 
   .writeFormWhitBt input {
+    width: 100%;
     font-size: 14px;
     padding: 0.5rem 0.75rem;
   }
+
+  .writeFormWhitBt button {
+    width: 100%;
+  }
 }
 
-/* 아주 작은 기기 (400px 이하) */
+/* ============================= */
+/* 400px 이하 (아주 작은 기기) */
+/* ============================= */
 @media (max-width: 400px) {
   .pageContainer {
     width: 100%;
@@ -93,7 +140,17 @@
     gap: 0.5rem;
   }
 
+  .writeFormWhitBt input {
+    font-size: 13px;
+  }
+
   .writeFormWhitBt button {
     width: 100%;
+    font-size: 13px;
+    padding: 0.6rem;
+  }
+
+  .category {
+    font-size: 11px;
   }
 }

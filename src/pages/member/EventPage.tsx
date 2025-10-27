@@ -14,6 +14,7 @@ import Modal from '../../ui/sdj/Modal';
 import { useModal } from '../../ui/sdj/ModalState';
 import TagBadge from '../../ui/TagBadge';
 import styles from './EventPage.module.css';
+import { AnimatePresence, motion } from 'framer-motion';
 
 type EventState = Database['public']['Tables']['events']['Row']['status'];
 type EventFilterState = EventState | '전체';
@@ -230,13 +231,17 @@ function EventPage() {
 
   const modalText = () => {
     return (
-      <>
+      <AnimatePresence>
         {filterCategories
           .filter(e => e.id === selectedEventId)
           .map(e => (
-            <div
-              key={e.id}
+            <motion.div
               className="w-full bg-white border-none rounded-[16px] flex flex-col items-center gap-[17px]"
+              initial={{ opacity: 0 }}
+              animate={{ opacity: 1 }}
+              exit={{ opacity: 0 }}
+              transition={{ duration: 0.25 }}
+              key={e.id}
             >
               <GiftFill bgColor="#FFEDD5" color="#F97A18" size={20} padding={14} />
               <div className="w-full flex flex-col items-center gap-[15px] text-md">
@@ -281,9 +286,9 @@ function EventPage() {
                   </div>
                 </div>
               </div>
-            </div>
+            </motion.div>
           ))}
-      </>
+      </AnimatePresence>
     );
   };
 
@@ -400,8 +405,11 @@ function EventPage() {
                     {event.status === '종료' && `종료된 이벤트`}
                   </button>
                   {admin && (
-                    <button onClick={() => handleEditBt(event.id)} className="flex-1">
-                      <RiEditLine />
+                    <button
+                      onClick={() => handleEditBt(event.id)}
+                      className="flex-1 flex items-center justify-center gap-2 p-2"
+                    >
+                      <RiEditLine className="translate-y-0.5" /> 수정하기
                     </button>
                   )}
                 </div>
