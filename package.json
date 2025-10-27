@@ -35,6 +35,7 @@
     "react-infinite-scroll-component": "^6.1.0",
     "react-kakao-maps-sdk": "^1.2.0",
     "react-paginate": "^8.3.0",
+    "react-responsive": "^10.0.1",
     "react-router-dom": "^6.30.1",
     "react-spinners": "^0.17.0",
     "sonner": "^2.0.7",

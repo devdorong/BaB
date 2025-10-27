@@ -7,6 +7,10 @@ import { ReviewCard } from '../../../ui/dorong/ReviewMockCard';
 import { categoryColors, defaultCategoryColor } from '../../../ui/jy/categoryColors';
 import { BlackTag, GrayTag } from '../../../ui/tag';
 import ReviewCardSkeleton from '@/ui/dorong/ReviewCardSkeleton';
+import { Select } from 'antd';
+import CategorySelect from '@/components/partner/CategorySelect';
+import { usePartnerSignup } from '@/contexts/PartnerSignupContext';
+import AllCategory from '@/components/member/AllCategory';
 
 const FOOD = '음식 종류';
 
@@ -15,7 +19,7 @@ type SortType = 'distance' | 'rating' | 'review';
 function ReviewsPage() {
   const navigate = useNavigate();
   const [search, setSearch] = useState('');
-  const [selectedCategory, setSelectedCategory] = useState('전체');
+  const [selectedCategory, setSelectedCategory] = useState<string | number>('전체');
   const [currentPage, setCurrentPage] = useState(1);
   const [sortType, setSortType] = useState<SortType>('distance');
   const itemsPerPage = 6;
@@ -146,152 +150,170 @@ function ReviewsPage() {
   const totalPages = Math.ceil(filtered.length / itemsPerPage);
 
   return (
-    <div className="w-full bg-bg-bg">
-      <div className="w-[1280px] mx-auto flex flex-col gap-8 py-8">
-        {/* 타이틀 */}
-        <div className="flex flex-col gap-1">
-          <p className="text-3xl font-bold">맛집추천</p>
-          <p className="text-babgray-600">진짜 맛집을 찾아보세요</p>
-        </div>
-        <div className="flex p-6 flex-col justify-center gap-4 sm:gap-6 rounded-[20px] bg-white shadow-[0_4px_4px_0_rgba(0,0,0,0.02)]">
-          {/* 검색폼,버튼 */}
-          <div className="flex w-full justify-between items-center gap-[16px]">
-            <div
-              onClick={() => document.getElementById('searchInput')?.focus()}
-              className="flex w-full items-center pl-[20px] bg-white h-[55px] py-3 px-3 border border-s-babgray rounded-3xl"
-            >
-              <input
-                id="searchInput"
-                className="focus:outline-none w-full"
-                type="text"
-                value={search}
-                onChange={e => setSearch(e.target.value)}
-                onKeyDown={e => {
-                  if (e.key === 'Enter') {
-                    handleSearch();
-                  }
-                }}
-                placeholder="맛집 이름이나 음식 종류로 검색하기"
-              />
-            </div>
-            <div
-              onClick={handleSearch}
-              className="flex px-5 py-4 justify-center items-center bg-bab-500 rounded-[18px] cursor-pointer transition hover:bg-bab-600"
-            >
-              <RiSearchLine size={20} className=" text-white" />
-            </div>
+    <div id="root" className="flex flex-col min-h-screen bg-bg-bg">
+      <div className="w-full flex justify-center">
+        <div className="max-w-[1280px] mx-auto flex flex-col px-4 sm:px-6 lg:px-8 xl:px-0 gap-8 py-8">
+          {/* 타이틀 */}
+          <div className="flex flex-col gap-1">
+            <p className="text-3xl font-bold">맛집추천</p>
+            <p className="text-babgray-600">진짜 맛집을 찾아보세요</p>
           </div>
-          <div className="flex flex-wrap gap-2 justify-start sm:justify-start">
-            <div className="flex gap-[8px] justify-start ">
-              <button
-                onClick={() => {
-                  setSelectedCategory('전체');
-                  setCurrentPage(1);
-                }}
-                className={`px-4 py-2 rounded-full text-sm ${
-                  selectedCategory === '전체'
-                    ? 'bg-bab-500 text-white'
-                    : 'bg-babgray-100 text-babgray-700 hover:bg-babgray-200'
-                }`}
+          <div className="flex p-6 flex-col justify-center gap-4 sm:gap-6 rounded-[20px] bg-white shadow-[0_4px_4px_0_rgba(0,0,0,0.02)]">
+            {/* 검색폼,버튼 */}
+            <div className="flex w-full justify-between items-center gap-[16px]">
+              <div
+                onClick={() => document.getElementById('searchInput')?.focus()}
+                className="flex w-full items-center pl-[20px] bg-white h-[55px] py-3 px-3 border border-s-babgray rounded-3xl"
               >
-                전체
-              </button>
-            </div>
-
-            {(interests[FOOD] ?? []).map(cat => (
-              <button
-                key={cat}
-                onClick={() => {
-                  setSelectedCategory(cat);
-                  setCurrentPage(1);
-                }}
-                className={`px-4 py-2 rounded-full text-sm ${
-                  selectedCategory === cat
-                    ? 'bg-bab-500 text-white'
-                    : 'bg-babgray-100 text-babgray-700 hover:bg-babgray-200'
-                }`}
-              >
-                {cat}
-              </button>
-            ))}
-          </div>
-
-          <div className="flex justify-start gap-[8px]">
-            <div onClick={() => setSortType('distance')} className="cursor-pointer">
-              {sortType === 'distance' ? <BlackTag>거리순</BlackTag> : <GrayTag>거리순</GrayTag>}
-            </div>
-            <div onClick={() => setSortType('rating')} className="cursor-pointer">
-              {sortType === 'rating' ? <BlackTag>별점순</BlackTag> : <GrayTag>별점순</GrayTag>}
-            </div>
-            <div onClick={() => setSortType('review')} className="cursor-pointer">
-              {sortType === 'review' ? <BlackTag>리뷰순</BlackTag> : <GrayTag>리뷰순</GrayTag>}
-            </div>
-          </div>
-        </div>
-
-        <div className="grid grid-cols-2 gap-[34px]">
-          {currentItems.map(r => {
-            const category = r.interests?.name ?? '';
-            const color = categoryColors[category] || defaultCategoryColor;
-            const avgRating = getAvgRating(r);
-            const distanceNum =
-              userPos && r.latitude && r.longitude
-                ? getDistance(
-                    userPos.lat,
-                    userPos.lng,
-                    parseFloat(r.latitude),
-                    parseFloat(r.longitude),
-                  )
-                : 0;
-            const distance = distanceNum > 0 ? formatDistance(distanceNum) : '';
-
-            return (
-              <div key={r.id} onClick={() => navigate(`/member/reviews/${r.id}`)}>
-                <ReviewCard
-                  key={r.id}
-                  restaurantId={r.id}
-                  name={r.name}
-                  category={category}
-                  img={r.thumbnail_url}
-                  review={`리뷰 ${r.reviews.length}개`}
-                  storeintro={r.storeintro ?? ''}
-                  rating={avgRating ?? 0}
-                  distance={distance}
-                  tagBg={color.bg}
-                  tagText={color.text}
+                <input
+                  id="searchInput"
+                  className="focus:outline-none"
+                  type="text"
+                  value={search}
+                  onChange={e => setSearch(e.target.value)}
+                  onKeyDown={e => {
+                    if (e.key === 'Enter') {
+                      handleSearch();
+                    }
+                  }}
+                  placeholder="맛집 이름이나 음식 종류로 검색하기"
                 />
               </div>
-            );
-          })}
-        </div>
-        <div className="flex justify-center gap-2 mt-6">
-          <button
-            disabled={currentPage === 1}
-            onClick={() => setCurrentPage(p => Math.max(p - 1, 1))}
-            className="p-2  bg-bg-bg rounded disabled:opacity-50 hover:bg-bab hover:text-white"
-          >
-            <RiArrowLeftSLine size={16} />
-          </button>
+              <div
+                onClick={handleSearch}
+                className="flex px-5 py-4 justify-center items-center bg-bab-500 rounded-[18px] cursor-pointer transition hover:bg-bab-600"
+              >
+                <RiSearchLine size={20} className=" text-white" />
+              </div>
+            </div>
 
-          {Array.from({ length: totalPages }).map((_, idx) => (
+            {/* 검색폼,버튼 */}
+            <div>
+              {/* 데탑 */}
+              <div className="hidden lg:flex flex-wrap gap-2 justify-start sm:justify-start">
+                <div className="flex gap-[8px] justify-start ">
+                  <button
+                    onClick={() => {
+                      setSelectedCategory('전체');
+                      setCurrentPage(1);
+                    }}
+                    className={`px-4 py-2 rounded-full text-sm ${
+                      selectedCategory === '전체'
+                        ? 'bg-bab-500 text-white'
+                        : 'bg-babgray-100 text-babgray-700 hover:bg-babgray-200'
+                    }`}
+                  >
+                    전체
+                  </button>
+                </div>
+
+                {(interests[FOOD] ?? []).map(cat => (
+                  <button
+                    key={cat}
+                    onClick={() => {
+                      setSelectedCategory(cat);
+                      setCurrentPage(1);
+                    }}
+                    className={`px-4 py-2 rounded-full text-sm ${
+                      selectedCategory === cat
+                        ? 'bg-bab-500 text-white'
+                        : 'bg-babgray-100 text-babgray-700 hover:bg-babgray-200'
+                    }`}
+                  >
+                    {cat}
+                  </button>
+                ))}
+              </div>
+
+              {/* 모바일·태블릿용 드롭다운 */}
+              <div className="lg:hidden w-full flex justify-start">
+                <AllCategory
+                  value={selectedCategory}
+                  onChange={v => {
+                    setSelectedCategory(v);
+                    setCurrentPage(1);
+                  }}
+                ></AllCategory>
+              </div>
+            </div>
+
+            <div className="flex justify-start gap-[8px]">
+              <div onClick={() => setSortType('distance')} className="cursor-pointer">
+                {sortType === 'distance' ? <BlackTag>거리순</BlackTag> : <GrayTag>거리순</GrayTag>}
+              </div>
+              <div onClick={() => setSortType('rating')} className="cursor-pointer">
+                {sortType === 'rating' ? <BlackTag>별점순</BlackTag> : <GrayTag>별점순</GrayTag>}
+              </div>
+              <div onClick={() => setSortType('review')} className="cursor-pointer">
+                {sortType === 'review' ? <BlackTag>리뷰순</BlackTag> : <GrayTag>리뷰순</GrayTag>}
+              </div>
+            </div>
+          </div>
+
+          <div className="grid grid-cols-1 lg:grid-cols-2 gap-[14px]">
+            {currentItems.map(r => {
+              const category = r.interests?.name ?? '';
+              const color = categoryColors[category] || defaultCategoryColor;
+              const avgRating = getAvgRating(r);
+              const distanceNum =
+                userPos && r.latitude && r.longitude
+                  ? getDistance(
+                      userPos.lat,
+                      userPos.lng,
+                      parseFloat(r.latitude),
+                      parseFloat(r.longitude),
+                    )
+                  : 0;
+              const distance = distanceNum > 0 ? formatDistance(distanceNum) : '';
+
+              return (
+                <div key={r.id} onClick={() => navigate(`/member/reviews/${r.id}`)}>
+                  <ReviewCard
+                    key={r.id}
+                    restaurantId={r.id}
+                    name={r.name}
+                    category={category}
+                    img={r.thumbnail_url}
+                    review={`리뷰 ${r.reviews.length}개`}
+                    storeintro={r.storeintro ?? ''}
+                    rating={avgRating ?? 0}
+                    distance={distance}
+                    tagBg={color.bg}
+                    tagText={color.text}
+                  />
+                </div>
+              );
+            })}
+          </div>
+          <div className="flex justify-center gap-2 mt-6">
             <button
-              key={idx + 1}
-              onClick={() => setCurrentPage(idx + 1)}
-              className={`p-2 py-0 rounded hover:bg-bab hover:text-white ${
-                currentPage === idx + 1 ? 'text-bab' : 'bg-bg-bg'
-              }`}
+              disabled={currentPage === 1}
+              onClick={() => setCurrentPage(p => Math.max(p - 1, 1))}
+              className="p-2  bg-bg-bg rounded disabled:opacity-50 hover:bg-bab hover:text-white"
             >
-              {idx + 1}
+              <RiArrowLeftSLine size={16} />
             </button>
-          ))}
 
-          <button
-            disabled={currentPage === totalPages}
-            onClick={() => setCurrentPage(p => Math.min(p + 1, totalPages))}
-            className="p-2 bg-bg-bg rounded disabled:opacity-50 hover:bg-bab hover:text-white"
-          >
-            <RiArrowRightSLine size={16} />
-          </button>
+            {Array.from({ length: totalPages }).map((_, idx) => (
+              <button
+                key={idx + 1}
+                onClick={() => setCurrentPage(idx + 1)}
+                className={`p-2 py-0 rounded hover:bg-bab hover:text-white ${
+                  currentPage === idx + 1 ? 'text-bab' : 'bg-bg-bg'
+                }`}
+              >
+                {idx + 1}
+              </button>
+            ))}
+
+            <button
+              disabled={currentPage === totalPages}
+              onClick={() => setCurrentPage(p => Math.min(p + 1, totalPages))}
+              className="p-2 bg-bg-bg rounded disabled:opacity-50 hover:bg-bab hover:text-white"
+            >
+              <RiArrowRightSLine size={16} />
+            </button>
+          </div>
         </div>
       </div>
     </div>

@@ -110,7 +110,7 @@ function FavoritePage() {
             <div className="text-babgray-600 px-[5px] text-[17px]">{'>'}</div>
             <div className="text-bab-500 text-[17px]">즐겨찾는 식당</div>
           </div>
-          <div className="w-[1280px] mx-auto flex flex-col gap-8 py-8">
+          <div className="mx-auto flex flex-col gap-4 py-4 lg:gap-8 lg:py-8">
             {/* 타이틀 */}
             <div className="flex flex-col gap-1">
               <p className="text-[24px] lg:text-3xl font-bold">즐겨찾는 식당</p>
@@ -120,7 +120,7 @@ function FavoritePage() {
             </div>
 
             {/* 검색폼,버튼 */}
-            <div className="pb-[0px] ">
+            <div>
               {/* 데스크탑 */}
               <div className="hidden lg:flex flex-wrap gap-2 justify-start">
                 <button
