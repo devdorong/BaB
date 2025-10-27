@@ -134,8 +134,8 @@ const MatchingWritePage = () => {
               </div>
               <div className="w-full flex items-center rounded-3xl ">
                 <DatePicker
-                  className="bab-date-picker"
-                  placeholder="날짜 선택"
+                  className="bab-date-picker w-full"
+                  placeholder="연도-월-일"
                   value={formData.date}
                   onChange={setDate}
                 />
@@ -150,7 +150,7 @@ const MatchingWritePage = () => {
               </div>
               <div className="w-full flex items-center rounded-3xl ">
                 <TimePicker
-                  className="bab-time-picker"
+                  className="bab-time-picker w-full"
                   format="HH:mm"
                   placeholder="시간 선택"
                   value={formData.time}
@@ -168,7 +168,7 @@ const MatchingWritePage = () => {
                 <span>희망 인원수 (본인 포함)</span>
                 <p className="text-bab">*</p>
               </div>
-              <div className="flex flex-wrap justify-center gap-2 sm:gap-2">
+              <div className="flex flex-wrap justify-start gap-2 sm:gap-2">
                 {headCounts.map(item => {
                   const isSelected = selectedHeadCounts === item;
                   return (
@@ -237,7 +237,7 @@ const MatchingWritePage = () => {
           </div>
 
           {/* 버튼 영역 */}
-          <div className="flex flex-col sm:flex-row p-6 border-t justify-center items-center gap-3 sm:gap-6">
+          <div className="flex flex-col sm:flex-row pt-6 border-t justify-center items-center gap-3 sm:gap-6">
             <ButtonLineMd
               className="w-full sm:flex-1"
               onClick={() => navigate('/member')}

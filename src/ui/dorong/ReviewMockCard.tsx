@@ -14,6 +14,7 @@ import TagBadge from '../TagBadge';
 import { InterestBadge } from '../tag';
 import React, { useEffect, useState } from 'react';
 import { supabase } from '../../lib/supabase';
+import ReviewCardSkeleton from './ReviewCardSkeleton';
 
 const CardLayout = styled.div`
   display: inline-flex;
@@ -75,6 +76,7 @@ export const ReviewCard = ({
 
   useEffect(() => {
     const fetchFavorite = async () => {
+      setLoading(true);
       const {
         data: { user },
       } = await supabase.auth.getUser();
@@ -140,7 +142,9 @@ export const ReviewCard = ({
     }
   };
 
-  if (loading) return null;
+  if (loading) {
+    return <ReviewCardSkeleton />;
+  }
 
   return (
     <div onClick={onClick}>
@@ -153,7 +157,7 @@ export const ReviewCard = ({
           {/* 상단: 태그 + 제목 */}
           <div className="flex flex-col items-start gap-2">
             <TagBadge bgColor={tagBg || 'bg-babgray-100'} textColor={tagText || 'text-babgray-700'}>
-              {category || "기타"}
+              {category || '기타'}
             </TagBadge>
             <Title>{name}</Title>
           </div>

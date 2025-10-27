@@ -1,9 +1,8 @@
 import { useEffect, useState } from 'react';
-import { RiAddLine, RiSearchLine } from 'react-icons/ri';
+import { RiAddLine } from 'react-icons/ri';
 import { useNavigate } from 'react-router-dom';
 import { useAuth } from '../../contexts/AuthContext';
-import { getMatchings } from '../../services/matchingService';
-import { getRestaurantById } from '../../services/restaurants';
+import { getMatchingsWithRestaurant, type MatchingWithRestaurant } from '../../services/matchingService';
 import type { Matchings } from '../../types/bobType';
 import { ButtonFillLG, ButtonLineMd } from '../../ui/button';
 import MatchCardSkeleton from '../../ui/dorong/MatchCardSkeleton';
@@ -27,10 +26,8 @@ const MachingIndex = () => {
   const navigate = useNavigate();
   const { user } = useAuth();
   const { modal, closeModal, openModal } = useModal();
-  const [matchingList, setMatchingList] = useState<Matchings[]>([]);
   const [processedMatchings, setProcessedMatchings] = useState<ProcessedMatching[]>([]);
   const [loading, setLoading] = useState(true);
-  // 사용자 위치
   const [userPos, setUserPos] = useState<{ lat: number; lng: number } | null>(null);
 
   const getColorByCategory = (interestName: string): { bg: string; text: string } => {
@@ -57,44 +54,37 @@ const MachingIndex = () => {
       try {
         setLoading(true);
 
-        // 1. 매칭 데이터 가져오기
-        const matchings = await getMatchings();
+        // 한 번의 쿼리로 매칭 + 레스토랑 + 관심사 데이터 모두 가져오기
+        const matchingsWithRestaurant = await getMatchingsWithRestaurant();
 
-        // 2. 각 매칭에 대해 레스토랑 정보 가져오고 태그 조립하기
-        const processed: ProcessedMatching[] = [];
-
-        for (const matching of matchings) {
-          // 레스토랑 ID로 레스토랑 정보 가져오기
-          const restaurant = await getRestaurantById(matching.restaurant_id);
-
-          if (restaurant) {
-            // 카테고리 색상 가져오기
+        // 데이터 가공  
+        const processed: ProcessedMatching[] = matchingsWithRestaurant
+          .filter(matching => matching.restaurants) // 레스토랑 정보가 있는 것만
+          .map(matching => {
+            const restaurant = matching.restaurants!;
             const categoryName = restaurant.interests?.name || '기타';
             const categoryColor = getColorByCategory(categoryName);
 
-            // 태그 배열 생성 (카테고리 + 추가 태그)
             const tags: Badge[] = [
               {
                 label: categoryName,
                 bgClass: categoryColor.bg,
                 textClass: categoryColor.text,
               },
-              // 필요시 추가 태그 (예: 실내/실외 등) 추가 가능
             ];
 
-            processed.push({
+            return {
               ...matching,
               tags,
               title: matching.title || restaurant.name,
               description: matching.description || restaurant.storeintro || '',
-              distanceKm: 0, // 추후 거리계산 해서 집어넣기
+              distanceKm: 0,
               area: restaurant.address || '위치 정보 없음',
               timeAgo: matching.created_at ? formatTimeAgo(matching.created_at) : '',
               latitude: restaurant.latitude || 0,
               longitude: restaurant.longitude || 0,
-            });
-          }
-        }
+            };
+          });
 
         setProcessedMatchings(processed);
       } catch (error) {
@@ -116,16 +106,8 @@ const MachingIndex = () => {
       navigate('/member/matching/write');
     }
   };
-  useEffect(() => {
-    const fetchMatching = async () => {
-      const matching = await getMatchings();
-      // console.log(matching);
-      setMatchingList(matching);
-    };
-    fetchMatching();
-  }, []);
 
-  // 현재위치
+  // 현재위치 가져오기
   useEffect(() => {
     if (!navigator.geolocation) {
       console.error('이 브라우저는 위치 정보를 지원하지 않습니다.');
@@ -146,9 +128,9 @@ const MachingIndex = () => {
     );
   }, []);
 
-  // 현재 위치 기준으로 거리 계산
+  // 거리 계산
   const getDistance = (lat1: number, lon1: number, lat2: number, lon2: number): string => {
-    const R = 6371; // 지구 반지름 (km)
+    const R = 6371;
     const dLat = ((lat2 - lat1) * Math.PI) / 180;
     const dLon = ((lon2 - lon1) * Math.PI) / 180;
     const a =
@@ -157,23 +139,18 @@ const MachingIndex = () => {
     const c = 2 * Math.atan2(Math.sqrt(a), Math.sqrt(1 - a));
     const distance = R * c;
 
-    // 단위 변환 (1km 미만이면 m, 그 이상이면 km)
     return distance < 1 ? `${(distance * 1000).toFixed(0)} m` : `${distance.toFixed(1)} km`;
   };
 
   return (
-    <div className="w-full px-4 sm:px-6 md:px-8 lg:px-10 pt-10 sm:pt-0">
+    <div className="w-full pt-10 sm:pt-0">
       {/* 상단 */}
-      <div className="flex justify-between items-center sm:flex-row sm:items-center sm:justify-between gap-4 sm:gap-6 ">
-        {/* 왼쪽 */}
+      <div className="flex justify-between items-center sm:flex-row sm:items-center sm:justify-between gap-4 sm:gap-6">
         <div>
           <span className="text-2xl sm:text-3xl font-bold">매칭 대기중</span>
         </div>
 
-        {/* 오른쪽 */}
         <div className="flex flex-col sm:flex-row items-stretch sm:items-center gap-3 sm:gap-[20px] lg:gap-[30px]">
-          
-
           <ButtonFillLG onClick={handleButtonClick} className="w-full sm:w-auto justify-center">
             <i>
               <RiAddLine size={22} className="sm:size-[24px]" />
@@ -185,16 +162,7 @@ const MachingIndex = () => {
 
       {/* 중단 */}
       <div className="w-full pt-[30px] pb-[50px]">
-        <ul
-          className="
-      grid 
-      grid-cols-1      
-      sm:grid-cols-2   
-      gap-x-[30px] gap-y-[24px]
-      place-items-center
-      justify-center
-    "
-        >
+        <ul className="grid grid-cols-1 sm:grid-cols-2 gap-x-[30px] gap-y-[24px] place-items-center justify-center">
           {loading ? (
             <>
               {[...Array(4)].map((_, i) => (
@@ -213,7 +181,7 @@ const MachingIndex = () => {
                       : '';
                   return (
                     <MatchCard
-                      key={index}
+                      key={item.id || index}
                       distance={distance}
                       {...item}
                       modal={modal}
@@ -231,7 +199,7 @@ const MachingIndex = () => {
       <div className="flex justify-center pb-[50px]">
         <ButtonLineMd
           onClick={() => navigate('/member/matching')}
-          className="rounded-[20px] px-6 sm:px-8 py-3 sm:py-4 text-sm sm:text-base"
+          className="!rounded-[24px] px-6 sm:px-8 py-3 sm:py-4 text-sm sm:text-base"
         >
           더보기
         </ButtonLineMd>

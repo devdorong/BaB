@@ -345,7 +345,7 @@ const MemberHeader = () => {
                     setMenuOpen(false);
                     setIsSupportOpen(false);
                   }}
-                  className="hover:text-bab-500 transition-colors"
+                  className="hover:text-bab-500 transition-colors font-bold"
                 >
                   개인정보처리방침
                 </NavLink>

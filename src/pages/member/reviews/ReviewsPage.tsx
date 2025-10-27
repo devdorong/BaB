@@ -6,20 +6,24 @@ import { fetchRestaurants, type RestaurantTypeRatingAvg } from '../../../lib/res
 import { ReviewCard } from '../../../ui/dorong/ReviewMockCard';
 import { categoryColors, defaultCategoryColor } from '../../../ui/jy/categoryColors';
 import { BlackTag, GrayTag } from '../../../ui/tag';
+import ReviewCardSkeleton from '@/ui/dorong/ReviewCardSkeleton';
 
 const FOOD = '음식 종류';
+
+type SortType = 'distance' | 'rating' | 'review';
 
 function ReviewsPage() {
   const navigate = useNavigate();
   const [search, setSearch] = useState('');
   const [selectedCategory, setSelectedCategory] = useState('전체');
   const [currentPage, setCurrentPage] = useState(1);
+  const [sortType, setSortType] = useState<SortType>('distance');
   const itemsPerPage = 6;
   const [restaurants, setRestaurants] = useState<RestaurantTypeRatingAvg[]>([]);
   const [interests, setInterests] = useState<Record<string, string[]>>({});
   const [loading, setLoading] = useState<boolean>(false);
-  // 사용자 위치
   const [userPos, setUserPos] = useState<{ lat: number; lng: number } | null>(null);
+  const [displayedSearch, setDisplayedSearch] = useState('');
 
   // 카테고리
   useEffect(() => {
@@ -39,32 +43,6 @@ function ReviewsPage() {
       }
     };
     restaurantLoad();
-  }, []);
-
-  // 카테고리 필터 적용
-  const filtered =
-    selectedCategory === '전체'
-      ? restaurants
-      : restaurants.filter(item => item.interests?.name === selectedCategory);
-
-  const startIdx = (currentPage - 1) * itemsPerPage;
-  const endIdx = startIdx + itemsPerPage;
-  const currentItems = filtered.slice(startIdx, endIdx);
-  const totalPages = Math.ceil(filtered.length / itemsPerPage);
-
-  useEffect(() => {
-    const load = async () => {
-      setLoading(true);
-      try {
-        const grouped = await fetchInterestsGrouped();
-        setInterests(grouped);
-      } catch (err) {
-        console.log(err);
-      } finally {
-        setLoading(false);
-      }
-    };
-    load();
   }, []);
 
   // 현재위치
@@ -89,7 +67,7 @@ function ReviewsPage() {
   }, []);
 
   // 현재 위치 기준으로 거리 계산
-  const getDistance = (lat1: number, lon1: number, lat2: number, lon2: number): string => {
+  const getDistance = (lat1: number, lon1: number, lat2: number, lon2: number): number => {
     const R = 6371; // 지구 반지름 (km)
     const dLat = ((lat2 - lat1) * Math.PI) / 180;
     const dLon = ((lon2 - lon1) * Math.PI) / 180;
@@ -97,11 +75,75 @@ function ReviewsPage() {
       Math.sin(dLat / 2) ** 2 +
       Math.cos((lat1 * Math.PI) / 180) * Math.cos((lat2 * Math.PI) / 180) * Math.sin(dLon / 2) ** 2;
     const c = 2 * Math.atan2(Math.sqrt(a), Math.sqrt(1 - a));
-    const distance = R * c;
+    return R * c;
+  };
 
-    // 단위 변환 (1km 미만이면 m, 그 이상이면 km)
+  // 거리를 문자열로 포맷팅
+  const formatDistance = (distance: number): string => {
     return distance < 1 ? `${(distance * 1000).toFixed(0)} m` : `${distance.toFixed(1)} km`;
   };
+
+  // 평균 평점 계산
+  const getAvgRating = (r: RestaurantTypeRatingAvg): number => {
+    const ratings = r.reviews?.map(v => v.rating_food ?? 0) || [];
+    return ratings.length > 0
+      ? Math.round((ratings.reduce((sum, r) => sum + r, 0) / ratings.length) * 10) / 10
+      : 0;
+  };
+
+  // 검색 실행
+  const handleSearch = () => {
+    setDisplayedSearch(search);
+    setCurrentPage(1);
+  };
+
+  // 카테고리 필터 적용
+  let filtered = restaurants.filter(item => {
+    // 카테고리 필터
+    const matchCategory = selectedCategory === '전체' || item.interests?.name === selectedCategory;
+
+    // 검색 필터 (맛집 이름 또는 음식 종류) - displayedSearch 사용
+    const matchSearch =
+      !displayedSearch ||
+      item.name.toLowerCase().includes(displayedSearch.toLowerCase()) ||
+      (item.interests?.name ?? '').toLowerCase().includes(displayedSearch.toLowerCase());
+
+    return matchCategory && matchSearch;
+  });
+
+  // 정렬 적용
+  filtered = filtered.sort((a, b) => {
+    if (sortType === 'distance') {
+      if (!userPos || !a.latitude || !a.longitude || !b.latitude || !b.longitude) return 0;
+      const distA = getDistance(
+        userPos.lat,
+        userPos.lng,
+        parseFloat(a.latitude),
+        parseFloat(a.longitude),
+      );
+      const distB = getDistance(
+        userPos.lat,
+        userPos.lng,
+        parseFloat(b.latitude),
+        parseFloat(b.longitude),
+      );
+      return distA - distB;
+    } else if (sortType === 'rating') {
+      const ratingA = getAvgRating(a);
+      const ratingB = getAvgRating(b);
+      return ratingB - ratingA; // 높은 평점부터
+    } else if (sortType === 'review') {
+      const reviewCountA = a.reviews?.length || 0;
+      const reviewCountB = b.reviews?.length || 0;
+      return reviewCountB - reviewCountA; // 리뷰 많은 순
+    }
+    return 0;
+  });
+
+  const startIdx = (currentPage - 1) * itemsPerPage;
+  const endIdx = startIdx + itemsPerPage;
+  const currentItems = filtered.slice(startIdx, endIdx);
+  const totalPages = Math.ceil(filtered.length / itemsPerPage);
 
   return (
     <div className="w-full bg-bg-bg">
@@ -111,7 +153,7 @@ function ReviewsPage() {
           <p className="text-3xl font-bold">맛집추천</p>
           <p className="text-babgray-600">진짜 맛집을 찾아보세요</p>
         </div>
-        <div className="flex p-[24px] flex-col justify-center gap-[16px] rounded-[20px] bg-white shadow-[0_4px_4px_0_rgba(0,0,0,0.02)]">
+        <div className="flex p-6 flex-col justify-center gap-4 sm:gap-6 rounded-[20px] bg-white shadow-[0_4px_4px_0_rgba(0,0,0,0.02)]">
           {/* 검색폼,버튼 */}
           <div className="flex w-full justify-between items-center gap-[16px]">
             <div
@@ -125,69 +167,74 @@ function ReviewsPage() {
                 value={search}
                 onChange={e => setSearch(e.target.value)}
                 onKeyDown={e => {
-                  if (e.key === `Enter`) {
+                  if (e.key === 'Enter') {
+                    handleSearch();
                   }
                 }}
                 placeholder="맛집 이름이나 음식 종류로 검색하기"
               />
             </div>
-            <div className="flex px-[30px] py-[20px] justify-center items-center bg-bab-500 rounded-[18px] cursor-pointer transition hover:bg-bab-600">
+            <div
+              onClick={handleSearch}
+              className="flex px-5 py-4 justify-center items-center bg-bab-500 rounded-[18px] cursor-pointer transition hover:bg-bab-600"
+            >
               <RiSearchLine size={20} className=" text-white" />
             </div>
           </div>
-          <div className="flex gap-[8px]">
+          <div className="flex flex-wrap gap-2 justify-start sm:justify-start">
             <div className="flex gap-[8px] justify-start ">
               <button
                 onClick={() => {
                   setSelectedCategory('전체');
                   setCurrentPage(1);
                 }}
-                className={`px-4 py-2 rounded-full ${
+                className={`px-4 py-2 rounded-full text-sm ${
                   selectedCategory === '전체'
-                    ? 'bg-bab-500 text-white text-[13px]'
-                    : 'bg-babgray-100 text-babgray-700 text-[13px]'
+                    ? 'bg-bab-500 text-white'
+                    : 'bg-babgray-100 text-babgray-700 hover:bg-babgray-200'
                 }`}
               >
                 전체
               </button>
             </div>
 
-            <div className="flex gap-[8px] justify-start ">
-              {(interests[FOOD] ?? []).map(cat => (
-                <button
-                  key={cat}
-                  onClick={() => {
-                    setSelectedCategory(cat);
-                    setCurrentPage(1);
-                  }}
-                  className={`px-4 py-2 rounded-full ${
-                    selectedCategory === cat
-                      ? 'bg-bab-500 text-white text-[13px]'
-                      : 'bg-babgray-100 text-babgray-700 text-[13px]'
-                  }`}
-                >
-                  {cat}
-                </button>
-              ))}
-            </div>
+            {(interests[FOOD] ?? []).map(cat => (
+              <button
+                key={cat}
+                onClick={() => {
+                  setSelectedCategory(cat);
+                  setCurrentPage(1);
+                }}
+                className={`px-4 py-2 rounded-full text-sm ${
+                  selectedCategory === cat
+                    ? 'bg-bab-500 text-white'
+                    : 'bg-babgray-100 text-babgray-700 hover:bg-babgray-200'
+                }`}
+              >
+                {cat}
+              </button>
+            ))}
           </div>
 
           <div className="flex justify-start gap-[8px]">
-            <BlackTag>거리순</BlackTag>
-            <GrayTag>별점순</GrayTag>
-            <GrayTag>리뷰순</GrayTag>
+            <div onClick={() => setSortType('distance')} className="cursor-pointer">
+              {sortType === 'distance' ? <BlackTag>거리순</BlackTag> : <GrayTag>거리순</GrayTag>}
+            </div>
+            <div onClick={() => setSortType('rating')} className="cursor-pointer">
+              {sortType === 'rating' ? <BlackTag>별점순</BlackTag> : <GrayTag>별점순</GrayTag>}
+            </div>
+            <div onClick={() => setSortType('review')} className="cursor-pointer">
+              {sortType === 'review' ? <BlackTag>리뷰순</BlackTag> : <GrayTag>리뷰순</GrayTag>}
+            </div>
           </div>
         </div>
+
         <div className="grid grid-cols-2 gap-[34px]">
           {currentItems.map(r => {
             const category = r.interests?.name ?? '';
             const color = categoryColors[category] || defaultCategoryColor;
-            const ratings = r.reviews?.map(v => v.rating_food ?? 0) || [];
-            const avgRating =
-              ratings.length > 0
-                ? Math.round((ratings.reduce((sum, r) => sum + r, 0) / ratings.length) * 10) / 10
-                : 0;
-            const distance =
+            const avgRating = getAvgRating(r);
+            const distanceNum =
               userPos && r.latitude && r.longitude
                 ? getDistance(
                     userPos.lat,
@@ -195,7 +242,8 @@ function ReviewsPage() {
                     parseFloat(r.latitude),
                     parseFloat(r.longitude),
                   )
-                : '';
+                : 0;
+            const distance = distanceNum > 0 ? formatDistance(distanceNum) : '';
 
             return (
               <div key={r.id} onClick={() => navigate(`/member/reviews/${r.id}`)}>
