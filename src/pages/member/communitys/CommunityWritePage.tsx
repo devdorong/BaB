@@ -118,7 +118,7 @@ function CommunityWritePage() {
             {categories.map(item => (
               <button
                 key={item}
-                className={`flex p-2 rounded-full cursor-pointer ${activeCategory === item ? 'text-white bg-bab' : 'bg-bg-bg text-babgray-700'} focus:bg-bab transition-colors`}
+                className={`flex py-2 px-4 rounded-full cursor-pointer ${activeCategory === item ? 'text-white bg-bab' : 'bg-bg-bg text-babgray-700'} focus:bg-bab transition-colors`}
                 onClick={() => {
                   {
                     setActiveCategory(item);

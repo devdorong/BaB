@@ -80,6 +80,9 @@
     font-size: 14px;
     padding: 0.5rem 0.75rem;
   }
+  .category {
+    font-size: 15px;
+  }
 }
 
 /* 아주 작은 기기 (400px 이하) */
@@ -95,5 +98,8 @@
 
   .writeFormWhitBt button {
     width: 100%;
+  }
+  .category {
+    font-size: 10px;
   }
 }
