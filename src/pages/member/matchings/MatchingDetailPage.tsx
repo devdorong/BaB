@@ -518,17 +518,17 @@ const MatchingDetailPage = () => {
 
   return (
     <div className="flex bg-bg-bg">
-      <div className="flex flex-col w-[1280px] m-auto">
-        <div className="mt-[20px] mb-[60px]">
-          <div className="flex gap-[40px] items-start">
-            {/* 왼쪽 프로필카드 */}
-            <div className="flex flex-col w-full gap-[25px]">
+      <div className="flex flex-col w-full max-w-[1280px] mx-auto px-4 sm:px-6 lg:px-8 xl:px-0">
+        <div className="mt-5 mb-16">
+          <div className="flex flex-col lg:flex-row gap-8 items-start">
+            {/* 왼쪽 콘텐츠 */}
+            <div className="flex flex-col w-full lg:flex-[2] gap-6">
               {/* 매칭 상세 정보 */}
-              <div className="inline-flex w-full px-[35px] py-[25px] flex-col justify-center bg-white rounded-[16px] shadow-[0px_4px_4px_0px_rgba(0,0,0,0.02)]">
-                <div className="flex flex-col gap-[15px]">
-                  {/* 음식태그 및 작성 시간 */}
-                  <div className="flex justify-between">
-                    <div className="flex gap-[10px]">
+              <div className="w-full px-5 sm:px-8 py-6 sm:py-8 bg-white rounded-2xl shadow-[0_4px_4px_rgba(0,0,0,0.02)] flex flex-col">
+                <div className="flex flex-col gap-4">
+                  {/* 태그 + 시간 */}
+                  <div className="flex justify-between flex-wrap gap-2">
+                    <div className="flex gap-2">
                       <InterestBadge
                         bgColor={matchingData.tags[0].bgClass}
                         textColor={matchingData.tags[0].textClass}
@@ -536,21 +536,19 @@ const MatchingDetailPage = () => {
                         {matchingData.tags[0].label}
                       </InterestBadge>
                     </div>
-                    <div className="text-[14px] text-babgray-500">{matchingData.timeAgo}</div>
+                    <div className="text-sm text-babgray-500">{matchingData.timeAgo}</div>
                   </div>
 
                   {/* 제목 */}
-                  <div
-                    className={`text-[32px] font-bold flex items-center  ${matchingData ? 'gap-5' : ''}`}
-                  >
-                    {matchingData.title}{' '}
+                  <div className="text-[24px] sm:text-[32px] font-bold flex items-center gap-3">
+                    {matchingData.title}
                     {matchingData.status !== 'waiting' && <TagBadge>종료된 매칭</TagBadge>}
                   </div>
                 </div>
 
-                {/* 글 작성자 프로필 */}
-                <div className="flex my-[20px] gap-[20px] items-center">
-                  <div className="flex w-[60px] h-[60px] rounded-full overflow-hidden">
+                {/* 작성자 프로필 */}
+                <div className="flex items-center gap-4 my-6">
+                  <div className="w-[60px] h-[60px] rounded-full overflow-hidden flex-shrink-0">
                     <img
                       src={
                         userData?.avatar_url === 'guest_image' || !userData?.avatar_url
@@ -560,35 +558,33 @@ const MatchingDetailPage = () => {
                       alt={userData?.nickname}
                     />
                   </div>
-                  <div className="text-[20px] font-semibold text-babgray-800">
-                    {userData?.nickname}
-                  </div>
+                  <div className="text-lg font-semibold text-babgray-800">{userData?.nickname}</div>
                 </div>
 
-                {/* 모임일시 및 인원 */}
-                <div className="bg-bg-bg rounded-[16px]">
-                  <div className="flex justify-between p-6">
-                    {/* 모임 일시 */}
-                    <div className="flex flex-1 items-center gap-[15px]">
-                      <div className="flex items-center rounded-[32px] justify-center w-[50px] h-[50px] bg-[#DBEAFE]">
+                {/* 모임일시 + 인원 */}
+                <div className="bg-bg-bg rounded-2xl p-5 sm:p-6">
+                  <div className="flex flex-col sm:flex-row justify-between gap-4">
+                    {/* 모임일시 */}
+                    <div className="flex items-center gap-4 flex-1">
+                      <div className="flex items-center justify-center w-[50px] h-[50px] bg-[#DBEAFE] rounded-full">
                         <RiCalendarLine className="text-[#256AEC]" />
                       </div>
                       <div>
-                        <p className="text-[16px] font-medium text-babgray-500">모임 일시</p>
-                        <p className="text-[16px] font-semibold text-babgray-800">
+                        <p className="text-sm font-medium text-babgray-500">모임 일시</p>
+                        <p className="text-base font-semibold text-babgray-800">
                           {matchingData.met_at ? formatMeetingDate(matchingData.met_at) : ''}
                         </p>
                       </div>
                     </div>
 
-                    {/* 모집 인원 */}
-                    <div className="flex flex-1 items-center gap-[15px]">
-                      <div className="flex items-center rounded-[32px] justify-center w-[50px] h-[50px] bg-[#DCFCE7]">
+                    {/* 모집인원 */}
+                    <div className="flex items-center gap-4 flex-1">
+                      <div className="flex items-center justify-center w-[50px] h-[50px] bg-[#DCFCE7] rounded-full">
                         <RiGroupLine className="text-[#16A34A]" />
                       </div>
                       <div>
-                        <p className="text-[16px] font-medium text-babgray-500">모집 인원</p>
-                        <p className="text-[16px] font-semibold text-babgray-800">
+                        <p className="text-sm font-medium text-babgray-500">모집 인원</p>
+                        <p className="text-base font-semibold text-babgray-800">
                           {headCount}명 / {matchingData.desired_members}명
                         </p>
                       </div>
@@ -597,127 +593,88 @@ const MatchingDetailPage = () => {
                 </div>
 
                 {/* 상세설명 */}
-                <div className="flex py-10 px-2">
-                  <p className="text-babgray-600 leading-7">{matchingData.description}</p>
+                <div className="py-8 px-2 text-babgray-600 leading-7 whitespace-pre-line break-words">
+                  {matchingData.description}
                 </div>
               </div>
 
               {/* 식당 정보 */}
-              <div className="inline-flex w-full px-[35px] py-[25px] flex-col justify-center bg-white rounded-[16px] shadow-[0px_4px_4px_0px_rgba(0,0,0,0.02)]">
-                <div className="flex flex-col">
-                  <div className="text-babgray-900 text-[20px] mb-[25px] font-bold">식당 정보</div>
-
-                  {/* 식당 프로필 */}
-                  <div className="flex gap-[30px]">
-                    {/* 식당 이미지 */}
-                    <img
-                      className="rounded-[20px] w-[140px] h-[140px] object-cover"
-                      src={restaurant.thumbnail_url ? restaurant.thumbnail_url : ''}
-                      alt={restaurant.name}
-                    />
-
-                    {/* 식당 텍스트 정보 */}
-                    <div className="flex-1 items-center">
-                      {/* 식당명 */}
-                      <h3 className="text-[18px] md:text-[20px] font-semibold text-babgray-900 leading-tight">
-                        {restaurant.name}
-                      </h3>
-
-                      {/* 평점 */}
-                      <div className="mt-2 flex items-center gap-2">
-                        <div className="flex items-center">
-                          <StarRating rating={rating?.averageRating ?? 0} />
-                        </div>
-                        <p className="text-sm text-gray-700">
-                          <span className="font-medium">
-                            {rating?.averageRating
-                              ? rating.averageRating
-                              : '아직 등록된 리뷰가 없습니다.'}
-                          </span>
-                          <span className="text-gray-500 font-medium ">
-                            {rating?.reviewCount ? `  (${rating.reviewCount}개)` : ''}
-                          </span>
-                        </p>
-                      </div>
-
-                      {/* 주소 */}
-                      <p className="mt-2 flex items-center gap-2 text-sm text-gray-700 leading-6">
-                        <RiMapPinLine className="mt-[2px] w-4 h-4 text-[#FF5722] flex-shrink-0" />
-                        {restaurant.address}
-                      </p>
-
-                      {/* 전화번호 */}
-                      <p className="mt-1 flex items-center gap-2 text-sm text-gray-700 leading-6">
-                        <RiPhoneLine className="mt-[2px] w-4 h-4 text-babbutton-green flex-shrink-0" />
-                        {restaurant.phone}
-                      </p>
-
-                      {/* 영업시간 */}
-                      <p className="mt-1 flex items-center gap-2 text-sm text-gray-700 leading-6">
-                        <RiTimeLine className="mt-[2px] w-4 h-4 text-babbutton-blue flex-shrink-0" />
-                        {formatTime(restaurant.opentime)} - {formatTime(restaurant.closetime)}
-                        <span className="text-gray-500 ml-1">{`(라스트 오더 ${formatTime(restaurant.closetime)})`}</span>
+              <div className="w-full px-5 sm:px-8 py-6 sm:py-8 bg-white rounded-2xl shadow-[0_4px_4px_rgba(0,0,0,0.02)] flex flex-col">
+                <h3 className="text-lg sm:text-xl font-bold text-babgray-900 mb-6">식당 정보</h3>
+                <div className="flex flex-col sm:flex-row gap-5">
+                  {/* 이미지 */}
+                  <img
+                    className="rounded-2xl w-full sm:w-[160px] h-[160px] object-cover"
+                    src={restaurant.thumbnail_url ?? ''}
+                    alt={restaurant.name}
+                  />
+                  {/* 텍스트 */}
+                  <div className="flex-1">
+                    <h4 className="text-base sm:text-lg font-semibold text-babgray-900">
+                      {restaurant.name}
+                    </h4>
+                    <div className="mt-2 flex items-center gap-2">
+                      <StarRating rating={rating?.averageRating ?? 0} />
+                      <p className="text-sm text-gray-700">
+                        {rating?.averageRating
+                          ? `${rating.averageRating} (${rating.reviewCount ?? 0}개)`
+                          : '아직 등록된 리뷰가 없습니다.'}
                       </p>
                     </div>
+                    <p className="mt-2 flex items-center gap-2 text-sm text-gray-700">
+                      <RiMapPinLine className="text-[#FF5722]" /> {restaurant.address}
+                    </p>
+                    <p className="mt-1 flex items-center gap-2 text-sm text-gray-700">
+                      <RiPhoneLine className="text-babbutton-green" /> {restaurant.phone}
+                    </p>
+                    <p className="mt-1 flex items-center gap-2 text-sm text-gray-700">
+                      <RiTimeLine className="text-babbutton-blue" />
+                      {formatTime(restaurant.opentime)} - {formatTime(restaurant.closetime)}
+                    </p>
                   </div>
-
-                  <ButtonLineLg
-                    style={{ fontWeight: 600, marginTop: 30 }}
-                    onClick={() => navigate(`/member/reviews/${restaurant.id}`)}
-                  >
-                    식당 상세정보 보기
-                  </ButtonLineLg>
                 </div>
+                <ButtonLineLg
+                  style={{ fontWeight: 600, marginTop: 24 }}
+                  onClick={() => navigate(`/member/reviews/${restaurant.id}`)}
+                >
+                  식당 상세정보 보기
+                </ButtonLineLg>
               </div>
 
-              {/* 인원 */}
-              <div className="inline-flex w-full px-[35px] py-[25px] flex-col justify-center bg-white rounded-[16px] shadow-[0px_4px_4px_0px_rgba(0,0,0,0.02)]">
-                <div className="flex flex-col">
-                  <div className="text-babgray-900 text-[20px] mb-[25px] font-bold">
-                    참여자 ({headCount}/{matchingData.desired_members}명)
-                  </div>
-
-                  {/* 참여자 리스트 */}
-                  <ul className="space-y-3">
-                    {membersWithProfiles
-                      .slice() // 원본 훼손 방지용 복사
-                      .sort((a, b) => (a.role === 'host' ? -1 : b.role === 'host' ? 1 : 0))
-                      .map(p => (
-                        <li key={p.id} className="flex items-center gap-3">
-                          {/* 프로필 이미지 */}
-                          <div className="flex w-[60px] h-[60px] rounded-full overflow-hidden">
-                            <img
-                              src={
-                                p.profile.avatar_url === 'guest_image' || !p.profile.avatar_url
-                                  ? DEFAULT_AVATAR
-                                  : p.profile.avatar_url
-                              }
-                              alt={p.profile.nickname}
-                            />
-                          </div>
-
-                          {/* 이름 및 역할 */}
-                          <div>
-                            <div className="flex items-center gap-1">
-                              <div className="text-[16px] font-semibold text-babgray-800">
-                                {p.profile.nickname}
-                              </div>
-                              {/* {p.role === 'host' && (
-                                <TagBadge bgColor="bg-yellow-100" textColor="text-yellow-800">
-                                  모집자
-                                </TagBadge>
-                              )} */}
+              {/* 참여자 */}
+              <div className="w-full px-5 sm:px-8 py-6 sm:py-8 bg-white rounded-2xl shadow-[0_4px_4px_rgba(0,0,0,0.02)] flex flex-col">
+                <h3 className="text-lg sm:text-xl font-bold text-babgray-900 mb-6">
+                  참여자 ({headCount}/{matchingData.desired_members}명)
+                </h3>
+                <ul className="space-y-3">
+                  {membersWithProfiles
+                    .slice()
+                    .sort((a, b) => (a.role === 'host' ? -1 : b.role === 'host' ? 1 : 0))
+                    .map(p => (
+                      <li key={p.id} className="flex items-center gap-3">
+                        <div className="w-[50px] h-[50px] rounded-full overflow-hidden">
+                          <img
+                            src={
+                              p.profile.avatar_url === 'guest_image' || !p.profile.avatar_url
+                                ? DEFAULT_AVATAR
+                                : p.profile.avatar_url
+                            }
+                            alt={p.profile.nickname}
+                          />
+                        </div>
+                        <div>
+                          <div className="flex items-center gap-1">
+                            <div className="text-sm sm:text-base font-semibold text-babgray-800">
+                              {p.profile.nickname}
                             </div>
-                            <p className="text-gray-500 text-[13px] leading-6">
-                              {p.role === 'host' ? '모집자' : '참여자'}
-                            </p>
                           </div>
-                        </li>
-                      ))}
-                  </ul>
-                </div>
-
-                {/* 남은 자리 안내 */}
+                          <p className="text-xs text-gray-500">
+                            {p.role === 'host' ? '모집자' : '참여자'}
+                          </p>
+                        </div>
+                      </li>
+                    ))}
+                </ul>
                 <div className="mt-5 rounded-xl bg-gray-50 text-gray-600 text-sm text-center py-4">
                   {matchingData.desired_members && matchingData.desired_members - headCount > 0
                     ? `아직 ${matchingData.desired_members && matchingData.desired_members - headCount}
@@ -727,209 +684,156 @@ const MatchingDetailPage = () => {
               </div>
             </div>
 
-            {/* 오른쪽 프로필 카드 */}
-            <div className="flex flex-col gap-[20px] items-center justify-center">
+            {/* 오른쪽 패널 */}
+            <div className="flex flex-col w-full lg:flex-[1] gap-6 lg:top-[100px]">
               {/* 액션 버튼 */}
-              <div className="inline-flex w-[400px] p-[25px] flex-col justify-center items-center bg-white rounded-[16px] shadow-[0px_4px_4px_0px_rgba(0,0,0,0.02)]">
+              <div className="w-full p-6 bg-white rounded-2xl shadow-[0_4px_4px_rgba(0,0,0,0.02)]">
                 <section className="w-full space-y-3">
+                  {/* 조건별 버튼 */}
                   {user?.id === userData?.id ? (
-                    <>
-                      <ButtonFillLG
-                        className="w-full"
-                        style={{ fontWeight: 600, borderRadius: '12px' }}
-                        onClick={handlecomplete}
-                      >
-                        모집종료
-                      </ButtonFillLG>
-                    </>
+                    <ButtonFillLG className="w-full" onClick={handlecomplete}>
+                      모집종료
+                    </ButtonFillLG>
+                  ) : isParticipant ? (
+                    <ButtonFillLG className="w-full" onClick={handleLeave}>
+                      참여 취소하기
+                    </ButtonFillLG>
                   ) : (
-                    <>
-                      {isParticipant ? (
-                        <>
-                          <ButtonFillLG
-                            className="w-full"
-                            style={{ fontWeight: 600, borderRadius: '12px' }}
-                            onClick={handleLeave}
-                          >
-                            참여 취소하기
-                          </ButtonFillLG>
-                        </>
-                      ) : (
-                        <>
-                          <ButtonFillLG
-                            className="w-full"
-                            style={{ fontWeight: 600, borderRadius: '12px' }}
-                            onClick={handleParticipation}
-                          >
-                            참여 신청하기
-                          </ButtonFillLG>
-                        </>
-                      )}
-                    </>
+                    <ButtonFillLG className="w-full" onClick={handleParticipation}>
+                      참여 신청하기
+                    </ButtonFillLG>
                   )}
 
                   {user?.id === userData?.id ? (
-                    <>
-                      <ButtonLineLg
-                        className="w-full"
-                        style={{ fontWeight: 600, borderRadius: '12px' }}
-                        onClick={() => navigate(`/member/matching/edit/${id}`)}
-                      >
-                        <div className="flex gap-[5px] justify-center items-center">
-                          수정하기
-                          <RiEditLine className="w-4 h-4 shrink-0 relative top-[1px]" />
-                        </div>
-                      </ButtonLineLg>
-                    </>
+                    <ButtonLineLg
+                      className="w-full"
+                      onClick={() => navigate(`/member/matching/edit/${id}`)}
+                    >
+                      <div className="flex gap-1 items-center justify-center">
+                        수정하기 <RiEditLine className="w-4 h-4" />
+                      </div>
+                    </ButtonLineLg>
                   ) : (
-                    <>
-                      <ButtonLineLg
-                        className="w-full"
-                        style={{ fontWeight: 600, borderRadius: '12px' }}
-                        onClick={() => navigate(`/member/profile/chat`)}
-                      >
-                        <div className="flex gap-[5px] justify-center items-center">
-                          1:1 채팅
-                          <RiChat3Line className="w-4 h-4 shrink-0 relative top-[1px]" />
-                        </div>
-                      </ButtonLineLg>
-                    </>
+                    <ButtonLineLg
+                      className="w-full"
+                      onClick={() => navigate(`/member/profile/chat`)}
+                    >
+                      <div className="flex gap-1 items-center justify-center">
+                        1:1 채팅 <RiChat3Line className="w-4 h-4" />
+                      </div>
+                    </ButtonLineLg>
                   )}
 
                   {user?.id === userData?.id ? (
-                    <>
-                      <ButtonLineLg
-                        className="w-full"
-                        style={{ fontWeight: 600, borderRadius: '12px' }}
-                        onClick={handleDeleteMatching}
-                      >
-                        <div className="inline-flex items-center justify-center gap-1.5 font-semibold rounded-[12px] leading-none">
-                          삭제하기
-                          <RiCloseFill className="w-4 h-4 shrink-0 relative top-[1px]" />
-                        </div>
-                      </ButtonLineLg>
-                    </>
+                    <ButtonLineLg className="w-full" onClick={handleDeleteMatching}>
+                      <div className="flex gap-1 items-center justify-center">
+                        삭제하기 <RiCloseFill className="w-4 h-4" />
+                      </div>
+                    </ButtonLineLg>
                   ) : (
-                    <>
-                      <ButtonLineLg
-                        className="w-full"
-                        style={{ fontWeight: 600, borderRadius: '12px' }}
-                        onClick={() => {
-                          setReportInfo({
-                            type: '매칭',
-                            nickname: userData?.nickname ?? null, // 매칭 작성자
-                            targetProfileId: userData?.id, // 호스트 프로필 ID
-                          });
-                          setReports(true);
-                        }}
-                      >
-                        <div className="inline-flex items-center justify-center gap-1.5 font-semibold rounded-[12px] leading-none ">
-                          <RiFlagLine className="w-4 h-4 shrink-0 relative top-[1px]" />
-                          신고하기
-                        </div>
-                      </ButtonLineLg>
-                    </>
+                    <ButtonLineLg
+                      className="w-full"
+                      onClick={() => {
+                        setReportInfo({
+                          type: '매칭',
+                          nickname: userData?.nickname ?? null,
+                          targetProfileId: userData?.id,
+                        });
+                        setReports(true);
+                      }}
+                    >
+                      <div className="flex gap-1 items-center justify-center">
+                        <RiFlagLine className="w-4 h-4" />
+                        신고하기
+                      </div>
+                    </ButtonLineLg>
                   )}
                 </section>
               </div>
 
               {/* 지도 프리뷰 */}
-              <div className="inline-flex w-[400px] p-[25px] flex-col justify-center items-start bg-white rounded-[16px] shadow-[0px_4px_4px_0px_rgba(0,0,0,0.02)]">
-                <div className="flex w-full flex-col">
-                  <div className="h-[200px] rounded-2xl overflow-hidden">
-                    {/* 지도 */}
-                    <div>
-                      <h3 className="text-[18px] font-semibold text-babgray-900 mb-3">지도</h3>
-                      {isMapLoaded ? (
-                        <KkoMapMatching
-                          lat={restaurant.latitude?.toString()}
-                          lng={restaurant.longitude?.toString()}
-                        />
-                      ) : (
-                        <div className="py-10 text-center text-babgray-600 max-w-[1280px] mx-auto">
-                          지도를 불러오는 중입니다...
-                        </div>
-                      )}
+              <div className="w-full p-6 bg-white rounded-2xl shadow-[0_4px_4px_rgba(0,0,0,0.02)]">
+                <h3 className="text-lg font-semibold text-babgray-900 mb-3">지도</h3>
+                <div className="h-[200px] rounded-2xl overflow-hidden">
+                  {isMapLoaded ? (
+                    <KkoMapMatching
+                      lat={restaurant.latitude?.toString()}
+                      lng={restaurant.longitude?.toString()}
+                    />
+                  ) : (
+                    <div className="py-10 text-center text-babgray-600">
+                      지도를 불러오는 중입니다...
                     </div>
-                  </div>
-
-                  <p className="text-gray-600 text-[15px] mb-5 mt-3">{restaurant.address}</p>
-
-                  <ButtonLineMd
-                    style={{ fontWeight: 600 }}
-                    onClick={() =>
-                      window.open(
-                        `https://map.kakao.com/link/to/${restaurant.name},${restaurant.latitude},${restaurant.longitude}`,
-                        '_blank',
-                      )
-                    }
-                  >
-                    길찾기
-                  </ButtonLineMd>
+                  )}
                 </div>
+                <p className="text-gray-600 text-sm mt-3 mb-5">{restaurant.address}</p>
+                <ButtonLineMd
+                  className="w-full"
+                  onClick={() =>
+                    window.open(
+                      `https://map.kakao.com/link/to/${restaurant.name},${restaurant.latitude},${restaurant.longitude}`,
+                      '_blank',
+                    )
+                  }
+                >
+                  길찾기
+                </ButtonLineMd>
               </div>
 
               {/* 비슷한 모집글 */}
-
-              <div className="inline-flex w-[400px] p-[25px] flex-col justify-center items-start bg-white rounded-[16px] shadow-[0px_4px_4px_0px_rgba(0,0,0,0.02)]">
-                <div className="flex w-full flex-col">
-                  <div className="text-babgray-900 text-[20px] mb-[10px] font-bold">
-                    비슷한 모집글
-                  </div>
-
-                  {similarMatchings.length === 0 ? (
-                    <div className="py-8 text-center text-gray-500">비슷한 모집글이 없습니다</div>
-                  ) : (
-                    <ul className="space-y-3">
-                      {similarMatchings.map(similar => {
-                        const categoryName = similar.restaurants.interests?.name || '기타';
-                        const categoryColor = getColorByCategory(categoryName);
-
-                        // 거리 계산 - null 체크를 명확히
-                        let distance: number | null = null;
-                        if (
-                          restaurant.latitude != null &&
-                          restaurant.longitude != null &&
-                          similar.restaurants.latitude != null &&
-                          similar.restaurants.longitude != null
-                        ) {
-                          distance = calculateDistance(
-                            restaurant.latitude,
-                            restaurant.longitude,
-                            similar.restaurants.latitude,
-                            similar.restaurants.longitude,
-                          );
-                        }
-
-                        return (
-                          <li
-                            key={similar.id}
-                            className="rounded-2xl border border-gray-100 bg-white px-4 py-3 cursor-pointer hover:border-gray-300 transition-colors"
-                            onClick={() => navigate(`/member/matching/${similar.id}`)}
-                          >
-                            <div className="flex items-center gap-2">
-                              <TagBadge bgColor={categoryColor.bg} textColor={categoryColor.text}>
-                                {categoryName}
-                              </TagBadge>
-                            </div>
-                            <p className="mt-2 text-[15px] font-semibold text-gray-900 line-clamp-1">
-                              {similar.title || similar.restaurants.name}
-                            </p>
-                            <p className="mt-1 text-sm text-gray-500">
-                              {distance !== null ? `${distance.toFixed(1)}km` : '거리 정보 없음'} ·{' '}
-                              {formatTimeAgo(similar.created_at || '')}
-                            </p>
-                          </li>
+              <div className="w-full p-6 bg-white rounded-2xl shadow-[0_4px_4px_rgba(0,0,0,0.02)]">
+                <h3 className="text-lg sm:text-xl font-bold text-babgray-900 mb-3">
+                  비슷한 모집글
+                </h3>
+                {similarMatchings.length === 0 ? (
+                  <div className="py-8 text-center text-gray-500">비슷한 모집글이 없습니다</div>
+                ) : (
+                  <ul className="space-y-3">
+                    {similarMatchings.map(similar => {
+                      const categoryName = similar.restaurants.interests?.name || '기타';
+                      const categoryColor = getColorByCategory(categoryName);
+                      let distance: number | null = null;
+                      if (
+                        restaurant.latitude &&
+                        restaurant.longitude &&
+                        similar.restaurants.latitude &&
+                        similar.restaurants.longitude
+                      ) {
+                        distance = calculateDistance(
+                          restaurant.latitude,
+                          restaurant.longitude,
+                          similar.restaurants.latitude,
+                          similar.restaurants.longitude,
                         );
-                      })}
-                    </ul>
-                  )}
-                </div>
+                      }
+                      return (
+                        <li
+                          key={similar.id}
+                          className="rounded-2xl border border-gray-100 bg-white px-4 py-3 cursor-pointer hover:border-gray-300 transition-colors"
+                          onClick={() => navigate(`/member/matching/${similar.id}`)}
+                        >
+                          <TagBadge bgColor={categoryColor.bg} textColor={categoryColor.text}>
+                            {categoryName}
+                          </TagBadge>
+                          <p className="mt-2 text-sm font-semibold text-gray-900 line-clamp-1">
+                            {similar.title || similar.restaurants.name}
+                          </p>
+                          <p className="mt-1 text-xs text-gray-500">
+                            {distance !== null ? `${distance.toFixed(1)}km` : '거리 정보 없음'} ·{' '}
+                            {formatTimeAgo(similar.created_at || '')}
+                          </p>
+                        </li>
+                      );
+                    })}
+                  </ul>
+                )}
               </div>
             </div>
           </div>
         </div>
       </div>
+
+      {/* 모달 및 기타 */}
       {reports && (
         <ReportsModal
           setReports={setReports}
@@ -952,29 +856,17 @@ const MatchingDetailPage = () => {
           onX={x}
         />
       )}
-      {/* ===== 결제 모달 컴포넌트 ===== */}
       <PaymentModal
-        isOpen={isPaymentModalOpen} // 모달 열림/닫힘 상태
-        onClose={() => setIsPaymentModalOpen(false)} // 모달 닫기 핸들러
+        isOpen={isPaymentModalOpen}
+        onClose={() => setIsPaymentModalOpen(false)}
         onSuccess={result => {
-          // ===== 결제 완료 시 실행되는 핵심 콜백 함수 =====
           console.log('결제 성공:', result);
-
-          // TODO: 실제 운영 시에는 여기에 추가 작업을 구현해야 합니다
-          // - 주문 데이터베이스 저장
-          // - 결제 내역 저장
-          // - 사용자 알림 발송
-          // - 재고 차감
-          // - 주문 상태 업데이트
-          // - 이메일/SMS 알림 발송
-          // - 포인트 적립 처리
-
-          setIsPaymentModalOpen(false); // 결제 완료 후 모달 닫기
+          setIsPaymentModalOpen(false);
         }}
-        selectedPG={selectedPG} // 선택된 PG사
-        amount={totalAmount} // 총 결제 금액
-        orderItems={sampleOrderItems} // 주문 상품 목록
-        orderName="도로롱의 피자 주문" // 주문명
+        selectedPG={selectedPG}
+        amount={totalAmount}
+        orderItems={sampleOrderItems}
+        orderName="도로롱의 피자 주문"
       />
     </div>
   );

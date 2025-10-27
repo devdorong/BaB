@@ -239,144 +239,143 @@ const KkoMap = ({ radius = 1000, onFetched }: KkoMapProps) => {
   }
 
   return (
-    <div className="max-w-[1280px] mx-auto py-[60px] px-4 sm:px-6 md:px-8">
-  <h2 className="text-2xl sm:text-3xl font-bold mb-6 sm:mb-[27px]  sm:text-left">
-    내 주변 맛집 추천
-  </h2>
+    <div className="max-w-[1280px] mx-auto py-[60px] px-4 sm:px-6 md:px-8 lg:px-0">
+      <h2 className="text-2xl sm:text-3xl font-bold mb-6 sm:mb-[27px]  sm:text-left">
+        내 주변 맛집 추천
+      </h2>
 
-  {/* 지도 + 리스트 컨테이너 */}
-  <div className="flex flex-col lg:flex-row justify-between gap-6 lg:gap-8">
-    {/* 지도 영역 */}
-    <div className="w-full lg:w-[60%] rounded-2xl overflow-hidden">
-      <Map
-        center={center}
-        level={4}
-        style={{ width: '100%', height: '356px' }}
-        onCreate={handleOnCreate}
-        onCenterChanged={map => {
-          // 지도 드래그 시 center 업데이트
-        }}
-      >
-        {/* 현재 위치 마커 */}
-        <MapMarker
-          position={center}
-          image={{
-            src: 'https://t1.daumcdn.net/localimg/localimages/07/mapapidoc/markerStar.png',
-            size: { width: 24, height: 35 },
-          }}
-        />
-
-        {/* 맛집 마커 클러스터 */}
-        <MarkerClusterer averageCenter minLevel={6}>
-          {places.map(p => (
+      {/* 지도 + 리스트 컨테이너 */}
+      <div className="flex flex-col lg:flex-row justify-between gap-6 lg:gap-8">
+        {/* 지도 영역 */}
+        <div className="w-full lg:w-[60%] rounded-2xl overflow-hidden">
+          <Map
+            center={center}
+            level={4}
+            style={{ width: '100%', height: '356px' }}
+            onCreate={handleOnCreate}
+            onCenterChanged={map => {
+              // 지도 드래그 시 center 업데이트
+            }}
+          >
+            {/* 현재 위치 마커 */}
             <MapMarker
-              key={p.id}
-              position={{ lat: p.lat, lng: p.lng }}
-              onClick={() => handleMarkerClick(p)}
+              position={center}
+              image={{
+                src: 'https://t1.daumcdn.net/localimg/localimages/07/mapapidoc/markerStar.png',
+                size: { width: 24, height: 35 },
+              }}
             />
-          ))}
-        </MarkerClusterer>
 
-        {/* 선택 오버레이 */}
-        {selected && (
-          <CustomOverlayMap position={{ lat: selected.lat, lng: selected.lng }} yAnchor={1.3}>
-            <div className="bg-white rounded-xl shadow-lg p-3 min-w-[220px]">
-              <div className="font-semibold text-sm">{selected.name}</div>
-              <div className="text-xs text-babgray-600 mt-1">
-                {selected.roadAddress || selected.address}
-              </div>
-              {selected.distance !== undefined && (
-                <div className="text-xs text-babgray-500 mt-1">
-                  약 {selected.distance / 1} m
+            {/* 맛집 마커 클러스터 */}
+            <MarkerClusterer averageCenter minLevel={6}>
+              {places.map(p => (
+                <MapMarker
+                  key={p.id}
+                  position={{ lat: p.lat, lng: p.lng }}
+                  onClick={() => handleMarkerClick(p)}
+                />
+              ))}
+            </MarkerClusterer>
+
+            {/* 선택 오버레이 */}
+            {selected && (
+              <CustomOverlayMap position={{ lat: selected.lat, lng: selected.lng }} yAnchor={1.3}>
+                <div className="bg-white rounded-xl shadow-lg p-3 min-w-[220px]">
+                  <div className="font-semibold text-sm">{selected.name}</div>
+                  <div className="text-xs text-babgray-600 mt-1">
+                    {selected.roadAddress || selected.address}
+                  </div>
+                  {selected.distance !== undefined && (
+                    <div className="text-xs text-babgray-500 mt-1">
+                      약 {selected.distance / 1} m
+                    </div>
+                  )}
+                  {selected.phone && <div className="text-xs mt-1">{selected.phone}</div>}
+                  <div className="mt-2 flex gap-2">
+                    {selected.url && (
+                      <a
+                        className="text-xs px-2 py-1 rounded-lg bg-bab-500 text-white"
+                        href={selected.url}
+                        target="_blank"
+                        rel="noreferrer"
+                      >
+                        상세보기
+                      </a>
+                    )}
+                    <button
+                      className="text-xs px-2 py-1 rounded-lg border"
+                      onClick={() => setSelectedId(null)}
+                    >
+                      닫기
+                    </button>
+                  </div>
                 </div>
-              )}
-              {selected.phone && <div className="text-xs mt-1">{selected.phone}</div>}
-              <div className="mt-2 flex gap-2">
-                {selected.url && (
-                  <a
-                    className="text-xs px-2 py-1 rounded-lg bg-bab-500 text-white"
-                    href={selected.url}
-                    target="_blank"
-                    rel="noreferrer"
-                  >
-                    상세보기
-                  </a>
-                )}
-                <button
-                  className="text-xs px-2 py-1 rounded-lg border"
-                  onClick={() => setSelectedId(null)}
-                >
-                  닫기
-                </button>
-              </div>
-            </div>
-          </CustomOverlayMap>
-        )}
-      </Map>
-    </div>
+              </CustomOverlayMap>
+            )}
+          </Map>
+        </div>
 
-    {/* 리스트 영역 */}
-    <aside className="w-full lg:w-[38%] flex flex-col gap-3">
-      <InfiniteScroll
-        dataLength={places.length}
-        next={loadMore}
-        hasMore={true}
-        height={356}
-        loader={<></>}
-        endMessage={<></>}
-        style={{
-          display: 'flex',
-          flexDirection: 'column',
-          gap: '20px',
-          overflowY: 'auto',
-          overflowX: 'hidden',
-        }}
-      >
-        {places.map(p => (
-          <button
-            key={p.id}
-            onClick={() => handleMarkerClick(p)}
-            className={`relative w-full rounded-2xl border transition-all duration-150 text-left
+        {/* 리스트 영역 */}
+        <aside className="w-full lg:w-[38%] flex flex-col gap-3">
+          <InfiniteScroll
+            dataLength={places.length}
+            next={loadMore}
+            hasMore={true}
+            height={356}
+            loader={<></>}
+            endMessage={<></>}
+            style={{
+              display: 'flex',
+              flexDirection: 'column',
+              gap: '20px',
+              overflowY: 'auto',
+              overflowX: 'hidden',
+            }}
+          >
+            {places.map(p => (
+              <button
+                key={p.id}
+                onClick={() => handleMarkerClick(p)}
+                className={`relative w-full rounded-2xl border transition-all duration-150 text-left
               ${
                 selectedId === p.id
                   ? 'border-[#FF5722] bg-[#FFF8F4] shadow-[0_2px_8px_rgba(255,87,34,0.08)]'
                   : 'border-babgray-200 bg-white hover:bg-gray-50 hover:shadow-[0_1px_6px_rgba(0,0,0,0.05)]'
               }`}
-          >
-            <div className="flex flex-col justify-between h-full px-4 py-4 gap-2">
-              {/* 상단: 이름 + 아이콘 */}
-              <div className="flex items-start justify-between">
-                <p className="text-[15px] font-semibold text-babgray-900 leading-tight line-clamp-1">
-                  {p.name}
-                </p>
-                <RiStore2Line className="text-[#FF5722] w-[18px] h-[18px] flex-shrink-0 mt-[2px]" />
-              </div>
+              >
+                <div className="flex flex-col justify-between h-full px-4 py-4 gap-2">
+                  {/* 상단: 이름 + 아이콘 */}
+                  <div className="flex items-start justify-between">
+                    <p className="text-[15px] font-semibold text-babgray-900 leading-tight line-clamp-1">
+                      {p.name}
+                    </p>
+                    <RiStore2Line className="text-[#FF5722] w-[18px] h-[18px] flex-shrink-0 mt-[2px]" />
+                  </div>
 
-              {/* 중간: 카테고리 + 주소 */}
-              <div className="mt-0.5 space-y-[2px]">
-                <p className="text-xs text-babgray-500 font-medium">
-                  {p.category?.split('>')[1]?.trim() ?? '음식점'}
-                </p>
-                <div className="flex justify-between items-center">
-                  <p className="text-xs text-babgray-600 truncate">
-                    {p.roadAddress || p.address}
-                  </p>
-                  {p.distance !== undefined && (
-                    <div className="flex items-center gap-[4px] text-xs text-babgray-500">
-                      <RiMapPinLine className="text-[#FF5722] w-3.5 h-3.5" />
-                      <span className="font-medium">{Math.round(p.distance)}m</span>
+                  {/* 중간: 카테고리 + 주소 */}
+                  <div className="mt-0.5 space-y-[2px]">
+                    <p className="text-xs text-babgray-500 font-medium">
+                      {p.category?.split('>')[1]?.trim() ?? '음식점'}
+                    </p>
+                    <div className="flex justify-between items-center">
+                      <p className="text-xs text-babgray-600 truncate">
+                        {p.roadAddress || p.address}
+                      </p>
+                      {p.distance !== undefined && (
+                        <div className="flex items-center gap-[4px] text-xs text-babgray-500">
+                          <RiMapPinLine className="text-[#FF5722] w-3.5 h-3.5" />
+                          <span className="font-medium">{Math.round(p.distance)}m</span>
+                        </div>
+                      )}
                     </div>
-                  )}
+                  </div>
                 </div>
-              </div>
-            </div>
-          </button>
-        ))}
-      </InfiniteScroll>
-    </aside>
-  </div>
-</div>
-
+              </button>
+            ))}
+          </InfiniteScroll>
+        </aside>
+      </div>
+    </div>
   );
 };
 

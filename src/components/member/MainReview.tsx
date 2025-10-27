@@ -11,6 +11,7 @@ import 'swiper/css/pagination';
 import { fetchAllReviewData, type MyReviewData } from '@/lib/myreviews';
 import MyreviewCard from '@/ui/jy/MyReviewCard';
 import { categoryColors } from '@/ui/jy/categoryColors';
+import MainReviewCard from '@/ui/dorong/MainReviewCard';
 
 export default function MainReview() {
   const navigate = useNavigate();
@@ -54,8 +55,8 @@ export default function MainReview() {
   return (
     <section className="relative w-full">
       {/* 상단 타이틀 */}
-      <div className="mb-6 flex flex-col sm:flex-row items-center justify-between gap-4 sm:gap-0">
-        <h2 className="text-2xl sm:text-3xl font-bold text-center sm:text-left">
+      <div className="mb-6 flex flex-col sm:flex-row items-start justify-between gap-4 sm:gap-0">
+        <h2 className="text-2xl sm:text-3xl font-bold text-left">
           최근 올라온 리뷰
         </h2>
       </div>
@@ -77,7 +78,7 @@ export default function MainReview() {
       >
         {reviewCards.map((card, idx) => (
           <SwiperSlide key={idx} className="!h-auto">
-            <MyreviewCard {...card} onClick={() => navigate(`/member/reviews/${card.name}`)} />
+            <MainReviewCard {...card} onClick={() => navigate(`/member/reviews/${card.name}`)} />
           </SwiperSlide>
         ))}
       </Swiper>

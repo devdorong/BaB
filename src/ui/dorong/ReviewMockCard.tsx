@@ -14,6 +14,7 @@ import TagBadge from '../TagBadge';
 import { InterestBadge } from '../tag';
 import React, { useEffect, useState } from 'react';
 import { supabase } from '../../lib/supabase';
+import ReviewCardSkeleton from './ReviewCardSkeleton';
 
 const CardLayout = styled.div`
   display: inline-flex;
@@ -75,6 +76,7 @@ export const ReviewCard = ({
 
   useEffect(() => {
     const fetchFavorite = async () => {
+      setLoading(true);
       const {
         data: { user },
       } = await supabase.auth.getUser();
@@ -140,7 +142,9 @@ export const ReviewCard = ({
     }
   };
 
-  if (loading) return null;
+  if (loading) {
+    return <ReviewCardSkeleton />;
+  }
 
   return (
     <div className="hidden lg:block" onClick={onClick}>

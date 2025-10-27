@@ -127,18 +127,18 @@ const MapSearchModal = ({ isOpen, onClose, onSelectPlace }: MapSearchModalProps)
   if (!isOpen) return null;
 
   return (
-    <div className="fixed inset-0 bg-black bg-opacity-50 z-50 flex items-center justify-center">
-      <div className="bg-white rounded-2xl w-[900px] h-[600px] flex flex-col shadow-2xl">
+    <div className="fixed inset-0 bg-black bg-opacity-50 z-50 flex items-center justify-center p-4 sm:p-6">
+      <div className="bg-white rounded-2xl w-full max-w-[900px] h-[90vh] sm:h-[80vh] flex flex-col shadow-2xl overflow-hidden">
         {/* 헤더 */}
-        <div className="flex items-center justify-between p-6 border-b">
-          <h2 className="text-xl font-bold">맛집 선택</h2>
+        <div className="flex items-center justify-between p-4 sm:p-6 border-b">
+          <h2 className="text-lg sm:text-xl font-bold">맛집 선택</h2>
           <button onClick={onClose} className="p-1 hover:bg-babgray-100 rounded-lg transition">
             <RiCloseLine size={24} />
           </button>
         </div>
 
         {/* 검색 영역 */}
-        <div className="flex gap-2 p-4 bg-babgray-50">
+        <div className="flex flex-col sm:flex-row gap-2 p-4 bg-babgray-50">
           <input
             type="text"
             value={keyword}
@@ -149,7 +149,7 @@ const MapSearchModal = ({ isOpen, onClose, onSelectPlace }: MapSearchModalProps)
           />
           <button
             onClick={searchPlaces}
-            className="px-4 py-2 bg-bab text-white rounded-lg hover:bg-bab-600 transition flex items-center gap-2"
+            className="px-4 py-2 bg-bab text-white rounded-lg hover:bg-bab-600 transition flex items-center justify-center gap-2"
           >
             <RiSearchLine size={18} />
             검색
@@ -157,16 +157,19 @@ const MapSearchModal = ({ isOpen, onClose, onSelectPlace }: MapSearchModalProps)
         </div>
 
         {/* 지도 + 리스트 */}
-        <div className="flex flex-1 overflow-hidden px-4 gap-2 pb-4">
+        <div className="flex flex-1 overflow-hidden flex-col sm:flex-row px-4 gap-2 pb-4">
           {/* 지도 */}
-          <div ref={mapContainer} className="flex-1" />
+          <div
+            ref={mapContainer}
+            className="flex-1 h-[300px] sm:h-auto rounded-lg border border-babgray-200"
+          />
 
           {/* 검색 결과 리스트 */}
-          <div className="w-80 overflow-y-auto">
+          <div className="w-full sm:w-80 h-[250px] sm:h-auto overflow-y-auto border-t sm:border-t-0 sm:border-l border-babgray-100">
             {places.length === 0 ? (
               <div className="p-4 text-center text-babgray-500">검색 결과가 없습니다</div>
             ) : (
-              <ul className="">
+              <ul>
                 {places.map((place, idx) => (
                   <li
                     key={place.id}
@@ -203,7 +206,7 @@ const MapSearchModal = ({ isOpen, onClose, onSelectPlace }: MapSearchModalProps)
         </div>
 
         {/* 하단 버튼 */}
-        <div className="flex gap-3 p-4 border-t bg-babgray-50">
+        <div className="flex flex-col sm:flex-row gap-3 p-4 border-t bg-babgray-50">
           <button
             onClick={onClose}
             className="flex-1 px-4 py-2 border border-babgray-300 rounded-lg hover:bg-babgray-100 transition font-medium"
@@ -225,6 +228,7 @@ const MapSearchModal = ({ isOpen, onClose, onSelectPlace }: MapSearchModalProps)
           </button>
         </div>
       </div>
+
       {modal.isOpen && (
         <Modal
           isOpen={modal.isOpen}

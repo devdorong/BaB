@@ -4,13 +4,13 @@ import { useEffect, useState } from 'react';
 import { RiArrowLeftSLine, RiArrowRightSLine, RiSearchLine } from 'react-icons/ri';
 import MatchCard, { type Badge } from '../../../components/MatchCard';
 import { fetchInterestsGrouped } from '../../../lib/interests';
-import { getMatchings } from '../../../services/matchingService';
-import { getRestaurantById } from '../../../services/restaurants';
 import type { Matchings } from '../../../types/bobType';
 import MatchCardSkeleton from '../../../ui/dorong/MatchCardSkeleton';
 import { categoryColors, defaultCategoryColor } from '../../../ui/jy/categoryColors';
 import { useModal } from '../../../ui/sdj/ModalState';
 import Modal from '../../../ui/sdj/Modal';
+import { supabase } from '@/lib/supabase';
+import { BlackTag, GrayTag } from '@/ui/tag';
 
 dayjs.extend(relativeTime);
 dayjs.locale('ko');
@@ -45,6 +45,7 @@ const MatchingListPage = () => {
   const [selectedCategory, setSelectedCategory] = useState('전체');
   const [userPos, setUserPos] = useState<{ lat: number; lng: number } | null>(null);
   const [search, setSearch] = useState('');
+  const [lastSearchQuery, setLastSearchQuery] = useState('');
 
   // 유틸리티 함수들
   const getColorByCategory = (interestName: string): { bg: string; text: string } => {
@@ -67,7 +68,7 @@ const MatchingListPage = () => {
   };
 
   const getDistanceNum = (lat1: number, lon1: number, lat2: number, lon2: number): number => {
-    const R = 6371; // 지구 반경 (km)
+    const R = 6371;
     const dLat = ((lat2 - lat1) * Math.PI) / 180;
     const dLon = ((lon2 - lon1) * Math.PI) / 180;
     const a =
@@ -80,6 +81,92 @@ const MatchingListPage = () => {
   const getDistance = (lat1: number, lon1: number, lat2: number, lon2: number): string => {
     const distance = getDistanceNum(lat1, lon1, lat2, lon2);
     return distance < 1 ? `${(distance * 1000).toFixed(0)} m` : `${distance.toFixed(1)} km`;
+  };
+
+  // 매칭 데이터 가져오기 (조인 쿼리로 최적화)
+  const fetchMatchings = async (searchQuery: string) => {
+    try {
+      setLoading(true);
+      setLastSearchQuery(searchQuery);
+
+      let matchingQuery = supabase
+        .from('matchings')
+        .select(
+          `
+          *,
+          restaurants (
+            id,
+            name,
+            thumbnail_url,
+            address,
+            storeintro,
+            latitude,
+            longitude,
+            interests (
+              name
+            )
+          ),
+          profiles (
+            id,
+            nickname
+          )
+        `,
+        )
+        .eq('status', 'waiting')
+        .order('created_at', { ascending: false });
+
+      // 검색 기능
+      if (searchQuery.trim() !== '') {
+        matchingQuery = matchingQuery.or(
+          `title.ilike.%${searchQuery.trim()}%,description.ilike.%${searchQuery.trim()}%`,
+        );
+      }
+
+      const { data, error } = await matchingQuery;
+
+      if (error) throw error;
+
+      // 데이터 처리
+      const processed: ProcessedMatching[] = (data || []).map(matching => {
+        const restaurant = matching.restaurants;
+        const categoryName = restaurant?.interests?.name || '기타';
+        const categoryColor = getColorByCategory(categoryName);
+
+        const tags: Badge[] = [
+          {
+            label: categoryName,
+            bgClass: categoryColor.bg,
+            textClass: categoryColor.text,
+          },
+        ];
+
+        const distanceNum =
+          userPos && restaurant?.latitude && restaurant?.longitude
+            ? getDistanceNum(userPos.lat, userPos.lng, restaurant.latitude, restaurant.longitude)
+            : Infinity;
+
+        return {
+          ...matching,
+          tags,
+          category: categoryName,
+          title: matching.title || restaurant?.name || '',
+          description: matching.description || restaurant?.storeintro || '',
+          distanceKm: 0,
+          area: restaurant?.address || '위치 정보 없음',
+          timeAgo: matching.created_at ? formatTimeAgo(matching.created_at) : '',
+          latitude: restaurant?.latitude || 0,
+          longitude: restaurant?.longitude || 0,
+          distanceNum,
+        };
+      });
+
+      setProcessedMatchings(processed);
+      setCurrentPage(1);
+    } catch (err) {
+      console.error('매칭 데이터 불러오기 오류:', err);
+    } finally {
+      setLoading(false);
+    }
   };
 
   // 사용자 위치 가져오기
@@ -116,67 +203,15 @@ const MatchingListPage = () => {
     loadInterests();
   }, []);
 
-  // 매칭 데이터 가져오기 및 처리
+  // 초기 매칭 데이터 로드 (userPos가 설정된 후)
   useEffect(() => {
-    const fetchAndProcessMatchings = async () => {
-      try {
-        setLoading(true);
-        const matchings = await getMatchings();
-        const processed: ProcessedMatching[] = [];
-
-        for (const matching of matchings) {
-          const restaurant = await getRestaurantById(matching.restaurant_id);
-
-          if (restaurant) {
-            const categoryName = restaurant.interests?.name || '기타';
-            const categoryColor = getColorByCategory(categoryName);
-
-            const tags: Badge[] = [
-              {
-                label: categoryName,
-                bgClass: categoryColor.bg,
-                textClass: categoryColor.text,
-              },
-            ];
-
-            const distanceNum =
-              userPos && restaurant.latitude && restaurant.longitude
-                ? getDistanceNum(
-                    userPos.lat,
-                    userPos.lng,
-                    restaurant.latitude,
-                    restaurant.longitude,
-                  )
-                : Infinity;
-
-            processed.push({
-              ...matching,
-              tags,
-              category: categoryName,
-              title: matching.title || restaurant.name,
-              description: matching.description || restaurant.storeintro || '',
-              distanceKm: 0,
-              area: restaurant.address || '위치 정보 없음',
-              timeAgo: matching.created_at ? formatTimeAgo(matching.created_at) : '',
-              latitude: restaurant.latitude || 0,
-              longitude: restaurant.longitude || 0,
-              distanceNum,
-            });
-          }
-        }
-
-        setProcessedMatchings(processed);
-      } catch (error) {
-        console.error('매칭 데이터 처리 중 에러:', error);
-      } finally {
-        setLoading(false);
-      }
-    };
-
-    fetchAndProcessMatchings();
+    if (userPos) {
+      fetchMatchings('');
+    }
   }, [userPos]);
 
   const waitingMatchings = processedMatchings.filter(item => item.status === 'waiting');
+
   // 필터링 및 정렬 로직
   const filteredMatchings =
     selectedCategory === '전체'
@@ -211,43 +246,51 @@ const MatchingListPage = () => {
 
   return (
     <div className="w-full bg-bg-bg">
-      <div className="w-[1280px] mx-auto flex flex-col gap-8 py-8">
+      <div className="w-full max-w-[1280px] mx-auto flex flex-col gap-8 py-8 px-4 sm:px-6 lg:px-8 xl:px-0">
         {/* 타이틀 */}
-        <div className="flex flex-col gap-1">
-          <p className="text-3xl font-bold">매칭게시판</p>
-          <p className="text-babgray-600">매칭에 참여해보세요</p>
+        <div className="flex flex-col gap-1 text-left">
+          <p className="text-2xl sm:text-3xl font-bold">매칭게시판</p>
+          <p className="text-babgray-600 text-sm sm:text-base">매칭에 참여해보세요</p>
         </div>
 
         {/* 검색 및 필터 영역 */}
-        <div className="flex p-[24px] flex-col gap-[16px] rounded-[20px] bg-white shadow-[0_4px_4px_0_rgba(0,0,0,0.02)]">
+        <div className="flex flex-col gap-4 sm:gap-6 p-5 sm:p-6 rounded-2xl bg-white shadow-[0_4px_4px_rgba(0,0,0,0.02)]">
           {/* 검색바 */}
-          <div className="flex w-full justify-between items-center gap-[16px]">
+          <div className="flex  w-full gap-3 sm:gap-4 items-center">
             <div
               onClick={() => document.getElementById('searchInput')?.focus()}
-              className="flex w-full items-center pl-[20px] bg-white h-[55px] py-3 px-3 border border-s-babgray rounded-3xl"
+              className="flex w-full items-center bg-white border border-babgray rounded-3xl h-[50px] sm:h-[55px] px-4"
             >
               <input
                 id="searchInput"
-                className="focus:outline-none w-full"
+                className="focus:outline-none w-full text-sm sm:text-base"
                 type="text"
                 value={search}
                 onChange={e => setSearch(e.target.value)}
+                onKeyDown={e => {
+                  if (e.key === 'Enter') {
+                    fetchMatchings(search);
+                  }
+                }}
                 placeholder="맛집 이름이나 음식 종류로 검색하기"
               />
             </div>
-            <div className="flex px-[30px] py-[20px] justify-center items-center bg-bab-500 rounded-[18px]">
-              <RiSearchLine className="text-white" />
-            </div>
+            <button
+              onClick={() => fetchMatchings(search)}
+              className="flex px-5 py-4 justify-center items-center bg-bab-500 rounded-[18px] cursor-pointer transition hover:bg-bab-600"
+            >
+              <RiSearchLine size={20} className="text-white" />
+            </button>
           </div>
 
           {/* 카테고리 필터 */}
-          <div className="flex gap-[8px] justify-start">
+          <div className="flex flex-wrap gap-2 justify-start sm:justify-start">
             <button
               onClick={() => handleCategoryChange('전체')}
-              className={`px-4 py-2 rounded-full text-[13px] ${
+              className={`px-4 py-2 rounded-full text-sm ${
                 selectedCategory === '전체'
                   ? 'bg-bab-500 text-white'
-                  : 'bg-babgray-100 text-babgray-700'
+                  : 'bg-babgray-100 text-babgray-700 hover:bg-babgray-200'
               }`}
             >
               전체
@@ -257,10 +300,10 @@ const MatchingListPage = () => {
               <button
                 key={cat}
                 onClick={() => handleCategoryChange(cat)}
-                className={`px-4 py-2 rounded-full text-[13px] ${
+                className={`px-4 py-2 rounded-full text-sm ${
                   selectedCategory === cat
                     ? 'bg-bab-500 text-white'
-                    : 'bg-babgray-100 text-babgray-700'
+                    : 'bg-babgray-100 text-babgray-700 hover:bg-babgray-200'
                 }`}
               >
                 {cat}
@@ -269,53 +312,34 @@ const MatchingListPage = () => {
           </div>
 
           {/* 정렬 옵션 */}
-          <div className="flex gap-[8px]">
-            <button
-              onClick={() => handleSortChange('최신순')}
-              className={`flex items-center justify-center px-[20px] py-[10px] rounded-[24px] text-[13px] font-medium transition-colors ${
-                sortOption === '최신순'
-                  ? 'bg-[#292929] text-white hover:bg-[#444]'
-                  : 'bg-[#EDEDED] text-[#292929] hover:bg-[#DADADA]'
-              }`}
-            >
-              최신순
+          <div className="flex flex-wrap justify-start sm:justify-start gap-2">
+            <button onClick={() => handleSortChange('최신순')} className="cursor-pointer">
+              {sortOption === '최신순' ? <BlackTag>최신순</BlackTag> : <GrayTag>최신순</GrayTag>}
             </button>
 
-            <button
-              onClick={() => handleSortChange('거리순')}
-              className={`flex items-center justify-center px-[20px] py-[10px] rounded-[24px] text-[13px] font-medium transition-colors ${
-                sortOption === '거리순'
-                  ? 'bg-[#292929] text-white hover:bg-[#444]'
-                  : 'bg-[#EDEDED] text-[#292929] hover:bg-[#DADADA]'
-              }`}
-            >
-              거리순
+            <button onClick={() => handleSortChange('거리순')} className="cursor-pointer">
+              {sortOption === '거리순' ? <BlackTag>거리순</BlackTag> : <GrayTag>거리순</GrayTag>}
             </button>
           </div>
         </div>
 
         {/* 매칭 리스트 */}
-        <div className="w-full py-[30px] ">
-          <ul className="flex flex-col gap-x-[30px] gap-y-[24px] list-none p-0 m-0">
+        <div className="w-full py-6">
+          <ul className="flex flex-col gap-y-6 sm:gap-y-8 list-none p-0 m-0">
             {loading ? (
-              <>
-                {[...Array(4)].map((_, i) => (
-                  <MatchCardSkeleton key={i} />
-                ))}
-              </>
+              [...Array(4)].map((_, i) => <MatchCardSkeleton key={i} />)
             ) : processedMatchings.length === 0 ? (
-              <>
-                {[...Array(4)].map((_, i) => (
-                  <MatchCardSkeleton key={i} />
-                ))}
-              </>
-            ) : paginatedMatchings.length > 0 ? (
+              <li className="min-h-[calc(100vh/2.8)] flex items-center justify-center">
+                <p className="text-center text-babgray-500 py-10">
+                  해당 카테고리의 매칭이 없습니다.
+                </p>
+              </li>
+            ) : (
               paginatedMatchings.map((item, index) => {
                 const distance =
                   userPos && item.latitude && item.longitude
                     ? getDistance(userPos.lat, userPos.lng, item.latitude, item.longitude)
                     : '';
-
                 return (
                   <MatchCard
                     key={`${item.id}-${index}`}
@@ -327,23 +351,17 @@ const MatchingListPage = () => {
                   />
                 );
               })
-            ) : (
-              <li className="min-h-[calc(100vh/2.8)] flex items-center justify-center">
-                <p className="text-center text-babgray-500 py-10">
-                  해당 카테고리의 매칭이 없습니다.
-                </p>
-              </li>
             )}
           </ul>
         </div>
 
         {/* 페이지네이션 */}
         {paginatedMatchings.length > 0 && (
-          <div className="flex justify-center gap-2 mt-6">
+          <div className="flex justify-center gap-2 mt-4 sm:mt-6 flex-wrap">
             <button
               disabled={currentPage === 1}
               onClick={() => setCurrentPage(p => Math.max(p - 1, 1))}
-              className="p-2 bg-bg-bg rounded disabled:opacity-50 hover:bg-bab hover:text-white"
+              className="p-2 bg-bg-bg rounded hover:bg-bab hover:text-white disabled:opacity-50 transition"
             >
               <RiArrowLeftSLine size={16} />
             </button>
@@ -363,13 +381,15 @@ const MatchingListPage = () => {
             <button
               disabled={currentPage === totalPages}
               onClick={() => setCurrentPage(p => Math.min(p + 1, totalPages))}
-              className="p-2 bg-bg-bg rounded disabled:opacity-50 hover:bg-bab hover:text-white"
+              className="p-2 bg-white rounded hover:bg-bab hover:text-white disabled:opacity-50 transition"
             >
               <RiArrowRightSLine size={16} />
             </button>
           </div>
         )}
       </div>
+
+      {/* 모달 */}
       {modal.isOpen && (
         <Modal
           isOpen={modal.isOpen}

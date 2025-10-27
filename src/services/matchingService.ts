@@ -1,6 +1,21 @@
 import { supabase } from '../lib/supabase';
 import type { Matchings, MatchingsInsert, MatchingsUpdate } from '../types/bobType';
 
+export type MatchingWithRestaurant = Matchings & {
+  restaurants: {
+    id: number;
+    name: string;
+    address: string;
+    latitude: number | null;
+    longitude: number | null;
+    category_id: number | null;
+    storeintro: string | null;
+    interests: {
+      name: string;
+    } | null;
+  } | null;
+};
+
 // 모든 매칭 불러오기
 export const getMatchings = async (): Promise<Matchings[]> => {
   const { data, error } = await supabase
@@ -9,6 +24,35 @@ export const getMatchings = async (): Promise<Matchings[]> => {
     .order('created_at', { ascending: false });
   if (error) {
     console.log('getMatchings 에러 : ', error.message);
+    throw new Error(error.message);
+  }
+  return data ?? [];
+};
+
+export const getMatchingsWithRestaurant = async (): Promise<MatchingWithRestaurant[]> => {
+  const { data, error } = await supabase
+    .from('matchings')
+    .select(
+      `
+      *,
+      restaurants (
+        id,
+        name,
+        address,
+        latitude,
+        longitude,
+        category_id,
+        storeintro,
+        interests (
+          name
+        )
+      )
+    `,
+    )
+    .order('created_at', { ascending: false });
+
+  if (error) {
+    console.log('getMatchingsWithRestaurant 에러 : ', error.message);
     throw new Error(error.message);
   }
   return data ?? [];
