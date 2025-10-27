@@ -8,8 +8,8 @@ import EventDateSelector from './EventDateSelector';
 import Modal from './Modal';
 import { useModal } from './ModalState';
 import { AnimatePresence, motion } from 'framer-motion';
+import styles from './EventWriteModal.module.css';
 
-type EventState = Database['public']['Tables']['events']['Row']['status'];
 export type EventBadge = Database['public']['Tables']['events']['Row']['badge'];
 export type EventWriteModalProps = {
   onClose: () => void;
@@ -117,16 +117,13 @@ function EventWriteModal({ onClose, onSuccess }: EventWriteModalProps) {
         transition={{ duration: 0.25 }}
       >
         <motion.div
-          className="flex flex-col w-[615px] min-h-[250px] bg-white text-babgray-500 rounded-[30px] overflow-hidden shadow"
+          className={styles.modalContainer}
           initial={{ scale: 0.95, opacity: 0 }}
           animate={{ scale: 1, opacity: 1 }}
           exit={{ scale: 0.95, opacity: 0 }}
           transition={{ duration: 0.25, ease: 'easeOut' }}
         >
-          <div
-            onClick={handleDivClick}
-            className="w-full h-[230px] bg-babgray-200  flex justify-center items-center cursor-pointer"
-          >
+          <div onClick={handleDivClick} className={styles.imageContainer}>
             {imagePreview ? (
               <img src={imagePreview} alt="미리보기" className="w-full h-full object-cover" />
             ) : (

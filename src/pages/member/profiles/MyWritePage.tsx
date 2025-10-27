@@ -11,6 +11,7 @@ import Modal from '../../../ui/sdj/Modal';
 import { useModal } from '../../../ui/sdj/ModalState';
 import type { PostWithProfile } from '../communitys/CommunityPage';
 import { BlueTag, GreenTag, PurpleTag } from '../../../ui/tag';
+import styles from './MyWritePage.module.css';
 
 dayjs.extend(relativeTime);
 dayjs.locale('ko');
@@ -108,7 +109,7 @@ function MyWritePage() {
 
   return (
     <div className="w-full bg-bg-bg">
-      <div className="w-[1280px] mx-auto flex flex-col gap-8 py-8">
+      <div className={styles.pageContainer}>
         {/* 타이틀 */}
         <div className="flex flex-col gap-1">
           <p className="text-3xl font-bold">내가 쓴 게시글</p>
@@ -116,7 +117,7 @@ function MyWritePage() {
         </div>
 
         {/* 게시글 목록 */}
-        <div className="flex flex-col gap-6 py-8">
+        <div className={styles.postList}>
           {isLoading ? (
             <>
               {[...Array(10)].map((_, i) => (
@@ -128,7 +129,7 @@ function MyWritePage() {
               <div
                 key={item.id}
                 onClick={() => handlePostClick(item.id)}
-                className="w-full h-auto shadow flex flex-col gap-4 bg-white rounded-xl2 py-6 px-8 cursor-pointer"
+                className={styles.postCard}
               >
                 <div className="flex justify-between">
                   <div>{tagComponents[item.tag as FilteredTag] ?? item.tag}</div>

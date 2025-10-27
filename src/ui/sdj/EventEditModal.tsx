@@ -7,6 +7,7 @@ import EventDateSelector from './EventDateSelector';
 import { RiImageLine } from 'react-icons/ri';
 import type { DateSelectType } from './EventWriteModal';
 import { AnimatePresence, motion } from 'framer-motion';
+import styles from './EventEditModal.module.css';
 
 interface EventEditModalProps {
   eventId: number | null;
@@ -39,7 +40,7 @@ function EventEditModal({ eventId, isOpen, onClose }: EventEditModalProps) {
     onClose();
   };
 
-  const handleDateSelect = ({ start, end, status }: DateSelectType) => {
+  const handleDateSelect = ({ start, end }: DateSelectType) => {
     setStartDate(start);
     setEndDate(end);
   };
@@ -116,22 +117,21 @@ function EventEditModal({ eventId, isOpen, onClose }: EventEditModalProps) {
         transition={{ duration: 0.25 }}
       >
         <motion.div
-          className="flex flex-col w-[615px] min-h-[250px] bg-white text-babgray-500 rounded-[30px] overflow-hidden shadow"
+          className={styles.modalContainer}
           initial={{ scale: 0.95, opacity: 0 }}
           animate={{ scale: 1, opacity: 1 }}
           exit={{ scale: 0.95, opacity: 0 }}
           transition={{ duration: 0.25, ease: 'easeOut' }}
         >
-          <div
-            onClick={handleDivClick}
-            className="w-full h-[230px] bg-babgray-200  flex justify-center items-center cursor-pointer"
-          >
+          {/* 이미지 영역 */}
+          <div onClick={handleDivClick} className={styles.imageContainer}>
             {imagePreview ? (
-              <img src={imagePreview} alt="미리보기" className="w-full h-full object-cover" />
+              <img src={imagePreview} alt="미리보기" className={styles.imagePreview} />
             ) : (
-              <RiImageLine className="text-5xl" />
+              <RiImageLine className="text-5xl text-babgray-400" />
             )}
           </div>
+
           <input
             ref={fileInputRef}
             type="file"
@@ -139,19 +139,19 @@ function EventEditModal({ eventId, isOpen, onClose }: EventEditModalProps) {
             onChange={handleImageChange}
             className="hidden"
           />
+
+          {/* 폼 영역 */}
           <form className="flex flex-col p-6 gap-6">
             <div className="flex flex-col gap-6">
               <input
-                className="w-full h-[42px] p-3 border border-babgray rounded-3xl focus:ring-1 focus:ring-bab
-              "
+                className="w-full h-[42px] p-3 border border-babgray rounded-3xl focus:ring-1 focus:ring-bab"
                 type="text"
                 value={title}
                 onChange={e => setTitle(e.target.value)}
                 placeholder="제목을 입력하세요"
               />
               <input
-                className="w-full h-[42px] p-3 border border-babgray rounded-3xl focus:ring-1 focus:ring-bab
-              "
+                className="w-full h-[42px] p-3 border border-babgray rounded-3xl focus:ring-1 focus:ring-bab"
                 value={benefit}
                 onChange={e => setBenefit(e.target.value)}
                 type="text"
@@ -159,18 +159,19 @@ function EventEditModal({ eventId, isOpen, onClose }: EventEditModalProps) {
               />
               <input
                 type="text"
-                className="w-full h-[42px] p-3 border border-babgray rounded-3xl focus:ring-1 focus:ring-bab
-              "
+                className="w-full h-[42px] p-3 border border-babgray rounded-3xl focus:ring-1 focus:ring-bab"
                 value={content}
                 onChange={e => setContent(e.target.value)}
                 placeholder="상세 내용을 입력해주세요"
               />
             </div>
+
             <EventDateSelector
               onSelect={handleDateSelect}
               startDate={startDate}
               endDate={endDate}
             />
+
             <div className="flex w-full gap-4">
               <ButtonFillMd className="flex flex-1" type="button" onClick={handleEditSubmit}>
                 수정하기
@@ -184,6 +185,7 @@ function EventEditModal({ eventId, isOpen, onClose }: EventEditModalProps) {
               </ButtonFillMd>
             </div>
           </form>
+
           {modal.isOpen && (
             <Modal
               isOpen={modal.isOpen}

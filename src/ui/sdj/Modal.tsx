@@ -3,6 +3,7 @@ import { ButtonFillMd } from '../button';
 import type React from 'react';
 import { useEffect } from 'react';
 import { AnimatePresence, motion } from 'framer-motion';
+import styles from './Modal.module.css';
 
 export interface ModalProps {
   isOpen: boolean;
@@ -55,14 +56,14 @@ const Modal: React.FC<ModalProps> = ({
           transition={{ duration: 0.25 }} // 애니메이션 시간
         >
           <motion.div
-            className="flex flex-col gap-10 w-[470px] min-h-[250px] bg-white rounded-[30px] shadow"
+            className={styles.modalContainer}
             initial={{ scale: 0.95, opacity: 0 }}
             animate={{ scale: 1, opacity: 1 }}
             exit={{ scale: 0.95, opacity: 0 }}
             transition={{ duration: 0.25, ease: 'easeOut' }}
           >
             {/* 상단 영역 */}
-            <div className="flex items-center justify-between p-8 border-b border-b-babgray">
+            <div className={styles.modalHeader}>
               <p className="font-bold">{titleText}</p>
               <RiCloseFill
                 onClick={onX ? onX : onClose}
@@ -71,12 +72,12 @@ const Modal: React.FC<ModalProps> = ({
             </div>
 
             {/* 본문 내용 */}
-            <div className="flex justify-center items-center px-6 text-center">
+            <div className={styles.modalContent}>
               <p className="font-bold">{contentText}</p>
             </div>
 
             {/* 버튼 영역 */}
-            <div className="flex justify-center gap-4 items-center bg-babgray-100 py-[20px] px-[20px] rounded-b-[30px]">
+            <div className={styles.modalFooter}>
               {submitButtonText && (
                 <ButtonFillMd
                   onClick={onSubmit}

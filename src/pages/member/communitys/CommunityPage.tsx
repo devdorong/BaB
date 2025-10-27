@@ -162,15 +162,17 @@ function CommunityPage() {
           <p className="text-babgray-600">맛집 친구들과 소통해보세요</p>
         </div>
         {/* 검색폼,버튼 */}
-        <div className={`${styles.writeFormWhitBt}`}>
+
+        <div className={`${styles.writeFormWhitBt} w-full items-center`}>
           <div
             onClick={() => document.getElementById('searchInput')?.focus()}
-            className="flex items-center gap-3 bg-white w-full max-w-[550px] py-3 px-3 border border-s-babgray rounded-3xl"
+            className="flex items-center gap-3 bg-white h-[55px] py-3 px-3 border border-s-babgray rounded-3xl"
+
           >
             <RiSearchLine className="text-babgray-300" />
             <input
               id="searchInput"
-              className="focus:outline-none w-full"
+              className="focus:outline-none w-[600px]"
               type="text"
               value={search}
               onChange={e => setSearch(e.target.value)}
@@ -204,7 +206,7 @@ function CommunityPage() {
         </div>
         <div>
           {/* 카테고리 */}
-          <div className="flex gap-10 border-b-[1px] border-babgray-150">
+          <div className={`${styles.category} flex gap-10 border-b-[1px] border-babgray-150`}>
             {UiCategories.map(item => (
               <div
                 key={item}
@@ -248,6 +250,8 @@ function CommunityPage() {
                     </div>
                   </div>
                 ))
+              ) : currentItems.length === 0 ? (
+                <p className="text-gray-600 text-center py-5">검색된 게시물이 없습니다.</p>
               ) : (
                 <>
                   {[...Array(10)].map((_, i) => (
@@ -261,55 +265,57 @@ function CommunityPage() {
         {/* 페이지네이션 */}
         <div className="flex items-center justify-center">
           <div className="flex items-center gap-2">
-            <div className="flex items-center justify-center gap-2">
-              {/* 맨 처음 블록 버튼 */}
-              {currentBlock > 0 && (
-                <button
-                  className="flex justify-center items-center rounded-md hover:bg-bab hover:text-white w-6 h-6"
-                  onClick={() => handlePageClick({ selected: 0 })}
-                >
-                  <RiArrowRightDoubleLine className="transform rotate-180" />
-                </button>
-              )}
-              {currentPage > 0 && (
-                <button
-                  className="flex justify-center items-center rounded-md hover:bg-bab hover:text-white w-6 h-6 "
-                  onClick={() => handlePageClick({ selected: currentPage - 1 })}
-                >
-                  {<RiArrowRightSLine className="transform rotate-180" />}
-                </button>
-              )}
-              {/* 현재 블록 페이지들 */}
-              {Array.from({ length: endPage - startPage }, (_, i) => {
-                const page = startPage + i;
-                return (
+            {pageCount > 0 && (
+              <div className="flex items-center justify-center gap-2">
+                {/* 맨 처음 블록 버튼 */}
+                {currentBlock > 0 && (
                   <button
-                    key={page}
-                    onClick={() => handlePageClick({ selected: page })}
-                    className={`flex justify-center items-center px-2 ${page === currentPage ? 'font-bold text-bab' : ''} rounded-md hover:bg-bab hover:text-white w-6 h-6`}
+                    className="flex justify-center items-center rounded-md hover:bg-bab hover:text-white w-6 h-6"
+                    onClick={() => handlePageClick({ selected: 0 })}
                   >
-                    {page + 1}
+                    <RiArrowRightDoubleLine className="transform rotate-180" />
                   </button>
-                );
-              })}
-              {currentPage < pageCount - 1 && (
-                <button
-                  className="flex justify-center items-center rounded-md hover:bg-bab hover:text-white w-6 h-6"
-                  onClick={() => handlePageClick({ selected: currentPage + 1 })}
-                >
-                  {<RiArrowRightSLine />}
-                </button>
-              )}
-              {/* 맨 끝 블록 버튼 */}
-              {currentBlock < Math.floor((pageCount - 1) / blockSize) && (
-                <button
-                  className="flex justify-center items-center rounded-md hover:bg-bab hover:text-white w-6 h-6"
-                  onClick={() => handlePageClick({ selected: pageCount - 1 })}
-                >
-                  {<RiArrowRightDoubleLine />}
-                </button>
-              )}
-            </div>
+                )}
+                {currentPage > 0 && (
+                  <button
+                    className="flex justify-center items-center rounded-md hover:bg-bab hover:text-white w-6 h-6 "
+                    onClick={() => handlePageClick({ selected: currentPage - 1 })}
+                  >
+                    {<RiArrowRightSLine className="transform rotate-180" />}
+                  </button>
+                )}
+                {/* 현재 블록 페이지들 */}
+                {Array.from({ length: endPage - startPage }, (_, i) => {
+                  const page = startPage + i;
+                  return (
+                    <button
+                      key={page}
+                      onClick={() => handlePageClick({ selected: page })}
+                      className={`flex justify-center items-center px-2 ${page === currentPage ? 'font-bold text-bab' : ''} rounded-md hover:bg-bab hover:text-white w-6 h-6`}
+                    >
+                      {page + 1}
+                    </button>
+                  );
+                })}
+                {currentPage < pageCount - 1 && (
+                  <button
+                    className="flex justify-center items-center rounded-md hover:bg-bab hover:text-white w-6 h-6"
+                    onClick={() => handlePageClick({ selected: currentPage + 1 })}
+                  >
+                    {<RiArrowRightSLine />}
+                  </button>
+                )}
+                {/* 맨 끝 블록 버튼 */}
+                {currentBlock < Math.floor((pageCount - 1) / blockSize) && (
+                  <button
+                    className="flex justify-center items-center rounded-md hover:bg-bab hover:text-white w-6 h-6"
+                    onClick={() => handlePageClick({ selected: pageCount - 1 })}
+                  >
+                    {<RiArrowRightDoubleLine />}
+                  </button>
+                )}
+              </div>
+            )}
           </div>
         </div>
       </div>

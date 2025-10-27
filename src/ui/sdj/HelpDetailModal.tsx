@@ -4,6 +4,7 @@ import type { Help } from '../../types/bobType';
 import { ButtonFillMd } from '../button';
 import { useEffect } from 'react';
 import { AnimatePresence, motion } from 'framer-motion';
+import styles from './HelpDetailModal.module.css';
 
 type HelpDetailModalProps = {
   isOpen: (value: React.SetStateAction<boolean>) => void;
@@ -30,7 +31,7 @@ function HelpDetailModal({ isOpen, help }: HelpDetailModalProps) {
         transition={{ duration: 0.25 }}
       >
         <motion.div
-          className="flex flex-col items-center justify-center gap-10 px-8 py-8 max-h-[100vh] bg-white rounded-[30px] shadow-[0_4px_4px_0_rgba(0,0,0,0.02)]"
+          className={styles.modalContainer}
           initial={{ scale: 0.95, opacity: 0 }}
           animate={{ scale: 1, opacity: 1 }}
           exit={{ scale: 0.95, opacity: 0 }}
@@ -38,10 +39,7 @@ function HelpDetailModal({ isOpen, help }: HelpDetailModalProps) {
         >
           <p className="w-full flex items-start text-xl font-bold">1:1 문의하기</p>
 
-          <div
-            className="flex flex-col items-start gap-7 w-[400px] overflow-y-auto pr-4 text-babgray-700"
-            style={{ scrollbarGutter: 'stable both-edges' }}
-          >
+          <div className={styles.modalContent} style={{ scrollbarGutter: 'stable both-edges' }}>
             <div className="w-full">
               <p className="text-sm">답변상태</p>
               <div className="w-full h-12 px-2.5 py-3 border-b items-center">
