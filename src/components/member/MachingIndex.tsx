@@ -162,42 +162,39 @@ const MachingIndex = () => {
   };
 
   return (
-    <div className="">
+    <div className="w-full px-4 sm:px-6 md:px-8 lg:px-10 pt-10 sm:pt-0">
       {/* 상단 */}
-      <div className="flex justify-between mt-[120px]">
+      <div className="flex justify-between items-center sm:flex-row sm:items-center sm:justify-between gap-4 sm:gap-6 ">
         {/* 왼쪽 */}
         <div>
-          <span className="text-3xl font-bold">매칭 대기중</span>
+          <span className="text-2xl sm:text-3xl font-bold">매칭 대기중</span>
         </div>
+
         {/* 오른쪽 */}
-        <div className="flex items-center justify-between gap-[30px]">
-          {/* 검색창 */}
-          <div className="flex items-center w-[300px] h-[56px]  px-[15px] py-[20px] bg-white rounded-[28px] border border-babgray-300 gap-[10px]">
-            <input
-              type="text"
-              className="flex-1 text-[13px] text-gray-700 focus:outline-none ml-1"
-              placeholder="원하는 음식이나 지역을 검색해보세요"
-            />{' '}
-            <RiSearchLine className="text-babgray-300 w-5 h-5 mr-2" />
-          </div>
-          <ButtonFillLG onClick={handleButtonClick}>
+        <div className="flex flex-col sm:flex-row items-stretch sm:items-center gap-3 sm:gap-[20px] lg:gap-[30px]">
+          
+
+          <ButtonFillLG onClick={handleButtonClick} className="w-full sm:w-auto justify-center">
             <i>
-              <RiAddLine size={24} />
+              <RiAddLine size={22} className="sm:size-[24px]" />
             </i>
-            <span>매칭 등록하기</span>
+            <span className="text-sm sm:text-base">매칭 등록하기</span>
           </ButtonFillLG>
         </div>
       </div>
+
       {/* 중단 */}
       <div className="w-full pt-[30px] pb-[50px]">
         <ul
-          className=" w-full grid list-none p-0 m-0 
-  [grid-template-columns:repeat(auto-fill,615px)]
-  justify-between
-  gap-x-[30px] gap-y-[24px]
+          className="
+      grid 
+      grid-cols-1      
+      sm:grid-cols-2   
+      gap-x-[30px] gap-y-[24px]
+      place-items-center
+      justify-center
     "
         >
-          {/* 매칭 대기중인 게시글 최대 4개 출력하기 테이블연결후 수정 */}
           {loading ? (
             <>
               {[...Array(4)].map((_, i) => (
@@ -229,15 +226,17 @@ const MachingIndex = () => {
           )}
         </ul>
       </div>
+
       {/* 하단 */}
       <div className="flex justify-center pb-[50px]">
         <ButtonLineMd
           onClick={() => navigate('/member/matching')}
-          style={{ borderRadius: '20px', padding: '20px 30px' }}
+          className="rounded-[20px] px-6 sm:px-8 py-3 sm:py-4 text-sm sm:text-base"
         >
           더보기
         </ButtonLineMd>
       </div>
+
       {modal.isOpen && (
         <Modal
           isOpen={modal.isOpen}

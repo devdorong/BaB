@@ -79,13 +79,16 @@ const MatchingWritePage = () => {
 
   return (
     <ConfigProvider locale={locale}>
-      <div className="w-[750px] h-auto py-8 flex flex-col gap-10 mx-auto">
-        <div className="flex flex-col gap-2.5">
-          <p className="text-babgray-900 text-3xl font-bold">매칭 등록</p>
-          <p className="text-babgray-600">함께 식사할 친구를 찾아보세요.</p>
+      <div className="w-full max-w-[750px] mx-auto px-4 sm:px-6 md:px-8 py-8 flex flex-col gap-10">
+        {/* 헤더 */}
+        <div className="flex flex-col gap-2.5 sm:text-left">
+          <p className="text-2xl sm:text-3xl font-bold text-babgray-900">매칭 등록</p>
+          <p className="text-babgray-600 text-sm sm:text-base">함께 식사할 친구를 찾아보세요.</p>
         </div>
 
-        <div className="flex flex-col text-babgray-800 p-8 bg-white rounded-2xl shadow-[0px_4px_4px_0px_rgba(0,0,0,0.02)] gap-8">
+        {/* 입력 폼 */}
+        <div className="flex flex-col text-babgray-800 p-6 sm:p-8 bg-white rounded-2xl shadow-[0px_4px_4px_0px_rgba(0,0,0,0.02)] gap-8">
+          {/* 제목 */}
           <div className="flex flex-col gap-3">
             <div className="flex gap-1">
               <span>매칭 제목</span>
@@ -98,7 +101,7 @@ const MatchingWritePage = () => {
                 placeholder="매칭 게시글 제목을 입력해주세요"
                 value={formData.title}
                 onChange={e => setTitle(e.target.value)}
-                className="px-4 py-3.5 rounded-3xl border border-1 border-offset-[-1px] border-babgray focus:border-bab"
+                className="px-4 py-3.5 rounded-3xl border border-babgray focus:border-bab text-sm sm:text-base"
               />
               <p className="flex justify-end text-babgray-500 text-xs">
                 {formData.title.length}/50
@@ -106,6 +109,7 @@ const MatchingWritePage = () => {
             </div>
           </div>
 
+          {/* 상세 설명 */}
           <div className="flex flex-col gap-3.5">
             <p>상세 설명</p>
             <textarea
@@ -113,74 +117,76 @@ const MatchingWritePage = () => {
               placeholder="함께 식사하고 싶은 이유나 추가 정보를 입력해주세요"
               value={formData.content}
               onChange={e => setContent(e.target.value)}
-              className="h-24 px-4 py-3.5 rounded-3xl border border-1 border-offset-[-1px] border-babgray resize-none focus:border-bab"
+              className="h-28 sm:h-32 px-4 py-3.5 rounded-3xl border border-babgray resize-none focus:border-bab text-sm sm:text-base"
             />
             <p className="flex justify-end text-babgray-500 text-xs">
               {formData.content.length}/500
             </p>
           </div>
 
-          <div className="flex justify-between items-center gap-3.5">
-            <div className="w-1/3 flex flex-col gap-3.5">
+          {/* 날짜, 시간, 인원 */}
+          <div className="flex flex-col sm:flex-row justify-between gap-6">
+            {/* 날짜 */}
+            <div className="flex-1 flex flex-col gap-3.5">
               <div className="flex gap-1">
                 <span>날짜</span>
                 <p className="text-bab">*</p>
               </div>
-              <div className="w flex items-center justify-between rounded-3xl border border-1 border-offset-[-1px] border-babgray">
+              <div className="w-full flex items-center rounded-3xl ">
                 <DatePicker
-                  placeholder="연도-월-일"
+                  className="bab-date-picker"
+                  placeholder="날짜 선택"
                   value={formData.date}
                   onChange={setDate}
-                  className="custom-day-picker w-full"
                 />
               </div>
             </div>
 
-            <div className="flex flex-col gap-3.5 w-1/3">
-              <div className=" flex gap-1">
+            {/* 시간 */}
+            <div className="flex-1 flex flex-col gap-3.5">
+              <div className="flex gap-1">
                 <span>시간</span>
                 <p className="text-bab">*</p>
               </div>
-              <div className=" flex items-center justify-between rounded-3xl border border-1 border-offset-[-1px] border-babgray">
+              <div className="w-full flex items-center rounded-3xl ">
                 <TimePicker
+                  className="bab-time-picker"
                   format="HH:mm"
-                  placeholder="00:00"
+                  placeholder="시간 선택"
                   value={formData.time}
                   onChange={setTime}
-                  className="custom-bab-time-picker w-full"
                   classNames={{
-                    popup: { root: 'custom-bab-time-picker-panel' } as any,
+                    popup: { root: 'bab-time-picker-panel' } as any,
                   }}
                 />
               </div>
             </div>
 
-            <div className="w-1/3 flex flex-col items-start gap-4">
-              <div className=" flex gap-1">
+            {/* 인원 */}
+            <div className="flex-1 flex flex-col gap-3.5">
+              <div className="flex gap-1">
                 <span>희망 인원수 (본인 포함)</span>
                 <p className="text-bab">*</p>
               </div>
-              <div className="flex flex-col gap-2">
-                <div className="flex justify-center gap-3">
-                  {headCounts.map(item => {
-                    const isSelected = selectedHeadCounts === item;
-                    return (
-                      <button
-                        key={item}
-                        type="button"
-                        onClick={() => toggleMembers(item)}
-                        className={`min-w-10 h-10 px-2 rounded-xl flex justify-center items-center text-base font-medium transition 
-                  ${
-                    isSelected
-                      ? 'bg-bab text-white border border-bab'
-                      : 'border border-babgray-300 text-babgray-800 hover:bg-babgray-100'
-                  }`}
-                      >
-                        {item}
-                      </button>
-                    );
-                  })}
-                </div>
+              <div className="flex flex-wrap justify-center gap-2 sm:gap-2">
+                {headCounts.map(item => {
+                  const isSelected = selectedHeadCounts === item;
+                  return (
+                    <button
+                      key={item}
+                      type="button"
+                      onClick={() => toggleMembers(item)}
+                      className={`min-w-[40px] h-10 px-3 rounded-xl flex justify-center items-center text-sm sm:text-base font-medium transition 
+                    ${
+                      isSelected
+                        ? 'bg-bab text-white border border-bab'
+                        : 'border border-babgray-300 text-babgray-800 hover:bg-babgray-100'
+                    }`}
+                    >
+                      {item}
+                    </button>
+                  );
+                })}
               </div>
             </div>
           </div>
@@ -193,14 +199,14 @@ const MatchingWritePage = () => {
             </div>
 
             {formData.selectedPlace ? (
-              <div className="w-full p-4 rounded-3xl border-2 border-bab bg-bab-50 flex justify-between items-center">
+              <div className="w-full p-4 rounded-3xl border-2 border-bab bg-bab-50 flex justify-between items-center flex-wrap gap-3">
                 <div className="flex flex-col gap-1">
                   <p className="font-semibold text-babgray-900">{formData.selectedPlace.name}</p>
                   <p className="text-xs text-babgray-600">{formData.selectedPlace.address}</p>
                 </div>
                 <button
                   onClick={() => setIsMapModalOpen(true)}
-                  className="text-bab hover:text-bab-600 transition"
+                  className="text-bab hover:text-bab-600 transition text-sm"
                 >
                   변경
                 </button>
@@ -208,7 +214,7 @@ const MatchingWritePage = () => {
             ) : (
               <button
                 onClick={() => setIsMapModalOpen(true)}
-                className="w-full h-48 px-4 py-5 rounded-3xl border-dashed border-2 border-offset-[-1px] border-babgray flex flex-col justify-center items-center gap-4 hover:bg-babgray-50 transition"
+                className="w-full h-44 px-4 py-5 rounded-3xl border-dashed border-2 border-babgray flex flex-col justify-center items-center gap-4 hover:bg-babgray-50 transition text-sm sm:text-base"
               >
                 <RiMapPinLine className="text-bab w-6 h-6" />
                 <p className="text-babgray-600">지도에서 맛집을 선택해주세요</p>
@@ -216,9 +222,9 @@ const MatchingWritePage = () => {
             )}
           </div>
 
-          {/* 매칭 이용 안내 */}
-          <div className="px-3.5 py-4 bg-bab-100 text-bab rounded-lg flex flex-col items-start gap-2.5">
-            <div className="flex items-center gap-1.5">
+          {/* 이용 안내 */}
+          <div className="px-4 py-4 bg-bab-100 text-bab rounded-lg flex flex-col items-start gap-2.5 text-sm">
+            <div className="flex items-center gap-1.5 font-medium">
               <RiAlarmWarningLine />
               <p>매칭 이용 안내</p>
             </div>
@@ -231,31 +237,32 @@ const MatchingWritePage = () => {
           </div>
 
           {/* 버튼 영역 */}
-          <div className="flex p-6 border-t justify-center items-center gap-6">
+          <div className="flex flex-col sm:flex-row p-6 border-t justify-center items-center gap-3 sm:gap-6">
             <ButtonLineMd
-              className="flex-1"
+              className="w-full sm:flex-1"
               onClick={() => navigate('/member')}
               disabled={isLoading}
             >
               취소
             </ButtonLineMd>
-            <ButtonFillMd className="flex-1" onClick={handleSubmit} disabled={isLoading}>
+            <ButtonFillMd className="w-full sm:flex-1" onClick={handleSubmit} disabled={isLoading}>
               {isLoading ? '등록 중...' : '등록하기'}
             </ButtonFillMd>
           </div>
-          {/* 에러 메시지 표시 */}
+
+          {/* 에러 메시지 */}
           {error && (
             <div className="px-3.5 py-3 bg-red-100 text-red-700 rounded-lg text-sm">{error}</div>
           )}
         </div>
-      </div>
 
-      {/* 지도 모달 */}
-      <MapSearchModal
-        isOpen={isMapModalOpen}
-        onClose={() => setIsMapModalOpen(false)}
-        onSelectPlace={handlePlaceSelect}
-      />
+        {/* 지도 모달 */}
+        <MapSearchModal
+          isOpen={isMapModalOpen}
+          onClose={() => setIsMapModalOpen(false)}
+          onSelectPlace={handlePlaceSelect}
+        />
+      </div>
     </ConfigProvider>
   );
 };
