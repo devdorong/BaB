@@ -78,100 +78,95 @@ function PointPage() {
     );
 
   return (
-    <div id="root" className="flex flex-col min-h-screen">
-      <div className="flex-1 bg-bg-bg ">
+    <div id="root" className="flex flex-col min-h-screen bg-bg-bg">
+      <div className="flex flex-col max-w-[1280px] px-4 sm:px-6 lg:px-8 xl:px-0">
         {/* 프로필 헤더 링크 */}
-        <div className="flex flex-col w-[1280px] m-auto px-4 sm:px-6 lg:px-8 xl:px-0">
-          <div className="flex py-[15px]">
-            <div
-              onClick={() => navigate('/member/profile')}
-              className="text-babgray-600 text-[17px] cursor-pointer hover:text-babgray-900"
-            >
-              프로필
-            </div>
-            <div className="flex pt-[3px] items-center text-babgray-600 px-[5px] text-[17px]">
-              <RiArrowRightSLine />
-            </div>{' '}
-            <div className="text-bab-500 text-[17px]">포인트</div>
+        <div className="hidden lg:flex py-4 items-center text-sm sm:text-base">
+          <div
+            onClick={() => navigate('/member/profile')}
+            className="text-babgray-600 text-[17px] cursor-pointer hover:text-babgray-900"
+          >
+            프로필
           </div>
-          <div className="mt-[20px] mb-[60px]">
-            <div className="flex gap-[40px] items-start">
-              {/* 왼쪽 프로필 카드 */}
-              <div className="flex flex-col gap-[20px] items-center justify-center">
-                <div className="inline-flex w-[260px] p-[25px] flex-col justify-center items-center bg-white rounded-[16px] shadow-[0px_4px_4px_0px_rgba(0,0,0,0.02)]">
+          <div className="flex pt-[3px] items-center text-babgray-600 px-[5px] text-[17px]">
+            <RiArrowRightSLine />
+          </div>{' '}
+          <div className="text-bab-500 text-[17px]">포인트</div>
+        </div>
+
+        <div className="mt-6 mb-14">
+          <div className="flex flex-col lg:flex-row gap-8 items-start">
+            {/* 왼쪽 프로필 카드 */}
+            <div className="flex flex-col gap-5 items-center justify-center w-full lg:w-[240px] w-full">
+              <div className="w-full bg-white rounded-2xl shadow p-6 flex flex-col items-center">
+                <div className="p-6 bg-bab-500 rounded-full flex items-center justify-center">
                   {/* 프로필 및 설명 */}
-                  <div className="gap-[15px] flex flex-col justify-center items-center">
-                    <div className="flex p-[25px] items-center bg-bab-500 rounded-full">
-                      <RiCoinLine className="text-white w-[30px] h-[30px] aspect-square" />
-                    </div>
-                  </div>
-                  {/* 포인트 */}
-                  <div className="text-center py-[23px]">
-                    <div className="text-[28px] font-bold text-gray-900">
-                      {point.toLocaleString()}P
-                    </div>
-                    <div className="text-[14px] text-babgray-600">보유 포인트</div>
-                  </div>
-                  {/* 라인 */}
-                  <div className="w-full border-babgray-100 border-[1px]"></div>
-                  {/* 리뷰, 찜, 매칭, 평점 */}
-                  <div className="flex w-[172px] pt-[23px] text-center justify-between items-center ">
-                    <div>
-                      <div className="text-[22px] font-bold text-babbutton-green">
-                        +{totaladd.toLocaleString()}
-                      </div>
-                      <div className="text-[14px] text-babgray-600">총 적립</div>
-                    </div>
-                    <div>
-                      <div className="text-[22px] font-bold text-babbutton-red">
-                        -{total.toLocaleString()}
-                      </div>
-                      <div className="text-[14px] text-babgray-600">총 사용</div>
-                    </div>
-                  </div>
-                  <div></div>
+                  <RiCoinLine className="text-white w-8 h-8" />
                 </div>
+                {/* 포인트 */}
+                <div className="text-center py-[23px]">
+                  <div className="text-[28px] font-bold text-gray-900">
+                    {point.toLocaleString()}P
+                  </div>
+                  <div className="text-[14px] text-babgray-600">보유 포인트</div>
+                </div>
+                {/* 라인 */}
+                <div className="w-full border-babgray-100 border-[1px]"></div>
+                {/* 리뷰, 찜, 매칭, 평점 */}
+                <div className="flex w-[172px] pt-[23px] text-center justify-between items-center ">
+                  <div>
+                    <div className="text-lg sm:text-xl font-bold text-babbutton-green">
+                      +{totaladd.toLocaleString()}
+                    </div>
+                    <div className="text-[14px] text-babgray-600">총 적립</div>
+                  </div>
+                  <div>
+                    <div className="text-lg sm:text-xl font-bold text-babbutton-red">
+                      -{total.toLocaleString()}
+                    </div>
+                    <div className="text-[14px] text-babgray-600">총 사용</div>
+                  </div>
+                </div>
+                <div></div>
               </div>
-              {/* 오른쪽 프로필카드 */}
-              <div className="flex flex-col gap-[25px] flex-1">
-                {/* 리워드교환 / 쿠폰함 / 적립방법 */}
-                <div className="flex self-start p-[3px] items-center justify-center gap-[3px] bg-white rounded-[10px] shadow-[0px_4px_4px_0px_rgba(0,0,0,0.02)]">
-                  <div className="flex justify-between items-center gap-[3px]">
-                    <button
-                      onClick={() => setSelectedTab('reward')}
-                      className={`flex px-[8px] py-[15px] gap-[7px] justify-center items-center margin rounded-[8px] bg-bab-500 ${selectedTab === 'reward' ? 'bg-bab-500 text-white' : 'bg-white text-babgray-600'} `}
-                    >
-                      <div className="flex w-[120px] items-center gap-[7px] justify-center text-[14px]">
-                        <RiGiftLine className="w-[15px] h-[15px]" />
-                        리워드 교환
-                      </div>
-                    </button>
-                    <button
-                      onClick={() => setSelectedTab('coupon')}
-                      className={`flex px-[8px] py-[15px] gap-[7px] justify-center items-center margin rounded-[8px] bg-bab-500 ${selectedTab === 'coupon' ? 'bg-bab-500 text-white' : 'bg-white text-babgray-600'} `}
-                    >
-                      <div className="flex w-[120px] items-center gap-[7px] justify-center text-[14px]">
-                        <RiGiftLine className="w-[15px] h-[15px]" />
-                        쿠폰함
-                      </div>
-                    </button>
-                    <button
-                      onClick={() => setSelectedTab('rule')}
-                      className={`flex px-[8px] py-[15px] gap-[7px] justify-center items-center margin rounded-[8px] bg-bab-500 ${selectedTab === 'rule' ? 'bg-bab-500 text-white' : 'bg-white text-babgray-600'} `}
-                    >
-                      <div className="flex w-[120px] items-center gap-[7px] justify-center text-[14px]">
-                        <RiGiftLine className="w-[15px] h-[15px]" />
-                        적립
-                      </div>
-                    </button>
+            </div>
+            {/* 오른쪽 프로필카드 */}
+            <div className="order-2 lg:order-2 flex flex-col gap-6  w-full ">
+              {/* 리워드교환 / 쿠폰함 / 적립방법 */}
+              <div className="flex flex-wrap justify-center sm:justify-start items-center gap-2 p-2 bg-white rounded-xl shadow">
+                <button
+                  onClick={() => setSelectedTab('reward')}
+                  className={`flex px-[8px] py-[15px] gap-[7px] justify-center items-center margin rounded-[8px] bg-bab-500 ${selectedTab === 'reward' ? 'bg-bab-500 text-white' : 'bg-white text-babgray-600'} `}
+                >
+                  <div className="flex w-[120px] items-center gap-[7px] justify-center text-[14px]">
+                    <RiGiftLine className="w-[15px] h-[15px]" />
+                    리워드 교환
                   </div>
-                </div>
-                {/* 카드 영역 */}
-                <div className="inline-flex w-full px-[35px] py-[25px] flex-col justify-center bg-white rounded-[16px] shadow-[0px_4px_4px_0px_rgba(0,0,0,0.02)]">
-                  {selectedTab === 'reward' && <RewardChange />}
-                  {selectedTab === 'coupon' && <CouponPage />}
-                  {selectedTab === 'rule' && <PointRule />}
-                </div>
+                </button>
+                <button
+                  onClick={() => setSelectedTab('coupon')}
+                  className={`flex px-[8px] py-[15px] gap-[7px] justify-center items-center margin rounded-[8px] bg-bab-500 ${selectedTab === 'coupon' ? 'bg-bab-500 text-white' : 'bg-white text-babgray-600'} `}
+                >
+                  <div className="flex w-[120px] items-center gap-[7px] justify-center text-[14px]">
+                    <RiGiftLine className="w-[15px] h-[15px]" />
+                    쿠폰함
+                  </div>
+                </button>
+                <button
+                  onClick={() => setSelectedTab('rule')}
+                  className={`flex px-[8px] py-[15px] gap-[7px] justify-center items-center margin rounded-[8px] bg-bab-500 ${selectedTab === 'rule' ? 'bg-bab-500 text-white' : 'bg-white text-babgray-600'} `}
+                >
+                  <div className="flex w-[120px] items-center gap-[7px] justify-center text-[14px]">
+                    <RiGiftLine className="w-[15px] h-[15px]" />
+                    적립
+                  </div>
+                </button>
+              </div>
+              {/* 카드 영역 */}
+              <div className="inline-flex w-full px-[35px] py-[25px] flex-col justify-center bg-white rounded-[16px] shadow-[0px_4px_4px_0px_rgba(0,0,0,0.02)]">
+                {selectedTab === 'reward' && <RewardChange />}
+                {selectedTab === 'coupon' && <CouponPage />}
+                {selectedTab === 'rule' && <PointRule />}
               </div>
             </div>
           </div>
