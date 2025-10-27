@@ -39,7 +39,9 @@ const OkCancelModal: React.FC<ModalProps> = ({
           <div className="w-full font-bold">{contentText}</div>
         </div>
         <div className="flex justify-center gap-4 items-center  py-[20px] px-[20px] rounded-b-[30px]">
+
           <ButtonFillMd onClick={onClose} className="flex flex-1 !text-babgray-700 !bg-babgray-200">
+
             {closeButtonText}
           </ButtonFillMd>
           <ButtonFillMd

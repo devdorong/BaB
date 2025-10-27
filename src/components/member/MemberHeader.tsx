@@ -45,6 +45,7 @@ const MemberHeader = () => {
   const [menuOpen, setMenuOpen] = useState(false);
   const isAdmin = profileData?.role === 'admin';
   const isPartner = profileData?.role === 'partner';
+  const [isSupportOpen, setIsSupportOpen] = useState(false);
 
   // 안읽은 알림 개수
   const notificationUnReadCount = notification.filter(n => !n.is_read).length;
@@ -111,8 +112,7 @@ const MemberHeader = () => {
           });
         }
       })
-      .subscribe(status => console.log('📡 Notification realtime status:', status));
-
+      .subscribe();
     return () => {
       supabase.removeChannel(channel);
     };
@@ -302,9 +302,56 @@ const MemberHeader = () => {
           <NavLink to="/member/events" onClick={() => setMenuOpen(false)}>
             이벤트
           </NavLink>
-          <NavLink to="/member/support" onClick={() => setMenuOpen(false)}>
-            고객센터
-          </NavLink>
+          {/* 고객센터 (서브메뉴 포함) */}
+          <div>
+            <button
+              onClick={() => setIsSupportOpen(prev => !prev)}
+              className="w-full text-left flex items-center justify-between hover:text-bab-500 transition-colors"
+            >
+              <span>고객지원</span>
+              <span
+                className={`transition-transform duration-200 ${isSupportOpen ? 'rotate-180' : ''}`}
+              >
+                ▾
+              </span>
+            </button>
+
+            {/* 하위 메뉴 */}
+            {isSupportOpen && (
+              <div className="mt-5 ml-3 flex flex-col gap-4 text-sm text-babgray-600">
+                <NavLink
+                  to="/member/support"
+                  onClick={() => {
+                    setMenuOpen(false);
+                    setIsSupportOpen(false);
+                  }}
+                  className="hover:text-bab-500 transition-colors"
+                >
+                  고객센터
+                </NavLink>
+                <NavLink
+                  to="/privacy"
+                  onClick={() => {
+                    setMenuOpen(false);
+                    setIsSupportOpen(false);
+                  }}
+                  className="hover:text-bab-500 transition-colors"
+                >
+                  이용약관
+                </NavLink>
+                <NavLink
+                  to="/perpolicy"
+                  onClick={() => {
+                    setMenuOpen(false);
+                    setIsSupportOpen(false);
+                  }}
+                  className="hover:text-bab-500 transition-colors"
+                >
+                  개인정보처리방침
+                </NavLink>
+              </div>
+            )}
+          </div>
           {user ? (
             <>
               <hr className="border-babgray-150" />

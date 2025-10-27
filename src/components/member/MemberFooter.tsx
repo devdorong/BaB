@@ -6,7 +6,7 @@ const MemberFooter = () => {
   const navigate = useNavigate();
 
   return (
-    <footer className="w-full bg-white border-t-2 text-gray-600">
+    <footer className="hidden lg:flex w-full bg-white border-t-2 text-gray-600">
       <div className="flex flex-col w-full max-w-[1280px] mx-auto px-4 sm:px-6 lg:px-8 py-8 gap-6">
         {/* 상단 영역 */}
         <div className="flex justify-between">

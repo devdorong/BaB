@@ -162,10 +162,12 @@ function CommunityPage() {
           <p className="text-babgray-600">맛집 친구들과 소통해보세요</p>
         </div>
         {/* 검색폼,버튼 */}
+
         <div className={`${styles.writeFormWhitBt} w-full items-center`}>
           <div
             onClick={() => document.getElementById('searchInput')?.focus()}
             className="flex items-center gap-3 bg-white h-[55px] py-3 px-3 border border-s-babgray rounded-3xl"
+
           >
             <RiSearchLine className="text-babgray-300" />
             <input
@@ -208,7 +210,7 @@ function CommunityPage() {
             {UiCategories.map(item => (
               <div
                 key={item}
-                className={`px-4 py-2 cursor-pointer ${activeCategory === item ? 'text-bab border-b-2 border-bab' : ' text-babgray-700'} hover:text-bab transition-colors`}
+                className={`${styles.category} px-4 py-2 cursor-pointer ${activeCategory === item ? 'text-bab border-b-2 border-bab' : ' text-babgray-700'} hover:text-bab transition-colors`}
                 onClick={() => setActiveCategory(item)}
               >
                 {item}

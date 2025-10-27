@@ -381,7 +381,9 @@ function EventPage() {
                   {event.start_date ?? ''} ~ {event.end_date ?? ''}
                 </p>
 
-                <div className={styles.eventButtonGroup}>
+                <div
+                  className={`${styles.eventButtonGroup} flex flex-col items-center justify-center`}
+                >
                   <button
                     disabled={event.status === '종료'}
                     onClick={() => {
@@ -410,6 +412,7 @@ function EventPage() {
                       className="flex-1 flex items-center justify-center gap-2 p-2"
                     >
                       <RiEditLine className="translate-y-0.5" /> 수정하기
+
                     </button>
                   )}
                 </div>
