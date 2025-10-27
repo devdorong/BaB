@@ -21,6 +21,8 @@ type Props = {
   comment: string | null;
   review_photos: ReviewPhoto[];
   onClick?: () => void;
+  isMyReview: boolean;
+  onDelete?: () => void;
 };
 
 export default function MyreviewCard({
@@ -34,19 +36,36 @@ export default function MyreviewCard({
   tagText,
   review_photos,
   onClick,
+  isMyReview,
+  onDelete,
 }: Props) {
+  const photoSrc =
+    review_photos && review_photos.length > 0 ? review_photos[0].photo_url : imageUrl;
+
   return (
     <div
       onClick={onClick}
-      className="w-full sm:w-[280px] md:w-[300px] lg:w-[312px] bg-white rounded-2xl overflow-hidden shadow-[0_4px_4px_rgba(0,0,0,0.02)] border border-black/5 cursor-pointer transition-transform hover:-translate-y-[2px]"
+      className="relative w-full bg-white rounded-2xl overflow-hidden shadow-[0_4px_4px_rgba(0,0,0,0.02)] border border-black/5 cursor-pointer"
     >
-      {/* 이미지 */}
-      <div className="relative">
-        <img
-          src={review_photos?.[0]?.photo_url || imageUrl}
-          alt={name}
-          className="w-full h-[180px] sm:h-[200px] object-cover"
-        />
+      {/* 이미지 영역 */}
+      <div className="relative w-full overflow-hidden rounded-t-2xl">
+        {/* 삭제 버튼 (이미지 위, 카드 기준 고정) */}
+        {isMyReview && (
+          <button
+            onClick={e => {
+              e.stopPropagation(); // 카드 클릭 방지
+              onDelete?.();
+            }}
+            className="absolute top-2 right-2 bg-red-500 text-white text-xs px-2 py-1 rounded-xl hover:bg-red-600 transition z-10"
+          >
+            삭제
+          </button>
+        )}
+
+        {/* 이미지 */}
+        <div className="relative">
+          <img src={photoSrc} alt={name} className="w-full h-[180px] sm:h-[200px] object-cover" />
+        </div>
       </div>
 
       {/* 본문 */}

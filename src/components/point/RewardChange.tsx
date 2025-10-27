@@ -50,7 +50,7 @@ const RewardChange = () => {
         <div>리워드 교환</div>
       </div>
       <div className="flex">
-        <div className="grid grid-cols-3 gap-[20px] w-full">
+        <div className="grid sm:grid-cols-2 lg:grid-cols-3 gap-[20px] w-full">
           {coupons.map(item => (
             <div
               key={item.id}
