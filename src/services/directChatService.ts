@@ -373,9 +373,9 @@ export async function sendMessage(
     }
 
     // ============================ 추가부문 ===============================
-    try {
-      const receiverId = chat.user1_id === currentUser.id ? chat.user2_id : chat.user1_id;
 
+    const receiverId = chat.user1_id === currentUser.id ? chat.user2_id : chat.user1_id;
+    try {
       const { error: notificationError } = await supabase.from('notifications').insert({
         profile_id: currentUser.id, // 보낸 사람
         receiver_id: receiverId, // 받는 사람
