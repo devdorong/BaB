@@ -3,7 +3,11 @@ import { useEffect, useState } from 'react';
 import { RiArrowLeftSLine, RiArrowRightSLine } from 'react-icons/ri';
 import { useNavigate } from 'react-router-dom';
 import { fetchInterestsGrouped } from '../../../lib/interests';
-import { fetchFavoriteRestaurants, type RestaurantsType } from '../../../lib/restaurants';
+import {
+  fetchFavoriteRestaurants,
+  type RestaurantsType,
+  type RestaurantTypeRatingAvg,
+} from '../../../lib/restaurants';
 import { categoryColors, defaultCategoryColor } from '../../../ui/jy/categoryColors';
 import { ReviewCard } from '@/ui/dorong/ReviewMockCard';
 
@@ -93,6 +97,14 @@ function FavoritePage() {
 
     // 단위 변환 (1km 미만이면 m, 그 이상이면 km)
     return distance < 1 ? `${(distance * 1000).toFixed(0)} m` : `${distance.toFixed(1)} km`;
+  };
+
+  // 평균 평점 계산
+  const getAvgRating = (r: { reviews?: { rating_food?: number | null }[] }) => {
+    const ratings = r.reviews?.map(v => v.rating_food ?? 0) || [];
+    return ratings.length > 0
+      ? Math.round((ratings.reduce((sum, r) => sum + r, 0) / ratings.length) * 10) / 10
+      : 0;
   };
 
   return (
@@ -187,6 +199,7 @@ function FavoritePage() {
                   {currentItems.map(r => {
                     const category = r.interests?.name ?? '';
                     const color = categoryColors[category] || defaultCategoryColor;
+                    const avgRating = getAvgRating(r as any);
                     const distance =
                       userPos && r.latitude && r.longitude
                         ? getDistance(
@@ -199,6 +212,7 @@ function FavoritePage() {
 
                     return (
                       <ReviewCard
+                        onClick={() => navigate(`/member/reviews/${r.id}`)}
                         key={r.id}
                         restaurantId={r.id}
                         name={r.name}

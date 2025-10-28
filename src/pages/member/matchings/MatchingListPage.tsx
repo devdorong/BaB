@@ -246,11 +246,11 @@ const MatchingListPage = () => {
 
   return (
     <div className="w-full bg-bg-bg">
-      <div className="w-full max-w-[1280px] mx-auto flex flex-col gap-8 py-8 px-4 sm:px-6 lg:px-8 xl:px-0">
+      <div className="w-full max-w-[1280px] mx-auto flex flex-col gap-4 py-4 lg:gap-8 lg:py-8 px-4 sm:px-6 lg:px-8 xl:px-0">
         {/* 타이틀 */}
         <div className="flex flex-col gap-1 text-left">
-          <p className="text-2xl sm:text-3xl font-bold">매칭게시판</p>
-          <p className="text-babgray-600 text-sm sm:text-base">매칭에 참여해보세요</p>
+          <p className="text-[24px] lg:text-3xl font-bold">매칭게시판</p>
+          <p className="text-babgray-600 text-[16px]">매칭에 참여해보세요</p>
         </div>
 
         {/* 검색 및 필터 영역 */}

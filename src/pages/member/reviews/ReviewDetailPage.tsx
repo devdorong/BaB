@@ -150,22 +150,27 @@ function ReviewDetailPage() {
     const loadRestaurant = async () => {
       if (!id) return;
 
-      const detail = await fetchRestaurantDetailId(id);
-      if (!detail) return;
+      setLoading(true);
+      try {
+        const [detail, reviewData] = await Promise.all([
+          fetchRestaurantDetailId(id),
+          fetchRestaurantReviews(Number(id)),
+        ]);
 
-      // 리뷰 목록 따로 불러오기
-      const reviewData = await fetchRestaurantReviews(Number(id));
-      setReviews(reviewData);
+        if (!detail) return;
 
-      // 평균계산
-      const ratings = reviewData.map(r => r.rating_food ?? 0);
-      const avg =
-        ratings.length > 0 ? ratings.reduce((sum, val) => sum + val, 0) / ratings.length : 0;
+        const ratings = reviewData.map(r => r.rating_food ?? 0);
+        const avg =
+          ratings.length > 0 ? ratings.reduce((sum, val) => sum + val, 0) / ratings.length : 0;
 
-      setRestaurant({
-        ...detail,
-        send_avg_rating: Math.round(avg * 10) / 10,
-      });
+        setRestaurant({
+          ...detail,
+          send_avg_rating: Math.round(avg * 10) / 10,
+        });
+        setReviews(reviewData);
+      } finally {
+        setLoading(false);
+      }
     };
 
     loadRestaurant();
@@ -201,9 +206,80 @@ function ReviewDetailPage() {
     );
   };
 
+  if (loading) {
+    return (
+      <div className="w-full animate-pulse">
+        <div className="max-w-[1280px] mx-auto py-[20px] lg:py-[50px] px-4 sm:px-6 lg:px-8 xl:px-0">
+          {/* 상단 이미지 */}
+          <section className="relative rounded-3xl overflow-hidden shadow-[0_4px_4px_rgba(0,0,0,0.02)] bg-white">
+            {/* 메인 이미지 */}
+            <div className="w-full h-[400px] bg-gray-200" />
+
+            {/* 헤더 정보 박스 */}
+            <div className="px-5 py-4 md:px-8 md:py-6 bg-white rounded-t-3xl space-y-5">
+              {/* 상단: 가게명 + 태그 + 하트 */}
+              <div className="flex items-center justify-between">
+                <div className="flex items-center gap-3">
+                  <div className="h-8 w-40 bg-gray-200 rounded-md" />
+                  <div className="h-6 w-14 bg-gray-200 rounded-full" />
+                </div>
+              </div>
+
+              {/* 평점 / 리뷰 / 거리 */}
+              <div className="flex flex-col gap-2">
+                <div className="flex gap-5">
+                  <div className="h-4 w-20 bg-gray-200 rounded" />
+                  <div className="h-4 w-24 bg-gray-200 rounded" />
+                </div>
+                <div className="h-4 w-40 bg-gray-200 rounded" />
+              </div>
+
+              {/* 한 줄 소개 */}
+              <div className="space-y-2">
+                <div className="h-4 w-full bg-gray-200 rounded" />
+                <div className="h-4 w-3/4 bg-gray-200 rounded" />
+              </div>
+
+              {/* 버튼들 */}
+              <div className="flex flex-wrap gap-5">
+                {Array.from({ length: 3 }).map((_, i) => (
+                  <div key={i} className="h-11 flex-1  bg-gray-200 rounded-full" />
+                ))}
+              </div>
+            </div>
+          </section>
+
+          {/* 탭 영역 */}
+          <nav className="mt-6 flex items-center gap-3 border-b border-babgray-150">
+            {['리뷰', '정보', '메뉴'].map((tab, i) => (
+              <div key={i} className="h-8 w-20 bg-gray-200 rounded-md" />
+            ))}
+          </nav>
+
+          {/* 탭 콘텐츠 (리뷰 리스트 형태로 통일) */}
+          <section className="mt-6 lg:mt-10 gap-3 space-y-4">
+            {Array.from({ length: 3 }).map((_, i) => (
+              <div
+                key={i}
+                className="w-full rounded-2xl bg-white shadow-[0_4px_4px_rgba(0,0,0,0.02)] p-5 space-y-3 border border-black/5"
+              >
+                <div className="h-5 w-1/2 bg-gray-200 rounded-md" />
+                <div className="space-y-2">
+                  <div className="h-4 w-full bg-gray-200 rounded" />
+                  <div className="h-4 w-5/6 bg-gray-200 rounded" />
+                  <div className="h-4 w-2/3 bg-gray-200 rounded" />
+                </div>
+              </div>
+            ))}
+          </section>
+        </div>
+      </div>
+    );
+  }
+
   return (
     <div className="w-full">
-      <div className="max-w-[1280px] mx-auto py-[50px]">
+      <div className="max-w-[1280px] mx-auto py-[20px] lg:py-[50px] px-4 sm:px-6 lg:px-8 xl:px-0 ">
         {/* 가게사진 */}
         <section className="relative rounded-3xl overflow-hidden shadow-[0_4px_4px_rgba(0,0,0,0.02)]">
           {/* 뒤로가기 버튼 */}
@@ -223,18 +299,18 @@ function ReviewDetailPage() {
               <img
                 src={restaurant?.thumbnail_url}
                 alt="가게 사진"
-                className="w-full h-[400px] object-cover"
+                className="w-full h-[300px] lg:h-[400px] object-cover"
               />
             </>
           ) : (
-            <div className="w-full h-[400px] object-cover bg-babgray-200"></div>
+            <div className="w-full h-[300px] lg:h-[400px]  object-cover bg-babgray-200"></div>
           )}
 
           {/* 헤더 정보 박스 */}
           <div className="px-5 py-4 md:px-8 md:py-6 bg-white rounded-t-3xl">
             <div className="flex items-center justify-between">
               <div className="flex item-center justify-center gap-[14px] mb-[4px]">
-                <h1 className="text-[30px] font-semibold ">{restaurant?.name}</h1>
+                <h1 className="text-[24px] lg:text-[30px] font-semibold ">{restaurant?.name}</h1>
                 {restaurant?.interests?.category === FOOD && (
                   <InterestBadge
                     bgColor={
@@ -266,7 +342,7 @@ function ReviewDetailPage() {
             </div>
 
             {/* 평점/리뷰/거리 */}
-            <div className="mt-2 flex flex-col flex-wrap items-start gap-2 text-babgray-700">
+            <div className="mt-0 lg:mt-2 flex flex-col flex-wrap items-start gap-2 text-babgray-700">
               <div className="flex items-center gap-2">
                 <div className="flex items-center gap-1">
                   <RiStarFill className="text-[#FACC15] text-[16px]" />
@@ -353,7 +429,7 @@ function ReviewDetailPage() {
 
         {/* 탭 콘텐츠 */}
         {tab === 'review' ? (
-          <section className="mt-10 space-y-4">
+          <section className="mt-5 lg:mt-10 space-y-4">
             {restaurant && <ReviewItem restaurantId={restaurant.id} reviews={reviews} />}
           </section>
         ) : tab === 'info' ? (

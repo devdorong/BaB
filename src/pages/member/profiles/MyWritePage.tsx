@@ -108,127 +108,143 @@ function MyWritePage() {
   }, []);
 
   return (
-    <div className="w-full bg-bg-bg">
-      <div className={styles.pageContainer}>
-        {/* 타이틀 */}
-        <div className="flex flex-col gap-1">
-          <p className="text-3xl font-bold">내가 쓴 게시글</p>
-          <p className="text-babgray-600">내가 작성한 글들을 확인해 보세요.</p>
+    <div className="w-full min-h-screen bg-bg-bg">
+      {/* 상단 경로 표시 */}
+      <div className="flex flex-col w-full max-w-[1280px] mx-auto">
+        <div className="hidden lg:flex items-center py-[15px] text-sm sm:text-base">
+          <div
+            onClick={() => navigate('/member/profile')}
+            className="cursor-pointer hover:text-babgray-900 text-babgray-600 text-[17px]"
+          >
+            프로필
+          </div>
+          <div className="flex pt-[3px] items-center text-babgray-600 px-[5px] text-[17px]">
+            <RiArrowRightSLine />
+          </div>
+          <div className="text-bab-500 text-[17px]">내가 쓴 게시글</div>
         </div>
 
-        {/* 게시글 목록 */}
-        <div className={styles.postList}>
-          {isLoading ? (
-            <>
-              {[...Array(10)].map((_, i) => (
-                <CommunityCardSkeleton key={i} />
-              ))}
-            </>
-          ) : currentItems.length > 0 ? (
-            currentItems.map(item => (
-              <div
-                key={item.id}
-                onClick={() => handlePostClick(item.id)}
-                className={styles.postCard}
-              >
-                <div className="flex justify-between">
-                  <div>{tagComponents[item.tag as FilteredTag] ?? item.tag}</div>
-                  <span className="text-babgray-500 text-[14px]">
-                    {dayjs(item.created_at).fromNow()}
-                  </span>
-                </div>
-                <div className="flex flex-col gap-2">
-                  <p className="font-bold text-xl">{item.title}</p>
-                  <p className="text-babgray-600 line-clamp-2">{item.content}</p>
-                </div>
-                <div className="flex justify-between text-babgray-600">
-                  <p className="font-semibold">{item.profiles?.nickname ?? '알 수 없음'}</p>
-                  <div className="flex items-center gap-1">
-                    <RiChat3Line />
-                    {item.comments?.length ?? 0}
+        <div className={styles.pageContainer}>
+          {/* 타이틀 */}
+          <div className="flex flex-col gap-1">
+            <p className="text-3xl font-bold">내가 쓴 게시글</p>
+            <p className="text-babgray-600">내가 작성한 글들을 확인해 보세요.</p>
+          </div>
+
+          {/* 게시글 목록 */}
+          <div className={styles.postList}>
+            {isLoading ? (
+              <>
+                {[...Array(10)].map((_, i) => (
+                  <CommunityCardSkeleton key={i} />
+                ))}
+              </>
+            ) : currentItems.length > 0 ? (
+              currentItems.map(item => (
+                <div
+                  key={item.id}
+                  onClick={() => handlePostClick(item.id)}
+                  className={styles.postCard}
+                >
+                  <div className="flex justify-between">
+                    <div>{tagComponents[item.tag as FilteredTag] ?? item.tag}</div>
+                    <span className="text-babgray-500 text-[14px]">
+                      {dayjs(item.created_at).fromNow()}
+                    </span>
+                  </div>
+                  <div className="flex flex-col gap-2">
+                    <p className="font-bold text-xl">{item.title}</p>
+                    <p className="text-babgray-600 line-clamp-2">{item.content}</p>
+                  </div>
+                  <div className="flex justify-between text-babgray-600">
+                    <p className="font-semibold">{item.profiles?.nickname ?? '알 수 없음'}</p>
+                    <div className="flex items-center gap-1">
+                      <RiChat3Line />
+                      {item.comments?.length ?? 0}
+                    </div>
                   </div>
                 </div>
+              ))
+            ) : (
+              <p className="text-gray-600 text-center py-5">지금 새로운 글을 등록해 보세요!</p>
+            )}
+          </div>
+
+          {/* 페이지네이션 */}
+          {!isLoading && pageCount > 1 && (
+            <div className="flex items-center justify-center">
+              <div className="flex items-center justify-center gap-2">
+                {/* 맨 처음 블록 버튼 */}
+                {currentBlock > 0 && (
+                  <button
+                    className="flex justify-center items-center rounded-md hover:bg-bab hover:text-white w-6 h-6"
+                    onClick={() => handlePageClick({ selected: 0 })}
+                  >
+                    <RiArrowRightDoubleLine className="transform rotate-180" />
+                  </button>
+                )}
+
+                {/* 이전 페이지 */}
+                {currentPage > 0 && (
+                  <button
+                    className="flex justify-center items-center rounded-md hover:bg-bab hover:text-white w-6 h-6"
+                    onClick={() => handlePageClick({ selected: currentPage - 1 })}
+                  >
+                    <RiArrowRightSLine className="transform rotate-180" />
+                  </button>
+                )}
+
+                {/* 현재 블록 페이지들 */}
+                {Array.from({ length: endPage - startPage }, (_, i) => {
+                  const page = startPage + i;
+                  return (
+                    <button
+                      key={page}
+                      onClick={() => handlePageClick({ selected: page })}
+                      className={`flex justify-center items-center px-2 ${
+                        page === currentPage ? 'font-bold text-bab' : ''
+                      } rounded-md hover:bg-bab hover:text-white w-6 h-6`}
+                    >
+                      {page + 1}
+                    </button>
+                  );
+                })}
+
+                {/* 다음 페이지 */}
+                {currentPage < pageCount - 1 && (
+                  <button
+                    className="flex justify-center items-center rounded-md hover:bg-bab hover:text-white w-6 h-6"
+                    onClick={() => handlePageClick({ selected: currentPage + 1 })}
+                  >
+                    <RiArrowRightSLine />
+                  </button>
+                )}
+
+                {/* 맨 끝 블록 버튼 */}
+                {currentBlock < Math.floor((pageCount - 1) / blockSize) && (
+                  <button
+                    className="flex justify-center items-center rounded-md hover:bg-bab hover:text-white w-6 h-6"
+                    onClick={() => handlePageClick({ selected: pageCount - 1 })}
+                  >
+                    <RiArrowRightDoubleLine />
+                  </button>
+                )}
               </div>
-            ))
-          ) : (
-            <p className="text-gray-600 text-center py-5">지금 새로운 글을 등록해 보세요!</p>
+            </div>
           )}
         </div>
-
-        {/* 페이지네이션 */}
-        {!isLoading && pageCount > 1 && (
-          <div className="flex items-center justify-center">
-            <div className="flex items-center justify-center gap-2">
-              {/* 맨 처음 블록 버튼 */}
-              {currentBlock > 0 && (
-                <button
-                  className="flex justify-center items-center rounded-md hover:bg-bab hover:text-white w-6 h-6"
-                  onClick={() => handlePageClick({ selected: 0 })}
-                >
-                  <RiArrowRightDoubleLine className="transform rotate-180" />
-                </button>
-              )}
-
-              {/* 이전 페이지 */}
-              {currentPage > 0 && (
-                <button
-                  className="flex justify-center items-center rounded-md hover:bg-bab hover:text-white w-6 h-6"
-                  onClick={() => handlePageClick({ selected: currentPage - 1 })}
-                >
-                  <RiArrowRightSLine className="transform rotate-180" />
-                </button>
-              )}
-
-              {/* 현재 블록 페이지들 */}
-              {Array.from({ length: endPage - startPage }, (_, i) => {
-                const page = startPage + i;
-                return (
-                  <button
-                    key={page}
-                    onClick={() => handlePageClick({ selected: page })}
-                    className={`flex justify-center items-center px-2 ${
-                      page === currentPage ? 'font-bold text-bab' : ''
-                    } rounded-md hover:bg-bab hover:text-white w-6 h-6`}
-                  >
-                    {page + 1}
-                  </button>
-                );
-              })}
-
-              {/* 다음 페이지 */}
-              {currentPage < pageCount - 1 && (
-                <button
-                  className="flex justify-center items-center rounded-md hover:bg-bab hover:text-white w-6 h-6"
-                  onClick={() => handlePageClick({ selected: currentPage + 1 })}
-                >
-                  <RiArrowRightSLine />
-                </button>
-              )}
-
-              {/* 맨 끝 블록 버튼 */}
-              {currentBlock < Math.floor((pageCount - 1) / blockSize) && (
-                <button
-                  className="flex justify-center items-center rounded-md hover:bg-bab hover:text-white w-6 h-6"
-                  onClick={() => handlePageClick({ selected: pageCount - 1 })}
-                >
-                  <RiArrowRightDoubleLine />
-                </button>
-              )}
-            </div>
-          </div>
+        {modal.isOpen && (
+          <Modal
+            isOpen={modal.isOpen}
+            onClose={closeModal}
+            titleText={modal.title}
+            contentText={modal.content}
+            closeButtonText={modal.closeText}
+            submitButtonText={modal.submitText}
+            onSubmit={modal.onSubmit}
+          />
         )}
       </div>
-      {modal.isOpen && (
-        <Modal
-          isOpen={modal.isOpen}
-          onClose={closeModal}
-          titleText={modal.title}
-          contentText={modal.content}
-          closeButtonText={modal.closeText}
-          submitButtonText={modal.submitText}
-          onSubmit={modal.onSubmit}
-        />
-      )}
     </div>
   );
 }

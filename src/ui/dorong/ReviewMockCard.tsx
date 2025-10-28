@@ -142,8 +142,6 @@ export const ReviewCard = ({
     }
   };
 
-  if (loading) return null;
-
   /* 데스크탑 (lg 이상) */
   if (isDesktop) {
     return (
@@ -235,6 +233,14 @@ export const ReviewCard = ({
             <div className="flex items-center gap-1">
               <RiMessageLine className="size-4 text-babgray-700" />
               <span className="text-[13px] text-babgray-600">{review}</span>
+            </div>
+            <div onClick={handleToggleFavorite} className="flex items-center gap-1 text-sm">
+              {isFavorite ? (
+                <RiHeart3Fill className="text-[#FF5722]" />
+              ) : (
+                <RiHeart3Fill className="text-babgray-600" />
+              )}
+              <span className="text-[13px]">찜 {favoriteCount}개</span>
             </div>
           </div>
         </div>

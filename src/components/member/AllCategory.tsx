@@ -25,8 +25,9 @@ export default function AllCategory({ value, onChange }: AllCategoryProps) {
     <Select
       value={value || undefined}
       onChange={onChange}
+      suffixIcon={null}
       placeholder="카테고리"
-      className="bab-select w-[120px] h-[50px]"
+      className="bab-select text-center justify-center items-center w-[121px] h-[50px]"
       classNames={{
         popup: {
           root: 'bab-select-dropdown',

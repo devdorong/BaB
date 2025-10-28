@@ -11,6 +11,8 @@ import { Select } from 'antd';
 import CategorySelect from '@/components/partner/CategorySelect';
 import { usePartnerSignup } from '@/contexts/PartnerSignupContext';
 import AllCategory from '@/components/member/AllCategory';
+import SortCategory from '@/components/member/SortCategory';
+import ReviewsPageSkeleton from '@/ui/jy/SkeletonRestaurantCard';
 
 const FOOD = '음식 종류';
 
@@ -149,25 +151,29 @@ function ReviewsPage() {
   const currentItems = filtered.slice(startIdx, endIdx);
   const totalPages = Math.ceil(filtered.length / itemsPerPage);
 
+  if (loading || restaurants.length === 0 || Object.keys(interests).length === 0) {
+    <ReviewsPageSkeleton />;
+  }
+
   return (
     <div id="root" className="flex flex-col min-h-screen bg-bg-bg">
       <div className="w-full flex justify-center">
-        <div className="max-w-[1280px] mx-auto flex flex-col px-4 sm:px-6 lg:px-8 xl:px-0 gap-8 py-8">
+        <div className="w-[1280px] mx-auto flex flex-col px-4 sm:px-6 lg:px-8 xl:px-0 gap-4 py-4 lg:gap-8 lg:py-8">
           {/* 타이틀 */}
           <div className="flex flex-col gap-1">
-            <p className="text-3xl font-bold">맛집추천</p>
-            <p className="text-babgray-600">진짜 맛집을 찾아보세요</p>
+            <p className="text-[24px] lg:text-3xl font-bold">맛집추천</p>
+            <p className="text-babgray-600 text-[16px]">진짜 맛집을 찾아보세요</p>
           </div>
-          <div className="flex p-6 flex-col justify-center gap-4 sm:gap-6 rounded-[20px] bg-white shadow-[0_4px_4px_0_rgba(0,0,0,0.02)]">
+          <div className="flex w-full  p-6 flex-col justify-center gap-4 sm:gap-6 rounded-[20px] bg-white shadow-[0_4px_4px_0_rgba(0,0,0,0.02)]">
             {/* 검색폼,버튼 */}
-            <div className="flex w-full justify-between items-center gap-[16px]">
+            <div className="flex w-full items-center gap-[16px]">
               <div
                 onClick={() => document.getElementById('searchInput')?.focus()}
-                className="flex w-full items-center pl-[20px] bg-white h-[55px] py-3 px-3 border border-s-babgray rounded-3xl"
+                className="flex flex-1 items-center pl-[20px] bg-white h-[55px] py-3 px-3 border border-s-babgray rounded-3xl"
               >
                 <input
                   id="searchInput"
-                  className="focus:outline-none"
+                  className="focus:outline-none w-full text-[14px] lg:text-base"
                   type="text"
                   value={search}
                   onChange={e => setSearch(e.target.value)}
@@ -176,7 +182,7 @@ function ReviewsPage() {
                       handleSearch();
                     }
                   }}
-                  placeholder="맛집 이름이나 음식 종류로 검색하기"
+                  placeholder="원하는 음식이나 가게를 검색해보세요"
                 />
               </div>
               <div
@@ -188,7 +194,7 @@ function ReviewsPage() {
             </div>
 
             {/* 검색폼,버튼 */}
-            <div>
+            <div className="flex flex-col gap-4">
               {/* 데탑 */}
               <div className="hidden lg:flex flex-wrap gap-2 justify-start sm:justify-start">
                 <div className="flex gap-[8px] justify-start ">
@@ -197,7 +203,7 @@ function ReviewsPage() {
                       setSelectedCategory('전체');
                       setCurrentPage(1);
                     }}
-                    className={`px-4 py-2 rounded-full text-sm ${
+                    className={`px-4 py-2.5 rounded-full text-sm ${
                       selectedCategory === '전체'
                         ? 'bg-bab-500 text-white'
                         : 'bg-babgray-100 text-babgray-700 hover:bg-babgray-200'
@@ -226,64 +232,64 @@ function ReviewsPage() {
               </div>
 
               {/* 모바일·태블릿용 드롭다운 */}
-              <div className="lg:hidden w-full flex justify-start">
-                <AllCategory
-                  value={selectedCategory}
-                  onChange={v => {
-                    setSelectedCategory(v);
-                    setCurrentPage(1);
-                  }}
-                ></AllCategory>
-              </div>
-            </div>
+              <div className="flex gap-4 justify-start items-start">
+                <div className="lg:hidden flex justify-start">
+                  <AllCategory
+                    value={selectedCategory}
+                    onChange={v => {
+                      setSelectedCategory(v);
+                      setCurrentPage(1);
+                    }}
+                  />
+                </div>
 
-            <div className="flex justify-start gap-[8px]">
-              <div onClick={() => setSortType('distance')} className="cursor-pointer">
-                {sortType === 'distance' ? <BlackTag>거리순</BlackTag> : <GrayTag>거리순</GrayTag>}
-              </div>
-              <div onClick={() => setSortType('rating')} className="cursor-pointer">
-                {sortType === 'rating' ? <BlackTag>별점순</BlackTag> : <GrayTag>별점순</GrayTag>}
-              </div>
-              <div onClick={() => setSortType('review')} className="cursor-pointer">
-                {sortType === 'review' ? <BlackTag>리뷰순</BlackTag> : <GrayTag>리뷰순</GrayTag>}
+                <div className="flex justify-start gap-[8px]">
+                  <SortCategory sortType={sortType} setSortType={setSortType} />
+                </div>
               </div>
             </div>
           </div>
 
           <div className="grid grid-cols-1 lg:grid-cols-2 gap-[14px]">
-            {currentItems.map(r => {
-              const category = r.interests?.name ?? '';
-              const color = categoryColors[category] || defaultCategoryColor;
-              const avgRating = getAvgRating(r);
-              const distanceNum =
-                userPos && r.latitude && r.longitude
-                  ? getDistance(
-                      userPos.lat,
-                      userPos.lng,
-                      parseFloat(r.latitude),
-                      parseFloat(r.longitude),
-                    )
-                  : 0;
-              const distance = distanceNum > 0 ? formatDistance(distanceNum) : '';
+            {loading ? (
+              Array.from({ length: 6 }).map((_, i) => <ReviewCardSkeleton key={i} />)
+            ) : currentItems.length > 0 ? (
+              currentItems.map(r => {
+                const category = r.interests?.name ?? '';
+                const color = categoryColors[category] || defaultCategoryColor;
+                const avgRating = getAvgRating(r);
+                const distanceNum =
+                  userPos && r.latitude && r.longitude
+                    ? getDistance(
+                        userPos.lat,
+                        userPos.lng,
+                        parseFloat(r.latitude),
+                        parseFloat(r.longitude),
+                      )
+                    : 0;
+                const distance = distanceNum > 0 ? formatDistance(distanceNum) : '';
 
-              return (
-                <div key={r.id} onClick={() => navigate(`/member/reviews/${r.id}`)}>
-                  <ReviewCard
-                    key={r.id}
-                    restaurantId={r.id}
-                    name={r.name}
-                    category={category}
-                    img={r.thumbnail_url}
-                    review={`리뷰 ${r.reviews.length}개`}
-                    storeintro={r.storeintro ?? ''}
-                    rating={avgRating ?? 0}
-                    distance={distance}
-                    tagBg={color.bg}
-                    tagText={color.text}
-                  />
-                </div>
-              );
-            })}
+                return (
+                  <div key={r.id} onClick={() => navigate(`/member/reviews/${r.id}`)}>
+                    <ReviewCard
+                      key={r.id}
+                      restaurantId={r.id}
+                      name={r.name}
+                      category={category}
+                      img={r.thumbnail_url}
+                      review={`리뷰 ${r.reviews.length}개`}
+                      storeintro={r.storeintro ?? ''}
+                      rating={avgRating ?? 0}
+                      distance={distance}
+                      tagBg={color.bg}
+                      tagText={color.text}
+                    />
+                  </div>
+                );
+              })
+            ) : (
+              <p className="text-center text-babgray-500 py-10">검색 결과가 없습니다.</p>
+            )}
           </div>
           <div className="flex justify-center gap-2 mt-6">
             <button
