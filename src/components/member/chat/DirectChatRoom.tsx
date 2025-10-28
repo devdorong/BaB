@@ -106,7 +106,7 @@ function DirectChatRoom({ chatId, onExit }: DirectChatRoomProps) {
     return () => {
       subscription.unsubscribe();
     };
-  }, [chatId, loadMessages]);
+  }, [chatId, loadMessages, messages]);
 
   // 채팅방 ID가 변경이 되면 메시지를 다시 로드 (초기 로딩)
   // 2025-10-21 수정: 초기 로딩 시에만 로딩 상태 표시하도록 isInitialLoad: true 전달

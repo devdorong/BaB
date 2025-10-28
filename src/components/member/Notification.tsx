@@ -65,20 +65,21 @@ interface NotificationProps {
 export default function Notification({ isOpen, onClose, onRead }: NotificationProps) {
   const [notification, setNotification] = useState<NotificationsProps[]>([]);
   const navigate = useNavigate();
-
   const panelRef = useRef<HTMLDivElement>(null);
+  const channelRef = useRef<ReturnType<typeof supabase.channel> | null>(null);
 
+  // 초기 로드 - isOpen과 무관하게 항상 실행
   useEffect(() => {
     const loadNotification = async () => {
       const data = await fetchNotificationProfileData();
       setNotification(data);
     };
     loadNotification();
+  }, []); // 한 번만 실행
 
-    let notificationChannel: ReturnType<typeof supabase.channel> | null = null;
-
+  // Realtime 구독 - isOpen과 무관하게 항상 유지
+  useEffect(() => {
     const setupRealtimeSubscription = async () => {
-      // 현재 사용자 ID 가져오기
       const {
         data: { user },
       } = await supabase.auth.getUser();
@@ -88,10 +89,9 @@ export default function Notification({ isOpen, onClose, onRead }: NotificationPr
         return;
       }
 
-      // console.log('현재 사용자 ID:', user.id);
+      console.log('🔔 Realtime 구독 시작');
 
-      // receiver_id로 필터링
-      notificationChannel = supabase
+      channelRef.current = supabase
         .channel(`notifications-${user.id}`)
         .on(
           'postgres_changes',
@@ -102,49 +102,56 @@ export default function Notification({ isOpen, onClose, onRead }: NotificationPr
             filter: `receiver_id=eq.${user.id}`,
           },
           payload => {
-            // console.log('Realtime 이벤트 수신:', payload);
+            // console.log('Realtime 이벤트:', payload.eventType, payload.new);
 
             if (payload.eventType === 'INSERT') {
               setNotification(prev => {
-                const updated = [payload.new as NotificationsProps, ...prev];
+                const newNotification = payload.new as NotificationsProps;
+                if (prev.some(n => n.id === newNotification.id)) {
+                  return prev;
+                }
+                const updated = [newNotification, ...prev];
                 return updated.sort((a, b) => {
                   if (a.is_read !== b.is_read) return a.is_read ? 1 : -1;
                   return new Date(b.created_at).getTime() - new Date(a.created_at).getTime();
                 });
               });
             } else if (payload.eventType === 'UPDATE') {
-              setNotification(prev => {
-                const updated = prev.map(n =>
-                  n.id === payload.new.id ? (payload.new as NotificationsProps) : n,
-                );
-
-                return updated.sort((a, b) => {
-                  if (a.is_read !== b.is_read) return a.is_read ? 1 : -1;
-                  return new Date(b.created_at).getTime() - new Date(a.created_at).getTime();
-                });
-              });
+              setNotification(prev =>
+                prev.map(n => (n.id === payload.new.id ? (payload.new as NotificationsProps) : n)),
+              );
+            } else if (payload.eventType === 'DELETE') {
+              setNotification(prev => prev.filter(n => n.id !== payload.old.id));
             }
           },
         )
         .subscribe(status => {
-          // console.log('Realtime 구독 상태:', status);
+          console.log('📡 구독 상태:', status);
         });
     };
 
     setupRealtimeSubscription();
 
-    // 클린업 함수
     return () => {
-      if (notificationChannel) {
-        supabase.removeChannel(notificationChannel);
-        // console.log('Realtime 채널 정리 완료');
+      if (channelRef.current) {
+        // console.log('Realtime 채널 정리');
+        supabase.removeChannel(channelRef.current);
       }
     };
-  }, []);
+  }, []); // 한 번만 실행, 컴포넌트가 완전히 언마운트될 때만 정리
 
-  // 알림창 열때 3일지난 읽은 알림
+  // 알림창 열 때마다 데이터 새로고침
   useEffect(() => {
     if (!isOpen) return;
+
+    const refreshNotifications = async () => {
+      // console.log('알림창 열림 - 데이터 새로고침');
+      const data = await fetchNotificationProfileData();
+      setNotification(data);
+    };
+    refreshNotifications();
+
+    // 3일 지난 알림 삭제
     const cleanup = async () => {
       try {
         await deleteReadNotification();
@@ -163,16 +170,15 @@ export default function Notification({ isOpen, onClose, onRead }: NotificationPr
       }
     };
 
-    if (isOpen) {
-      document.addEventListener('mousedown', handleClickOutside);
-    }
+    document.addEventListener('mousedown', handleClickOutside);
     return () => {
       document.removeEventListener('mousedown', handleClickOutside);
     };
-  }, [isOpen, onClose]);
+  }, [onClose]);
 
   // 전체 읽음 처리
-  const handleAllClick = async () => {
+  const handleAllClick = async (e: React.MouseEvent) => {
+    e.stopPropagation();
     try {
       // 비동기: 모든 알림 읽음 처리
       await Promise.all(
@@ -186,6 +192,13 @@ export default function Notification({ isOpen, onClose, onRead }: NotificationPr
       setNotification(prev => prev.map(n => ({ ...n, is_read: true })));
       // // 상위 콜백 (onRead) 에 전체 처리 알림
       // onRead?.('all');
+
+      return () => {
+        if (channelRef.current) {
+          // console.log('Realtime 채널 정리');
+          supabase.removeChannel(channelRef.current);
+        }
+      };
     } catch (err) {
       console.error('전체 읽음 처리 실패:', err);
     }
@@ -225,18 +238,22 @@ export default function Notification({ isOpen, onClose, onRead }: NotificationPr
       console.log(err);
     }
   };
+
   return (
-    <AnimatePresence>
+    <AnimatePresence mode="wait">
       {isOpen && (
         <>
           <motion.div
+            key="overlay"
             initial={{ opacity: 0 }}
             animate={{ opacity: 1 }}
             exit={{ opacity: 0 }}
             transition={{ duration: 0.2 }}
           />
           <motion.div
+            key="panel"
             ref={panelRef}
+            onMouseDown={e => e.stopPropagation()}
             initial={{ x: 400, opacity: 0 }}
             animate={{ x: 0, opacity: 1 }}
             exit={{ x: 400, opacity: 0 }}
