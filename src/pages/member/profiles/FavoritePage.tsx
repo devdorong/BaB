@@ -3,7 +3,11 @@ import { useEffect, useState } from 'react';
 import { RiArrowLeftSLine, RiArrowRightSLine } from 'react-icons/ri';
 import { useNavigate } from 'react-router-dom';
 import { fetchInterestsGrouped } from '../../../lib/interests';
-import { fetchFavoriteRestaurants, type RestaurantsType } from '../../../lib/restaurants';
+import {
+  fetchFavoriteRestaurants,
+  type RestaurantsType,
+  type RestaurantTypeRatingAvg,
+} from '../../../lib/restaurants';
 import { categoryColors, defaultCategoryColor } from '../../../ui/jy/categoryColors';
 import { ReviewCard } from '@/ui/dorong/ReviewMockCard';
 
@@ -95,6 +99,14 @@ function FavoritePage() {
     return distance < 1 ? `${(distance * 1000).toFixed(0)} m` : `${distance.toFixed(1)} km`;
   };
 
+  // 평균 평점 계산
+  const getAvgRating = (r: { reviews?: { rating_food?: number | null }[] }) => {
+    const ratings = r.reviews?.map(v => v.rating_food ?? 0) || [];
+    return ratings.length > 0
+      ? Math.round((ratings.reduce((sum, r) => sum + r, 0) / ratings.length) * 10) / 10
+      : 0;
+  };
+
   return (
     <div id="root" className="flex flex-col min-h-screen bg-bg-bg">
       <div className="w-full flex justify-center">
@@ -110,7 +122,7 @@ function FavoritePage() {
             <div className="text-babgray-600 px-[5px] text-[17px]">{'>'}</div>
             <div className="text-bab-500 text-[17px]">즐겨찾는 식당</div>
           </div>
-          <div className="w-[1280px] mx-auto flex flex-col gap-8 py-8">
+          <div className="mx-auto flex flex-col gap-4 py-4 lg:gap-8 lg:py-8">
             {/* 타이틀 */}
             <div className="flex flex-col gap-1">
               <p className="text-[24px] lg:text-3xl font-bold">즐겨찾는 식당</p>
@@ -120,7 +132,7 @@ function FavoritePage() {
             </div>
 
             {/* 검색폼,버튼 */}
-            <div className="pb-[0px] ">
+            <div>
               {/* 데스크탑 */}
               <div className="hidden lg:flex flex-wrap gap-2 justify-start">
                 <button
@@ -187,6 +199,7 @@ function FavoritePage() {
                   {currentItems.map(r => {
                     const category = r.interests?.name ?? '';
                     const color = categoryColors[category] || defaultCategoryColor;
+                    const avgRating = getAvgRating(r as any);
                     const distance =
                       userPos && r.latitude && r.longitude
                         ? getDistance(
@@ -199,6 +212,7 @@ function FavoritePage() {
 
                     return (
                       <ReviewCard
+                        onClick={() => navigate(`/member/reviews/${r.id}`)}
                         key={r.id}
                         restaurantId={r.id}
                         name={r.name}

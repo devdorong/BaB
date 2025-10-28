@@ -18,7 +18,7 @@ const ReviewMenu = ({ restaurantId }: { restaurantId: number }) => {
   }, [restaurantId]);
 
   return (
-    <section className="mt-10">
+    <section className="mt-5 lg:mt-10">
       <div className="bg-white rounded-2xl border border-gray-100 shadow-sm p-8">
         {menus.length > 0 ? (
           <>
