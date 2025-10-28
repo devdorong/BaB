@@ -1,0 +1,127 @@
+.custom-btn {
+  box-sizing: border-box;
+  position: relative;
+  border-radius: 50%;
+  background: linear-gradient(0deg, rgba(255, 151, 0, 1) 0%, rgba(251, 75, 2, 1) 100%);
+  color: #fff;
+  font-weight: 600;
+  border: none;
+  cursor: pointer;
+  overflow: hidden; /* 원 안에서만 반짝임 보이게 */
+  transition: all 0.3s ease;
+  z-index: 1;
+  box-shadow:
+    inset 2px 2px 2px rgba(255, 255, 255, 0.5),
+    7px 7px 20px rgba(0, 0, 0, 0.1),
+    4px 4px 5px rgba(0, 0, 0, 0.1);
+}
+
+/* ✨ 기본 반짝임 (왼쪽→오른쪽) */
+.custom-btn::before {
+  content: '';
+  position: absolute;
+  top: 0;
+  left: -150%;
+  width: 80%; /* 크기 축소해서 원 밖으로 안 튀어나오게 */
+  height: 100%;
+  background: linear-gradient(
+    120deg,
+    rgba(255, 255, 255, 0) 0%,
+    rgba(255, 255, 255, 0.4) 50%,
+    rgba(255, 255, 255, 0) 100%
+  );
+  transform: skewX(-20deg);
+  animation: shine-slide 5s linear infinite;
+  z-index: 0;
+}
+
+@keyframes shine-slide {
+  0% {
+    left: -150%;
+    opacity: 0;
+  }
+  2% {
+    opacity: 1;
+  }
+  6% {
+    left: 150%;
+    opacity: 1;
+  }
+  8% {
+    opacity: 0;
+  }
+  100% {
+    left: 150%;
+    opacity: 0;
+  }
+}
+
+/* hover/active 시 내부 배경 제거 */
+.custom-btn:hover,
+.custom-btn:active {
+  background: transparent;
+  color: #ff5722;
+  box-shadow: none;
+}
+
+/* 회전 테두리 */
+.custom-btn::after {
+  content: '';
+  position: absolute;
+  inset: 0;
+  border-radius: 50%;
+  border: 4px solid transparent;
+  border-top-color: #ff5722;
+  border-right-color: #ff5722;
+  transform: rotate(0deg);
+  opacity: 0;
+  transition: opacity 0.3s ease;
+  z-index: 2; /* 반짝임 위로 */
+}
+
+.custom-btn:hover::after,
+.custom-btn:active::after {
+  opacity: 1 !important;
+  animation: circle-spin 1.2s linear forwards !important;
+}
+
+/* 원 테두리 회전 애니메이션 (세밀 단계 유지) */
+@keyframes circle-spin {
+  0% {
+    transform: rotate(0deg);
+    border-color: #ff5722 transparent transparent transparent;
+  }
+  10% {
+    transform: rotate(90deg);
+    border-color: #ff5722 #ff5722 transparent transparent;
+  }
+  25% {
+    transform: rotate(180deg);
+    border-color: #ff5722 #ff5722 #ff5722 transparent;
+  }
+  40% {
+    transform: rotate(270deg);
+    border-color: #ff5722 #ff5722 #ff5722 #ff5722;
+  }
+  60% {
+    transform: rotate(360deg);
+    border-color: #ff5722 #ff5722 #ff5722 #ff5722;
+  }
+  75% {
+    transform: rotate(450deg);
+    border-color: #ff5722 #ff5722 #ff5722 #ff5722;
+  }
+  90% {
+    transform: rotate(540deg);
+    border-color: #ff784e #ff784e #ff784e #ff784e;
+  }
+  100% {
+    transform: rotate(720deg);
+    border-color: #ff5722 #ff5722 #ff5722 #ff5722;
+  }
+}
+
+/* 클릭 시 눌림 효과 */
+.custom-btn:active {
+  transform: scale(0.95);
+}
