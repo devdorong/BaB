@@ -3,7 +3,7 @@ import { useState } from 'react';
 export type ModalState = {
   isOpen: boolean;
   title: string;
-  content: string;
+  content: React.ReactNode;
   closeText?: React.ReactNode;
   submitText?: React.ReactNode;
   onSubmit?: () => void;
@@ -22,7 +22,7 @@ export const useModal = () => {
 
   const openModal = (
     title: string,
-    content: string,
+    content: React.ReactNode,
     closeText?: React.ReactNode,
     submitText?: React.ReactNode,
     onSubmit?: () => void,

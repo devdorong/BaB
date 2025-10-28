@@ -302,7 +302,7 @@ export const givePoint = async (): Promise<boolean> => {
       const today = new Date().toDateString();
 
       if (signupDate === today) {
-        console.log('신규 가입자는 다음날부터 출석체크 가능합니다.');
+        // console.log('신규 가입자는 다음날부터 출석체크 가능합니다.');
         return false; // 신규 가입자는 출석체크 불가
       }
     }
