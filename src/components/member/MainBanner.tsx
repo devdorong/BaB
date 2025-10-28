@@ -53,12 +53,12 @@ const MainBanner = () => {
         try {
           const result = await quickJoinMatching(user.id);
           if (result.success) {
-            console.log(`매칭(${result.joinedMatchingId})에 자동 참여되었습니다.`);
+            // console.log(`매칭(${result.joinedMatchingId})에 자동 참여되었습니다.`);
           } else {
-            console.log(result.message);
+            // console.log(result.message);
           }
         } catch (error) {
-          console.log('퀵매칭 오류', error);
+          // console.log('퀵매칭 오류', error);
         } finally {
           closeModal();
         }
