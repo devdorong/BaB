@@ -1,5 +1,6 @@
 import { useEffect, useState } from 'react';
 import {
+  RiAlarmWarningLine,
   RiCalendarLine,
   RiChat3Line,
   RiCloseFill,
@@ -26,6 +27,7 @@ import {
   getSimilarMatchingsWithRestaurant,
   removeMatchingParticipant,
   updateMatching,
+  updateMatchingStatus,
 } from '../../../services/matchingService';
 import { getRestaurantById, getRestaurantReviewStats } from '../../../services/restaurants';
 import type {
@@ -117,6 +119,7 @@ const MatchingDetailPage = () => {
   const [loading, setLoading] = useState(true);
   const [userData, setUserData] = useState<Profile>();
   const [headCount, setHeadCount] = useState(0);
+  const [status, setStatus] = useState('');
 
   const { closeModal, modal, openModal, x } = useModal();
 
@@ -259,7 +262,7 @@ const MatchingDetailPage = () => {
           return; // ← 바로 중단
         }
 
-        if (currentMatching.status !== 'waiting') {
+        if (currentMatching.status === 'cancel') {
           console.warn(`취소된 매칭 접근: ${matchingId}`);
           navigate('/member/matching', { replace: true });
           return;
@@ -304,6 +307,7 @@ const MatchingDetailPage = () => {
         };
         const processedMatch: Matchings = { ...currentMatching };
 
+        setStatus(processedMatch.status);
         setMatchingData(processedMatching);
         setRestaurant(restaurantData);
         setOriginMatch(processedMatch);
@@ -390,11 +394,7 @@ const MatchingDetailPage = () => {
       },
       // 결제 미진행시
       async () => {
-        const updated: MatchingsUpdate = {
-          ...originMatch,
-          status: 'completed',
-        };
-        await updateMatching(matchingId, updated);
+        await updateMatchingStatus(matchingId, 'completed');
       },
     );
   };
@@ -461,17 +461,21 @@ const MatchingDetailPage = () => {
           if (!user) {
             return;
           }
-          await removeMatchingParticipant(matchingId, user!.id);
+
+          await removeMatchingParticipant(matchingId, user.id);
+
+          // UI 업데이트
           setMembersWithProfiles(prev => prev.filter(p => p.profile_id !== user.id));
           setHeadCount(prev => prev - 1);
           setIsParticipant(false);
+
           closeModal();
           openModal('매칭 참여', '참가된 매칭에서 나왔습니다.', '', '확인', () => {
             closeModal();
           });
         } catch (error) {
-          console.log('매칭 참가중 오류 발생: ', error);
-          openModal('오류 발생', '매칭 참가에 실패하였습니다. 다시 시도해주세요.', '닫기');
+          console.log('매칭 나가기 중 오류 발생: ', error);
+          openModal('오류 발생', '매칭 나가기에 실패하였습니다. 다시 시도해주세요.', '닫기');
         }
       },
       // 취소 버튼 누를시
@@ -512,6 +516,10 @@ const MatchingDetailPage = () => {
     }
   };
 
+  useEffect(() => {
+    console.log(matchingData?.status);
+  }, [matchingData, matchingId]);
+
   if (loading || !matchingData || !restaurant) {
     return <div className="flex items-center justify-center min-h-screen">불러오는 중...</div>;
   }
@@ -542,7 +550,9 @@ const MatchingDetailPage = () => {
                   {/* 제목 */}
                   <div className="text-[24px] sm:text-[32px] font-bold flex items-center gap-3">
                     {matchingData.title}
-                    {matchingData.status !== 'waiting' && <TagBadge>종료된 매칭</TagBadge>}
+                    {headCount === matchingData.desired_members && <TagBadge>정원 도달</TagBadge>}
+                    {status === 'completed' && <TagBadge>종료된 매칭</TagBadge>}
+                    {status === 'cancel' && <TagBadge>취소된 매칭</TagBadge>}
                   </div>
                 </div>
 
@@ -743,8 +753,8 @@ const MatchingDetailPage = () => {
                       }}
                     >
                       <div className="flex gap-1 items-center justify-center">
-                        <RiFlagLine className="w-4 h-4" />
                         신고하기
+                        <RiAlarmWarningLine />
                       </div>
                     </ButtonLineLg>
                   )}
