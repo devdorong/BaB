@@ -31,7 +31,7 @@ function InfoSection({
   const isMapLoaded = useKakaoLoader();
 
   return (
-    <section className="mt-10">
+    <section className="mt-5 lg:mt-10">
       <div
         className="bg-white rounded-2xl border border-black/5
                       shadow-[0_4px_4px_rgba(0,0,0,0.02)] p-[30px]"
@@ -66,7 +66,7 @@ function InfoSection({
 
           {/* 지도 */}
           <div>
-            <h3 className="text-[18px] font-semibold text-babgray-900 mb-3">지도</h3>
+            <h3 className="pt-5 lg:pt-0 text-[18px] font-semibold text-babgray-900 mb-3">지도</h3>
             {isMapLoaded ? (
               <KkoMapDetail lat={lat} lng={lng} />
             ) : (

@@ -158,7 +158,7 @@ function CommunityPage() {
       <div className={`${styles.pageContainer} w-[1280px] mx-auto flex flex-col gap-8 py-8`}>
         {/* 타이틀 */}
         <div className="flex flex-col gap-1">
-          <p className="text-3xl font-bold">커뮤니티</p>
+          <p className="text-[24px] lg:text-3xl font-bold">커뮤니티</p>
           <p className="text-babgray-600">맛집 친구들과 소통해보세요</p>
         </div>
         {/* 검색폼,버튼 */}
@@ -167,7 +167,6 @@ function CommunityPage() {
           <div
             onClick={() => document.getElementById('searchInput')?.focus()}
             className="flex items-center gap-3 bg-white h-[55px] py-3 px-3 border border-s-babgray rounded-3xl"
-
           >
             <RiSearchLine className="text-babgray-300" />
             <input

@@ -16,7 +16,7 @@ export interface RestaurantsType {
   longitude: string | null;
   category_id?: number | null;
   interests?: { name: string } | null;
-  reviews: { count: number }[];
+  reviews: { count: number; rating_food: number }[];
 }
 
 export interface RestaurantTypeRatingAvg {
@@ -149,19 +149,26 @@ export const fetchFavoriteRestaurants = async (): Promise<RestaurantsType[]> => 
     const { data: restaurantData, error: restaurantError } = await supabase
       .from('restaurants')
       .select(
-        `id, name, phone, address, thumbnail_url, status, send_avg_rating, favorite, storeintro, latitude, longitude, category_id, interests(name),reviews(count)`,
+        `id, name, phone, address, thumbnail_url, status, send_avg_rating, favorite, storeintro, latitude, longitude, category_id, interests(name),reviews(rating_food)`,
       )
       .in('id', restaurantIds);
 
-    // interests를 배열이아닌 객체로 변환
-    const formatted = (restaurantData ?? []).map(r => ({
-      ...r,
-      interests: Array.isArray(r.interests) ? r.interests[0] : r.interests,
-    }));
-
     if (restaurantError) throw restaurantError;
 
-    return formatted;
+    // 평균 별점 계산 + interests 정리
+    const formatted = (restaurantData ?? []).map(r => {
+      const ratings = r.reviews?.map(rv => rv.rating_food ?? 0) || [];
+      const avg = ratings.length > 0 ? ratings.reduce((sum, v) => sum + v, 0) / ratings.length : 0;
+
+      return {
+        ...r,
+        send_avg_rating: Math.round(avg * 10) / 10,
+        review_count: ratings.length,
+        interests: Array.isArray(r.interests) ? r.interests[0] : r.interests,
+      };
+    });
+
+    return formatted as any;
   } catch (error) {
     return [];
   }
