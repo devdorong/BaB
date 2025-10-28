@@ -8,6 +8,7 @@ import { Swiper, SwiperSlide } from 'swiper/react';
 import { supabase } from '../../lib/supabase';
 import type { Banner } from '../../types/bobType';
 import { useNavigate } from 'react-router-dom';
+import '../../css/buttonStyles.css';
 
 const MainBanner = () => {
   const [bannerImgs, setBannerImgs] = useState<Banner[] | null>([]);
@@ -38,7 +39,7 @@ const MainBanner = () => {
         <div className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-[45%] z-20">
           <button
             onClick={() => navigate('/member/matching')}
-            className="flex flex-col items-center justify-center gap-3 w-[140px] h-[140px] sm:w-[180px] sm:h-[180px] md:w-[200px] md:h-[200px] bg-gradient-to-br from-bab-400 to-bab-600 text-white rounded-full border-[5px] border-bab-300 shadow-md"
+            className="flex flex-col items-center justify-center gap-3 w-[140px] h-[140px] sm:w-[180px] sm:h-[180px] md:w-[200px] md:h-[200px] bg-gradient-to-br from-bab-400 to-bab-600 text-white rounded-full border-[5px] border-bab-300 shadow-md "
           >
             <RiRestaurantFill size={40} className="sm:size-[48px]" />
             <span className="text-lg sm:text-xl md:text-2xl">빠른매칭</span>
@@ -82,7 +83,10 @@ const MainBanner = () => {
       <div className="absolute left-1/2 bottom-0 translate-x-[-50%] translate-y-[50%] z-20 border-[10px] rounded-[50%] bg-white border-bg-bg ">
         <button
           onClick={() => navigate('/member/matching')}
-          className="flex flex-col items-center justify-center gap-3 w-[140px] h-[140px] sm:w-[180px] sm:h-[180px] md:w-[200px] md:h-[200px] bg-gradient-to-br from-bab-400 to-bab-600 text-white rounded-full border-[5px] border-bab-300 shadow-md"
+          className="flex flex-col items-center justify-center gap-3 
+        w-[140px] h-[140px] sm:w-[180px] sm:h-[180px] md:w-[200px] md:h-[200px] 
+        bg-gradient-to-br from-bab-400 to-bab-600 
+        text-white rounded-full shadow-md custom-btn"
         >
           <RiRestaurantFill size={40} className="sm:size-[48px]" />
           <span className="text-lg sm:text-xl md:text-2xl">빠른매칭</span>
