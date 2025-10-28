@@ -29,8 +29,12 @@ function RecentMatchingPage() {
 
       try {
         const userMatchings = await getUserMatchings(user.id);
-        const endMatching = userMatchings.filter(item => item.status !== 'waiting');
-        const expectedMatching = userMatchings.filter(item => item.status === 'waiting');
+        const endMatching = userMatchings.filter(
+          item => item.status === 'cancel' || item.status === 'completed',
+        );
+        const expectedMatching = userMatchings.filter(
+          item => item.status === 'waiting' || item.status === 'full',
+        );
         // console.log('사용자 매칭:', userMatchings);
         // console.log('종료된 매칭:', endMatching);
         // console.log('예정된 매칭:', expectedMatching);
@@ -108,27 +112,6 @@ function RecentMatchingPage() {
                     </div>
                   </div>
                 </div>
-                {/* <div className="inline-flex w-[260px] p-[25px] flex-col justify-center items-center bg-white rounded-[16px] shadow-[0px_4px_4px_0px_rgba(0,0,0,0.02)]">
-                <div className="flex flex-col w-full">
-                  <p className="text-[16px] font-bold">평균 평점</p>
-                  <div className="flex flex-col items-center justify-center">
-                    <span className="text-[#FACC15]  py-[15px] text-[28px] font-bold">4.4</span>
-                    <div className="flex p-[10px] items-center">
-                      <div className="flex items-center gap-[5px] ">
-                        <div className="flex text-[#FACC15] gap-[1px]">
-                          <RiStarFill />
-                          <RiStarFill />
-                          <RiStarFill />
-                          <RiStarFill />
-                          <RiStarLine />
-                        </div>
-                        <p className="text-[13px] text-babgray-700">(4.4)</p>
-                      </div>
-                    </div>
-                    <p className="text-[13px] text-babgray-700">9개의 평가기준</p>
-                  </div>
-                </div>
-              </div> */}
               </div>
 
               <div className="flex flex-col w-full gap-[50px]">

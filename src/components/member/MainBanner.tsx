@@ -1,4 +1,4 @@
-import { useEffect, useState } from 'react';
+import { useCallback, useEffect, useState } from 'react';
 import { RiRestaurantFill } from 'react-icons/ri';
 import 'swiper/css';
 import 'swiper/css/navigation';
@@ -12,11 +12,12 @@ import { useNavigate } from 'react-router-dom';
 import Modal from '@/ui/sdj/Modal';
 import { useModal } from '@/ui/sdj/ModalState';
 import { useAuth } from '@/contexts/AuthContext';
-import { quickJoinMatching } from '@/services/matchingService';
 import { toast } from 'sonner';
 
 import '../../css/buttonStyles.css';
+import { findQuickMatchingCandidate, joinMatchingById } from '@/services/matchingService';
 
+type Preview = Awaited<ReturnType<typeof findQuickMatchingCandidate>>;
 
 const MainBanner = () => {
   const [bannerImgs, setBannerImgs] = useState<Banner[] | null>([]);
@@ -24,6 +25,34 @@ const MainBanner = () => {
   const { user } = useAuth();
   const navigate = useNavigate();
   const { modal, closeModal, openModal } = useModal();
+  const [preview, setPreview] = useState<Preview>(null);
+  const [loadingPreview, setLoadingPreview] = useState(false);
+
+  const PreviewContent = (
+    <div className="space-y-3">
+      {loadingPreview && <div className="text-sm text-babgray-600">매칭 정보를 불러오는 중…</div>}
+      {!loadingPreview && !preview && (
+        <div className="text-sm text-babgray-600">참여 가능한 매칭이 없습니다.</div>
+      )}
+      {preview && (
+        <>
+          <div className="text-base font-semibold">{preview.title ?? preview.restaurant?.name}</div>
+          {preview.restaurant?.interest[0]?.name && (
+            <div className="text-xs text-babgray-500">
+              카테고리: {preview.restaurant.interest[0].name}
+            </div>
+          )}
+          {preview.description && (
+            <p className="text-sm text-babgray-700 line-clamp-3">{preview.description}</p>
+          )}
+          <div className="text-xs text-babgray-500">
+            인원 {preview.participantCount}/{preview.desired_members}명 · 남은자리{' '}
+            {preview.remaining}명
+          </div>
+        </>
+      )}
+    </div>
+  );
 
   useEffect(() => {
     const getBannerData = async () => {
@@ -39,36 +68,64 @@ const MainBanner = () => {
     };
     getBannerData();
   }, []);
+  const fetchPreview = useCallback(async () => {
+    setLoadingPreview(true);
+    try {
+      const candidate = await findQuickMatchingCandidate();
+      setPreview(candidate);
+    } catch {
+      setPreview(null);
+    } finally {
+      setLoadingPreview(false);
+    }
+  }, []);
 
-  const handleMatchingClick = async () => {
+  const handleMatchingClick = useCallback(async () => {
     if (!user) {
       openModal('로그인 확인', '로그인이 필요합니다.', '닫기', '로그인', () =>
         navigate('/member/login'),
       );
       return;
     }
+
+    // 모달 먼저 열고
+    setPreview(null);
+    setLoadingPreview(true);
     openModal(
       '빠른매칭',
-      '해당 정보의 매칭에 참가하시겠습니까?',
+      PreviewContent, // 상태를 읽는 JSX
       '닫기',
       '참가하기',
-      // 참가하기 버튼 클릭시 실행항 함수
       async () => {
+        if (!preview) return;
         try {
-          const result = await quickJoinMatching(user.id);
-          if (result.success) {
-            // console.log(`매칭(${result.joinedMatchingId})에 자동 참여되었습니다.`);
-          } else {
-            // console.log(result.message);
+          const res = await joinMatchingById(preview.id, user.id);
+          if (res.success) {
+            // navigate(`/member/matching/${preview.id}`);
           }
-        } catch (error) {
-          // console.log('퀵매칭 오류', error);
         } finally {
           closeModal();
         }
       },
     );
-  };
+
+    // 그리고 바로 미리보기 로드
+    await fetchPreview();
+  }, [user, openModal, closeModal, navigate, PreviewContent, preview, fetchPreview]);
+
+  useEffect(() => {
+    const fetch = async () => {
+      try {
+        const candidate = await findQuickMatchingCandidate();
+        setPreview(candidate);
+      } catch (e) {
+        setPreview(null);
+      } finally {
+        setLoadingPreview(false);
+      }
+    };
+    fetch();
+  }, []);
 
   if (isLoading) {
     return (
@@ -78,8 +135,10 @@ const MainBanner = () => {
         </div>
         <div className="absolute left-1/2 bottom-0 translate-x-[-50%] translate-y-[50%] z-20 border-[10px] rounded-[50%] bg-white border-bg-bg ">
           <button
-            onClick={() => navigate('/member/matching')}
-            className="flex flex-col items-center justify-center gap-3 w-[140px] h-[140px] sm:w-[180px] sm:h-[180px] md:w-[200px] md:h-[200px] bg-gradient-to-br from-bab-400 to-bab-600 text-white rounded-full border-[5px] border-bab-300 shadow-md "
+            className="flex flex-col items-center justify-center gap-3 
+        w-[140px] h-[140px] sm:w-[180px] sm:h-[180px] md:w-[200px] md:h-[200px] 
+        bg-gradient-to-br from-bab-400 to-bab-600 
+        text-white rounded-full shadow-md custom-btn"
           >
             <RiRestaurantFill size={40} className="sm:size-[48px]" />
             <span className="text-lg sm:text-xl md:text-2xl">빠른매칭</span>
@@ -122,13 +181,11 @@ const MainBanner = () => {
       {/* 중앙 버튼 (하단 절반 걸치게) */}
       <div className="absolute left-1/2 bottom-0 translate-x-[-50%] translate-y-[50%] z-20 border-[4px] rounded-[50%] bg-white border-bg-bg sm:border-[10px]">
         <button
-
           onClick={handleMatchingClick}
-             className="flex flex-col items-center justify-center gap-3 
+          className="flex flex-col items-center justify-center gap-3 
         w-[140px] h-[140px] sm:w-[180px] sm:h-[180px] md:w-[200px] md:h-[200px] 
         bg-gradient-to-br from-bab-400 to-bab-600 
         text-white rounded-full shadow-md custom-btn"
-
         >
           <RiRestaurantFill size={40} className="sm:size-[48px]" />
           <span className="text-lg sm:text-xl md:text-2xl">빠른매칭</span>

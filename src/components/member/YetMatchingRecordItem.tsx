@@ -8,12 +8,14 @@ import type { Matchings, Profile } from '../../types/bobType';
 import TagBadge from '../../ui/TagBadge';
 import { RecentMatchingRecordSkeleton } from '../../ui/dorong/RecentMatchingRecordSkeleton';
 import { categoryColors } from '../../ui/jy/categoryColors';
+import { useNavigate } from 'react-router-dom';
 
 interface YetMatchingRecordItemProps {
   matching: Matchings;
 }
 
 const YetMatchingRecordItem = ({ matching }: YetMatchingRecordItemProps) => {
+  const navigate = useNavigate();
   const [hostNickname, setHostNickname] = useState<string | null>(null);
   const [profileData, setProfileData] = useState<Partial<Profile> | null>(null);
   const [place, setPlace] = useState<RestaurantsDetailType | null>(null);
@@ -146,17 +148,16 @@ const YetMatchingRecordItem = ({ matching }: YetMatchingRecordItemProps) => {
                 <TagBadge bgColor="bg-blue-100" textColor="text-blue-700">
                   예정
                 </TagBadge>
-              ) : matching.status === 'completed' ? (
-                <TagBadge bgColor="bg-green-100" textColor="text-green-700">
-                  완료
-                </TagBadge>
               ) : (
-                <TagBadge bgColor="bg-red-100" textColor="text-red-700">
-                  취소
+                <TagBadge bgColor="bg-green-100" textColor="text-green-700">
+                  대기
                 </TagBadge>
               )}
             </div>
-            <RiMoreFill className="text-gray-400 cursor-pointer hover:text-gray-600" />
+            <RiMoreFill
+              className="text-gray-400 cursor-pointer hover:text-gray-600"
+              onClick={() => navigate(`/member/matching/${matching.id}`)}
+            />
           </div>
 
           {/* 장소 + 시간 */}

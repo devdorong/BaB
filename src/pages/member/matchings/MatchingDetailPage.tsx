@@ -218,7 +218,7 @@ const MatchingDetailPage = () => {
         try {
           const similar = await getSimilarMatchingsWithRestaurant(matchingId, restaurant.id, 2);
           setSimilarMatchings(similar);
-          console.log('비슷한 매칭:', similar);
+          
         } catch (error) {
           console.error('비슷한 매칭 로드 실패:', error);
         }
@@ -356,8 +356,8 @@ const MatchingDetailPage = () => {
         setMembersWithProfiles(detailed);
         const joined = detailed.some(p => p.profile_id === user?.id);
         setIsParticipant(joined);
-        console.log('프로필 포함 참가자:', detailed);
-        console.log('로그인한 정보', user);
+        
+        
       } catch (err) {
         console.error('참가자 상세정보 불러오기 실패:', err);
       }
@@ -372,7 +372,7 @@ const MatchingDetailPage = () => {
     const fetchData = async () => {
       if (matchingData?.restaurant_id) {
         const data = await getRestaurantReviewStats(matchingData?.restaurant_id);
-        console.log(data);
+        
         setRating(data);
       }
     };
@@ -441,7 +441,7 @@ const MatchingDetailPage = () => {
             () => navigate('/member/profile/recentmatching'),
           );
         } catch (error) {
-          console.log('매칭 참가중 오류 발생: ', error);
+          
           openModal('오류 발생', '매칭 참가에 실패하였습니다. 다시 시도해주세요.', '닫기');
         }
       },
@@ -474,7 +474,7 @@ const MatchingDetailPage = () => {
             closeModal();
           });
         } catch (error) {
-          console.log('매칭 나가기 중 오류 발생: ', error);
+          
           openModal('오류 발생', '매칭 나가기에 실패하였습니다. 다시 시도해주세요.', '닫기');
         }
       },
@@ -517,7 +517,7 @@ const MatchingDetailPage = () => {
   };
 
   useEffect(() => {
-    console.log(matchingData?.status);
+    
   }, [matchingData, matchingId]);
 
   if (loading || !matchingData || !restaurant) {
@@ -870,7 +870,7 @@ const MatchingDetailPage = () => {
         isOpen={isPaymentModalOpen}
         onClose={() => setIsPaymentModalOpen(false)}
         onSuccess={result => {
-          console.log('결제 성공:', result);
+          
           setIsPaymentModalOpen(false);
         }}
         selectedPG={selectedPG}
