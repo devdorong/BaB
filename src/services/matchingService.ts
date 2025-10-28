@@ -23,7 +23,7 @@ export const getMatchings = async (): Promise<Matchings[]> => {
     .select('*')
     .order('created_at', { ascending: false });
   if (error) {
-    console.log('getMatchings 에러 : ', error.message);
+    // console.log('getMatchings 에러 : ', error.message);
     throw new Error(error.message);
   }
   return data ?? [];
@@ -52,7 +52,7 @@ export const getMatchingsWithRestaurant = async (): Promise<MatchingWithRestaura
     .order('created_at', { ascending: false });
 
   if (error) {
-    console.log('getMatchingsWithRestaurant 에러 : ', error.message);
+    // console.log('getMatchingsWithRestaurant 에러 : ', error.message);
     throw new Error(error.message);
   }
   return data ?? [];
@@ -66,7 +66,7 @@ export const getMatchingById = async (matchingId: number): Promise<Matchings> =>
     .eq('id', matchingId)
     .single();
   if (error) {
-    console.log('getMatchingById 에러 : ', error.message);
+    // console.log('getMatchingById 에러 : ', error.message);
     throw new Error(error.message);
   }
   return data ?? null;
@@ -81,7 +81,7 @@ export const createMatching = async (newMatching: MatchingsInsert): Promise<numb
     .single();
 
   if (error) {
-    console.log('createMatching 에러 : ', error.message);
+    // console.log('createMatching 에러 : ', error.message);
     throw new Error(error.message);
   }
 
@@ -98,12 +98,30 @@ export const updateMatching = async (
   matchingId: number,
   updatedMatching: MatchingsUpdate,
 ): Promise<void> => {
-  const { error } = await supabase.from('matchings').update(updatedMatching).eq('id', matchingId);
+  // console.log('🔄 updateMatching 시작:', { matchingId, updatedMatching });
+
+  const { data, error } = await supabase
+    .from('matchings')
+    .update(updatedMatching)
+    .eq('id', matchingId)
+    .select(); // select()를 추가해서 실제 업데이트된 데이터 확인
+
+  // console.log('업데이트 결과:', { data, error });
+
   if (error) {
-    console.log('updateMatching 에러 : ', error.message);
+    // console.error('❌ updateMatching 에러:', error);
     throw new Error(error.message);
   }
+
+  // RLS로 인해 에러는 없지만 실제로 업데이트가 안 된 경우 체크
+  if (!data || data.length === 0) {
+    // console.error('⚠️ RLS 정책으로 인해 업데이트가 차단되었습니다!');
+    throw new Error('매칭 업데이트 권한이 없습니다. (RLS 정책 확인 필요)');
+  }
+
+  // console.log('✅ updateMatching 완료:', data);
 };
+
 // 매칭 삭제 (soft delete)
 export const deleteMatching = async (matchingId: number): Promise<void> => {
   const {
@@ -121,7 +139,7 @@ export const deleteMatching = async (matchingId: number): Promise<void> => {
     .eq('matching_id', matchingId);
 
   if (matchingUserError || !matchingUser?.length) {
-    console.error('매칭 참가자 정보 불러올 수 없음');
+    // console.error('매칭 참가자 정보 불러올 수 없음');
     return;
   }
 
@@ -132,12 +150,12 @@ export const deleteMatching = async (matchingId: number): Promise<void> => {
     .single();
 
   if (matchingError) {
-    console.error('매칭 삭제 에러:', matchingError.message);
+    // console.error('매칭 삭제 에러:', matchingError.message);
     throw new Error(matchingError.message);
   }
 
   if (matching.status === 'cancel') {
-    console.warn('이미 취소된 매칭입니다.');
+    // console.warn('이미 취소된 매칭입니다.');
     return;
   }
 
@@ -147,7 +165,7 @@ export const deleteMatching = async (matchingId: number): Promise<void> => {
     .eq('id', matchingId);
 
   if (updateError) {
-    console.error('매칭 상태 업데이트 실패:', updateError.message);
+    // console.error('매칭 상태 업데이트 실패:', updateError.message);
     throw new Error(updateError.message);
   }
 
@@ -165,11 +183,12 @@ export const deleteMatching = async (matchingId: number): Promise<void> => {
   if (notification.length > 0) {
     const { error: notificationError } = await supabase.from('notifications').insert(notification);
     if (notificationError) {
-      console.log(notificationError.message);
+      // console.log(notificationError.message);
+      throw new Error(notificationError.message);
     }
   }
 
-  console.log(`매칭 ${matchingId} → cancel 처리 완료`);
+  // console.log(`매칭 ${matchingId} → cancel 처리 완료`);
 };
 
 // 참가자 추가
@@ -178,7 +197,7 @@ export const addMatchingParticipant = async (
   profileId: string,
   role: 'host' | 'member' = 'member',
 ): Promise<void> => {
-  console.log('addMatchingParticipant 호출:', { matchingId, profileId, role });
+  // console.log('addMatchingParticipant 호출:', { matchingId, profileId, role });
   // 1. 매칭 정보와 현재 참가자 수 확인
   const { data: matching, error: matchingError } = await supabase
     .from('matchings')
@@ -217,7 +236,7 @@ export const addMatchingParticipant = async (
     .insert({ matching_id: matchingId, profile_id: profileId, role })
     .select();
 
-  console.log('삽입된 데이터:', data);
+  // console.log('삽입된 데이터:', data);
 
   if (insertError) {
     if (insertError.code === '23505') {
@@ -228,7 +247,7 @@ export const addMatchingParticipant = async (
 
   // 4. 정원 도달 시 상태 업데이트
   if (currentCount + 1 === matching.desired_members) {
-    await updateMatching(matchingId, { status: 'completed' });
+    await updateMatchingStatus(matchingId, 'full');
 
     // 매칭 참가자 정보 불러오기
     const { data: matchingUser, error: matchingUserError } = await supabase
@@ -237,7 +256,7 @@ export const addMatchingParticipant = async (
       .eq('matching_id', matchingId);
 
     if (matchingUserError || !matchingUser?.length) {
-      console.error('매칭 참가자 정보 불러올 수 없음');
+      // console.error('매칭 참가자 정보 불러올 수 없음');
       return;
     }
 
@@ -252,7 +271,8 @@ export const addMatchingParticipant = async (
     const { error: notificationError } = await supabase.from('notifications').insert(notification);
 
     if (notificationError) {
-      console.log(notificationError.message);
+      // console.log(notificationError.message);
+      throw new Error(notificationError.message);
     }
   }
 };
@@ -262,6 +282,12 @@ export const removeMatchingParticipant = async (
   matchingId: number,
   profileId: string,
 ): Promise<void> => {
+  const {
+    data: { user },
+  } = await supabase.auth.getUser();
+  // console.log('현재 로그인 사용자:', user?.id);
+  // console.log('제거하려는 사용자:', profileId);
+  // 1. 참가자 삭제 (일반 권한)
   const { error } = await supabase
     .from('matching_participants')
     .delete()
@@ -269,20 +295,44 @@ export const removeMatchingParticipant = async (
     .eq('profile_id', profileId);
 
   if (error) {
-    console.log('removeMatchingParticipant 에러 : ', error.message);
+    // console.log('removeMatchingParticipant 에러 : ', error.message);
     throw new Error(error.message);
   }
 
-  // 참가자 제거 후 상태를 'waiting'으로 복구
-  const { data: matching } = await supabase
+  // 2. 매칭 정보 조회 (일반 권한)
+  const { data: matching, error: matchingError } = await supabase
     .from('matchings')
-    .select('status')
+    .select('status, desired_members')
     .eq('id', matchingId)
     .single();
 
-  if (matching?.status === 'completed') {
-    await updateMatching(matchingId, { status: 'waiting' });
+  if (matchingError) {
+    // console.log('매칭 정보 조회 에러:', matchingError.message);
+    return;
   }
+
+  // 3. full 상태인 경우에만 처리
+  if (matching?.status === 'full') {
+    // console.log('✅ 매칭이 full 상태입니다. 참가자 수 확인 중...');
+
+    const currentCount = await getParticipantCount(matchingId);
+    // console.log('현재 참가자 수:', currentCount, '정원:', matching.desired_members);
+
+    if (currentCount < matching.desired_members) {
+      // console.log('🔄 waiting으로 상태 변경 시도...');
+
+      // ✨ 새로운 status 전용 함수 사용
+      await updateMatchingStatus(matchingId, 'waiting');
+
+      // console.log(`✅ 매칭 ${matchingId} 상태가 waiting으로 변경됨`);
+    } else {
+      // console.log('⚠️ 여전히 정원이 찼습니다. 상태 변경 안 함');
+    }
+  } else {
+    // console.log('⚠️ 매칭 상태가 full이 아닙니다:', matching?.status);
+  }
+
+  // console.log('=== removeMatchingParticipant 종료 ===');
 };
 
 // 매칭의 모든 참가자 조회
@@ -321,7 +371,7 @@ export const getUserMatchings = async (profileId: string): Promise<Matchings[]> 
     .eq('profile_id', profileId);
 
   if (partError) {
-    console.error('참여 매칭 조회 실패:', partError.message);
+    // console.error('참여 매칭 조회 실패:', partError.message);
     throw new Error(partError.message);
   }
 
@@ -338,7 +388,7 @@ export const getUserMatchings = async (profileId: string): Promise<Matchings[]> 
     .in('id', matchingIds);
 
   if (matchError) {
-    console.error('매칭 데이터 조회 실패:', matchError.message);
+    // console.error('매칭 데이터 조회 실패:', matchError.message);
     throw new Error(matchError.message);
   }
 
@@ -398,7 +448,7 @@ export const getSimilarMatchings = async (
       .neq('id', restaurantId); // 현재 레스토랑 제외
 
     if (similarRestError) {
-      console.log('비슷한 레스토랑 조회 실패:', similarRestError.message);
+      // console.log('비슷한 레스토랑 조회 실패:', similarRestError.message);
       return [];
     }
 
@@ -481,4 +531,90 @@ export const getSimilarMatchingsWithRestaurant = async (
     console.error('getSimilarMatchingsWithRestaurant 에러:', error);
     return [];
   }
+};
+
+export const quickJoinMatching = async (userId: string) => {
+  const { data: matchings, error } = await supabase
+    .from('matchings')
+    .select('id, desired_members,status, created_at')
+    .eq('status', 'waiting')
+    .order('created_at', { ascending: true }); // 오래된 순 우선
+
+  if (error) throw error;
+  if (!matchings || matchings.length === 0) {
+    return { success: false, message: '참여 가능한 매칭이 없습니다.' };
+  }
+
+  const withCounts = await Promise.all(
+    matchings.map(async m => {
+      const count = await getParticipantCount(m.id);
+      return { ...m, participantCount: count, remaining: m.desired_members - count };
+    }),
+  );
+
+  const sorted = withCounts
+    .filter(m => m.remaining > 0)
+    .sort((a, b) => {
+      if (a.remaining === b.remaining) {
+        return new Date(a.created_at).getTime() - new Date(b.created_at).getTime();
+      }
+      return a.remaining - b.remaining;
+    });
+
+  const target = sorted[0];
+  if (!target) {
+    return { success: false, message: '참여 가능한 매칭이 없습니다.' };
+  }
+
+  const { data: existing, error: existError } = await supabase
+    .from('matching_participants')
+    .select('id')
+    .eq('matching_id', target.id)
+    .eq('profile_id', userId)
+    .maybeSingle();
+
+  if (existError) throw existError;
+  if (existing) {
+    return { success: false, message: '이미 해당 매칭에 참가 중입니다.' };
+  }
+
+  const { error: insertError } = await supabase
+    .from('matching_participants')
+    .insert({ matching_id: target.id, profile_id: userId });
+
+  if (insertError) throw insertError;
+
+  const newCount = await getParticipantCount(target.id);
+  if (newCount >= target.desired_members && target.status === 'waiting') {
+    await updateMatchingStatus(target.id, 'full');
+  }
+
+  return { success: true, joinedMatchingId: target.id, message: '매칭에 자동 참여되었습니다.' };
+};
+
+export const updateMatchingStatus = async (
+  matchingId: number,
+  newStatus: 'waiting' | 'full' | 'completed' | 'cancel',
+): Promise<void> => {
+  // console.log('🔄 updateMatchingStatus 시작:', { matchingId, newStatus });
+
+  const { data, error } = await supabase
+    .from('matchings')
+    .update({ status: newStatus })
+    .eq('id', matchingId)
+    .select('id, status'); // status만 확인
+
+  console.log('상태 업데이트 결과:', { data, error });
+
+  if (error) {
+    // console.error('❌ updateMatchingStatus 에러:', error.message);
+    throw new Error(error.message);
+  }
+
+  if (!data || data.length === 0) {
+    // console.error('⚠️ RLS 정책으로 인해 업데이트가 차단되었습니다!');
+    throw new Error('매칭 상태 업데이트 권한이 없습니다.');
+  }
+
+  // console.log('✅ updateMatchingStatus 완료:', data);
 };
