@@ -60,6 +60,7 @@ const MachingIndex = () => {
 
         // 한 번의 쿼리로 매칭 + 레스토랑 + 관심사 데이터 모두 가져오기
         const matchingsWithRestaurant = await getMatchingsWithRestaurant();
+        console.log(matchingsWithRestaurant);
 
         // 데이터 가공
         const processed: ProcessedMatching[] = matchingsWithRestaurant

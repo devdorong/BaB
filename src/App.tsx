@@ -74,6 +74,12 @@ import HelpPage from './pages/member/profiles/HelpPage';
 import { Toaster } from './components/ui/sonner';
 import { ChatNotificationProvider } from './contexts/ChatNotificationContext';
 import { NotificationRealTimeProvider } from './contexts/NotificationContext';
+import { useGoogleAnalytics } from './hooks/useGoogleAnalytics';
+
+const LayoutWithAnalytics = ({ children }: { children: React.ReactNode }) => {
+  useGoogleAnalytics(); // Router 컨텍스트 내부에서 사용
+  return <>{children}</>;
+};
 
 function App() {
   // supabase.auth.onAuthStateChange((_event, session) => {
@@ -153,7 +159,14 @@ function App() {
                         <Route path="/" element={<IndexPage />} />
 
                         {/* Member */}
-                        <Route path="/member" element={<MemberLayout />}>
+                        <Route
+                          path="/member"
+                          element={
+                            <LayoutWithAnalytics>
+                              <MemberLayout />
+                            </LayoutWithAnalytics>
+                          }
+                        >
                           <Route index element={<MemberPage />} />
                           <Route path="matching">
                             <Route index element={<MatchingListPage />} />
@@ -196,7 +209,14 @@ function App() {
                         </Route>
 
                         {/* 이용약관/개인정보처리방침 */}
-                        <Route path="/" element={<MemberLayout />}>
+                        <Route
+                          path="/"
+                          element={
+                            <LayoutWithAnalytics>
+                              <MemberLayout />
+                            </LayoutWithAnalytics>
+                          }
+                        >
                           <Route path="privacy" element={<TermsofServicePage />} />
                           <Route path="perpolicy" element={<PersonalPolicyPage />} />
                         </Route>
@@ -206,7 +226,13 @@ function App() {
                         <Route path="/kakao" element={<KaKaoPage />} />
 
                         {/* 헤더없는 화면 */}
-                        <Route element={<BareLayout />}>
+                        <Route
+                          element={
+                            <LayoutWithAnalytics>
+                              <BareLayout />
+                            </LayoutWithAnalytics>
+                          }
+                        >
                           <Route path="member/login" element={<MemberLoginPage />} />
                           <Route path="member/signup" element={<MemberSignupPage />} />
                           <Route path="partner/login" element={<PartnerLoginPage />} />
