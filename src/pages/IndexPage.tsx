@@ -59,7 +59,7 @@ function IndexPage() {
   return (
     <div className="w-[calc(100vw/0.9)] h-[calc(100vh/0.9)] overflow-hidden">
       {/* 웹용 화면 */}
-      <div className="hidden lg:flex w-[calc(100vw/0.9)] h-[calc(100vh/0.9)]">
+      <div className="hidden lg:flex w-full h-full">
         {/* 파트너 */}
         <div className=" w-[50%] relative group overflow-hidden">
           <img
@@ -104,7 +104,7 @@ function IndexPage() {
         </div>
       </div>
       {/* 모바일용 화면 */}
-      <div className="flex lg:hidden w-[calc(100vw/0.9)] h-[calc(100vh/0.9)]">
+      <div className="flex lg:hidden w-full h-full">
         <Swiper className="w-full h-full">
           {/* STEP 1~2 */}
           <SwiperSlide>
