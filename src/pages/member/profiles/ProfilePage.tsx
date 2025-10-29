@@ -2,19 +2,15 @@ import { getUserMatchings } from '@/services/matchingService';
 import { useEffect, useState } from 'react';
 import {
   RiArrowRightSLine,
-
   RiBankCard2Line,
-  RiBardFill,
-
   RiCalendarLine,
   RiDeleteBinLine,
   RiEdit2Line,
-  RiEditLine,
   RiMailLine,
   RiMastercardLine,
   RiPhoneLine,
   RiUserLine,
-  RiVisaLine,
+  RiVisaLine
 } from 'react-icons/ri';
 import { Link, useNavigate } from 'react-router-dom';
 import { useAuth } from '../../../contexts/AuthContext';
@@ -27,22 +23,8 @@ import type { Matchings, Profile } from '../../../types/bobType';
 import { ButtonFillMd } from '../../../ui/button';
 import CategoryBadge from '../../../ui/jy/CategoryBadge';
 
-import { fetchMyReviewData, type MyReviewData } from '../../../lib/myreviews';
-import {
-  checkFavoriteRest,
-  fetchFavoriteRestaurants,
-  fetchRestaurantDetailId,
-  getAvgMyRatingScore,
-  getFavoriteCount,
-  getMyFavoritesCount,
-  type RestaurantsDetailType,
-  type RestaurantsType,
-  type RestaurantTypeRatingAvg,
-} from '../../../lib/restaurants';
-import { getUserMatchings } from '@/services/matchingService';
-import { PaymentInputModal } from '@/components/payment/PaymentInputModal';
-import { fetchPaymentMethods } from '@/services/myPaymentService';
 import { usePayment } from '@/components/payment/PaymentContext';
+import { PaymentInputModal } from '@/components/payment/PaymentInputModal';
 
 interface PaymentMethod {
   id: number;
@@ -54,7 +36,6 @@ interface PaymentMethod {
 }
 
 import { GrayTag, OrangeTag } from '../../../ui/tag';
-
 
 function ProfilePage() {
   const { user, signOut } = useAuth();
