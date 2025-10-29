@@ -15,7 +15,6 @@ import type { Profile_Blocks } from '../../../types/bobType';
 import CommunityCardSkeleton from '../../../ui/sdj/CommunityCardSkeleton';
 import Modal from '../../../ui/sdj/Modal';
 import { useModal } from '../../../ui/sdj/ModalState';
-import styles from './BlockPage.module.css';
 
 type BlockProfile = Profile_Blocks & {
   blocked_profile: {
@@ -69,7 +68,6 @@ function BlockPage() {
   const handleUnblock = async (blockId: number, nickname: string) => {
     openModal('차단 해제', `${nickname}님의 차단을 해제하시겠습니까?`, '취소', '해제', async () => {
       const { error } = await supabase.from('profile_blocks').delete().eq('id', blockId);
-
       if (error) console.error('차단 해제 실패:', error.message);
       else setBlockedList(prev => prev.filter(b => b.id !== blockId));
       closeModal();
@@ -78,9 +76,16 @@ function BlockPage() {
 
   return (
     <div id="root" className="min-h-screen bg-bg-bg">
-      {/* 프로필 헤더 링크 */}
-      <div className={styles.pageContainer}>
-        <div className="flex py-[15px]">
+      {/* 컨테이너 */}
+      <div
+        className="
+          w-full max-w-[1280px] mx-auto box-border flex flex-col
+          px-4 sm:px-4 md:px-6 lg:px-8 xl:px-0
+          pt-[15px] pb-[60px]
+        "
+      >
+        {/* 상단 네비 */}
+        <div className="flex items-center">
           <div
             onClick={() => navigate('/member/profile')}
             className="text-babgray-600 text-[17px] cursor-pointer hover:text-babgray-900"
@@ -93,43 +98,56 @@ function BlockPage() {
           <div className="text-bab-500 text-[17px]">차단</div>
         </div>
 
-        <div className={styles.wrapper}>
-          {/* 왼쪽 카드 영역 */}
-          <div className={styles.leftSection}>
+        {/* 메인 섹션 */}
+        <div
+          className="
+            flex flex-col lg:flex-row lg:items-start justify-start gap-8 lg:gap-10
+            mt-5 w-full
+          "
+        >
+          {/* 왼쪽 카드 */}
+          <div
+            className="
+              flex flex-row sm:flex-col md:flex-row lg:flex-col 
+              items-stretch justify-center 
+              gap-4 sm:gap-5 md:gap-6 lg:gap-5
+              w-full lg:w-[280px] flex-shrink-0
+            "
+          >
             {/* 총 차단 사용자 */}
-            <div className="inline-flex w-[260px] p-[25px] flex-col justify-center items-center bg-white rounded-[16px] shadow-[0px_4px_4px_0px_rgba(0,0,0,0.02)]">
-              <div className="flex gap-[15px] flex-col items-center justify-center">
-                <div className="flex w-[40px] h-[40px] p-[10px] bg-red-100 rounded-[12px] justify-center items-center">
-                  <RiUserForbidLine className="w-[20px] h-[20px] text-babbutton-red" />
+            <div className="flex-1 lg:w-[260px] p-6 flex flex-col justify-center items-center bg-white rounded-2xl shadow-[0_4px_4px_rgba(0,0,0,0.02)]">
+              <div className="flex flex-col items-center gap-4">
+                <div className="flex w-10 h-10 p-2.5 bg-red-100 rounded-xl justify-center items-center">
+                  <RiUserForbidLine className="w-5 h-5 text-babbutton-red" />
                 </div>
-                <p className="text-[24px] font-bold">{blockedList.length}</p>
-                <p className="text-[16px] text-babgray-800">총 차단 사용자</p>
+                <p className="text-2xl font-bold">{blockedList.length}</p>
+                <p className="text-base text-babgray-800">총 차단 사용자</p>
               </div>
             </div>
 
             {/* 이번 달 차단 */}
-            <div className="inline-flex w-[260px] p-[25px] flex-col justify-center items-center bg-white rounded-[16px] shadow-[0px_4px_4px_0px_rgba(0,0,0,0.02)]">
-              <div className="flex gap-[15px] flex-col items-center justify-center">
-                <div className="flex w-[40px] h-[40px] p-[10px] bg-[#FFEEE8] rounded-[12px] justify-center items-center">
-                  <RiCalendarLine className="w-[20px] h-[20px] text-[#EA580C]" />
+            <div className="flex-1 lg:w-[260px] p-6 flex flex-col justify-center items-center bg-white rounded-2xl shadow-[0_4px_4px_rgba(0,0,0,0.02)]">
+              <div className="flex flex-col items-center gap-4">
+                <div className="flex w-10 h-10 p-2.5 bg-[#FFEEE8] rounded-xl justify-center items-center">
+                  <RiCalendarLine className="w-5 h-5 text-[#EA580C]" />
                 </div>
-                <p className="text-[24px] font-bold">{thisMonthCount}</p>
-                <p className="text-[16px] text-babgray-800">이번 달 차단</p>
+                <p className="text-2xl font-bold">{thisMonthCount}</p>
+                <p className="text-base text-babgray-800">이번 달 차단</p>
               </div>
             </div>
           </div>
 
-          {/* 오른쪽 카드 영역 */}
-          <div className={styles.rightSection}>
+          {/* 오른쪽 카드 */}
+          <div className="flex flex-col w-full gap-8 sm:gap-6 lg:gap-8">
             {/* 안내 카드 */}
-            <div className="inline-flex w-full p-[25px] flex-col justify-center bg-white rounded-[16px] shadow-[0px_4px_4px_0px_rgba(0,0,0,0.02)]">
-              <div className="flex gap-[20px]">
-                <div className="flex w-[40px] h-[40px] p-[10px] bg-red-100 rounded-[12px] justify-center items-center">
-                  <RiErrorWarningLine className="w-[20px] h-[20px] text-babbutton-red" />
+            <div className="w-full p-6 bg-white rounded-2xl shadow-[0_4px_4px_rgba(0,0,0,0.02)]">
+              <div className="flex gap-5">
+                <div className="flex w-10 h-10 p-2.5 bg-red-100 rounded-xl justify-center items-center">
+                  <RiErrorWarningLine className="w-5 h-5 text-babbutton-red" />
                 </div>
-                <div className="flex flex-col gap-[10px]">
-                  <p className="text-[24px] font-bold">차단 기능 안내</p>
-                  <div className="flex flex-col gap-[10px] text-[17px] text-babgray-800">
+                <div className="flex flex-col gap-2">
+                  <p className="text-xl font-bold">차단 기능 안내</p>
+                  <div className="flex flex-col gap-2 text-[15px] text-babgray-800 leading-relaxed">
                     <span>· 차단된 사용자는 나에게 메시지를 보낼 수 없습니다.</span>
                     <span>· 차단된 사용자와 매칭 될 경우에는 동의를 받습니다.</span>
                     <span>· 언제든지 차단을 해제할 수 있습니다.</span>
@@ -140,24 +158,21 @@ function BlockPage() {
             </div>
 
             {/* 차단자 목록 */}
-            <div className="inline-flex w-full p-[25px] flex-col justify-center bg-white rounded-[16px] shadow-[0px_4px_4px_0px_rgba(0,0,0,0.02)]">
-              <div className="flex flex-col gap-[20px]">
+            <div className="w-full p-6 bg-white rounded-2xl shadow-[0_4px_4px_rgba(0,0,0,0.02)]">
+              <div className="flex flex-col gap-5">
                 {loading ? (
                   [...Array(1)].map((_, i) => <CommunityCardSkeleton key={i} />)
                 ) : blockedList.length > 0 ? (
                   blockedList.map(item => (
                     <div
                       key={item.id}
-                      className="flex justify-between items-center p-5 bg-white rounded-xl border border-gray-200"
+                      className="flex sm:flex-col justify-between items-start sm:items-center p-5 bg-white rounded-xl border border-gray-200"
                     >
-                      {/* 왼쪽 사용자 정보 */}
-                      <div className="flex items-center gap-5">
+                      {/* 사용자 정보 */}
+                      <div className="flex items-center gap-4 mb-3 sm:mb-0">
                         <div className="w-12 h-12 flex items-center justify-center bg-gray-100 rounded-full">
-                          <span className="text-xl text-gray-700">
-                            <RiUserForbidLine />
-                          </span>
+                          <RiUserForbidLine className="text-xl text-gray-700" />
                         </div>
-
                         <div className="flex flex-col">
                           <span className="text-base font-medium text-gray-900">
                             {item.blocked_profile?.nickname}
@@ -168,7 +183,7 @@ function BlockPage() {
                         </div>
                       </div>
 
-                      {/* 차단 해제 버튼 */}
+                      {/* 해제 버튼 */}
                       <button
                         onClick={() =>
                           handleUnblock(item.id, item.blocked_profile?.nickname ?? '사용자')
@@ -207,9 +222,7 @@ function BlockPage() {
           <OkCancelModal
             isOpen={viewModal}
             onClose={() => setViewModal(false)}
-            onSubmit={() => {
-              setViewModal(false);
-            }}
+            onSubmit={() => setViewModal(false)}
             submitButtonText="해제"
             closeButtonText="취소"
           />
