@@ -573,3 +573,16 @@ export const findQuickMatchingCandidate = async () => {
     category,
   };
 };
+
+// admin 매칭페이지 작업
+// 모든 매칭 불러오기
+export const getMatchingsWithRestaurantsAndStatus = async (): Promise<any[]> => {
+  const { data, error } = await supabase
+    .from('matchings')
+    .select('*')
+    .order('created_at', { ascending: false });
+  if (error) {
+    throw new Error(error.message);
+  }
+  return data ?? [];
+};
