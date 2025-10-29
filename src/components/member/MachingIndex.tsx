@@ -115,6 +115,7 @@ const MachingIndex = () => {
   // 현재위치 가져오기
   useEffect(() => {
     if (!navigator.geolocation) {
+      setUserPos({ lng: 128.59396682562848, lat: 35.86823232723134 });
       console.error('이 브라우저는 위치 정보를 지원하지 않습니다.');
       return;
     }
@@ -128,6 +129,7 @@ const MachingIndex = () => {
       },
       err => {
         console.error('위치 정보를 가져올 수 없습니다:', err);
+        setUserPos({ lng: 128.59396682562848, lat: 35.86823232723134 });
       },
       { enableHighAccuracy: true },
     );

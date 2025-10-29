@@ -185,6 +185,7 @@ const MatchingListPage = () => {
       },
       err => {
         console.error('위치 정보를 가져올 수 없습니다:', err);
+        setUserPos({ lng: 128.59396682562848, lat: 35.86823232723134 });
       },
       { enableHighAccuracy: true },
     );
