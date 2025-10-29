@@ -68,77 +68,86 @@ export default function Notification({ isOpen, onClose, onRead }: NotificationPr
   const panelRef = useRef<HTMLDivElement>(null);
   const channelRef = useRef<ReturnType<typeof supabase.channel> | null>(null);
 
-  // 초기 로드 - isOpen과 무관하게 항상 실행
-  useEffect(() => {
-    const loadNotification = async () => {
-      const data = await fetchNotificationProfileData();
-      setNotification(data);
-    };
-    loadNotification();
-  }, []); // 한 번만 실행
+  // // 초기 로드 - isOpen과 무관하게 항상 실행
+  // useEffect(() => {
+  //   const loadNotification = async () => {
+  //     const data = await fetchNotificationProfileData();
+  //     setNotification(data);
+  //   };
+  //   loadNotification();
+  // }, []); // 한 번만 실행
 
-  // Realtime 구독 - isOpen과 무관하게 항상 유지
-  useEffect(() => {
-    const setupRealtimeSubscription = async () => {
-      const {
-        data: { user },
-      } = await supabase.auth.getUser();
+  // // Realtime 구독 - isOpen과 무관하게 항상 유지
+  // useEffect(() => {
+  //   const setupRealtimeSubscription = async () => {
+  //     const {
+  //       data: { user },
+  //     } = await supabase.auth.getUser();
 
-      if (!user) {
-        console.error('사용자 ID를 찾을 수 없습니다.');
-        return;
-      }
+  //     if (!user) {
+  //       console.error('사용자 ID를 찾을 수 없습니다.');
+  //       return;
+  //     }
 
-      console.log('🔔 Realtime 구독 시작');
+  //     console.log('Realtime 구독 시작');
 
-      channelRef.current = supabase
-        .channel(`notifications-${user.id}`)
-        .on(
-          'postgres_changes',
-          {
-            event: '*',
-            schema: 'public',
-            table: 'notifications',
-            filter: `receiver_id=eq.${user.id}`,
-          },
-          payload => {
-            // console.log('Realtime 이벤트:', payload.eventType, payload.new);
+  //     // 기존 채널 제거 (중복 방지)
+  //     if (channelRef.current) {
+  //       await supabase.removeChannel(channelRef.current);
+  //       channelRef.current = null;
+  //     }
 
-            if (payload.eventType === 'INSERT') {
-              setNotification(prev => {
-                const newNotification = payload.new as NotificationsProps;
-                if (prev.some(n => n.id === newNotification.id)) {
-                  return prev;
-                }
-                const updated = [newNotification, ...prev];
-                return updated.sort((a, b) => {
-                  if (a.is_read !== b.is_read) return a.is_read ? 1 : -1;
-                  return new Date(b.created_at).getTime() - new Date(a.created_at).getTime();
-                });
-              });
-            } else if (payload.eventType === 'UPDATE') {
-              setNotification(prev =>
-                prev.map(n => (n.id === payload.new.id ? (payload.new as NotificationsProps) : n)),
-              );
-            } else if (payload.eventType === 'DELETE') {
-              setNotification(prev => prev.filter(n => n.id !== payload.old.id));
-            }
-          },
-        )
-        .subscribe(status => {
-          console.log('📡 구독 상태:', status);
-        });
-    };
+  //     channelRef.current = supabase
+  //       .channel(`notifications-${user.id}`)
+  //       .on(
+  //         'postgres_changes',
+  //         {
+  //           event: '*',
+  //           schema: 'public',
+  //           table: 'notifications',
+  //           filter: `receiver_id=eq.${user.id}`,
+  //         },
+  //         payload => {
+  //           // console.log('Realtime 이벤트:', payload.eventType, payload.new);
 
-    setupRealtimeSubscription();
+  //           if (payload.eventType === 'INSERT') {
+  //             setNotification(prev => {
+  //               const newNotification = payload.new as NotificationsProps;
+  //               if (prev.some(n => n.id === newNotification.id)) {
+  //                 return prev;
+  //               }
+  //               const updated = [newNotification, ...prev];
+  //               return updated.sort((a, b) => {
+  //                 if (a.is_read !== b.is_read) return a.is_read ? 1 : -1;
+  //                 return new Date(b.created_at).getTime() - new Date(a.created_at).getTime();
+  //               });
+  //             });
+  //           } else if (payload.eventType === 'UPDATE') {
+  //             setNotification(prev =>
+  //               prev.map(n => (n.id === payload.new.id ? (payload.new as NotificationsProps) : n)),
+  //             );
+  //           } else if (payload.eventType === 'DELETE') {
+  //             setNotification(prev => prev.filter(n => n.id !== payload.old.id));
+  //           }
+  //         },
+  //       )
+  //       .subscribe(status => {
+  //         console.log('구독 상태:', status);
+  //         // if (status === 'SUBSCRIBED') {
+  //         //   console.log('구독 성공');
+  //         // }
+  //       });
+  //   };
 
-    return () => {
-      if (channelRef.current) {
-        // console.log('Realtime 채널 정리');
-        supabase.removeChannel(channelRef.current);
-      }
-    };
-  }, []); // 한 번만 실행, 컴포넌트가 완전히 언마운트될 때만 정리
+  //   setupRealtimeSubscription();
+
+  //   return () => {
+  //     if (channelRef.current) {
+  //       // console.log('Realtime 채널 정리');
+  //       supabase.removeChannel(channelRef.current);
+  //     }
+  //   };
+  // }, []); // 한 번만 실행, 컴포넌트가 완전히 언마운트될 때만 정리
 
   // 알림창 열 때마다 데이터 새로고침
   useEffect(() => {
@@ -282,44 +291,42 @@ export default function Notification({ isOpen, onClose, onRead }: NotificationPr
               {notification.length > 0 ? (
                 <div className="flex flex-col gap-3">
                   {notification.map(n => (
-                    <>
-                      <motion.div
-                        key={n.id}
-                        initial={{ opacity: 0, y: 20 }}
-                        animate={{ opacity: 1, y: 0 }}
-                        whileHover={{
-                          opacity: 0.7,
-                          transition: { duration: 0.6, ease: 'easeInOut' },
-                        }}
-                        className={`relative flex bg-white items-start gap-3 cursor-pointer border rounded-lg p-4 border-l-4 ${n.is_read === true ? ' border border-babgray border-l-4' : ` ${borderColors[n.type as NotificationsProps['type']].split(' ')[2]} ${borderColors[n.type as NotificationsProps['type']].split(' ')[1]}`}`}
-                        onClick={() => handleClick(n)}
+                    <motion.div
+                      key={n.id}
+                      initial={{ opacity: 0, y: 20 }}
+                      animate={{ opacity: 1, y: 0 }}
+                      whileHover={{
+                        opacity: 0.7,
+                        transition: { duration: 0.6, ease: 'easeInOut' },
+                      }}
+                      className={`relative flex bg-white items-start gap-3 cursor-pointer border rounded-lg p-4 border-l-4 ${n.is_read === true ? ' border border-babgray border-l-4' : ` ${borderColors[n.type as NotificationsProps['type']].split(' ')[2]} ${borderColors[n.type as NotificationsProps['type']].split(' ')[1]}`}`}
+                      onClick={() => handleClick(n)}
+                    >
+                      <div
+                        className={`flex items-center justify-center w-10 h-10 rounded-md  ${IconColors[n.type as NotificationsProps['type']]}`}
                       >
-                        <div
-                          className={`flex items-center justify-center w-10 h-10 rounded-md  ${IconColors[n.type as NotificationsProps['type']]}`}
-                        >
-                          {n.type === '매칭완료' ? (
-                            <CheckLine size={20} bgColor="none" />
-                          ) : n.type === '채팅' ? (
-                            <Message2Fill bgColor="none" size={20} />
-                          ) : n.type === '이벤트' ? (
-                            <GiftFill bgColor="#4382e7" size={20} />
-                          ) : n.type === '매칭취소' ? (
-                            <CloseFill bgColor="none" size={20} />
-                          ) : n.type === '댓글' ? (
-                            <QuestionAnswerFill bgColor="none" size={20} />
-                          ) : (
-                            <StarFill bgColor="none" size={20} />
-                          )}
-                        </div>
-                        {/* <div className="text-lg">{n.title}</div> */}
-                        <div className="flex-1">
-                          <p className="text-sm text-gray-900 font-medium">{n.title}</p>
-                          <p className="text-xs text-gray-400">
-                            {new Date(n.created_at).toLocaleString()}
-                          </p>
-                        </div>
-                      </motion.div>
-                    </>
+                        {n.type === '매칭완료' ? (
+                          <CheckLine size={20} bgColor="none" />
+                        ) : n.type === '채팅' ? (
+                          <Message2Fill bgColor="none" size={20} />
+                        ) : n.type === '이벤트' ? (
+                          <GiftFill bgColor="#4382e7" size={20} />
+                        ) : n.type === '매칭취소' ? (
+                          <CloseFill bgColor="none" size={20} />
+                        ) : n.type === '댓글' ? (
+                          <QuestionAnswerFill bgColor="none" size={20} />
+                        ) : (
+                          <StarFill bgColor="none" size={20} />
+                        )}
+                      </div>
+                      {/* <div className="text-lg">{n.title}</div> */}
+                      <div className="flex-1">
+                        <p className="text-sm text-gray-900 font-medium">{n.title}</p>
+                        <p className="text-xs text-gray-400">
+                          {new Date(n.created_at).toLocaleString()}
+                        </p>
+                      </div>
+                    </motion.div>
                   ))}
                 </div>
               ) : (

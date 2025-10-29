@@ -1,7 +1,7 @@
+import { getUserMatchings } from '@/services/matchingService';
 import { useEffect, useState } from 'react';
 import {
   RiArrowRightSLine,
-  RiBardFill,
   RiCalendarLine,
   RiDeleteBinLine,
   RiEdit2Line,
@@ -14,28 +14,15 @@ import {
 } from 'react-icons/ri';
 import { Link, useNavigate } from 'react-router-dom';
 import { useAuth } from '../../../contexts/AuthContext';
+import { usePoint } from '../../../contexts/PointContext';
+import { fetchCurrentProfileInterests } from '../../../lib/interests';
+import { fetchMyReviewData, type MyReviewData } from '../../../lib/myreviews';
 import { getProfile } from '../../../lib/propile';
+import { getAvgMyRatingScore, getMyFavoritesCount } from '../../../lib/restaurants';
 import type { Matchings, Profile } from '../../../types/bobType';
 import { ButtonFillMd } from '../../../ui/button';
-import { Cafe, ChineseFood, GrayTag, Indoor, KFood, OrangeTag } from '../../../ui/tag';
-import { usePoint } from '../../../contexts/PointContext';
-import { supabase } from '../../../lib/supabase';
-import { fetchCurrentProfileInterests } from '../../../lib/interests';
-import { Divider } from 'antd';
 import CategoryBadge from '../../../ui/jy/CategoryBadge';
-import { fetchMyReviewData, type MyReviewData } from '../../../lib/myreviews';
-import {
-  checkFavoriteRest,
-  fetchFavoriteRestaurants,
-  fetchRestaurantDetailId,
-  getAvgMyRatingScore,
-  getFavoriteCount,
-  getMyFavoritesCount,
-  type RestaurantsDetailType,
-  type RestaurantsType,
-  type RestaurantTypeRatingAvg,
-} from '../../../lib/restaurants';
-import { getUserMatchings } from '@/services/matchingService';
+import { GrayTag, OrangeTag } from '../../../ui/tag';
 
 function ProfilePage() {
   const { user, signOut } = useAuth();

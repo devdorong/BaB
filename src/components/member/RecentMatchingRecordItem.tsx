@@ -173,7 +173,7 @@ const RecentMatchingRecordItem = ({ endMatching }: RecentMatchingRecordItemProps
                   </TagBadge>
                 )}
               </div>
-              <RiMoreFill className="text-gray-400 cursor-pointer hover:text-gray-600" />
+              {/* <RiMoreFill className="text-gray-400 cursor-pointer hover:text-gray-600" /> */}
             </div>
 
             {/* 장소 + 시간 */}
