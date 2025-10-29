@@ -1,69 +1,86 @@
-/**
- * 새 채팅 알림 Context
- * - 새 채팅 요청 시 알림 상태 관리
- * - 주메뉴에 N 아이콘 표시
- * - 채팅방 입장 시 알림 제거
- */
+import type { NotificationsProps } from '@/lib/notification';
+import { supabase } from '@/lib/supabase';
+import { createContext, useContext, useEffect, useRef, useState } from 'react';
 
-import { createContext, useCallback, useContext, useState } from 'react';
-
-interface NotificationContextType {
-  hasNewChat: boolean; // 새 채팅 알림 상태
-  setHasNewChat: (hasNew: boolean) => void; // 알림 상태 설정
-  setHasNewChatWithStorage: (hasNew: boolean) => void; // 로컬 스토리지와 함께 알림 상태 설정
-  clearNewChatNotification: () => void; // 알림 제거
+interface RealTimeNotificationContextType {
+  notifications: NotificationsProps[];
+  setNotifications: React.Dispatch<React.SetStateAction<NotificationsProps[]>>;
 }
 
-const NotificationContext = createContext<NotificationContextType | undefined>(undefined);
+const NotificationRealTimeContext = createContext<RealTimeNotificationContextType | undefined>(
+  undefined,
+);
 
-export const NotificationProvider = ({ children }: { children: React.ReactNode }) => {
-  // 로컬 스토리지에서 알림 상태 초기화
-  const [hasNewChat, setHasNewChat] = useState<boolean>(() => {
-    try {
-      const saved = localStorage.getItem('hasNewChat');
-      return saved === 'true';
-    } catch {
-      return false;
-    }
-  });
+export const NotificationRealTimeProvider = ({ children }: { children: React.ReactNode }) => {
+  const [notifications, setNotifications] = useState<NotificationsProps[]>([]);
+  const channelRef = useRef<ReturnType<typeof supabase.channel> | null>(null);
 
-  const clearNewChatNotification = useCallback(() => {
-    setHasNewChat(false);
-    try {
-      localStorage.setItem('hasNewChat', 'false');
-    } catch {
-      // 로컬 스토리지 오류 무시
-    }
-  }, []);
+  useEffect(() => {
+    const setupRealTime = async () => {
+      const {
+        data: { user },
+      } = await supabase.auth.getUser();
 
-  // 알림 상태 변경 시 로컬 스토리지에 저장
-  const setHasNewChatWithStorage = useCallback((hasNew: boolean) => {
-    setHasNewChat(hasNew);
-    try {
-      localStorage.setItem('hasNewChat', hasNew.toString());
-    } catch {
-      // 로컬 스토리지 오류 무시
-    }
+      if (!user) {
+        console.log('사용자 찾을 수 없음');
+        return;
+      }
+
+      console.log('구독시작');
+
+      if (channelRef.current) {
+        await supabase.removeChannel(channelRef.current);
+        channelRef.current = null;
+      }
+
+      channelRef.current = supabase
+        .channel(`notifications-${user.id}`)
+        .on(
+          'postgres_changes',
+          {
+            event: '*',
+            schema: 'public',
+            table: 'notifications',
+            filter: `receiver_id=eq.${user.id}`,
+          },
+          payload => {
+            if (payload.eventType === 'INSERT') {
+              const newNotification = payload.new as NotificationsProps;
+              setNotifications(prev =>
+                prev.some(n => n.id === newNotification.id) ? prev : [newNotification, ...prev],
+              );
+            } else if (payload.eventType === 'UPDATE') {
+              setNotifications(prev =>
+                prev.map(n => (n.id === payload.new.id ? (payload.new as NotificationsProps) : n)),
+              );
+            } else if (payload.eventType === 'DELETE') {
+              setNotifications(prev => prev.filter(n => n.id !== payload.old.id));
+            }
+          },
+        )
+        .subscribe(status => {
+          console.log('구독상태:', status);
+        });
+    };
+    setupRealTime();
+
+    return () => {
+      if (channelRef.current) {
+        // console.log('Realtime 채널 정리');
+        supabase.removeChannel(channelRef.current);
+      }
+    };
   }, []);
 
   return (
-    <NotificationContext.Provider
-      value={{
-        hasNewChat,
-        setHasNewChat,
-        setHasNewChatWithStorage,
-        clearNewChatNotification,
-      }}
-    >
+    <NotificationRealTimeContext.Provider value={{ notifications, setNotifications }}>
       {children}
-    </NotificationContext.Provider>
+    </NotificationRealTimeContext.Provider>
   );
 };
 
-export const useNotification = () => {
-  const context = useContext(NotificationContext);
-  if (context === undefined) {
-    throw new Error('useNotification must be used within a NotificationProvider');
-  }
-  return context;
+export const useRealTimeNotification = () => {
+  const ctx = useContext(NotificationRealTimeContext);
+  if (!ctx) throw new Error('컨택스트 없음');
+  return ctx;
 };

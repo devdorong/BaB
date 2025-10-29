@@ -88,9 +88,9 @@ function RecentMatchingPage() {
           <div className="mt-6 mb-14">
             <div className="flex flex-col lg:flex-row lg:gap-8 gap-4 items-start">
               {/* 왼쪽 프로필 카드 */}
-              <div className="flex flex-col gap-5 items-center justify-center lg:w-[300px] w-full">
+              <div className="flex flex-col w-full gap-5 items-center justify-center lg:w-[300px] ">
                 <div className="inline-flex w-full bg-white rounded-2xl shadow-[0_4px_4px_rgba(0,0,0,0.02)] p-6 flex-col items-center lg:w-[260px]">
-                  <div>
+                  <div className="flex flex-col w-full">
                     <p className="text-[16px] font-bold pb-[15px]">매칭 통계</p>
                     <div className="flex lg:flex-col gap-[15px]">
                       <div className="flex flex-col rounded-[12px] flex-1 lg:w-[200px] py-[16px] justify-center items-center bg-[#DCFCE7]">
