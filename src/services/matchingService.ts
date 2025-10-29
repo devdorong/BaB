@@ -549,11 +549,18 @@ export const findQuickMatchingCandidate = async () => {
 
   const { data: restaurant, error: restErr } = await supabase
     .from('restaurants')
-    .select(`name,interest:interests!restaurants_category_id_fkey ( name )`)
+    .select(`name,category_id`)
     .eq('id', target.restaurant_id)
     .maybeSingle();
 
-  if (restErr) throw restErr;
+  if (restErr) throw new Error(restErr.message);
+
+  const { data: category, error: categoryErr } = await supabase
+    .from('interests')
+    .select('name,id')
+    .eq('id', restaurant?.category_id)
+    .single();
+  if (categoryErr) throw new Error(categoryErr.message);
 
   return {
     id: target.id,
@@ -563,5 +570,6 @@ export const findQuickMatchingCandidate = async () => {
     participantCount: target.participantCount,
     remaining: target.remaining,
     restaurant,
+    category,
   };
 };

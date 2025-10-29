@@ -150,6 +150,9 @@ module.exports = {
       animation: {
         'spin-slow': 'spin 2s linear infinite',
       },
+      babscreen: {
+        screen: 'h-[calc(100vh/0.9)]',
+      },
     },
   },
   plugins: [require('tailwindcss-animate')],

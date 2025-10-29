@@ -218,7 +218,6 @@ const MatchingDetailPage = () => {
         try {
           const similar = await getSimilarMatchingsWithRestaurant(matchingId, restaurant.id, 2);
           setSimilarMatchings(similar);
-          
         } catch (error) {
           console.error('비슷한 매칭 로드 실패:', error);
         }
@@ -356,8 +355,6 @@ const MatchingDetailPage = () => {
         setMembersWithProfiles(detailed);
         const joined = detailed.some(p => p.profile_id === user?.id);
         setIsParticipant(joined);
-        
-        
       } catch (err) {
         console.error('참가자 상세정보 불러오기 실패:', err);
       }
@@ -372,7 +369,7 @@ const MatchingDetailPage = () => {
     const fetchData = async () => {
       if (matchingData?.restaurant_id) {
         const data = await getRestaurantReviewStats(matchingData?.restaurant_id);
-        
+
         setRating(data);
       }
     };
@@ -441,7 +438,6 @@ const MatchingDetailPage = () => {
             () => navigate('/member/profile/recentmatching'),
           );
         } catch (error) {
-          
           openModal('오류 발생', '매칭 참가에 실패하였습니다. 다시 시도해주세요.', '닫기');
         }
       },
@@ -474,7 +470,6 @@ const MatchingDetailPage = () => {
             closeModal();
           });
         } catch (error) {
-          
           openModal('오류 발생', '매칭 나가기에 실패하였습니다. 다시 시도해주세요.', '닫기');
         }
       },
@@ -516,9 +511,7 @@ const MatchingDetailPage = () => {
     }
   };
 
-  useEffect(() => {
-    
-  }, [matchingData, matchingId]);
+  useEffect(() => {}, [matchingData, matchingId]);
 
   if (loading || !matchingData || !restaurant) {
     return <div className="flex items-center justify-center min-h-screen">불러오는 중...</div>;
@@ -550,7 +543,7 @@ const MatchingDetailPage = () => {
                   {/* 제목 */}
                   <div className="text-[24px] sm:text-[32px] font-bold flex items-center gap-3">
                     {matchingData.title}
-                    {headCount === matchingData.desired_members && <TagBadge>정원 도달</TagBadge>}
+                    {headCount === matchingData.desired_members && <TagBadge>모집완료</TagBadge>}
                     {status === 'completed' && <TagBadge>종료된 매칭</TagBadge>}
                     {status === 'cancel' && <TagBadge>취소된 매칭</TagBadge>}
                   </div>
@@ -870,7 +863,6 @@ const MatchingDetailPage = () => {
         isOpen={isPaymentModalOpen}
         onClose={() => setIsPaymentModalOpen(false)}
         onSuccess={result => {
-          
           setIsPaymentModalOpen(false);
         }}
         selectedPG={selectedPG}

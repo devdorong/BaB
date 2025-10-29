@@ -64,9 +64,11 @@ export const PaymentProvider = ({ children }: { children: React.ReactNode }) => 
   // 결제수단 추가
   const addPaymentMethod = async (method: Omit<PaymentMethod, 'id'>) => {
     if (!user) return;
+    const hasAny = paymentMethods.length > 0;
     const { error } = await supabase.from('payment_methods').insert({
       ...method,
       profile_id: user.id,
+      is_default: hasAny ? method.is_default : true,
     });
     if (error) console.error('결제수단 추가 실패:', error.message);
     await fetchPaymentMethods();
@@ -74,8 +76,24 @@ export const PaymentProvider = ({ children }: { children: React.ReactNode }) => 
 
   // 결제수단 삭제
   const removePaymentMethod = async (id: number) => {
+    const target = paymentMethods.find(m => m.id === id);
     const { error } = await supabase.from('payment_methods').delete().eq('id', id);
     if (error) console.error('결제수단 삭제 실패:', error.message);
+
+    if (target?.is_default) {
+      const { data: remaining, error: remainingError } = await supabase
+        .from('payment_methods')
+        .select('*')
+        .eq('profile_id', user?.id)
+        .order('id', { ascending: true });
+
+      if (!remainingError && remaining && remaining.length > 0) {
+        const newDefaultId = remaining[0].id;
+        await supabase.from('payment_methods').update({ is_default: true }).eq('id', newDefaultId);
+        console.log(`삭제된 기본카드를 대체하여 카드 ${newDefaultId}가 기본으로 설정됨`);
+      }
+    }
+    
     await fetchPaymentMethods();
   };
 

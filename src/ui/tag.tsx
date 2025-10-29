@@ -546,7 +546,7 @@ export const InterestBadge = ({
 }: TagBadgeProps) => {
   return (
     <div
-      className={`flex w-auto px-[20px] py-[10px] rounded-3xl text-[13px] cursor-pointer items-center justify-center  ${bgColor} ${textColor}`}
+      className={`flex w-auto px-[20px] py-[10px] rounded-3xl text-[13px] items-center justify-center  ${bgColor} ${textColor}`}
     >
       {children}
     </div>

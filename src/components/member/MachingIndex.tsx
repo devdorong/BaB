@@ -2,7 +2,10 @@ import { useEffect, useState } from 'react';
 import { RiAddLine } from 'react-icons/ri';
 import { useNavigate } from 'react-router-dom';
 import { useAuth } from '../../contexts/AuthContext';
-import { getMatchingsWithRestaurant, type MatchingWithRestaurant } from '../../services/matchingService';
+import {
+  getMatchingsWithRestaurant,
+  type MatchingWithRestaurant,
+} from '../../services/matchingService';
 import type { Matchings } from '../../types/bobType';
 import { ButtonFillLG, ButtonLineMd } from '../../ui/button';
 import MatchCardSkeleton from '../../ui/dorong/MatchCardSkeleton';
@@ -10,6 +13,7 @@ import { categoryColors, defaultCategoryColor } from '../../ui/jy/categoryColors
 import Modal from '../../ui/sdj/Modal';
 import { useModal } from '../../ui/sdj/ModalState';
 import MatchCard, { type Badge } from '../MatchCard';
+import { supabase } from '@/lib/supabase';
 
 type ProcessedMatching = Matchings & {
   tags: Badge[];
@@ -57,7 +61,7 @@ const MachingIndex = () => {
         // 한 번의 쿼리로 매칭 + 레스토랑 + 관심사 데이터 모두 가져오기
         const matchingsWithRestaurant = await getMatchingsWithRestaurant();
 
-        // 데이터 가공  
+        // 데이터 가공
         const processed: ProcessedMatching[] = matchingsWithRestaurant
           .filter(matching => matching.restaurants) // 레스토랑 정보가 있는 것만
           .map(matching => {

@@ -3,7 +3,7 @@ import { ButtonFillMd } from '../button';
 import type React from 'react';
 import { useEffect } from 'react';
 import { AnimatePresence, motion } from 'framer-motion';
-import styles from './Modal.module.css';
+import styles from '../sdj/Modal.module.css';
 
 export interface ModalProps {
   isOpen: boolean;
@@ -20,7 +20,7 @@ export interface ModalProps {
   onX?: () => void;
 }
 
-const Modal: React.FC<ModalProps> = ({
+const MatchingModal: React.FC<ModalProps> = ({
   isOpen,
   onClose,
   onSubmit,
@@ -56,7 +56,7 @@ const Modal: React.FC<ModalProps> = ({
           transition={{ duration: 0.25 }} // 애니메이션 시간
         >
           <motion.div
-            className={styles.modalContainer}
+            className="flex flex-col gap-0 w-[470px] min-h-[250px] bg-white rounded-[30px] shadow-[0 4px 16px rgba(0, 0, 0, 0.1)] overflow-hidden"
             initial={{ scale: 0.95, opacity: 0 }}
             animate={{ scale: 1, opacity: 1 }}
             exit={{ scale: 0.95, opacity: 0 }}
@@ -107,4 +107,4 @@ const Modal: React.FC<ModalProps> = ({
   );
 };
 
-export default Modal;
+export default MatchingModal;

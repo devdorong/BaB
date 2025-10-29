@@ -6,6 +6,9 @@ import type { ProfileInsert } from '../types/bobType';
 import { LogoLg } from '../ui/Ui';
 import { RiArrowDownSLine, RiCheckLine } from 'react-icons/ri';
 import { useNavigate } from 'react-router-dom';
+import { useModal } from '@/ui/sdj/ModalState';
+import Modal from '@/ui/sdj/Modal';
+import { Select } from 'antd';
 function MemberSignupPage() {
   // ts
   // const { signUp } = useAuth();
@@ -22,7 +25,34 @@ function MemberSignupPage() {
   const [birth, setBirth] = useState('');
   const [gender, setGender] = useState(true);
   const [msg, setMsg] = useState('');
+  const { closeModal, modal, openModal } = useModal();
   const navigate = useNavigate();
+  // 이용 약관
+  const [agreements, setAgreements] = useState({
+    terms: false,
+    privacy: false,
+    marketing: false,
+  });
+
+  const [isCheckingEmail, setIsCheckingEmail] = useState(false);
+  const [isEmailAvailable, setIsEmailAvailable] = useState<boolean | null>(null);
+
+  const [isCheckingNick, setIsCheckingNick] = useState(false);
+  const [isNickAvailable, setIsNickAvailable] = useState<boolean | null>(null);
+
+  const allChecked = Object.values(agreements).every(Boolean);
+  const toggleAll = () => {
+    const newValue = !allChecked;
+    setAgreements({
+      terms: newValue,
+      privacy: newValue,
+      marketing: newValue,
+    });
+  };
+
+  const toggleOne = (key: keyof typeof agreements) => {
+    setAgreements(prev => ({ ...prev, [key]: !prev[key] }));
+  };
 
   // 현재 년도 기준 리스트
   const currentYear = new Date().getFullYear();
@@ -64,14 +94,87 @@ function MemberSignupPage() {
     }
   }, [year, month, day]);
 
+  // 이메일 중복 체크
+  const handleCheckEmail = async () => {
+    if (!email.trim()) return setMsg('이메일을 입력하세요.');
+
+    const { data, error } = await supabase
+      .from('profiles_with_email')
+      .select('email')
+      .eq('email', email)
+      .maybeSingle(); // 1건만 반환
+
+    if (error) {
+      console.error('이메일 확인 중 오류:', error.message);
+      setMsg('이메일 확인 중 오류가 발생했습니다.');
+      return;
+    }
+
+    if (data) {
+      setIsEmailAvailable(false);
+      setMsg('이미 가입된 이메일입니다.');
+    } else {
+      setIsEmailAvailable(true);
+      setMsg('사용 가능한 이메일입니다.');
+    }
+  };
+
+  // 닉네임 중복 체크
+  const handleCheckNick = async () => {
+    if (!nickName.trim()) {
+      setMsg('닉네임을 입력하세요.');
+      return;
+    }
+
+    setIsCheckingNick(true);
+    setIsNickAvailable(null);
+
+    const { data, error } = await supabase
+      .from('profiles')
+      .select('id')
+      .eq('nickname', nickName)
+      .maybeSingle();
+
+    setIsCheckingNick(false);
+
+    if (error) {
+      console.error('닉네임 중복체크 오류:', error.message);
+      setMsg('닉네임 확인 중 오류가 발생했습니다.');
+      return;
+    }
+
+    if (data) {
+      setIsNickAvailable(false);
+      setMsg('이미 사용 중인 닉네임입니다.');
+    } else {
+      setIsNickAvailable(true);
+      setMsg('사용 가능한 닉네임입니다.');
+    }
+  };
+
+  const validateForm = () => {
+    if (!email.trim()) return '이메일을 입력하세요.';
+    if (!pw.trim()) return '비밀번호를 입력하세요.';
+    if (pw.length < 6) return '비밀번호는 6자 이상 입력하세요.';
+    if (pw !== confirmPw) return '비밀번호와 확인 비밀번호가 일치하지 않습니다.';
+    if (!nickName.trim()) return '닉네임을 입력하세요.';
+    if (!birth) return '생년월일을 선택하세요.';
+    if (isEmailAvailable === false) return '이미 가입된 이메일입니다.';
+    if (isNickAvailable === false) return '이미 사용 중인 닉네임입니다.';
+    if (isEmailAvailable !== true || isNickAvailable !== true)
+      return '이메일과 닉네임 중복 확인을 완료해주세요.';
+    if (!agreements.terms || !agreements.privacy)
+      return '필수 약관에 모두 동의해야 신청이 가능합니다.';
+    return null;
+  };
+
   const handleSubmit = async (e: React.FormEvent<HTMLFormElement>) => {
     e.preventDefault();
-    if (!email.trim()) return alert('이메일을 입력하세요.');
-    if (!pw.trim()) return alert('비밀번호를 입력하세요.');
-    if (pw.length < 6) return alert('비밀번호는 6자 이상 입력하세요.');
-    if (pw !== confirmPw) return alert('비밀번호와 확인 비밀번호가 일치하지 않습니다.');
-    if (!nickName.trim()) return alert('닉네임을 입력하세요.');
-    if (!birth) return alert('생년월일을 선택하세요.');
+    const errorMsg = validateForm();
+    if (errorMsg) {
+      openModal('입력 오류', errorMsg, '닫기', '확인', () => closeModal());
+      return;
+    }
 
     try {
       // 1. 회원가입만 먼저 진행 (프로필 생성은 이메일 인증 후)
@@ -107,6 +210,8 @@ function MemberSignupPage() {
     }
   };
 
+  const handleMonthChange = () => {};
+
   const handlePhoneChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     let value = e.target.value.replace(/\D/g, ''); // 숫자만 남기기
 
@@ -122,278 +227,339 @@ function MemberSignupPage() {
     }
   };
 
+  useEffect(() => {
+    if (msg) {
+      const isSuccess = msg.includes('회원가입에 성공했습니다');
+
+      if (isSuccess) {
+        openModal(
+          '회원가입 완료',
+          `${email} 주소로 인증 메일을 보냈습니다.\n메일함을 열어 인증을 완료해주세요.`,
+          '닫기',
+          '메일함 열기',
+          () => {
+            // 이메일 도메인에 따라 자동 이동
+            const domain = email.split('@')[1];
+            let mailUrl = '';
+
+            if (domain.includes('gmail')) mailUrl = 'https://mail.google.com/';
+            else if (domain.includes('naver')) mailUrl = 'https://mail.naver.com/';
+            else if (domain.includes('daum')) mailUrl = 'https://mail.daum.net/';
+            else if (domain.includes('kakao')) mailUrl = 'https://mail.kakao.com/';
+            else mailUrl = `https://tmailor.com/ko/`; // 기본값 임시이메일생성
+
+            window.open(mailUrl, '_blank');
+            closeModal();
+          },
+        );
+      } else {
+        // 일반 알림 모달
+        openModal(msg.includes('가능') ? '가능' : '알림', msg, '닫기', '확인', () => {
+          closeModal();
+        });
+      }
+      setMsg('');
+    }
+  }, [msg]);
+
   // tsx
   return (
-    <div className="w-[full] min-h-full bg-bg-bg">
-      <div className="w-[530px] flex flex-col justify-center items-center gap-[60px] mx-auto py-[100px] ">
-        <div className="flex justify-center items-center flex-col gap-[50px] ]">
-          <LogoLg />
-          <div className="text-center flex flex-col  gap-[12px]">
-            <h2 className="text-black text-3xl font-bold">BaB에 오신 걸 환영합니다!</h2>
-            <p className="text-babgray-600 text-base ">
+    <div className="min-h-screen bg-bg-bg flex flex-col justify-center items-center px-4 sm:px-6 py-16">
+      {/* 상단 로고 및 안내문 */}
+      <div className="flex flex-col justify-center items-center gap-10 w-full max-w-[530px] text-center">
+        <div className="flex flex-col justify-center items-center gap-8">
+          {/* 반응형 로고 */}
+          <div className="transform transition-transform duration-300 scale-90 sm:scale-100 max-w-[200px] sm:max-w-none mx-auto">
+            <LogoLg />
+          </div>
+
+          <div className="flex flex-col gap-3">
+            <h2 className="text-black text-2xl sm:text-3xl font-bold">BaB에 오신 걸 환영합니다!</h2>
+            <p className="text-babgray-600 text-sm sm:text-base">
               함께 식사할 친구를 찾기 위해 정보를 입력해주세요
             </p>
           </div>
         </div>
-        <div>
-          <form className="w-[426px]" onSubmit={handleSubmit}>
-            <div className="flex flex-col gap-5">
-              <InputField
-                label="이름"
-                type="text"
-                value={name}
-                onChange={e => setName(e.target.value)}
-                placeholder="이름을 입력해주세요"
-                required
-              />
-              {/* 닉네임 */}
-              <InputFieldWithButton
-                label="닉네임"
-                type="text"
-                value={nickName}
-                onChange={e => setNickName(e.target.value)}
-                placeholder="닉네임을 입력해주세요"
-                required
-                children="중복 체크"
-              />
 
-              {/* 이메일 */}
-              <InputFieldWithButton
-                label="이메일"
-                type="email"
-                value={email}
-                onChange={e => setEmail(e.target.value)}
-                placeholder="이메일을 입력해주세요"
-                required
-                children="중복 체크"
-              />
+        {/* 입력 폼 */}
+        <div className="w-full max-w-[426px]">
+          <form onSubmit={handleSubmit} className="flex flex-col gap-5">
+            <InputField
+              label="이름"
+              type="text"
+              value={name}
+              onChange={e => setName(e.target.value)}
+              placeholder="이름을 입력해주세요"
+              required
+            />
 
-              {/* 비밀번호 */}
-              <InputField
-                label="비밀번호"
-                type="password"
-                value={pw}
-                onChange={e => setPw(e.target.value)}
-                placeholder="비밀번호를 입력해주세요"
-                required
-              />
+            <InputFieldWithButton
+              label="닉네임"
+              type="text"
+              value={nickName}
+              onChange={e => setNickName(e.target.value)}
+              placeholder="닉네임을 입력해주세요"
+              required
+              onButtonClick={handleCheckNick}
+              children={isCheckingNick ? '확인 중...' : '중복 체크'}
+            />
 
-              {/* 비밀번호 확인 */}
-              <InputField
-                label="비밀번호 확인"
-                type="password"
-                value={confirmPw}
-                onChange={e => setConfirmPw(e.target.value)}
-                placeholder="비밀번호를 다시 입력해주세요"
-                required
-              />
+            <InputFieldWithButton
+              label="이메일"
+              type="email"
+              value={email}
+              onChange={e => setEmail(e.target.value)}
+              placeholder="이메일을 입력해주세요"
+              required
+              onButtonClick={handleCheckEmail}
+              children={isCheckingEmail ? '확인 중...' : '중복 체크'}
+            />
 
-              {/* 휴대폰 번호 */}
-              <InputFieldWithButton
-                label="휴대폰 번호"
-                type="text"
-                value={phone}
-                onChange={handlePhoneChange}
-                placeholder="번호를 입력해주세요"
-                required
-                children="인증번호 전송"
-              />
+            <InputField
+              label="비밀번호"
+              type="password"
+              value={pw}
+              onChange={e => setPw(e.target.value)}
+              placeholder="비밀번호를 입력해주세요"
+              required
+            />
 
-              {/* 생년월일 */}
+            <InputField
+              label="비밀번호 확인"
+              type="password"
+              value={confirmPw}
+              onChange={e => setConfirmPw(e.target.value)}
+              placeholder="비밀번호를 다시 입력해주세요"
+              required
+            />
 
-              <div className="flex flex-col gap-2">
-                <label className="flex items-center gap-1 text-gray-700 font-medium">
-                  생년월일 <span className="text-bab-500">*</span>
-                </label>
-                <div className="flex gap-2">
-                  {/* 년도 */}
-                  <div className="relative flex-1">
-                    <select
-                      value={year}
-                      onChange={e => setYear(e.target.value)}
-                      required
-                      className="w-full h-[50px] rounded-[25px] border border-gray-300 px-3 pr-10 text-gray-400 focus:outline-none focus:ring-2 focus:ring-bab-500 appearance-none"
-                    >
-                      <option value="">년도</option>
-                      {years.map(y => (
-                        <option key={y} value={y}>
-                          {y}
-                        </option>
-                      ))}
-                    </select>
-                    <div className="pointer-events-none absolute right-3 top-1/2 -translate-y-1/2">
-                      <RiArrowDownSLine color="#C2C2C2" />
-                    </div>
-                  </div>
+            <InputField
+              label="휴대폰 번호"
+              type="text"
+              value={phone}
+              onChange={handlePhoneChange}
+              placeholder="번호를 입력해주세요"
+              required
+            />
 
-                  {/* 월 */}
-                  <div className="relative flex-1">
-                    <select
-                      value={month}
-                      onChange={e => setMonth(e.target.value)}
-                      required
-                      className="w-full h-[50px] rounded-[25px] border border-gray-300 px-3 pr-10  text-gray-400 focus:outline-none focus:ring-2 focus:ring-bab-500  appearance-none"
-                    >
-                      <option value="">월</option>
-                      {months.map(m => (
-                        <option key={m} value={m}>
-                          {m}
-                        </option>
-                      ))}
-                    </select>
-                    <div className="pointer-events-none absolute right-3 top-1/2 -translate-y-1/2">
-                      <RiArrowDownSLine color="#C2C2C2" />
-                    </div>
-                  </div>
+            {/* 생년월일 */}
+            <div className="flex flex-col gap-6">
+              <label className="flex items-center gap-1 text-gray-700 font-medium">
+                생년월일 <span className="text-bab-500">*</span>
+              </label>
+              <div className="flex gap-2 flex-wrap">
+                {/* 년 */}
+                <div className="flex-1">
+                  <Select
+                    value={year || '년도'}
+                    onChange={value => setYear(value)}
+                    suffixIcon={null}
+                    className="bab-select w-full flex items-center justify-center"
+                    classNames={{
+                      popup: {
+                        root: 'bab-select-dropdown',
+                      },
+                    }}
+                  >
+                    <option value="">년도</option>
+                    {years.map(y => (
+                      <option key={y} value={y}>
+                        {y}
+                      </option>
+                    ))}
+                  </Select>
+                </div>
 
-                  {/* 일 */}
-                  <div className="relative flex-1">
-                    <select
-                      value={day}
-                      onChange={e => setDay(e.target.value)}
-                      required
-                      className="w-full h-[50px] rounded-[25px] border border-gray-300 px-3 pr-10 text-gray-400 focus:outline-none focus:ring-2 focus:ring-bab-500 appearance-none"
-                    >
-                      <option value="">일</option>
-                      {days.map(d => (
-                        <option key={d} value={d}>
-                          {d}
-                        </option>
-                      ))}
-                    </select>
-                    <div className="pointer-events-none absolute right-3 top-1/2 -translate-y-1/2">
-                      <RiArrowDownSLine color="#C2C2C2" />
-                    </div>
-                  </div>
+                {/* 월 */}
+                <div className="flex-1">
+                  <Select
+                    value={month || '월'}
+                    onChange={value => setMonth(value)}
+                    suffixIcon={null}
+                    className="bab-select w-full flex items-center justify-center"
+                    classNames={{
+                      popup: {
+                        root: 'bab-select-dropdown',
+                      },
+                    }}
+                  >
+                    <option value="">월</option>
+                    {months.map(m => (
+                      <option key={m} value={m}>
+                        {m}
+                      </option>
+                    ))}
+                  </Select>
+                </div>
+
+                {/* 일 */}
+                <div className="flex-1">
+                  <Select
+                    value={day || '일'}
+                    onChange={value => setDay(value)}
+                    suffixIcon={null}
+                    className="bab-select w-full flex items-center justify-center"
+                    classNames={{
+                      popup: {
+                        root: 'bab-select-dropdown',
+                      },
+                    }}
+                  >
+                    <option value="">일</option>
+                    {days.map(d => (
+                      <option key={d} value={d}>
+                        {d}
+                      </option>
+                    ))}
+                  </Select>
                 </div>
               </div>
+            </div>
 
-              {/* 성별 */}
-              <div className="flex flex-col gap-2">
-                <label className="flex items-center gap-1 text-gray-700 font-medium">
-                  성별 <span className="text-bab-500">*</span>
-                </label>
-                <div className="flex gap-4">
-                  {/* 남성 */}
-                  <label htmlFor="male" className="flex items-center gap-2 cursor-pointer">
-                    <input
-                      type="radio"
-                      id="male"
-                      name="gender"
-                      value="true"
-                      checked={gender === true}
-                      onChange={() => setGender(true)}
-                      className="appearance-none w-5 h-5 border-2 border-[#C2C2C2] rounded-full 
-                   checked:border-[#FF5722] checked:bg-none checked:border-4
-                   focus:outline-none transition-colors"
-                    />
-                    <span className="text-gray-700">남성</span>
-                  </label>
-
-                  {/* 여성 */}
-                  <label htmlFor="female" className="flex items-center gap-2 cursor-pointer">
-                    <input
-                      type="radio"
-                      id="female"
-                      name="gender"
-                      value="false"
-                      checked={gender === false}
-                      onChange={() => setGender(false)}
-                      className="appearance-none w-5 h-5 border-2 border-[#C2C2C2] rounded-full 
-                   checked:border-[#FF5722] checked:bg-none checked:border-4
-                   focus:outline-none transition-colors"
-                    />
-                    <span className="text-gray-700">여성</span>
-                  </label>
-                </div>
-              </div>
-
-              <div className="w-80 flex flex-col gap-3">
-                <p className="text-gray-700 text-sm font-medium">약관 동의</p>
-
-                {/* 이용약관 */}
-                <label className="flex items-center gap-2 cursor-pointer">
-                  <span className="relative cursor-pointer">
-                    <input
-                      type="checkbox"
-                      className="peer appearance-none w-5 h-5 border-2 border-[#C2C2C2] rounded 
-                 checked:border-[#FF5722] checked:bg-[#FF5722]
-                 flex-shrink-0 transition-colors cursor-pointer"
-                    />
-                    <RiCheckLine className="absolute text-white text-lg left-[50%] top-[50%] translate-x-[-50%] translate-y-[-60%] hidden peer-checked:block pointer-events-none" />
-                  </span>
-                  <span className="text-sm">
-                    <span className="text-[#FF5722] font-medium">(필수)</span>{' '}
-                    <span className="text-gray-700">이용약관에 동의합니다</span>
-                  </span>
+            {/* 성별 */}
+            <div className="flex flex-col gap-2">
+              <label className="flex items-center gap-1 text-gray-700 font-medium">
+                성별 <span className="text-bab-500">*</span>
+              </label>
+              <div className="flex gap-6 flex-wrap">
+                <label htmlFor="male" className="flex items-center gap-2 cursor-pointer">
+                  <input
+                    type="radio"
+                    id="male"
+                    name="gender"
+                    value="true"
+                    checked={gender === true}
+                    onChange={() => setGender(true)}
+                    className="appearance-none w-5 h-5 border-2 border-[#C2C2C2] rounded-full checked:border-[#FF5722] checked:border-4 transition-colors"
+                  />
+                  <span className="text-gray-700">남성</span>
                 </label>
 
-                {/* 개인정보 */}
-                <label className="flex items-center gap-2 cursor-pointer">
-                  <span className="relative">
-                    <input
-                      type="checkbox"
-                      className="peer appearance-none w-5 h-5 border-2 border-[#C2C2C2] rounded 
-                 checked:border-[#FF5722] checked:bg-[#FF5722]
-                 flex-shrink-0 transition-colors cursor-pointer"
-                    />
-                    <RiCheckLine className="absolute text-white text-lg left-[50%] top-[50%] translate-x-[-50%] translate-y-[-60%] hidden peer-checked:block pointer-events-none" />
-                  </span>
-                  <span className="text-sm">
-                    <span className="text-[#FF5722] font-medium">(필수)</span>{' '}
-                    <span className="text-gray-700">개인정보 수집 및 이용에 동의합니다</span>
-                  </span>
-                </label>
-
-                {/* 마케팅 */}
-                <label className="flex items-center gap-2 cursor-pointer">
-                  <span className="relative">
-                    <input
-                      type="checkbox"
-                      className="peer appearance-none w-5 h-5 border-2 border-[#C2C2C2] rounded 
-                 checked:border-[#FF5722] checked:bg-[#FF5722]
-                 flex-shrink-0 transition-colors cursor-pointer"
-                    />
-                    <RiCheckLine className="absolute text-white text-lg left-[50%] top-[50%] translate-x-[-50%] translate-y-[-60%] hidden peer-checked:block pointer-events-none" />
-                  </span>
-                  <span className="text-sm text-gray-700">
-                    <span className="text-gray-500">(선택)</span> 마케팅 정보 수신에 동의합니다
-                  </span>
+                <label htmlFor="female" className="flex items-center gap-2 cursor-pointer">
+                  <input
+                    type="radio"
+                    id="female"
+                    name="gender"
+                    value="false"
+                    checked={gender === false}
+                    onChange={() => setGender(false)}
+                    className="appearance-none w-5 h-5 border-2 border-[#C2C2C2] rounded-full checked:border-[#FF5722] checked:border-4 transition-colors"
+                  />
+                  <span className="text-gray-700">여성</span>
                 </label>
               </div>
             </div>
 
+            {/* 약관 동의 */}
+            <div className="flex flex-col gap-3 mt-2">
+              <p className="text-gray-700 text-sm font-medium text-start">약관 동의</p>
+
+              {/* 전체 동의 */}
+              <label className="flex items-center gap-2 cursor-pointer font-medium">
+                <span className="relative cursor-pointer">
+                  <input
+                    type="checkbox"
+                    checked={allChecked}
+                    onChange={toggleAll}
+                    className="peer appearance-none w-5 h-5 border-2 border-[#C2C2C2] rounded 
+                     checked:border-[#FF5722] checked:bg-[#FF5722]
+                     flex-shrink-0 transition-colors cursor-pointer"
+                  />
+                  <RiCheckLine className="absolute text-white text-lg left-1/2 top-1/2 -translate-x-1/2 -translate-y-[60%] hidden peer-checked:block pointer-events-none" />
+                </span>
+                <span className="text-sm text-gray-700">전체 동의</span>
+              </label>
+
+              {/* 이용약관 */}
+              <label className="flex items-center gap-2 cursor-pointer">
+                <input
+                  type="checkbox"
+                  checked={agreements.terms}
+                  onChange={() => toggleOne('terms')}
+                  className="peer appearance-none w-5 h-5 border-2 border-[#C2C2C2] rounded checked:bg-[#FF5722] transition-colors"
+                />
+                <RiCheckLine className="absolute text-white text-lg hidden peer-checked:block pointer-events-none" />
+                <span className="text-sm">
+                  <span className="text-[#FF5722] font-medium">(필수)</span>{' '}
+                  <span className="text-gray-700">이용약관에 동의합니다</span>
+                </span>
+              </label>
+
+              {/* 개인정보 */}
+              <label className="flex items-center gap-2 cursor-pointer">
+                <input
+                  type="checkbox"
+                  checked={agreements.privacy}
+                  onChange={() => toggleOne('privacy')}
+                  className="peer appearance-none w-5 h-5 border-2 border-[#C2C2C2] rounded checked:bg-[#FF5722] transition-colors"
+                />
+                <RiCheckLine className="absolute text-white text-lg hidden peer-checked:block pointer-events-none" />
+                <span className="text-sm">
+                  <span className="text-[#FF5722] font-medium">(필수)</span>{' '}
+                  <span className="text-gray-700">개인정보 수집 및 이용에 동의합니다</span>
+                </span>
+              </label>
+
+              {/* 마케팅 */}
+              <label className="flex items-center gap-2 cursor-pointer">
+                <input
+                  type="checkbox"
+                  checked={agreements.marketing}
+                  onChange={() => toggleOne('marketing')}
+                  className="peer appearance-none w-5 h-5 border-2 border-[#C2C2C2] rounded checked:bg-[#FF5722] transition-colors"
+                />
+                <RiCheckLine className="absolute text-white text-lg hidden peer-checked:block pointer-events-none" />
+                <span className="text-sm text-gray-700">
+                  <span className="text-gray-500">(선택)</span> 마케팅 정보 수신에 동의합니다
+                </span>
+              </label>
+            </div>
+
+            {/* 회원가입 버튼 */}
             <button
               type="submit"
-              className="mt-[30px] text-white font-bold w-full h-[49px] bg-bab-500 rounded-lg "
+              className="mt-6 w-full h-[49px] bg-bab-500 rounded-lg text-white font-bold hover:bg-[#BB2D00] transition-colors"
             >
               회원가입
             </button>
           </form>
-          <div className="text-sm mt-[30px] text-center">
-            <span className="text-babgray-700">이미 계정이 있으신가요?</span>
-            <span onClick={() => navigate('/member/login')} className="text-bab-500 cursor-pointer">
+
+          {/* 로그인 유도 문구 */}
+          <div className="text-sm mt-6 text-center">
+            <span className="text-babgray-700">이미 계정이 있으신가요? </span>
+            <span
+              onClick={() => navigate('/member/login')}
+              className="text-bab-500 cursor-pointer hover:underline"
+            >
               로그인하기
             </span>
           </div>
-          <div className="max-w-[426px]">
-            {msg && (
-              <p
-                style={{
-                  marginTop: '16px',
-                  padding: '12px',
-                  borderRadius: '8px',
-                  backgroundColor: msg.includes('성공') ? '#ecfdf5' : '#fef2f2',
-                  color: msg.includes('성공') ? '#059669' : '#dc2626',
-                  border: `1px solid ${msg.includes('성공') ? '#059669' : '#dc2626'}`,
-                }}
-              >
-                {msg}
-              </p>
-            )}
-          </div>
+
+          {/* 메시지 출력 */}
+          {/* {msg && (
+            <p
+              className={`mt-4 p-3 rounded-lg text-center border ${
+                msg.includes('성공')
+                  ? 'bg-emerald-50 text-emerald-600 border-emerald-600'
+                  : 'bg-rose-50 text-rose-600 border-rose-600'
+              }`}
+            >
+              {msg}
+            </p>
+          )} */}
         </div>
       </div>
+      {modal.isOpen && (
+        <Modal
+          isOpen={modal.isOpen}
+          onClose={closeModal}
+          titleText={modal.title}
+          contentText={modal.content}
+          closeButtonText={modal.closeText}
+          submitButtonText={modal.submitText}
+          onSubmit={modal.onSubmit}
+        />
+      )}
     </div>
   );
 }

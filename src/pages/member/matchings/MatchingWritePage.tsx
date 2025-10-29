@@ -138,6 +138,7 @@ const MatchingWritePage = () => {
                   placeholder="연도-월-일"
                   value={formData.date}
                   onChange={setDate}
+                  disabledDate={current => current && current < dayjs().startOf('day')}
                 />
               </div>
             </div>
@@ -157,6 +158,23 @@ const MatchingWritePage = () => {
                   onChange={setTime}
                   classNames={{
                     popup: { root: 'bab-time-picker-panel' } as any,
+                  }}
+                  disabledTime={() => {
+                    if (formData.date && dayjs(formData.date).isSame(dayjs(), 'day')) {
+                      const now = dayjs();
+                      const limit = now.add(30, 'minute');
+                      const limitHour = limit.hour();
+                      const limitMinute = limit.minute();
+
+                      return {
+                        disabledHours: () => Array.from({ length: limitHour }, (_, i) => i),
+                        disabledMinutes: (hour: number) =>
+                          hour === limitHour
+                            ? Array.from({ length: limitMinute }, (_, i) => i)
+                            : [],
+                      };
+                    }
+                    return {};
                   }}
                 />
               </div>

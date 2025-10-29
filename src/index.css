@@ -141,6 +141,7 @@ html {
   font-size: 14px !important;
   padding: 8px 16px !important;
   border-radius: 6px !important;
+  text-align: center;
 }
 
 .bab-select-dropdown .ant-select-item-option-active {
