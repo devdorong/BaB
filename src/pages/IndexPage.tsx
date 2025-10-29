@@ -57,9 +57,9 @@ function IndexPage() {
   };
 
   return (
-    <div className="w-[calc(100vw/0.9)] h-[calc(100vh/0.9)] overflow-hidden">
+    <div className=" overflow-hidden">
       {/* 웹용 화면 */}
-      <div className="hidden lg:flex w-full h-full">
+      <div className="w-[calc(100vw/0.9)] h-[calc(100vh/0.9)] hidden lg:flex">
         {/* 파트너 */}
         <div className=" w-[50%] relative group overflow-hidden">
           <img
