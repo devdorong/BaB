@@ -1,25 +1,39 @@
 import { useAuth } from '@/contexts/AuthContext';
 import { supabase } from '@/lib/supabase';
-import type { Profile } from '@/types/bobType';
+import type { Database, Profile } from '@/types/bobType';
 import MemberActivityDetailModal from '@/ui/sdj/MemberActivityDetails';
-import { useEffect, useState } from 'react';
+import dayjs from 'dayjs';
+import { useEffect, useMemo, useState } from 'react';
 import { RiSearchLine } from 'react-icons/ri';
 
 type ProfileWithEmail = Profile & {
   email: string;
+  created_at: string;
 };
+
+export type ProfileStatus = Database['public']['Tables']['profiles']['Row']['status'];
 
 export default function UserManagementPage() {
   const { user: authUser } = useAuth();
-  const [filter, setFilter] = useState('전체');
+  const [statusFilter, setStatusFilter] = useState<ProfileStatus>('활성');
   const [userList, setUserList] = useState<ProfileWithEmail[]>([]);
   const [search, setSearch] = useState('');
+  const [sortType, setSortType] = useState<'이름순' | '가입일순'>('가입일순');
 
   const [memberDetail, setMemberDetail] = useState(false);
+
+  const category: ProfileStatus[] = ['활성', '정지', '탈퇴'];
+
+  const filterCategory = useMemo(() => {
+    if (statusFilter === '활성') return userList;
+    return userList.filter(user => user.status === statusFilter);
+  }, [userList, statusFilter]);
 
   const handleMemberDetail = () => {
     setMemberDetail(true);
   };
+
+  dayjs.locale('ko');
 
   const fetchData = async () => {
     const { data, error } = await supabase
@@ -36,22 +50,25 @@ export default function UserManagementPage() {
     fetchData();
   }, []);
 
-  const statusBadge = (status: string) => {
-    switch (status) {
-      case '활성':
-        return (
-          <span className="px-2 py-1 text-xs rounded-full bg-green-100 text-green-700">활성</span>
-        );
-      case '정지':
-        return (
-          <span className="px-2 py-1 text-xs rounded-full bg-yellow-100 text-yellow-700">정지</span>
-        );
-      case '탈퇴':
-        return <span className="px-2 py-1 text-xs rounded-full bg-red-100 text-red-700">탈퇴</span>;
-      default:
-        return null;
+  const filteredUsers = useMemo(() => {
+    const lower = search.toLowerCase();
+    return filterCategory.filter(
+      user =>
+        user.nickname?.toLowerCase().includes(lower) || user.email?.toLowerCase().includes(lower),
+    );
+  }, [statusFilter, search]);
+
+  const sortedUsers = useMemo(() => {
+    const users = [...filteredUsers];
+
+    if (sortType === '이름순') {
+      users.sort((a, b) => a.nickname.localeCompare(b.nickname, 'ko'));
+    } else if (sortType === '가입일순') {
+      users.sort((a, b) => dayjs(b.created_at).valueOf() - dayjs(a.created_at).valueOf());
     }
-  };
+
+    return users;
+  }, [filteredUsers, sortType]);
 
   return (
     <div className="w-full min-h-screen bg-bg-bg text-babgray-800 font-semibold">
@@ -68,24 +85,30 @@ export default function UserManagementPage() {
               <RiSearchLine className="absolute left-3 top-2.5 text-gray-400" />
               <input
                 type="text"
-                placeholder="이름, 이메일로 검색"
+                value={search}
+                onChange={e => setSearch(e.target.value)}
+                placeholder="닉네임, 이메일로 검색"
                 className="pl-10 pr-3 py-2 border border-gray-300 rounded-full text-sm w-64 focus:outline-none focus:ring-1 focus:ring-orange-500"
               />
             </div>
-            <select className="border border-gray-300 rounded-full px-4 py-2 text-sm focus:outline-none focus:ring-1 focus:ring-orange-500">
-              <option>가입일순</option>
-              <option>이름순</option>
+            <select
+              value={sortType}
+              onChange={e => setSortType(e.target.value as '이름순' | '가입일순')}
+              className="border border-gray-300 rounded-full px-4 py-2 text-sm focus:outline-none focus:ring-1 focus:ring-orange-500"
+            >
+              <option value="가입일순">가입일순</option>
+              <option value="이름순">이름순</option>
             </select>
           </div>
 
           {/* 상태 필터 버튼 */}
           <div className="flex space-x-2">
-            {['전체', '활성', '정지', '탈퇴'].map(item => (
+            {category.map(item => (
               <button
                 key={item}
-                onClick={() => setFilter(item)}
+                onClick={() => setStatusFilter(item)}
                 className={`px-4 py-1.5 rounded-full text-sm border ${
-                  filter === item
+                  statusFilter === item
                     ? 'text-orange-600 border-orange-400'
                     : 'border-gray-300 text-gray-600 hover:bg-gray-100'
                 }`}
@@ -104,26 +127,30 @@ export default function UserManagementPage() {
             <tr>
               <th className="py-3 px-8 text-left">이름</th>
               <th className="py-3 px-8 text-left">이메일</th>
-              <th className="py-3 px-[50px] text-left">가입일</th>
+              <th className="py-3 px-8 text-left">가입일</th>
               <th className="py-3 px-8 text-left">상태</th>
               <th className="py-3 px-8 text-left">활동내역</th>
               <th className="py-3 px-8 text-left">관리</th>
             </tr>
           </thead>
           <tbody>
-            {userList.map((user, idx) => (
+            {sortedUsers.map((user, idx) => (
               <tr key={idx} className="border-b last:border-b-0 hover:bg-gray-50">
                 <td className="py-3 px-8 flex items-center space-x-3">
                   <img
-                    src="https://placekitten.com/40/40"
+                    src={
+                      user.avatar_url === 'guest_image'
+                        ? `https://www.gravatar.com/avatar/?d=mp&s=200`
+                        : user.avatar_url
+                    }
                     alt="avatar"
                     className="w-8 h-8 rounded-full object-cover"
                   />
                   <span>{user.nickname}</span>
                 </td>
                 <td className="py-3 px-8">{user.email}</td>
-                <td className="py-3 px-8">{}</td>
-                <td className="py-3 px-8">{statusBadge(user.status)}</td>
+                <td className="py-3 px-8">{dayjs(user.created_at).format('YYYY-MM-DD')}</td>
+                <td className="py-3 px-8">{user.status}</td>
                 <td
                   onClick={handleMemberDetail}
                   className="py-3 px-8 text-orange-500 hover:underline cursor-pointer"
