@@ -81,11 +81,11 @@ function BlockPage() {
         className="
           w-full max-w-[1280px] mx-auto box-border flex flex-col
           px-4 sm:px-4 md:px-6 lg:px-8 xl:px-0
-          pt-[15px] pb-[60px]
+          pt-6 gap-5 pb-14
         "
       >
         {/* 상단 네비 */}
-        <div className="flex items-center">
+        <div className="items-center hidden lg:flex">
           <div
             onClick={() => navigate('/member/profile')}
             className="text-babgray-600 text-[17px] cursor-pointer hover:text-babgray-900"
@@ -102,7 +102,7 @@ function BlockPage() {
         <div
           className="
             flex flex-col lg:flex-row lg:items-start justify-start gap-8 lg:gap-10
-            mt-5 w-full
+             w-full
           "
         >
           {/* 왼쪽 카드 */}
@@ -158,7 +158,7 @@ function BlockPage() {
             </div>
 
             {/* 차단자 목록 */}
-            <div className="w-full p-6 bg-white rounded-2xl shadow-[0_4px_4px_rgba(0,0,0,0.02)]">
+            <div className="w-full  p-6 bg-white rounded-2xl shadow-[0_4px_4px_rgba(0,0,0,0.02)]">
               <div className="flex flex-col gap-5">
                 {loading ? (
                   [...Array(1)].map((_, i) => <CommunityCardSkeleton key={i} />)
@@ -166,10 +166,10 @@ function BlockPage() {
                   blockedList.map(item => (
                     <div
                       key={item.id}
-                      className="flex sm:flex-col justify-between items-start sm:items-center p-5 bg-white rounded-xl border border-gray-200"
+                      className="flex justify-between flex-col gap-4 sm:flex-row items-center p-5 bg-white rounded-xl border border-gray-200"
                     >
                       {/* 사용자 정보 */}
-                      <div className="flex items-center gap-4 mb-3 sm:mb-0">
+                      <div className="flex items-center gap-4 ">
                         <div className="w-12 h-12 flex items-center justify-center bg-gray-100 rounded-full">
                           <RiUserForbidLine className="text-xl text-gray-700" />
                         </div>
