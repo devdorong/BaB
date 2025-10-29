@@ -60,7 +60,7 @@ function HelpPage() {
         </div>
 
         {/* 메인 컨테이너 */}
-        <div className={styles.pageContainer}>
+        <div className="w-full max-w-[1280px] mx-auto">
           <div className={styles.wrapper}>
             {/* 왼쪽 통계 카드 */}
             <div className={styles.leftSection}>
