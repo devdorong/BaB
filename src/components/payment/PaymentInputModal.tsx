@@ -2,7 +2,7 @@ import React, { useState, useEffect } from 'react';
 import { X, CreditCard } from 'lucide-react';
 import { AnimatePresence, motion } from 'framer-motion';
 
-interface PaymentMethodModalProps {
+interface PaymentInputModalProps {
   isOpen: boolean;
   onClose: () => void;
   onSubmit: (paymentData: PaymentData) => void;
@@ -17,7 +17,7 @@ interface PaymentData {
   description: string;
 }
 
-export const PaymentMethodModal: React.FC<PaymentMethodModalProps> = ({
+export const PaymentInputModal: React.FC<PaymentInputModalProps> = ({
   isOpen,
   onClose,
   onSubmit,
@@ -87,6 +87,7 @@ export const PaymentMethodModal: React.FC<PaymentMethodModalProps> = ({
       brand: brand,
       description: description,
     };
+    
     onSubmit(paymentData);
 
     // 폼 초기화

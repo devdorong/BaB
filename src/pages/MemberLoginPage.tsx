@@ -45,119 +45,103 @@ function MemberLoginPage() {
   };
 
   return (
-    <div className="flex flex-col items-center bg-bg-bg min-h-[calc(100vh/0.9)] justify-center">
-      <div className="pb-[52px]">
-        <Link to={'/member'} className="cursor-pointer">
-          <LogoLg />
+    <div className="flex flex-col items-center bg-bg-bg min-h-[calc(100vh/0.9)] justify-center px-4 sm:px-6">
+      {/* 로고 영역 */}
+      <div className="pb-10">
+        <Link to="/member" className="cursor-pointer">
+          <div className="transform transition-transform duration-300 scale-90 sm:scale-100 max-w-[200px] sm:max-w-none mx-auto">
+            <LogoLg />
+          </div>
         </Link>
       </div>
-      <div className="flex flex-col">
+
+      <div className="flex flex-col w-full max-w-[450px]">
         <form onSubmit={handleSubmit}>
-          <div className="inline-flex flex-col justify-start items-start ">
-            <div className="flex flex-col gap-7">
-              {/* 아이디 */}
-              <div className="self-stretch w-[450px] h-[45px] px-3.5 py-3 bg-white rounded-3xl outline outline-1 outline-offset-[-1px] outline-babgray-300 inline-flex justify-start items-center text-center gap-2">
-                <RiUserLine className="text-babgray-300" />
-                <input
-                  type="email"
-                  value={email}
-                  onChange={e => setEmail(e.target.value)}
-                  placeholder="아이디"
-                  required
-                  className="flex-1 text-babgray-700 outline-none text-[16px] items-center "
-                />
-              </div>
-              {/* 비밀번호 */}
-              <div className="self-stretch w-[450px] h-[45px] px-3.5 py-3 bg-white rounded-3xl outline outline-1 outline-offset-[-1px] outline-babgray-300 inline-flex justify-start items-center text-center gap-2">
-                <RiLock2Line className="text-babgray-300" />
-                <input
-                  type="password"
-                  value={pw}
-                  onChange={e => setPw(e.target.value)}
-                  placeholder="비밀번호"
-                  required
-                  className="flex-1 text-babgray-700 outline-none text-[16px] items-center "
-                />
-              </div>
-            </div>
-
-            {/* 로그인 상태유지 */}
-
-            <label className="inline-flex items-center gap-1 pt-[25px] cursor-pointer">
+          <div className="flex flex-col gap-7">
+            {/* 아이디 */}
+            <div className="w-full h-[45px] px-3.5 py-3 bg-white rounded-3xl outline outline-1 outline-babgray-300 flex items-center gap-2">
+              <RiUserLine className="text-babgray-300" />
               <input
-                type="checkbox"
-                className="peer hidden" // 기본 체크박스 숨김
+                type="email"
+                value={email}
+                onChange={e => setEmail(e.target.value)}
+                placeholder="아이디"
+                required
+                className="flex-1 text-babgray-700 outline-none text-[16px]"
               />
-              <RiCheckboxCircleLine
-                className="text-xl text-babgray-600 
-               peer-checked:text-white peer-checked:bg-[#FF5722] 
-               rounded-full transition-colors"
-              />
-              <span className="justify-start text-babgray-900 text-base font-normal">
-                로그인 상태 유지
-              </span>
-            </label>
-            {/* 로그인 버튼 */}
-            <div className="py-[28px] relative">
-              <button
-                type="submit"
-                className="px-[15px] w-[450px] h-[50px] self-stretch bg-bab-500 rounded-lg inline-flex justify-center items-center hover:bg-[#BB2D00]"
-              >
-                <div className="justify-start text-white text-base font-semibold">로그인</div>
-              </button>
-              {/* 메시지 출력 */}
-              {msg && (
-                <p
-                  style={{
-                    textAlign: 'center',
-                    marginTop: '16px',
-                    padding: '12px',
-                    borderRadius: '8px',
-                    backgroundColor: msg.includes('성공') ? '#ecfdf5' : '#fef2f2',
-                    color: msg.includes('성공') ? '#059669' : '#dc2626',
-                    border: `1px solid ${msg.includes('성공') ? '#059669' : '#dc2626'}`,
-                  }}
-                >
-                  {msg}
-                </p>
-              )}
             </div>
+
+            {/* 비밀번호 */}
+            <div className="w-full h-[45px] px-3.5 py-3 bg-white rounded-3xl outline outline-1 outline-babgray-300 flex items-center gap-2">
+              <RiLock2Line className="text-babgray-300" />
+              <input
+                type="password"
+                value={pw}
+                onChange={e => setPw(e.target.value)}
+                placeholder="비밀번호"
+                required
+                className="flex-1 text-babgray-700 outline-none text-[16px]"
+              />
+            </div>
+          </div>
+
+          {/* 로그인 상태 유지 */}
+          <label className="inline-flex items-center gap-1 pt-6 cursor-pointer">
+            <input type="checkbox" className="peer hidden" />
+            <RiCheckboxCircleLine className="text-xl text-babgray-600 peer-checked:text-white peer-checked:bg-[#FF5722] rounded-full transition-colors" />
+            <span className="text-babgray-900 text-base font-normal">로그인 상태 유지</span>
+          </label>
+
+          {/* 로그인 버튼 */}
+          <div className="py-7">
+            <button
+              type="submit"
+              className="w-full h-[50px] bg-bab-500 rounded-lg flex justify-center items-center hover:bg-[#BB2D00] transition-colors"
+            >
+              <span className="text-white text-base font-semibold">로그인</span>
+            </button>
+
+            {msg && (
+              <p
+                className={`mt-4 p-3 rounded-lg text-center border ${
+                  msg.includes('성공')
+                    ? 'bg-emerald-50 text-emerald-600 border-emerald-600'
+                    : 'bg-rose-50 text-rose-600 border-rose-600'
+                }`}
+              >
+                {msg}
+              </p>
+            )}
           </div>
         </form>
 
         {/* 아이디/비밀번호 찾기/회원가입 */}
-        <div className="flex gap-2 justify-center ">
-          <div className="text-center justify-start text-babgray-500 text-base font-medium">
-            아이디 찾기
-          </div>
-          <div className="text-center justify-start text-babgray-500 text-base font-medium">|</div>
-          <div className="text-center justify-start text-babgray-500 text-base font-medium">
-            비밀번호 찾기
-          </div>
-          <div className="text-center justify-start text-babgray-500 text-base font-medium">|</div>
-          <div
+        <div className="flex flex-wrap justify-center gap-2 text-sm sm:text-base text-babgray-500 font-medium">
+          <span>아이디 찾기</span>
+          <span>|</span>
+          <span>비밀번호 찾기</span>
+          <span>|</span>
+          <span
             onClick={() => navigate('/member/signup')}
-            className="text-center justify-start text-babgray-500 text-base font-medium cursor-pointer"
+            className="cursor-pointer hover:text-bab-500"
           >
             회원가입
-          </div>
+          </span>
         </div>
-        {/* SNS 로그인 영역 */}
-        <div style={{ display: 'flex', alignItems: 'center', margin: '24px' }}>
-          <div style={{ flex: 1, height: 1, backgroundColor: '#d1d5db' }}></div>
-          <span style={{ padding: '0 16px', fontSize: '14px' }}>또는</span>
-          <div style={{ flex: 1, height: 1, backgroundColor: '#d1d5db' }}></div>
+
+        {/* 구분선 */}
+        <div className="flex items-center my-6">
+          <div className="flex-1 h-px bg-gray-300"></div>
+          <span className="px-4 text-sm text-gray-500">또는</span>
+          <div className="flex-1 h-px bg-gray-300"></div>
         </div>
-        {/* 소셜 로그인 아이콘 */}
-        <div className="flex gap-[24px] justify-center flex-col items-center">
-          {/* <div className="flex w-[40px] h-[40px] justify-center items-center pw-[8px] py-[8px] bg-white rounded-[20px]">
-            <GoogleIconSvg />
-          </div> */}
+
+        {/* SNS 로그인 */}
+        <div className="flex flex-col items-center gap-4">
           <GoogleLoginButton
             onError={error => setMsg(`구글 로그인 오류 : ${error}`)}
             onSuccess={message => setMsg(message)}
           />
-          {/* 카카오 로그인 버튼 : 오류 메시지는 사용자도 볼 수 있어야 함.*/}
           <KakaoLoginButton onError={error => setMsg(`카카오 로그인 오류 : ${error}`)} />
         </div>
       </div>

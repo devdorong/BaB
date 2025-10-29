@@ -79,6 +79,7 @@ function PartnerSignupPage() {
     approval: false,
     marketing: false, // 선택
   });
+
   useEffect(() => {
     if (address && latitude && longitude) {
       setFormData({
@@ -193,6 +194,8 @@ function PartnerSignupPage() {
       marketing: newValue,
     });
   };
+
+  
   const toggleOne = (key: keyof typeof agreements) => {
     setAgreements(prev => ({ ...prev, [key]: !prev[key] }));
   };

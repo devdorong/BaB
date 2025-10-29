@@ -16,6 +16,9 @@ import { toast } from 'sonner';
 
 import '../../css/buttonStyles.css';
 import { findQuickMatchingCandidate, joinMatchingById } from '@/services/matchingService';
+import TagBadge from '@/ui/TagBadge';
+import { categoryColors, defaultCategoryColor } from '@/ui/jy/categoryColors';
+import MatchingModal from '@/ui/dorong/MatchingModal';
 
 type Preview = Awaited<ReturnType<typeof findQuickMatchingCandidate>>;
 
@@ -27,27 +30,53 @@ const MainBanner = () => {
   const { modal, closeModal, openModal } = useModal();
   const [preview, setPreview] = useState<Preview>(null);
   const [loadingPreview, setLoadingPreview] = useState(false);
-
+  const getColorByCategory = (interestName: string): { bg: string; text: string } => {
+    return categoryColors[interestName] || defaultCategoryColor;
+  };
+  const categoryColor = getColorByCategory(preview?.category.name);
   const PreviewContent = (
-    <div className="space-y-3">
+    <div className="space-y-5 text-center">
       {loadingPreview && <div className="text-sm text-babgray-600">매칭 정보를 불러오는 중…</div>}
+
       {!loadingPreview && !preview && (
         <div className="text-sm text-babgray-600">참여 가능한 매칭이 없습니다.</div>
       )}
+
       {preview && (
         <>
-          <div className="text-base font-semibold">{preview.title ?? preview.restaurant?.name}</div>
-          {preview.restaurant?.interest[0]?.name && (
-            <div className="text-xs text-babgray-500">
-              카테고리: {preview.restaurant.interest[0].name}
-            </div>
-          )}
+          {/* 제목 */}
+          <h3 className="text-lg font-bold text-babgray-900">
+            {preview.title ?? preview.restaurant?.name}
+          </h3>
+
+          {/* 설명 */}
           {preview.description && (
-            <p className="text-sm text-babgray-700 line-clamp-3">{preview.description}</p>
+            <p className="text-[14px] text-babgray-700 leading-relaxed whitespace-pre-line">
+              {preview.description}
+            </p>
           )}
-          <div className="text-xs text-babgray-500">
-            인원 {preview.participantCount}/{preview.desired_members}명 · 남은자리{' '}
-            {preview.remaining}명
+
+          {/* 매칭 인원 요약 */}
+          <div className="bg-babgray-50 border border-babgray-200 rounded-lg px-5 py-3 text-sm text-babgray-700">
+            <div className="flex justify-between mb-1">
+              <span className="text-babgray-600">인원</span>
+              <span className="font-semibold">
+                {preview.participantCount}/{preview.desired_members}명
+              </span>
+            </div>
+            <div className="flex justify-between">
+              <span className="text-babgray-600">남은 자리</span>
+              <span className="font-semibold text-bab-500">{preview.remaining}명</span>
+            </div>
+          </div>
+
+          {/* 가게 정보 */}
+          <div className="flex justify-center items-center gap-3 text-sm">
+            <span className="text-babgray-600">가게정보 :</span>
+            <span className="font-semibold text-babgray-900">{preview.restaurant?.name}</span>
+            <TagBadge bgColor={categoryColor.bg} textColor={categoryColor.text}>
+              {preview.category ? preview.category.name : '카테고리'}
+            </TagBadge>
           </div>
         </>
       )}
@@ -179,7 +208,7 @@ const MainBanner = () => {
       </div>
 
       {/* 중앙 버튼 (하단 절반 걸치게) */}
-      <div className="absolute left-1/2 bottom-0 translate-x-[-50%] translate-y-[50%] z-20 border-[4px] rounded-[50%] bg-white border-bg-bg sm:border-[10px]">
+      <div className="absolute left-1/2 bottom-0 translate-x-[-50%] translate-y-[50%] z-20 border-[8px] rounded-[50%] bg-white border-bg-bg sm:border-[10px]">
         <button
           onClick={handleMatchingClick}
           className="flex flex-col items-center justify-center gap-3 

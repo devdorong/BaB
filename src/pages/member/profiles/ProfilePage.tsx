@@ -1,6 +1,7 @@
 import { useEffect, useState } from 'react';
 import {
   RiArrowRightSLine,
+  RiBankCard2Line,
   RiBardFill,
   RiCalendarLine,
   RiDeleteBinLine,
@@ -36,6 +37,18 @@ import {
   type RestaurantTypeRatingAvg,
 } from '../../../lib/restaurants';
 import { getUserMatchings } from '@/services/matchingService';
+import { PaymentInputModal } from '@/components/payment/PaymentInputModal';
+import { fetchPaymentMethods } from '@/services/myPaymentService';
+import { usePayment } from '@/components/payment/PaymentContext';
+
+interface PaymentMethod {
+  id: number;
+  brand: string;
+  number: string;
+  is_default: boolean;
+  description?: string;
+  expire?: string;
+}
 
 function ProfilePage() {
   const { user, signOut } = useAuth();
@@ -62,6 +75,15 @@ function ProfilePage() {
   const [avgScore, setAvgScore] = useState<number>(0);
   // 사용자 매칭 배열
   const [matchings, setMatchings] = useState<Matchings[]>([]);
+  // 결제 관련 모달 상태
+  const {
+    paymentMethods,
+    addPaymentMethod,
+    reloadPayments,
+    setDefaultMethod,
+    removePaymentMethod,
+  } = usePayment();
+  const [open, setOpen] = useState(false);
 
   useEffect(() => {
     const MyReviewCount = async () => {
@@ -177,6 +199,22 @@ function ProfilePage() {
     fetchUserMatchings();
   }, [user]);
 
+  const handleAddPayment = async (data: any) => {
+    try {
+      await addPaymentMethod({
+        brand: data.brand,
+        number: data.number,
+        expire: data.expire,
+        description: data.description,
+        is_default: false,
+      });
+      await reloadPayments();
+      setOpen(false);
+    } catch (err) {
+      console.error('결제 등록 실패:', err);
+      alert('결제 등록 중 오류가 발생했습니다.');
+    }
+  };
   // 로그아웃 처리
   const handleLogout = () => {
     signOut();
@@ -352,45 +390,75 @@ function ProfilePage() {
                 <div className="flex justify-between items-center">
                   <div className="text-babgray-900 text-[18px] font-bold">등록된 결제수단</div>
                   <ButtonFillMd
+                    onClick={() => setOpen(true)}
                     style={{ fontWeight: 400, justifyContent: 'center', alignItems: 'center' }}
                   >
                     <RiEdit2Line />
                     등록하기
                   </ButtonFillMd>
                 </div>
-                <div className="flex flex-col gap-[10px]">
-                  <div className="flex justify-between mt-[25px] items-center border border-babgray-150 rounded-[12px] bg-white p-[20px]">
-                    <div className="flex gap-[10px] items-center">
-                      <RiVisaLine className="rounded-[8px] bg-babgray-100 w-[48px] h-[48px] p-[12px] justify-center items-center aspect-square" />
-                      <div className="flex flex-col gap-[2px]">
-                        <div className="flex items-center gap-[10px]">
-                          <p className="text-babgray-700">Visa 8453 •••• 4532 1642</p>
-                          <OrangeTag>기본 카드</OrangeTag>
+
+                {/* 결제수단들 */}
+                <div className="flex flex-col gap-[10px] mt-[25px]">
+                  {paymentMethods.length === 0 ? (
+                    <div className="text-center text-babgray-500 py-8 text-[14px]">
+                      등록된 결제수단이 없습니다.
+                    </div>
+                  ) : (
+                    paymentMethods.map(method => {
+                      // 카드 브랜드별 아이콘 설정
+                      const Icon = method.brand.toLowerCase().includes('visa')
+                        ? RiVisaLine
+                        : method.brand.toLowerCase().includes('master')
+                          ? RiMastercardLine
+                          : RiBankCard2Line; // fallback 아이콘 (은행 카드 형태)
+
+                      return (
+                        <div
+                          key={method.id}
+                          className="flex justify-between items-center border border-babgray-150 rounded-[12px] bg-white p-[20px] hover:shadow-sm transition"
+                        >
+                          <div className="flex gap-[10px] items-center">
+                            <Icon className="rounded-[8px] bg-babgray-100 w-[48px] h-[48px] p-[12px] justify-center items-center aspect-square" />
+                            <div className="flex flex-col gap-[2px]">
+                              <div className="flex items-center gap-[10px]">
+                                <p className="text-babgray-700 font-medium">
+                                  {method.brand}{' '}
+                                  {method.number.length > 4
+                                    ? '•••• ' + method.number.slice(-4)
+                                    : method.number}
+                                </p>
+                                {method.is_default && <OrangeTag>기본 카드</OrangeTag>}
+                              </div>
+                              <p className="text-[13px] text-babgray-600">
+                                {method.description || '등록된 카드'}{' '}
+                                {method.expire && `• 만료: ${method.expire}`}
+                              </p>
+                            </div>
+                          </div>
+
+                          {/* 오른쪽 버튼들 */}
+                          <div className="flex gap-[10px] text-babgray-500 items-center">
+                            {!method.is_default && (
+                              <button
+                                onClick={() => setDefaultMethod(method)}
+                                className="hover:text-bab-500 transition"
+                              >
+                                <GrayTag>기본 설정</GrayTag>
+                              </button>
+                            )}
+                            <button
+                              onClick={() => removePaymentMethod(method.id)}
+                              className="hover:text-red-500 transition"
+                              title="삭제"
+                            >
+                              <RiDeleteBinLine />
+                            </button>
+                          </div>
                         </div>
-                        <p className="text-[13px] text-babgray-600">주 사용 카드 • 만료: 12/2026</p>
-                      </div>
-                    </div>
-                    <div className="flex gap-[10px] text-babgray-500">
-                      <RiEditLine />
-                      <RiDeleteBinLine />
-                    </div>
-                  </div>
-                  <div className="flex justify-between items-center border border-babgray-150 rounded-[12px] bg-white p-[20px]">
-                    <div className="flex gap-[10px] items-center">
-                      <RiMastercardLine className="rounded-[8px] bg-babgray-100 w-[48px] h-[48px] p-[12px] justify-center items-center aspect-square" />
-                      <div className="flex flex-col gap-[2px]">
-                        <div className="flex items-center gap-[10px]">
-                          <p className="text-babgray-700">Mastercard 1234 •••• 2432 1122</p>
-                        </div>
-                        <p className="text-[13px] text-babgray-600">서브 카드 • 만료: 12/2026</p>
-                      </div>
-                    </div>
-                    <div className="flex gap-[10px] text-babgray-500 items-center">
-                      <GrayTag>기본 설정</GrayTag>
-                      <RiEditLine />
-                      <RiDeleteBinLine />
-                    </div>
-                  </div>
+                      );
+                    })
+                  )}
                 </div>
               </div>
               {/* 나의 정보 */}
@@ -476,6 +544,7 @@ function ProfilePage() {
           </div>
         </div>
       </div>
+      <PaymentInputModal isOpen={open} onClose={() => setOpen(false)} onSubmit={handleAddPayment} />
     </div>
   );
 }

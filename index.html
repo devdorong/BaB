@@ -3,17 +3,50 @@
   <head>
     <meta charset="UTF-8" />
     <meta http-equiv="X-UA-Compatible" content="IE=edge" />
-    <link rel="icon" type="image/svg+xml" href="/vite.svg" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <!-- 폰트 설정 -->
+    <title>BaB | Bond and Bite</title>
+
+    <!-- Favicon -->
+    <link rel="icon" type="image/svg+xml" href="/BaB.svg" />
+    <link rel="apple-touch-icon" href="/apple-touch-icon.png" />
+    <meta name="theme-color" content="#FF5722" />
+
+    <!-- SEO -->
+    <meta name="title" content="BaB | Bond and Bite" />
+    <meta
+      name="description"
+      content="함께 식사할 친구를 찾고, 새로운 맛집을 공유하는 미식 커뮤니티 플랫폼 BaB."
+    />
+
+    <!-- Open Graph -->
+    <meta property="og:type" content="website" />
+    <meta property="og:url" content="https://bab-mu.vercel.app/" />
+    <meta property="og:title" content="BaB | Bond and Bite" />
+    <meta
+      property="og:description"
+      content="함께 식사할 친구를 찾고, 새로운 맛집을 공유하는 미식 커뮤니티 플랫폼 BaB."
+    />
+    <meta property="og:image" content="https://bab-mu.vercel.app/og-image.png" />
+
+    <!-- Fonts -->
     <link rel="preconnect" href="https://fonts.googleapis.com" />
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
     <link
       href="https://fonts.googleapis.com/css2?family=Black+Han+Sans&family=Noto+Sans+KR:wght@100..900&display=swap"
       rel="stylesheet"
     />
-    <title>BaB | Bond and Bite</title>
   </head>
+  <!-- Google tag (gtag.js) -->
+  <script async src="https://www.googletagmanager.com/gtag/js?id=G-JZ3JTGP4KZ"></script>
+  <script>
+    window.dataLayer = window.dataLayer || [];
+    function gtag() {
+      dataLayer.push(arguments);
+    }
+    gtag('js', new Date());
+
+    gtag('config', 'G-JZ3JTGP4KZ');
+  </script>
   <body>
     <div id="root"></div>
     <script type="module" src="/src/main.tsx"></script>

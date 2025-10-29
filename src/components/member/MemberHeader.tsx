@@ -124,6 +124,11 @@ const MemberHeader = () => {
     loadProfile();
   }, [user?.id, location.pathname]);
 
+  const handleLogout = () => {
+    signOut();
+    navigate('/member');
+  };
+
   return (
     <header className="flex items-center w-full justify-between bg-white z-20 border border-babgray-150">
       <div className="flex justify-between w-[1280px] h-[70px] items-center mx-auto pl-4 sm:pl-6 lg:pl-8 xl:pl-0">
@@ -193,7 +198,10 @@ const MemberHeader = () => {
                   <Link to={'/member/profile'}>
                     <span>{profileData?.nickname}님</span>
                   </Link>
-                  <div onClick={() => setIsOpen(!isOpen)} className="flex relative items-center">
+                  <div
+                    onClick={() => setIsOpen(!isOpen)}
+                    className="flex relative items-center cursor-pointer"
+                  >
                     <Notification2Line color="gray" bgColor="none" size={16} />
                     {notificationUnReadCount > 0 ? (
                       <div className="w-5 h-5 p-1 left-[60%] bottom-[60%] absolute bg-bab-500 rounded-[10px] inline-flex justify-center items-center">
@@ -252,7 +260,10 @@ const MemberHeader = () => {
 
           {/* 모바일 햄버거 */}
           <div className="lg:hidden flex gap-5 items-center pr-4 sm:pr-6 lg:pr-8 xl:pr-0">
-            <div onClick={() => setIsOpen(!isOpen)} className="flex relative items-center">
+            <div
+              onClick={() => setIsOpen(!isOpen)}
+              className="flex relative items-center cursor-pointer"
+            >
               <Notification2Line color="gray" bgColor="none" size={16} />
               {notificationUnReadCount > 0 ? (
                 <div className="w-5 h-5 p-1 left-[60%] bottom-[60%] absolute bg-bab-500 rounded-[10px] inline-flex justify-center items-center">
@@ -408,15 +419,15 @@ const MemberHeader = () => {
               <Link to="/member/profile/chat" onClick={() => setMenuOpen(false)}>
                 채팅
               </Link>
-              <div onClick={() => navigate('/member/logout')} className="cursor-pointer">
+              <div onClick={handleLogout} className="cursor-pointer">
                 로그아웃
               </div>
             </>
           ) : (
             <>
               <hr className="border-babgray-150" />
-              <div onClick={() => navigate('/member/login')}>로그인</div>
-              <div onClick={() => navigate('/member/signup')}>회원가입</div>
+              <div className='cursor-pointer' onClick={() => navigate('/member/login')}>로그인</div>
+              <div className='cursor-pointer' onClick={() => navigate('/member/signup')}>회원가입</div>
             </>
           )}
         </nav>
