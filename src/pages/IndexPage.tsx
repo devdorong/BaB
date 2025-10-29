@@ -105,7 +105,7 @@ function IndexPage() {
       </div>
       {/* 모바일용 화면 */}
       <div className="flex lg:hidden w-[calc(100vw/0.9)] h-[calc(100vh/0.9)]">
-        <Swiper className="w-[calc(100vw/0.9)] h-[calc(100vh/0.9)]">
+        <Swiper className="w-full h-full">
           {/* STEP 1~2 */}
           <SwiperSlide>
             <div className="relative w-full h-full">
