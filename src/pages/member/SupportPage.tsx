@@ -6,6 +6,10 @@ import TagBadge from '../../ui/TagBadge';
 import { useState } from 'react';
 import SupportModal from '../../ui/dorong/SupportModal';
 import styles from './SupportPage.module.css';
+import { useModal } from '@/ui/sdj/ModalState';
+import { useAuth } from '@/contexts/AuthContext';
+import Modal from '@/ui/sdj/Modal';
+import { useNavigate } from 'react-router-dom';
 
 function SupportPage() {
   // 목업데이터
@@ -79,11 +83,16 @@ function SupportPage() {
   ];
   // 카테고리 목업
 
+  const navigate = useNavigate();
+  const { closeModal, modal } = useModal();
+  const { user } = useAuth();
   const categories = ['전체', '이용방법', '결제/환불', '기타'];
 
   const [activeTag, setActiveTag] = useState('전체');
   const [openIndex, setOpenIndex] = useState<number | null>(null);
   const [openModal, setOpenModal] = useState(false);
+
+  const [clearModal, setClearModal] = useState(false);
 
   const toggleFaq = (index: number) => {
     setOpenIndex(prev => (prev === index ? null : index));
@@ -136,10 +145,17 @@ function SupportPage() {
           <div className="flex justify-between">
             <h3 className="font-bold text-[27px]">자주 묻는 질문</h3>
             {/* 클릭시 모달열리게 수정하기 */}
-            <div onClick={() => setOpenModal(true)}>
+            <div
+              onClick={() => {
+                if (user) {
+                  setOpenModal(true);
+                } else if (!user) {
+                  setClearModal(true);
+                }
+              }}
+            >
               <ButtonFillMd>1:1 문의하기</ButtonFillMd>
             </div>
-            {openModal && <SupportModal setOpenModal={setOpenModal} />}
           </div>
 
           {/* 태그 필터 */}
@@ -233,6 +249,18 @@ function SupportPage() {
             </div>
           </div>
         </div>
+        {user ? (
+          <SupportModal setOpenModal={setOpenModal} />
+        ) : (
+          <Modal
+            isOpen={clearModal}
+            onClose={closeModal}
+            titleText="로그인 확인"
+            contentText="로그인이 필요한 서비스 입니다."
+            submitButtonText="확인"
+            onSubmit={() => navigate('/member/login')}
+          />
+        )}
       </div>
     </div>
   );

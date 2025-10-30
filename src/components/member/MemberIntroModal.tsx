@@ -1,7 +1,7 @@
 import { useEffect, useState } from 'react';
 import { Swiper, SwiperSlide } from 'swiper/react';
 import 'swiper/css';
-import { RiCloseLine } from 'react-icons/ri';
+import { RiArrowRightLine, RiCloseLine, RiExpandHorizontalSLine } from 'react-icons/ri';
 import { useNavigate } from 'react-router-dom';
 import { motion, AnimatePresence } from 'framer-motion';
 
@@ -33,6 +33,18 @@ const MemberIntroModal = () => {
     setIsOpen(false);
   };
 
+  useEffect(() => {
+    if (isOpen) {
+      document.body.style.overflow = 'hidden';
+    } else {
+      document.body.style.overflow = 'auto';
+    }
+
+    return () => {
+      document.body.style.overflow = 'auto';
+    };
+  }, [isOpen]);
+
   if (!isDesktop) return null; // ✅ 모바일에선 완전히 렌더 안함
 
   return (
@@ -49,7 +61,7 @@ const MemberIntroModal = () => {
           {/* 모달 본체 */}
           <motion.div
             key="modal"
-            className="relative w-full max-w-[600px] h-[80vh] bg-none rounded-2xl overflow-hidden shadow-xl"
+            className="relative w-full max-w-[600px] h-[85vh] bg-none rounded-2xl overflow-hidden shadow-xl"
             initial={{ y: 80, opacity: 0, scale: 0.95 }}
             animate={{ y: 0, opacity: 1, scale: 1 }}
             exit={{ y: 60, opacity: 0, scale: 0.95 }}
@@ -92,6 +104,8 @@ const MemberIntroModal = () => {
                       <br />
                       이벤트나 쿠폰으로 다양한 매칭 기회를 얻을 수 있어요.
                     </p>
+
+                    <RiArrowRightLine className="text-[50px] absolute bottom-[120px] flex" />
                   </div>
                 </div>
               </SwiperSlide>
@@ -122,6 +136,7 @@ const MemberIntroModal = () => {
                       <br />
                       좋은 경험은 신뢰도를 높이고, 다음 매칭을 기대하게 돼요.
                     </p>
+                    <RiExpandHorizontalSLine className="text-[50px] absolute bottom-[120px] flex" />
                   </div>
                 </div>
               </SwiperSlide>
