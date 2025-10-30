@@ -25,10 +25,12 @@ import {
 import { notification } from 'antd/lib';
 import { supabase } from '../../lib/supabase';
 import { RiCloseLine, RiMenuLine } from 'react-icons/ri';
+import { useRealTimeNotification } from '@/contexts/NotificationContext';
 
 const MemberHeader = () => {
   const navigate = useNavigate();
   const { user, signOut } = useAuth();
+  const { notifications } = useRealTimeNotification();
   // 로딩
   const [loading, setLoading] = useState<boolean>(true);
   // 사용자 프로필
@@ -40,7 +42,7 @@ const MemberHeader = () => {
   // 알림 패널 온오프
   const [isOpen, setIsOpen] = useState(false);
   // 알림 개수
-  const [notification, setNotification] = useState<NotificationsProps[]>([]);
+  const [notificationcount, setNotificationcount] = useState<NotificationsProps[]>([]);
   // 모바일
   const [menuOpen, setMenuOpen] = useState(false);
   const isAdmin = profileData?.role === 'admin';
@@ -49,7 +51,7 @@ const MemberHeader = () => {
   const [isProfileOpen, setIsProfileOpen] = useState(false);
 
   // 안읽은 알림 개수
-  const notificationUnReadCount = notification.filter(n => !n.is_read).length;
+  const notificationUnReadCount = notifications.filter(n => !n.is_read).length;
 
   // 사용자 프로필 정보
   const loadProfile = async () => {
@@ -78,7 +80,7 @@ const MemberHeader = () => {
 
   const loadNotification = async () => {
     const data = await fetchNotificationProfileData();
-    setNotification(data);
+    setNotificationcount(data);
   };
   useEffect(() => {
     loadNotification();
@@ -90,9 +92,9 @@ const MemberHeader = () => {
       .channel('notifications-realtime')
       .on('postgres_changes', { event: '*', schema: 'public', table: 'notifications' }, payload => {
         if (payload.eventType === 'INSERT') {
-          setNotification(prev => {
+          setNotificationcount(prev => {
             const exists = prev.some(n => n.id === (payload.new as NotificationsProps).id);
-            if (exists) return prev; // ✅ 중복 방지
+            if (exists) return prev;
             const updated = [payload.new as NotificationsProps, ...prev];
             return updated.sort(
               (a, b) =>
@@ -101,7 +103,7 @@ const MemberHeader = () => {
             );
           });
         } else if (payload.eventType === 'UPDATE') {
-          setNotification(prev => {
+          setNotificationcount(prev => {
             const updated = prev.map(n =>
               n.id === payload.new.id ? (payload.new as NotificationsProps) : n,
             );
@@ -426,8 +428,12 @@ const MemberHeader = () => {
           ) : (
             <>
               <hr className="border-babgray-150" />
-              <div className='cursor-pointer' onClick={() => navigate('/member/login')}>로그인</div>
-              <div className='cursor-pointer' onClick={() => navigate('/member/signup')}>회원가입</div>
+              <div className="cursor-pointer" onClick={() => navigate('/member/login')}>
+                로그인
+              </div>
+              <div className="cursor-pointer" onClick={() => navigate('/member/signup')}>
+                회원가입
+              </div>
             </>
           )}
         </nav>

@@ -71,7 +71,7 @@ export const handleReadNotification = async (id: number) => {
   }
   const { error } = await supabase.from('notifications').update({ is_read: true }).eq('id', id);
 
-  if (error) throw error; 
+  if (error) throw error;
 };
 
 // 3일 지난 (읽은) 알림은 삭제

@@ -49,6 +49,7 @@ interface DirectChatContextType {
   messages: DirectMessage[]; // 여러 메시지를 관리
   users: ChatUser[]; // 검색된 여러 사용자
   currentChat: ChatListItem | null; // 현재 선택된 채팅방 정보
+  setCurrentChat: (chat: ChatListItem | null) => void;
   loading: boolean; // 로딩 상태 관리
   userSearchLoading: boolean; // 사용자 검색 로딩 상태 (별도 관리)
   error: string | null; // 에러 메시지 상태
@@ -504,6 +505,7 @@ export const DirectChatProider: React.FC<DirectChatProiderProps> = ({ children }
     messages,
     users,
     currentChat,
+    setCurrentChat,
     loading,
     userSearchLoading, // 사용자 검색 전용 로딩 상태 추가
     error,

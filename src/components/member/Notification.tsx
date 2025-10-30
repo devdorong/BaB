@@ -22,6 +22,10 @@ import {
 import { CheckCheckIcon } from 'lucide-react';
 import { supabase } from '../../lib/supabase';
 import { useNavigate } from 'react-router-dom';
+import { findOrCreateDirectChat } from '@/services/directChatService';
+import { useDirectChat } from '@/contexts/DirectChatContext';
+import type { ChatListItem } from '@/types/chatType';
+import { useRealTimeNotification } from '@/contexts/NotificationContext';
 
 export const badgeColors: Record<NotificationsProps['type'], string> = {
   주문: 'bg-bab-500',
@@ -63,7 +67,8 @@ interface NotificationProps {
 }
 
 export default function Notification({ isOpen, onClose, onRead }: NotificationProps) {
-  const [notification, setNotification] = useState<NotificationsProps[]>([]);
+  const { setCurrentChat, loadMessages, loadChats } = useDirectChat();
+  const { notifications, setNotifications } = useRealTimeNotification();
   const navigate = useNavigate();
   const panelRef = useRef<HTMLDivElement>(null);
   const channelRef = useRef<ReturnType<typeof supabase.channel> | null>(null);
@@ -156,7 +161,7 @@ export default function Notification({ isOpen, onClose, onRead }: NotificationPr
     const refreshNotifications = async () => {
       // console.log('알림창 열림 - 데이터 새로고침');
       const data = await fetchNotificationProfileData();
-      setNotification(data);
+      setNotifications(data);
     };
     refreshNotifications();
 
@@ -191,14 +196,14 @@ export default function Notification({ isOpen, onClose, onRead }: NotificationPr
     try {
       // 비동기: 모든 알림 읽음 처리
       await Promise.all(
-        notification.map(async n => {
+        notifications.map(async n => {
           if (!n.is_read) {
             await handleReadNotification(n.id);
           }
         }),
       );
       // 상태 업데이트 (전부 is_read = true)
-      setNotification(prev => prev.map(n => ({ ...n, is_read: true })));
+      setNotifications(prev => prev.map(n => ({ ...n, is_read: true })));
       // // 상위 콜백 (onRead) 에 전체 처리 알림
       // onRead?.('all');
 
@@ -219,22 +224,68 @@ export default function Notification({ isOpen, onClose, onRead }: NotificationPr
       // 읽음 처리
       await handleReadNotification(item.id);
 
-      setNotification(prev => prev.map(n => (n.id === item.id ? { ...n, is_read: true } : n)));
+      setNotifications(prev => prev.map(n => (n.id === item.id ? { ...n, is_read: true } : n)));
       onRead(item.id);
       onClose();
       switch (item.type) {
-        case '채팅':
-          navigate(`/member/profile/chat`);
+        case '채팅': {
+          const senderId = item.profile_id;
+          if (!senderId) {
+            console.warn('알림에 보낸 사람 ID가 없습니다.');
+            navigate('/member/profile/chat');
+            return;
+          }
+
+          const { success, data } = await findOrCreateDirectChat(senderId);
+          console.log(data);
+          if (success && data?.id) {
+            const {
+              data: { user },
+            } = await supabase.auth.getUser();
+            const myId = user?.id;
+
+            // 상대방 ID 구하기
+            const otherUserId = data.user1_id === myId ? data.user2_id : data.user1_id;
+
+            await loadChats();
+
+            // 상대방 프로필 정보 가져오기
+            const { data: otherProfile } = await supabase
+              .from('profiles')
+              .select('id, nickname, avatar_url')
+              .eq('id', otherUserId)
+              .single();
+            // DirectChat → ChatListItem 변환
+            const chatData: ChatListItem = {
+              id: data.id,
+              other_user: {
+                id: senderId,
+                nickname: item.title || '상대방', // 알림 제목이 있다면 임시 대체
+                avatar_url: null,
+                email: '',
+              },
+              last_message: undefined,
+              unread_count: 0,
+              is_new_chat: false,
+            };
+            setCurrentChat(chatData);
+            await loadMessages(chatData.id);
+            navigate(`/member/profile/chat`, { state: { chatId: data.id } });
+          } else {
+            navigate(`/member/profile/chat`);
+          }
           break;
+        }
         case '리뷰':
           if (item.restaurant_id) {
             navigate(`/partner/review`);
           }
           break;
         case '매칭완료':
-          if (item.restaurant_id) {
-            navigate(`/member/matching/${item.restaurant_id}`);
-          }
+          navigate(`/member/profile/recentmatching`);
+          break;
+        case '매칭취소':
+          navigate(`/member/profile/recentmatching`);
           break;
         case '이벤트':
           navigate(`/member/event`);
@@ -288,9 +339,9 @@ export default function Notification({ isOpen, onClose, onRead }: NotificationPr
 
             {/* 알림 목록 */}
             <div className="flex flex-col mt-5 gap-3 overflow-y-auto scrollbar-hide">
-              {notification.length > 0 ? (
+              {notifications.length > 0 ? (
                 <div className="flex flex-col gap-3">
-                  {notification.map(n => (
+                  {notifications.map(n => (
                     <motion.div
                       key={n.id}
                       initial={{ opacity: 0, y: 20 }}
