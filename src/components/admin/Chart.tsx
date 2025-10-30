@@ -17,7 +17,7 @@ function Chart() {
   useEffect(() => {
     const loadChartData = async () => {
       const { counts } = await fetchMatchingStatus();
-      console.log('매칭 상태 통계:', counts);
+      // console.log('매칭 상태 통계:', counts);
       setStatus(counts);
     };
     loadChartData();

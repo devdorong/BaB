@@ -44,6 +44,7 @@ type AuthContextType = {
   signOut: () => Promise<void>;
   // 회원정보 로딩 상태
   loading: boolean;
+  initialized: boolean;
   // 회원탈퇴 기능
   // deleteAccount: () => Promise<{ error?: string; success?: boolean; message?: string }>;
 };
@@ -60,6 +61,7 @@ export const AuthProvider = ({ children }: AuthProviderProps) => {
   const [user, setUser] = useState<User | null>(null);
   // 로딩 상태 추가
   const [loading, setLoading] = useState<boolean>(true);
+  const [initialized, setInitialized] = useState<boolean>(false);
 
   // 중복 처리 방지를 위한 ref
   const processingUsers = useRef<Set<string>>(new Set());
@@ -149,6 +151,7 @@ export const AuthProvider = ({ children }: AuthProviderProps) => {
         console.error('loadSession 오류:', err);
       } finally {
         setLoading(false);
+        setInitialized(true);
       }
     };
 
@@ -170,6 +173,7 @@ export const AuthProvider = ({ children }: AuthProviderProps) => {
       }
 
       setLoading(false);
+      setInitialized(true);
     });
 
     return () => {
@@ -366,6 +370,7 @@ export const AuthProvider = ({ children }: AuthProviderProps) => {
     signIn,
     signOut,
     session,
+    initialized,
     user,
     loading,
     checkEmailExists,

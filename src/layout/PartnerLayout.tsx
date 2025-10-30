@@ -1,9 +1,16 @@
+import { useAuth } from '@/contexts/AuthContext';
 import { Outlet } from 'react-router-dom';
 import PartnerHeader from '../components/PartnerHeader';
-import { PartnerRestaurantProvider } from '../contexts/PartnerRestaurantContext';
-import { MenusProvider } from '../contexts/MenuContext';
 
 function PartnerLayout() {
+  const { initialized } = useAuth();
+  if (!initialized) {
+    return (
+      <div className="w-full h-screen flex items-center justify-center text-gray-500">
+        로그인 정보를 확인 중입니다...
+      </div>
+    );
+  }
   return (
     <div className="relative">
       <PartnerHeader />
