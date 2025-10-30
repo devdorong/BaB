@@ -6,7 +6,7 @@ import {
   RiStarFill,
   RiStarLine,
 } from 'react-icons/ri';
-import { useNavigate } from 'react-router-dom';
+import { useLocation, useNavigate } from 'react-router-dom';
 import RecentMatchingRecordItem from '../../../components/member/RecentMatchingRecordItem';
 import YetMatchingRecordItem from '../../../components/member/YetMatchingRecordItem';
 import { useAuth } from '../../../contexts/AuthContext';
@@ -16,7 +16,11 @@ import type { Matchings } from '../../../types/bobType';
 type TabKey = 'recent' | 'yet';
 
 function RecentMatchingPage() {
-  const [tab, setTab] = useState<TabKey>('yet');
+  const location = useLocation();
+  const queryParams = new URLSearchParams(location.search);
+  const defaultTab = queryParams.get('tab') === 'recent' ? 'recent' : 'yet';
+  const [tab, setTab] = useState<TabKey>(defaultTab as TabKey);
+  
   const navigate = useNavigate();
   const { user } = useAuth();
   const [matchings, setMatchings] = useState<Matchings[]>([]);

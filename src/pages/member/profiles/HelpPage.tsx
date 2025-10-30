@@ -46,7 +46,7 @@ function HelpPage() {
     <div id="root" className="min-h-screen bg-bg-bg">
       {/* 상단 경로 표시 */}
       <div className="flex flex-col w-full max-w-[1280px] mx-auto">
-        <div className="flex py-[15px] px-4 sm:px-6">
+        <div className=" py-[15px] px-4 sm:px-6 hidden lg:flex">
           <div
             onClick={() => navigate('/member/profile')}
             className="text-babgray-600 text-[17px] cursor-pointer hover:text-babgray-900"
@@ -60,7 +60,7 @@ function HelpPage() {
         </div>
 
         {/* 메인 컨테이너 */}
-        <div className="w-full max-w-[1280px] mx-auto">
+        <div className="w-full max-w-[1280px] mx-auto pt-[20px] lg:pt-[0px] px-4 xl:px-0">
           <div className={styles.wrapper}>
             {/* 왼쪽 통계 카드 */}
             <div className={styles.leftSection}>

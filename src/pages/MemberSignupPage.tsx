@@ -374,7 +374,7 @@ function MemberSignupPage() {
                 <div className="flex-1">
                   <Select
                     value={month || '월'}
-                    onChange={value => setMonth(value)}
+                    onChange={value => setMonth(String(value))}
                     suffixIcon={null}
                     className="bab-select w-full flex items-center justify-center"
                     classNames={{
@@ -396,7 +396,7 @@ function MemberSignupPage() {
                 <div className="flex-1">
                   <Select
                     value={day || '일'}
-                    onChange={value => setDay(value)}
+                    onChange={value => setDay(String(value))}
                     suffixIcon={null}
                     className="bab-select w-full flex items-center justify-center"
                     classNames={{

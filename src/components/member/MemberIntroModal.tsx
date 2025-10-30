@@ -49,7 +49,7 @@ const MemberIntroModal = () => {
           {/* 모달 본체 */}
           <motion.div
             key="modal"
-            className="relative w-full max-w-[600px] h-[80vh] bg-white rounded-2xl overflow-hidden shadow-xl"
+            className="relative w-full max-w-[600px] h-[80vh] bg-none rounded-2xl overflow-hidden shadow-xl"
             initial={{ y: 80, opacity: 0, scale: 0.95 }}
             animate={{ y: 0, opacity: 1, scale: 1 }}
             exit={{ y: 60, opacity: 0, scale: 0.95 }}
@@ -64,7 +64,13 @@ const MemberIntroModal = () => {
             </button>
 
             {/* Swiper 슬라이드 */}
-            <Swiper className="w-full h-full">
+            <Swiper
+              className="w-full h-full"
+              loop={false}
+              resistanceRatio={0}
+              allowTouchMove={true}
+              edgeSwipeDetection={true}
+            >
               {/* STEP 1~2 */}
               <SwiperSlide>
                 <div className="relative w-full h-full">
@@ -164,7 +170,7 @@ const MemberIntroModal = () => {
             </Swiper>
 
             {/* 하단 체크박스 */}
-            <div className="absolute bottom-4 left-0 right-0 flex justify-center items-center gap-2 text-sm text-gray-700 bg-white/80 py-2">
+            <div className="absolute bottom-4 left-0 right-0 flex justify-center items-center gap-2 text-sm text-white  py-2 z-10">
               <input
                 id="skipIntro"
                 type="checkbox"
