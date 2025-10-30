@@ -12,6 +12,7 @@ import { Select } from 'antd';
 function MemberSignupPage() {
   // ts
   // const { signUp } = useAuth();
+  const { Option } = Select;
   const [name, setName] = useState('');
   const [nickName, setNickName] = useState('');
   const [email, setEmail] = useState('');
@@ -177,7 +178,7 @@ function MemberSignupPage() {
     }
 
     try {
-      // 1. 회원가입만 먼저 진행 (프로필 생성은 이메일 인증 후)
+      // 회원가입만 진행 (프로필 생성은 ConfirmPage에서)
       const { data, error } = await supabase.auth.signUp({
         email,
         password: pw,
@@ -188,9 +189,10 @@ function MemberSignupPage() {
             phone,
             gender,
             birth,
-            // 프로필 생성에 필요한 정보를 user_metadata에 저장
-            needsProfileCreation: true,
+            needsProfileCreation: true, // ✅ 플래그 설정
           },
+          // ✅ 반드시 ConfirmPage로 리다이렉트
+          emailRedirectTo: `${window.location.origin}/auth/confirm`,
         },
       });
 
@@ -199,18 +201,13 @@ function MemberSignupPage() {
         return;
       }
 
-      // 2. 회원가입 성공 메시지만 표시
+      // ✅ 성공 메시지만 표시 (프로필 생성은 이메일 인증 후)
       setMsg('회원가입에 성공했습니다. 이메일 인증 링크를 눌러 회원가입을 완료해주세요.');
-
-      // 3. 프로필 생성은 이메일 인증 완료 후 로그인 시 처리
-      // (별도 컴포넌트나 useEffect에서 처리)
     } catch (err) {
       console.error('회원가입 처리 중 오류:', err);
       setMsg('회원가입 처리 중 오류가 발생했습니다.');
     }
   };
-
-  const handleMonthChange = () => {};
 
   const handlePhoneChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     let value = e.target.value.replace(/\D/g, ''); // 숫자만 남기기
@@ -250,6 +247,7 @@ function MemberSignupPage() {
 
             window.open(mailUrl, '_blank');
             closeModal();
+            navigate('/');
           },
         );
       } else {
@@ -364,11 +362,11 @@ function MemberSignupPage() {
                       },
                     }}
                   >
-                    <option value="">년도</option>
+                    <Option value="">년도</Option>
                     {years.map(y => (
-                      <option key={y} value={y}>
+                      <Option key={y} value={String(y)}>
                         {y}
-                      </option>
+                      </Option>
                     ))}
                   </Select>
                 </div>
@@ -386,11 +384,11 @@ function MemberSignupPage() {
                       },
                     }}
                   >
-                    <option value="">월</option>
+                    <Option value="">월</Option>
                     {months.map(m => (
-                      <option key={m} value={m}>
+                      <Option key={m} value={String(m)}>
                         {m}
-                      </option>
+                      </Option>
                     ))}
                   </Select>
                 </div>
@@ -408,11 +406,11 @@ function MemberSignupPage() {
                       },
                     }}
                   >
-                    <option value="">일</option>
+                    <Option value="">일</Option>
                     {days.map(d => (
-                      <option key={d} value={d}>
+                      <Option key={d} value={String(d)}>
                         {d}
-                      </option>
+                      </Option>
                     ))}
                   </Select>
                 </div>
