@@ -21,7 +21,7 @@ export const PartnerRestaurantProvider = ({ children }: { children: React.ReactN
   useEffect(() => {
     if (!user) return;
     refreshRestaurant();
-  }, []);
+  }, [user?.id]);
 
   return (
     <PartnerRestaurantContext.Provider value={{ restaurant, refreshRestaurant }}>

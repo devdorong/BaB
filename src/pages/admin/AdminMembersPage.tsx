@@ -21,6 +21,7 @@ export default function UserManagementPage() {
   const [sortType, setSortType] = useState<'이름순' | '가입일순'>('가입일순');
 
   const [memberDetail, setMemberDetail] = useState(false);
+  const [loading, setLoading] = useState(true);
 
   const category: ProfileStatus[] = ['활성', '정지', '탈퇴'];
 
@@ -36,6 +37,7 @@ export default function UserManagementPage() {
   dayjs.locale('ko');
 
   const fetchData = async () => {
+    setLoading(true);
     const { data, error } = await supabase
       .from('profiles_with_email')
       .select('*')
@@ -43,12 +45,15 @@ export default function UserManagementPage() {
     if (error) {
       console.log('사용자 정보를 가져오는데 실패했습니다.', error.message);
     }
+    // console.log(data);
     setUserList(data || []);
+    setLoading(false);
   };
 
   useEffect(() => {
+    if (!authUser) return; // 세션 복원 전에는 실행하지 않음
     fetchData();
-  }, []);
+  }, [authUser]);
 
   const filteredUsers = useMemo(() => {
     const lower = search.toLowerCase();
@@ -56,7 +61,7 @@ export default function UserManagementPage() {
       user =>
         user.nickname?.toLowerCase().includes(lower) || user.email?.toLowerCase().includes(lower),
     );
-  }, [statusFilter, search]);
+  }, [filterCategory, search]);
 
   const sortedUsers = useMemo(() => {
     const users = [...filteredUsers];
@@ -69,7 +74,7 @@ export default function UserManagementPage() {
 
     return users;
   }, [filteredUsers, sortType]);
-
+  // console.log(sortedUsers);
   return (
     <div className="w-full min-h-screen bg-bg-bg text-babgray-800 font-semibold">
       <div className="p-8">
@@ -134,51 +139,67 @@ export default function UserManagementPage() {
             </tr>
           </thead>
           <tbody>
-            {sortedUsers.map((user, idx) => (
-              <tr key={idx} className="border-b last:border-b-0 hover:bg-gray-50">
-                <td className="py-3 px-8 flex items-center space-x-3">
-                  <img
-                    src={
-                      user.avatar_url === 'guest_image'
-                        ? `https://www.gravatar.com/avatar/?d=mp&s=200`
-                        : user.avatar_url
-                    }
-                    alt="avatar"
-                    className="w-8 h-8 rounded-full object-cover"
-                  />
-                  <span>{user.nickname}</span>
-                </td>
-                <td className="py-3 px-8">{user.email}</td>
-                <td className="py-3 px-8">{dayjs(user.created_at).format('YYYY-MM-DD')}</td>
-                <td className="py-3 px-8">{user.status}</td>
-                <td
-                  onClick={handleMemberDetail}
-                  className="py-3 px-8 text-orange-500 hover:underline cursor-pointer"
-                >
-                  상세보기
-                </td>
-                {memberDetail && (
-                  <MemberActivityDetailModal onClose={() => setMemberDetail(false)} />
-                )}
-                <td className="py-3 px-8">
-                  {user.status === '활성' && (
-                    <button className="border border-gray-300 text-gray-600 text-xs px-3 py-1 rounded-full hover:bg-gray-100">
-                      정지
-                    </button>
-                  )}
-                  {user.status === '정지' && (
-                    <button className="border border-red-300 text-red-500 text-xs px-3 py-1 rounded-full hover:bg-red-50">
-                      탈퇴
-                    </button>
-                  )}
-                  {user.status === '탈퇴' && (
-                    <button className="border border-green-300 text-green-600 text-xs px-3 py-1 rounded-full hover:bg-green-50">
-                      복원
-                    </button>
-                  )}
+            {loading ? (
+              <tr>
+                <td colSpan={6} className="py-10 text-center text-gray-400">
+                  사용자 목록을 불러오는 중입니다...
                 </td>
               </tr>
-            ))}
+            ) : sortedUsers.length === 0 ? (
+              <tr>
+                <td colSpan={6} className="py-10 text-center text-gray-400">
+                  표시할 사용자가 없습니다.
+                </td>
+              </tr>
+            ) : (
+              <>
+                {sortedUsers.map((user, idx) => (
+                  <tr key={idx} className="border-b last:border-b-0 hover:bg-gray-50">
+                    <td className="py-3 px-8 flex items-center space-x-3">
+                      <img
+                        src={
+                          user.avatar_url === 'guest_image'
+                            ? `https://www.gravatar.com/avatar/?d=mp&s=200`
+                            : user.avatar_url
+                        }
+                        alt="avatar"
+                        className="w-8 h-8 rounded-full object-cover"
+                      />
+                      <span>{user.nickname}</span>
+                    </td>
+                    <td className="py-3 px-8">{user.email}</td>
+                    <td className="py-3 px-8">{dayjs(user.created_at).format('YYYY-MM-DD')}</td>
+                    <td className="py-3 px-8">{user.status}</td>
+                    <td
+                      onClick={handleMemberDetail}
+                      className="py-3 px-8 text-orange-500 hover:underline cursor-pointer"
+                    >
+                      상세보기
+                    </td>
+                    {memberDetail && (
+                      <MemberActivityDetailModal onClose={() => setMemberDetail(false)} />
+                    )}
+                    <td className="py-3 px-8">
+                      {user.status === '활성' && (
+                        <button className="border border-gray-300 text-gray-600 text-xs px-3 py-1 rounded-full hover:bg-gray-100">
+                          정지
+                        </button>
+                      )}
+                      {user.status === '정지' && (
+                        <button className="border border-red-300 text-red-500 text-xs px-3 py-1 rounded-full hover:bg-red-50">
+                          탈퇴
+                        </button>
+                      )}
+                      {user.status === '탈퇴' && (
+                        <button className="border border-green-300 text-green-600 text-xs px-3 py-1 rounded-full hover:bg-green-50">
+                          복원
+                        </button>
+                      )}
+                    </td>
+                  </tr>
+                ))}
+              </>
+            )}
           </tbody>
         </table>
       </div>

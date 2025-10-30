@@ -50,7 +50,7 @@ function AdminMatchingPage() {
         const all = await getMatchingsWithRestaurant();
         setMatchings(all);
 
-        console.log(all);
+        // console.log(all);
       } catch (err) {
         console.error('매칭 불러오기 실패:', err);
       }

@@ -170,7 +170,7 @@ function AdminReportsPage() {
         <h3 className="font-bold">신고된 콘텐츠</h3>
         {/* 리스트 */}
         {mockReports.map((user, idx) => (
-          <div className="flex flex-col p-6 border w-full rounded-2xl">
+          <div key={idx} className="flex flex-col p-6 border w-full rounded-2xl">
             <div className="flex items-center gap-3">
               <div>{statusBadge(user.report_type)}</div>
               <p className="text-[11px] text-babgray-800">{user.created_at.toLocaleString()}</p>
