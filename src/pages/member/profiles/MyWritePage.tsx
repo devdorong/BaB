@@ -110,7 +110,7 @@ function MyWritePage() {
   return (
     <div className="w-full min-h-screen bg-bg-bg">
       {/* 상단 경로 표시 */}
-      <div className="flex flex-col w-full max-w-[1280px] mx-auto">
+      <div className="flex flex-col w-full xl:px-4 lg:px-4 max-w-[1280px] mx-auto">
         <div className="hidden lg:flex items-center py-[15px] text-sm sm:text-base">
           <div
             onClick={() => navigate('/member/profile')}
