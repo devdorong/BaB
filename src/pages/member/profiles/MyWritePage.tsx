@@ -127,7 +127,7 @@ function MyWritePage() {
         <div className={styles.pageContainer}>
           {/* 타이틀 */}
           <div className="flex flex-col gap-1">
-            <p className="text-3xl font-bold">내가 쓴 게시글</p>
+            <p className="text-[24px] lg:text-3xl font-bold">내가 쓴 게시글</p>
             <p className="text-babgray-600">내가 작성한 글들을 확인해 보세요.</p>
           </div>
 

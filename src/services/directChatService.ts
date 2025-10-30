@@ -197,9 +197,15 @@ export async function getChatList(): Promise<ChatApiResponse<ChatListItem[]>> {
       return { success: true, data: [] };
     }
 
+    // 현재 사용자가 active인 채팅방만 필터링
+    const activeChats = chats.filter(chat => {
+      const isUser1 = chat.user1_id === currentUser.id;
+      return isUser1 ? chat.user1_active : chat.user2_active;
+    });
+
     // 각 채팅방의 마지막 메시지와 읽지 않은 메시지 수 조회
     const chatListItems: ChatListItem[] = await Promise.all(
-      chats.map(async chat => {
+      activeChats.map(async chat => {
         // 상대방 사용자 ID
         const otherUserId = chat.user1_id === currentUser.id ? chat.user2_id : chat.user1_id;
 

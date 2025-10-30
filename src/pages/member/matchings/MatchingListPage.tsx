@@ -11,6 +11,9 @@ import { useModal } from '../../../ui/sdj/ModalState';
 import Modal from '../../../ui/sdj/Modal';
 import { supabase } from '@/lib/supabase';
 import { BlackTag, GrayTag } from '@/ui/tag';
+import SortCategory from '@/components/member/SortCategory';
+import { SortMatchingCategory } from '@/components/member/SortMatchingOption';
+import AllCategory from '@/components/member/AllCategory';
 
 dayjs.extend(relativeTime);
 dayjs.locale('ko');
@@ -42,7 +45,7 @@ const MatchingListPage = () => {
   const [interests, setInterests] = useState<Record<string, string[]>>({});
   const [sortOption, setSortOption] = useState<SortOption>('최신순');
   const [currentPage, setCurrentPage] = useState(1);
-  const [selectedCategory, setSelectedCategory] = useState('전체');
+  const [selectedCategory, setSelectedCategory] = useState<number | string>('전체');
   const [userPos, setUserPos] = useState<{ lat: number; lng: number } | null>(null);
   const [search, setSearch] = useState('');
   const [lastSearchQuery, setLastSearchQuery] = useState('');
@@ -285,7 +288,7 @@ const MatchingListPage = () => {
           </div>
 
           {/* 카테고리 필터 */}
-          <div className="flex flex-wrap gap-2 justify-start sm:justify-start">
+          <div className="hidden lg:flex flex-wrap gap-2 justify-start sm:justify-start">
             <button
               onClick={() => handleCategoryChange('전체')}
               className={`px-4 py-2 rounded-full text-sm ${
@@ -313,7 +316,7 @@ const MatchingListPage = () => {
           </div>
 
           {/* 정렬 옵션 */}
-          <div className="flex flex-wrap justify-start sm:justify-start gap-2">
+          {/* <div className="flex flex-wrap justify-start sm:justify-start gap-2">
             <button onClick={() => handleSortChange('최신순')} className="cursor-pointer">
               {sortOption === '최신순' ? <BlackTag>최신순</BlackTag> : <GrayTag>최신순</GrayTag>}
             </button>
@@ -321,6 +324,20 @@ const MatchingListPage = () => {
             <button onClick={() => handleSortChange('거리순')} className="cursor-pointer">
               {sortOption === '거리순' ? <BlackTag>거리순</BlackTag> : <GrayTag>거리순</GrayTag>}
             </button>
+          </div> */}
+          <div className="flex gap-4 justify-start items-start">
+            <div className="lg:hidden flex justify-start">
+              <AllCategory
+                value={selectedCategory}
+                onChange={v => {
+                  setSelectedCategory(v);
+                  setCurrentPage(1);
+                }}
+              />
+            </div>
+            <div className="flex justify-start gap-[8px]">
+              <SortMatchingCategory sortOption={sortOption} setSortOption={setSortOption} />
+            </div>
           </div>
         </div>
 

@@ -1,21 +1,17 @@
-import { ReviewCardMobile } from '@/ui/jy/ReviewCardMobile';
+import AllCategory from '@/components/member/AllCategory';
+import { ReviewCard } from '@/ui/dorong/ReviewMockCard';
 import { useEffect, useState } from 'react';
 import { RiArrowLeftSLine, RiArrowRightSLine } from 'react-icons/ri';
 import { useNavigate } from 'react-router-dom';
 import { fetchInterestsGrouped } from '../../../lib/interests';
-import {
-  fetchFavoriteRestaurants,
-  type RestaurantsType,
-  type RestaurantTypeRatingAvg,
-} from '../../../lib/restaurants';
+import { fetchFavoriteRestaurants, type RestaurantsType } from '../../../lib/restaurants';
 import { categoryColors, defaultCategoryColor } from '../../../ui/jy/categoryColors';
-import { ReviewCard } from '@/ui/dorong/ReviewMockCard';
 
 const FOOD = '음식 종류';
 
 function FavoritePage() {
   const navigate = useNavigate();
-  const [selectedCategory, setSelectedCategory] = useState('전체');
+  const [selectedCategory, setSelectedCategory] = useState<string | number>('전체');
   const [currentPage, setCurrentPage] = useState(1);
   const [restaurants, setRestaurants] = useState<RestaurantsType[]>([]);
   const [interests, setInterests] = useState<Record<string, string[]>>({});
@@ -37,11 +33,18 @@ function FavoritePage() {
     loadFavorites();
   }, []);
 
+  // // 카테고리 필터 적용
+  // const filtered =
+  //   selectedCategory === '전체'
+  //     ? restaurants
+  //     : restaurants.filter(item => item.interests?.name === selectedCategory);
+
   // 카테고리 필터 적용
-  const filtered =
-    selectedCategory === '전체'
-      ? restaurants
-      : restaurants.filter(item => item.interests?.name === selectedCategory);
+  let filtered = restaurants.filter(item => {
+    // 카테고리 필터
+    const matchCategory = selectedCategory === '전체' || item.interests?.name === selectedCategory;
+    return matchCategory;
+  });
 
   const startIdx = (currentPage - 1) * itemsPerPage;
   const endIdx = startIdx + itemsPerPage;
@@ -168,7 +171,7 @@ function FavoritePage() {
               </div>
 
               {/* 모바일·태블릿용 드롭다운 */}
-              <div className="lg:hidden flex justify-start">
+              {/* <div className="lg:hidden flex justify-start">
                 <select
                   value={selectedCategory}
                   onChange={e => {
@@ -184,6 +187,15 @@ function FavoritePage() {
                     </option>
                   ))}
                 </select>
+              </div> */}
+              <div className="lg:hidden flex justify-start">
+                <AllCategory
+                  value={selectedCategory}
+                  onChange={v => {
+                    setSelectedCategory(v);
+                    setCurrentPage(1);
+                  }}
+                />
               </div>
             </div>
 

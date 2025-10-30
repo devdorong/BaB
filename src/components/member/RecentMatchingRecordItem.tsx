@@ -1,5 +1,12 @@
 import { useEffect, useState } from 'react';
-import { RiCalendarLine, RiMoreFill, RiStarFill, RiStoreLine } from 'react-icons/ri';
+import {
+  RiCalendarLine,
+  RiMapLine,
+  RiMapPinLine,
+  RiMoreFill,
+  RiStarFill,
+  RiStoreLine,
+} from 'react-icons/ri';
 import { getRestaurantById, type RestaurantsDetailType } from '../../lib/restaurants';
 import { supabase } from '../../lib/supabase';
 import type { Matchings, Profile } from '../../types/bobType';
@@ -178,11 +185,21 @@ const RecentMatchingRecordItem = ({ endMatching }: RecentMatchingRecordItemProps
 
             {/* 장소 + 시간 */}
             <div className="flex flex-col text-sm text-gray-600 leading-relaxed">
-              <div className="flex items-center gap-2">
+              <div className="lg:flex items-center gap-2 hidden">
                 <RiStoreLine className="text-gray-500" />
                 <span className="font-medium text-gray-800">{place?.name}</span>
                 <span className="text-gray-400">·</span>
                 <span className="truncate">{place?.address}</span>
+              </div>
+              <div className="flex flex-col lg:hidden">
+                <div className="flex items-center gap-2">
+                  <RiStoreLine className="text-gray-500" />
+                  <span className="text-gray-800 font-medium">{place?.name}</span>
+                </div>
+                <div className="flex items-center gap-2">
+                  <RiMapPinLine />
+                  <span>{place?.address}</span>
+                </div>
               </div>
               <div className="flex items-center gap-2">
                 <RiCalendarLine className="text-gray-500" />

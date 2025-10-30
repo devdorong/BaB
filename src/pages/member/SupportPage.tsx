@@ -97,8 +97,8 @@ function SupportPage() {
       {/* 상단 */}
       <div>
         <div className="pb-[36px]">
-          <h2 className="text-[32px] font-bold">고객센터</h2>
-          <span className="text-[16px] font-medium">
+          <h2 className="text-[24px] lg:text-3xl font-bold">고객센터</h2>
+          <span className="text-babgray-600 text-[16px]">
             궁금한 점이 있으시면 언제든지 문의해주세요
           </span>
         </div>

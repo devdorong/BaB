@@ -27,6 +27,11 @@ function SortCategory({ sortType, setSortType }: SortCategoryProps) {
           suffixIcon={null}
           onChange={e => setSortType(e)}
           className="bab-select text-center justify-center items-center w-[90px] h-[50px] appearance-none"
+          classNames={{
+            popup: {
+              root: 'bab-select-dropdown',
+            },
+          }}
           options={[
             { label: '거리순', value: 'distance' },
             { label: '별점순', value: 'rating' },

@@ -270,14 +270,45 @@ export const DirectChatProider: React.FC<DirectChatProiderProps> = ({ children }
   );
 
   // 채팅방 나가기
+  // const exitDirectChatHandler = useCallback(
+  //   async (chatId: string): Promise<boolean> => {
+  //     try {
+  //       setLoading(true);
+  //       const response = await exitDirectChat(chatId);
+  //       if (response.success) {
+  //         // 채팅방 목록에서 제거
+  //         setChats(prev => prev.filter(chat => chat.id !== chatId));
+  //         // 현재 채팅방이 나간 채팅방이면 초기화
+  //         if (currentChatId.current === chatId) {
+  //           currentChatId.current = null;
+  //           setCurrentChat(null);
+  //           setMessages([]);
+  //         }
+  //         return true;
+  //       } else {
+  //         handleError(response.error || '채팅방 나가기에 실패했습니다.');
+  //         return false;
+  //       }
+  //     } catch (err) {
+  //       handleError('채팅방 나가기 중 오류가 발생했습니다.');
+  //       return false;
+  //     } finally {
+  //       setLoading(false);
+  //     }
+  //   },
+  //   [handleError],
+  // );
+
+  // 채팅방 나가기
   const exitDirectChatHandler = useCallback(
     async (chatId: string): Promise<boolean> => {
       try {
         setLoading(true);
         const response = await exitDirectChat(chatId);
         if (response.success) {
-          // 채팅방 목록에서 제거
-          setChats(prev => prev.filter(chat => chat.id !== chatId));
+          // setChats로 직접 제거하지 말고 loadChats로 최신 목록 불러오기
+          await loadChats(); // ← 변경
+
           // 현재 채팅방이 나간 채팅방이면 초기화
           if (currentChatId.current === chatId) {
             currentChatId.current = null;
@@ -296,7 +327,7 @@ export const DirectChatProider: React.FC<DirectChatProiderProps> = ({ children }
         setLoading(false);
       }
     },
-    [handleError],
+    [handleError, loadChats], // ← loadChats 의존성 추가
   );
 
   // 비활성화된 채팅방 목록 로딩
@@ -431,7 +462,7 @@ export const DirectChatProider: React.FC<DirectChatProiderProps> = ({ children }
 
           // 내가 나간 경우
           if (myOldActive === true && myNewActive === false) {
-            loadChats();
+            // loadChats();
             if (currentChatId.current === newChat.id) {
               setCurrentChat(null);
               setMessages([]);
@@ -440,6 +471,7 @@ export const DirectChatProider: React.FC<DirectChatProiderProps> = ({ children }
 
           // 상대방이 나간 경우
           if (otherOldActive === true && otherNewActive === false) {
+            loadChats();
             if (currentChatId.current === newChat.id) {
               setCurrentChat(null);
               setMessages([]);

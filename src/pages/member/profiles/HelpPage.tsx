@@ -97,7 +97,7 @@ function HelpPage() {
                   </div>
                   <div className="flex flex-col gap-[10px]">
                     <p className="text-[24px] font-bold">문의 내역 안내</p>
-                    <div className="flex flex-col gap-[10px] text-[17px] text-babgray-800">
+                    <div className="flex flex-col gap-[10px] text-[15px] lg:text-[17px] text-babgray-800">
                       <span>· 접수하신 1:1 문의 내역을 확인할 수 있습니다.</span>
                       <span>· 문의 내용과 답변을 한눈에 확인할 수 있습니다.</span>
                       <span>· 문의 접수 후 순차적으로 답변이 제공됩니다.</span>

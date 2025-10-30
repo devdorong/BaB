@@ -145,6 +145,10 @@ const DirectChatList = ({ onChatSelect, onCreateChat, selectedChatId }: DirectCh
     );
   }
 
+  const handleSelect = (chatId: string) => {
+    setOpenChatId(prev => (prev === chatId ? null : chatId));
+  };
+
   return (
     <div className="chat-list min-h-screen flex bg-white">
       {/* 채팅 목록 헤더 - 제목과 새 채팅 버튼 */}
@@ -221,7 +225,11 @@ const DirectChatList = ({ onChatSelect, onCreateChat, selectedChatId }: DirectCh
               chat={chat}
               isSelected={selectedChatId === chat.id}
               onSelect={() => {
-                onChatSelect(chat.id);
+                if (selectedChatId === chat.id) {
+                  onChatSelect('');
+                } else {
+                  onChatSelect(chat.id);
+                }
                 setOpenChatId(null);
               }}
               openChatId={openChatId}

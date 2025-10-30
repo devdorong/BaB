@@ -1,4 +1,4 @@
-import { Link, NavLink, useNavigate } from 'react-router-dom';
+import { Link, NavLink, useLocation, useNavigate } from 'react-router-dom';
 import { ButtonFillMd, ButtonFillSm, ButtonLineMd, GrayButtonFillSm } from '../../ui/button';
 import { LogoSm } from '../../ui/Ui';
 
@@ -49,7 +49,7 @@ const MemberHeader = () => {
   const isPartner = profileData?.role === 'partner';
   const [isSupportOpen, setIsSupportOpen] = useState(false);
   const [isProfileOpen, setIsProfileOpen] = useState(false);
-
+  const location = useLocation();
   // 안읽은 알림 개수
   const notificationUnReadCount = notifications.filter(n => !n.is_read).length;
 
@@ -130,6 +130,26 @@ const MemberHeader = () => {
     signOut();
     navigate('/member');
   };
+
+  useEffect(() => {
+    // 내 프로필 관련 경로일 때 자동 오픈
+    if (location.pathname.startsWith('/member/profile')) {
+      setIsProfileOpen(true);
+    } else {
+      setIsProfileOpen(false);
+    }
+
+    // 고객센터 관련 경로일 때 자동 오픈
+    if (
+      location.pathname.startsWith('/member/support') ||
+      location.pathname.startsWith('/privacy') ||
+      location.pathname.startsWith('/perpolicy')
+    ) {
+      setIsSupportOpen(true);
+    } else {
+      setIsSupportOpen(false);
+    }
+  }, [location.pathname]);
 
   return (
     <header className="flex items-center w-full justify-between bg-white z-20 border border-babgray-150">
@@ -291,7 +311,7 @@ const MemberHeader = () => {
       </div>
       {/* 모바일 메뉴 슬라이드 패널 */}
       <div
-        className={`fixed top-0 right-0 h-full w-[300px] bg-white border-l border-babgray-150 shadow-lg transform transition-transform duration-300 ease-in-out z-40 ${
+        className={`fixed top-0 right-0 h-full w-[300px] bg-white border-l border-babgray-150 shadow-lg transform transition-transform duration-300  ease-in-out z-40 ${
           menuOpen ? 'translate-x-0' : 'translate-x-full'
         }`}
       >
@@ -302,24 +322,48 @@ const MemberHeader = () => {
           </button>
         </div>
         {/* 메뉴 항목 */}
-        <nav className="flex flex-col gap-6 px-6 text-babgray-800">
-          <NavLink to="/member/matching" onClick={() => setMenuOpen(false)}>
+        <nav className="flex flex-col gap-6 px-6 text-babgray-800 ">
+          <NavLink
+            className={({ isActive }) =>
+              `${isActive ? 'text-bab' : 'hover:text-bab transition-colors'}`
+            }
+            to="/member/matching"
+            onClick={() => setMenuOpen(false)}
+          >
             매칭
           </NavLink>
-          <NavLink to="/member/community" onClick={() => setMenuOpen(false)}>
+          <NavLink
+            className={({ isActive }) =>
+              `${isActive ? 'text-bab' : 'hover:text-bab transition-colors'}`
+            }
+            to="/member/community"
+            onClick={() => setMenuOpen(false)}
+          >
             커뮤니티
           </NavLink>
-          <NavLink to="/member/reviews" onClick={() => setMenuOpen(false)}>
+          <NavLink
+            className={({ isActive }) =>
+              `${isActive ? 'text-bab' : 'hover:text-bab transition-colors'}`
+            }
+            to="/member/reviews"
+            onClick={() => setMenuOpen(false)}
+          >
             맛집추천
           </NavLink>
-          <NavLink to="/member/events" onClick={() => setMenuOpen(false)}>
+          <NavLink
+            className={({ isActive }) =>
+              `${isActive ? 'text-bab' : 'hover:text-bab transition-colors'}`
+            }
+            to="/member/events"
+            onClick={() => setMenuOpen(false)}
+          >
             이벤트
           </NavLink>
           {/* 고객센터 (서브메뉴 포함) */}
           <div>
             <button
               onClick={() => setIsSupportOpen(prev => !prev)}
-              className="w-full text-left flex items-center justify-between hover:text-bab-500 transition-colors"
+              className="w-full text-left flex items-center justify-between transition-colors"
             >
               <span>고객지원</span>
               <span
@@ -333,32 +377,38 @@ const MemberHeader = () => {
             {isSupportOpen && (
               <div className="mt-5 ml-3 flex flex-col gap-4 text-sm text-babgray-600">
                 <NavLink
+                  className={({ isActive }) =>
+                    `${isActive ? 'text-bab' : 'hover:text-bab transition-colors'}`
+                  }
                   to="/member/support"
                   onClick={() => {
                     setMenuOpen(false);
                     setIsSupportOpen(false);
                   }}
-                  className="hover:text-bab-500 transition-colors"
                 >
                   고객센터
                 </NavLink>
                 <NavLink
+                  className={({ isActive }) =>
+                    `${isActive ? 'text-bab' : 'hover:text-bab transition-colors'}`
+                  }
                   to="/privacy"
                   onClick={() => {
                     setMenuOpen(false);
                     setIsSupportOpen(false);
                   }}
-                  className="hover:text-bab-500 transition-colors"
                 >
                   이용약관
                 </NavLink>
                 <NavLink
+                  className={({ isActive }) =>
+                    `${isActive ? 'text-bab' : 'hover:text-bab transition-colors'}`
+                  }
                   to="/perpolicy"
                   onClick={() => {
                     setMenuOpen(false);
                     setIsSupportOpen(false);
                   }}
-                  className="hover:text-bab-500 transition-colors font-bold"
                 >
                   개인정보처리방침
                 </NavLink>
@@ -372,7 +422,7 @@ const MemberHeader = () => {
               <div>
                 <button
                   onClick={() => setIsProfileOpen(prev => !prev)}
-                  className="w-full text-left flex items-center justify-between hover:text-bab-500 transition-colors"
+                  className="w-full text-left flex items-center justify-between transition-colors"
                 >
                   <span>내 프로필</span>
                   <span
@@ -387,11 +437,14 @@ const MemberHeader = () => {
                   <div className="mt-5 ml-3 flex flex-col gap-4 text-sm text-babgray-600">
                     <NavLink
                       to="/member/profile"
+                      end
                       onClick={() => {
                         setMenuOpen(false);
-                        setIsSupportOpen(false);
+                        setIsProfileOpen(false);
                       }}
-                      className="hover:text-bab-500 transition-colors"
+                      className={({ isActive }) =>
+                        `${isActive ? 'text-bab' : 'hover:text-bab transition-colors'}`
+                      }
                     >
                       내정보
                     </NavLink>
@@ -399,9 +452,11 @@ const MemberHeader = () => {
                       to="/member/profile/point"
                       onClick={() => {
                         setMenuOpen(false);
-                        setIsSupportOpen(false);
+                        setIsProfileOpen(false);
                       }}
-                      className="hover:text-bab-500 transition-colors"
+                      className={({ isActive }) =>
+                        `${isActive ? 'text-bab' : 'hover:text-bab transition-colors'}`
+                      }
                     >
                       포인트
                     </NavLink>
@@ -409,18 +464,26 @@ const MemberHeader = () => {
                       to="/member/profile/helps"
                       onClick={() => {
                         setMenuOpen(false);
-                        setIsSupportOpen(false);
+                        setIsProfileOpen(false);
                       }}
-                      className="hover:text-bab-500 transition-colors"
+                      className={({ isActive }) =>
+                        `${isActive ? 'text-bab' : 'hover:text-bab transition-colors'}`
+                      }
                     >
                       문의내역
                     </NavLink>
                   </div>
                 )}
               </div>
-              <Link to="/member/profile/chat" onClick={() => setMenuOpen(false)}>
+              <NavLink
+                className={({ isActive }) =>
+                  `${isActive ? 'text-bab' : 'hover:text-bab transition-colors'}`
+                }
+                to="/member/profile/chat"
+                onClick={() => setMenuOpen(false)}
+              >
                 채팅
-              </Link>
+              </NavLink>
               <div onClick={handleLogout} className="cursor-pointer">
                 로그아웃
               </div>
