@@ -25,6 +25,8 @@ function DirectChatRoom({ chatId, onExit }: DirectChatRoomProps) {
 
   const DEFAULT_AVATAR = 'https://www.gravatar.com/avatar/?d=mp&s=200';
 
+  
+
   // 메세지가 개수가 많으면 하단으로 스크롤을 해야 함.
   // 새 메시지가 추가될 때마다 최신 메시지를 볼 수 있도록 해야 함.
   const messageEndRef = useRef<HTMLDivElement>(null);

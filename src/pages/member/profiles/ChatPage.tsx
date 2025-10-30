@@ -1,15 +1,35 @@
 import { RiArrowLeftLine, RiArrowRightSLine, RiSearchLine } from 'react-icons/ri';
 import { ButtonFillMd } from '../../../ui/button';
-import { useNavigate } from 'react-router-dom';
+import { useLocation, useNavigate } from 'react-router-dom';
 import DirectChatList from '../../../components/member/chat/DirectChatList';
-import { useCallback, useRef, useState } from 'react';
+import { useCallback, useEffect, useRef, useState } from 'react';
 import DirectChatRoom from '../../../components/member/chat/DirectChatRoom';
+import { useDirectChat } from '@/contexts/DirectChatContext';
 
 function ChatPage() {
   const navigate = useNavigate();
   // 현재 선택된 채팅방의 ID 상태 관리
   const [selectedChatId, setSelectedChatId] = useState<string | null>(null);
+  const location = useLocation();
+  const { loadMessages, currentChat, setCurrentChat, chats, loadChats } = useDirectChat();
 
+  useEffect(() => {
+    loadChats();
+  }, [loadChats]);
+
+  useEffect(() => {
+    const chatId = location.state?.chatId;
+    if (!chatId) return;
+
+    if (chatId) {
+      const found = chats.find(item => item.id === chatId);
+      if (found) {
+        setCurrentChat(found);
+        setSelectedChatId(chatId);
+        loadMessages(found.id);
+      }
+    }
+  }, [location.state]);
   /**
    * 채팅방 선택 처리 함수
    * DirectChatList 에서 목록 중 채팅방 1개를 선택하면 호출됨
