@@ -27,6 +27,7 @@ export const ChatSwiperItem = ({
     loading,
     userSearchLoading,
     chats,
+    exitDirectChat: exitDirectChatFromContext,
   } = useDirectChat();
 
   const [offsetX, setOffsetX] = useState(0);
@@ -88,13 +89,23 @@ export const ChatSwiperItem = ({
   const handleExitChat = async () => {
     const confirmExit = window.confirm('채팅방을 나가시겠습니까?');
     if (!confirmExit) return;
+    try {
+      const success = await exitDirectChatFromContext(chat.id);
+      if (success) {
+        alert('채팅방을 나갔습니다.');
+        setIsSwiped(false);
+        setOffsetX(0);
+        setOpenChatId(null);
 
-    const success = await exitDirectChat(chat.id);
-    if (success) {
-      alert('채팅방을 나갔습니다.');
-      loadChats(); // 목록 새로고침
-    } else {
-      alert('채팅방 나가기에 실패했습니다.');
+        if (isSelected) {
+          onSelect();
+        }
+      } else {
+        alert('채팅방 나가기에 실패했습니다.');
+      }
+    } catch (error) {
+      console.error('채팅방 나가기 오류:', error);
+      alert('채팅방 나가기 중 오류가 발생했습니다.');
     }
   };
 

@@ -1,3 +1,7 @@
+import AllCategory from '@/components/member/AllCategory';
+import SortCategory from '@/components/member/SortCategory';
+import ReviewCardSkeleton from '@/ui/dorong/ReviewCardSkeleton';
+import ReviewsPageSkeleton from '@/ui/jy/SkeletonRestaurantCard';
 import { useEffect, useState } from 'react';
 import { RiArrowLeftSLine, RiArrowRightSLine, RiSearchLine } from 'react-icons/ri';
 import { useNavigate } from 'react-router-dom';
@@ -5,14 +9,6 @@ import { fetchInterestsGrouped } from '../../../lib/interests';
 import { fetchRestaurants, type RestaurantTypeRatingAvg } from '../../../lib/restaurants';
 import { ReviewCard } from '../../../ui/dorong/ReviewMockCard';
 import { categoryColors, defaultCategoryColor } from '../../../ui/jy/categoryColors';
-import { BlackTag, GrayTag } from '../../../ui/tag';
-import ReviewCardSkeleton from '@/ui/dorong/ReviewCardSkeleton';
-import { Select } from 'antd';
-import CategorySelect from '@/components/partner/CategorySelect';
-import { usePartnerSignup } from '@/contexts/PartnerSignupContext';
-import AllCategory from '@/components/member/AllCategory';
-import SortCategory from '@/components/member/SortCategory';
-import ReviewsPageSkeleton from '@/ui/jy/SkeletonRestaurantCard';
 
 const FOOD = '음식 종류';
 

@@ -111,7 +111,7 @@ function IndexPage() {
             <div className="relative w-full h-full">
               <img src="/membermain.png" alt="slide1" className="w-full h-full object-cover" />
               <div className="absolute inset-0 bg-black/50 flex flex-col justify-center items-center text-white text-center px-6 gap-6">
-                <h2 className="text-3xl font-extrabold">STEP 1 · 회원가입 & 프로필 설정</h2>
+                <h2 className="text-2xl font-extrabold">STEP 1 · 회원가입 & 프로필 설정</h2>
                 <p className="text-base leading-relaxed max-w-[340px]">
                   간단한 회원가입으로 서비스를 시작해요.
                   <br />
@@ -119,7 +119,7 @@ function IndexPage() {
                   <br />내 취향을 반영한 맞춤형 매칭 준비가 돼요.
                 </p>
 
-                <h2 className="text-3xl font-extrabold mt-8">STEP 2 · 매칭 탐색 & 조건 설정</h2>
+                <h2 className="text-2xl font-extrabold mt-8">STEP 2 · 매칭 탐색 & 조건 설정</h2>
                 <p className="text-base leading-relaxed max-w-[340px]">
                   위치 기반으로 가까운 사람을 쉽게 찾아요.
                   <br />
@@ -140,7 +140,7 @@ function IndexPage() {
                 className="w-full h-full object-cover"
               />
               <div className="absolute inset-0 bg-black/50 flex flex-col justify-center items-center text-white text-center px-6 gap-6">
-                <h2 className="text-3xl font-extrabold">STEP 3 · 매칭 확정 & 상호작용</h2>
+                <h2 className="text-2xl font-extrabold">STEP 3 · 매칭 확정 & 상호작용</h2>
                 <p className="text-base leading-relaxed max-w-[340px]">
                   매칭 신청과 수락으로 만남이 성사돼요.
                   <br />
@@ -149,7 +149,7 @@ function IndexPage() {
                   편하게 대화하고 불안함을 줄일 수 있어요.
                 </p>
 
-                <h2 className="text-3xl font-extrabold mt-8">STEP 4 · 식사 후 리뷰 & 리워드</h2>
+                <h2 className="text-2xl font-extrabold mt-8">STEP 4 · 식사 후 리뷰 & 리워드</h2>
                 <p className="text-base leading-relaxed max-w-[340px]">
                   식사 후 함께한 상대방을 리뷰하면
                   <br />
@@ -170,7 +170,9 @@ function IndexPage() {
                 className="w-full h-full object-cover"
               />
               <div className="absolute inset-0 bg-black/50 flex flex-col justify-center items-center text-white text-center px-6 gap-5">
-                <h2 className="text-4xl font-extrabold">이제 당신의 식사 메이트를 만나보세요!</h2>
+                <h2 className="text-3xl font-extrabold">
+                  이제 당신의 식사 메이트를 <br /> 만나보세요!
+                </h2>
                 <p className="text-lg leading-relaxed max-w-[320px]">
                   간단한 가입으로 시작해
                   <br />
