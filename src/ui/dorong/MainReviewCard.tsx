@@ -50,7 +50,7 @@ export default function MainReviewCard({
       </div>
 
       {/* 본문 */}
-      <div className="p-4">
+      <div className="p-4 h-[230px]">
         <div className="flex flex-col gap-1">
           <span className="flex">
             <TagBadge bgColor={tagBg || 'bg-babgray-100'} textColor={tagText || 'text-babgray-700'}>
