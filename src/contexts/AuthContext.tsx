@@ -3,7 +3,6 @@ import { createContext, useContext, useEffect, useRef, useState } from 'react';
 import { createProfile, getProfile } from '../lib/propile';
 import { supabase } from '../lib/supabase';
 import type { ProfileInsert } from '../types/bobType';
-import { givePoint } from '../services/PointService';
 import LoadingDiv from '../components/LoadingDiv';
 
 type SignUpPayload = {
@@ -187,6 +186,7 @@ export const AuthProvider = ({ children }: AuthProviderProps) => {
       email: payload.email,
       password: payload.password,
       options: {
+        emailRedirectTo: `${window.location.origin}/auth/confirm`,
         data: {
           name: payload.name,
           nickName: payload.nickName,

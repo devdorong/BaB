@@ -75,6 +75,7 @@ import { Toaster } from './components/ui/sonner';
 import { ChatNotificationProvider } from './contexts/ChatNotificationContext';
 import { NotificationRealTimeProvider } from './contexts/NotificationContext';
 import { useGoogleAnalytics } from './hooks/useGoogleAnalytics';
+import ConfirmPage from './pages/auth/ConfirmPage';
 
 const LayoutWithAnalytics = ({ children }: { children: React.ReactNode }) => {
   useGoogleAnalytics(); // Router 컨텍스트 내부에서 사용
@@ -281,7 +282,8 @@ function App() {
                           <Route path="reports" element={<AdminReportsPage />} />
                           <Route path="settings" element={<AdminSettingsPage />} />
                         </Route>
-
+                        {/* confirm */}
+                        <Route path="/auth/confirm" element={<ConfirmPage />} />
                         {/* Not Found */}
                         <Route path="*" element={<NotFound />} />
                       </Routes>
