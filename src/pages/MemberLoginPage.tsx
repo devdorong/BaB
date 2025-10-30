@@ -1,4 +1,4 @@
-import { useState } from 'react';
+import { useEffect, useState } from 'react';
 import { RiCheckboxCircleLine, RiLock2Line, RiUserLine } from 'react-icons/ri';
 import { Link, useNavigate } from 'react-router-dom';
 import KakaoLoginButton from '../components/KakaoLoginButton';
@@ -10,10 +10,15 @@ import GoogleLoginButton from '../components/GoogleLoginButton';
 
 function MemberLoginPage() {
   const navigate = useNavigate();
-  const { signIn } = useAuth();
+  const {  signIn, signOut } = useAuth();
   const [email, setEmail] = useState('');
   const [pw, setPw] = useState('');
   const [msg, setMsg] = useState('');
+
+  useEffect(() => {
+    signOut();
+  }, []);
+
   const handleSubmit = async (e: React.FormEvent<HTMLFormElement>) => {
     e.preventDefault();
     const { error } = await signIn(email, pw);

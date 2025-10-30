@@ -245,9 +245,8 @@ function MemberSignupPage() {
             else if (domain.includes('kakao')) mailUrl = 'https://mail.kakao.com/';
             else mailUrl = `https://tmailor.com/ko/`; // 기본값 임시이메일생성
 
-            window.open(mailUrl, '_blank');
+            window.location.href = mailUrl;
             closeModal();
-            navigate('/');
           },
         );
       } else {

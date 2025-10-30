@@ -1,60 +1,79 @@
-// ConfirmPage.tsx - 전면 교체해도 됩니다
 import { useEffect, useState } from 'react';
 import { supabase } from '@/lib/supabase';
 import { useNavigate } from 'react-router-dom';
 
 export default function ConfirmPage() {
   const [message, setMessage] = useState('이메일 인증 중입니다...');
+  const [isError, setIsError] = useState(false);
   const navigate = useNavigate();
 
   useEffect(() => {
-    (async () => {
+    const handleEmailConfirmation = async () => {
       try {
-        const params = new URLSearchParams(window.location.search);
-        const tokenHash = params.get('token_hash');
-        const type = (params.get('type') || 'signup') as 'signup' | 'email';
+        console.log('=== URL 전체 ===', window.location.href);
 
-        if (!tokenHash) {
-          setMessage('잘못된 접근입니다. (토큰 없음)');
+        const params = new URLSearchParams(window.location.search);
+        const token_hash = params.get('token_hash');
+        const type = params.get('type');
+
+        console.log('추출된 파라미터:', { token_hash, type });
+
+        if (!token_hash || !type) {
+          console.error('파라미터 누락:', { token_hash, type });
+          setMessage('잘못된 인증 링크입니다.');
+          setIsError(true);
           return;
         }
 
+        console.log('verifyOtp 호출 전...');
+
+        // type을 'email'로 명시
         const { data, error } = await supabase.auth.verifyOtp({
-          token_hash: tokenHash,
-          type,
+          token_hash,
+          type: 'email', // 명시적으로 'email' 지정
         });
 
+        console.log('verifyOtp 결과:', { data, error });
+
         if (error) {
-          console.error('인증 오류:', error.message);
-          setMessage('이메일 인증에 실패했습니다.');
+          console.error('verifyOtp 에러:', error);
+          setMessage(`인증 실패: ${error.message}`);
+          setIsError(true);
           return;
         }
 
-        // ✅ 여기서 실제 로그인 세션이 생겼는지 확인
-        if (data.session) {
-          setMessage('이메일 인증이 완료되었습니다! 🎉 로그인 확인 중...');
-        } else {
-          // 이미 인증된 링크를 다시 누른 경우 등
-          // 세션이 없을 수 있으니 다시 세션 로드
-          const { data: sess } = await supabase.auth.getSession(); // 세션 재확인
-          setMessage('이메일 인증이 완료되었습니다! 🎉');
-          setTimeout(() => navigate('/'), 1000);
-        }
+        console.log('인증 성공! 세션:', data.session?.user.email);
+        setMessage('✅ 이메일 인증이 완료되었습니다!');
 
-        // 짧게 대기 후 홈으로
-        setTimeout(() => navigate('/'), 1200);
-      } catch (e) {
-        console.error(e);
-        setMessage('인증 처리 중 오류가 발생했습니다.');
+        // 2초 후 홈으로 이동
+        setTimeout(() => {
+          navigate('/member');
+        }, 2000);
+      } catch (err: any) {
+        console.error('예외 발생:', err);
+        setMessage(`오류: ${err.message || '알 수 없는 오류'}`);
+        setIsError(true);
       }
-    })();
+    };
+
+    handleEmailConfirmation();
   }, [navigate]);
 
   return (
-    <div className="min-h-screen flex flex-col justify-center items-center text-center">
-      <h2 className="text-xl font-bold mb-3">BaB 이메일 인증</h2>
-      <p className="text-gray-600">{message}</p>
-      <button onClick={() => navigate('/')}>홈으로</button>
+    <div className="min-h-screen flex flex-col justify-center items-center bg-bg-bg px-4">
+      <div className="max-w-md w-full bg-white rounded-lg shadow-lg p-8 text-center">
+        <h2 className="text-2xl font-bold mb-4">BaB 이메일 인증</h2>
+        <p className={`text-lg ${isError ? 'text-red-600' : 'text-gray-700'}`}>{message}</p>
+
+        {isError && (
+          <button
+            onClick={() => navigate('/member/signup')}
+            className="mt-4 w-full bg-bab-500 text-white py-3 rounded-lg"
+          >
+            다시 가입하기
+          </button>
+        )}
+      </div>
     </div>
   );
 }

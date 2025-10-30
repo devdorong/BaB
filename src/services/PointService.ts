@@ -59,60 +59,61 @@ export const GetOrCreatePoint = async (): Promise<Profile_Points | null> => {
       data: { user },
     } = await supabase.auth.getUser();
 
-    if (!user) {
-      throw new Error('로그인 필요');
+    if (!user) throw new Error('로그인 필요');
+
+    // 1️⃣ 프로필 존재 확인 (FK 안전성 보장)
+    const { data: profile, error: profileError } = await supabase
+      .from('profiles')
+      .select('id')
+      .eq('id', user.id)
+      .single();
+
+    if (profileError || !profile) {
+      throw new Error('⚠️ 프로필이 존재하지 않아 포인트를 생성할 수 없습니다.');
     }
 
-    // 먼저 기존 포인트 조회 시도
+    // 2️⃣ 기존 포인트 조회
     const { data: existingPoint, error: selectError } = await supabase
       .from('profile_points')
       .select('*')
       .eq('profile_id', user.id)
       .maybeSingle();
 
-    if (selectError) {
-      console.error('기존 포인트 조회 에러:', selectError);
-      throw selectError;
-    }
+    if (selectError) throw selectError;
 
-    // 이미 포인트가 존재하면 반환
     if (existingPoint) {
-      // console.log('기존 포인트 반환:', existingPoint.point);
       return existingPoint;
     }
 
-    // 포인트가 없으면 생성 (기본 포인트 2000으로 명시적 설정)
+    // 3️⃣ 포인트 신규 생성
     console.log('포인트가 없어서 새로 생성합니다.');
     const { data: newPoint, error: insertError } = await supabase
       .from('profile_points')
       .insert({
         profile_id: user.id,
-        point: 2000, // 기본값 명시적 설정
+        point: 2000,
       })
       .select('*')
       .single();
 
     if (insertError) {
-      // UNIQUE 제약조건 위반 시 (동시 생성으로 인한 경합)
+      // 동시성 예외 (중복 insert)
       if (insertError.code === '23505') {
-        console.log('동시 생성 감지, 기존 데이터 재조회');
-        // 다시 조회해서 반환
-        const { data: retryData, error: retryError } = await supabase
+        console.log('⚠️ 동시 생성 감지, 기존 데이터 재조회');
+        const { data: retryData } = await supabase
           .from('profile_points')
           .select('*')
           .eq('profile_id', user.id)
           .single();
-
-        if (retryError) throw retryError;
         return retryData;
       }
       throw insertError;
     }
 
-    console.log('새 포인트 생성 완료:', newPoint.point);
+    console.log('✅ 새 포인트 생성 완료:', newPoint.point);
     return newPoint;
   } catch (error) {
-    console.error('GetOrCreatePoint 에러:', error);
+    console.error('❌ GetOrCreatePoint 에러:', error);
     return null;
   }
 };

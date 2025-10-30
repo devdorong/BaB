@@ -83,64 +83,6 @@ const LayoutWithAnalytics = ({ children }: { children: React.ReactNode }) => {
 };
 
 function App() {
-  // supabase.auth.onAuthStateChange((_event, session) => {
-  //   if (session) {
-  //     console.log('🔑 Realtime 인증 토큰 갱신됨');
-  //     supabase.realtime.setAuth(session.access_token);
-  //   }
-  // });
-  // 인증 메일 확인후, 프로필 생성
-
-  useEffect(() => {
-    const handleAuthChange = async (event: string, session: Session | null) => {
-      if (event === 'SIGNED_IN' && session?.user) {
-        const user = session.user;
-
-        // user_metadata에서 프로필 생성 필요 여부 확인
-        if (user.user_metadata?.needsProfileCreation) {
-          try {
-            // 1. 프로필 생성
-            const newUser: ProfileInsert = {
-              id: user.id,
-              name: user.user_metadata.name,
-              nickname: user.user_metadata.nickName,
-              phone: user.user_metadata.phone,
-              gender: user.user_metadata.gender,
-              birth: user.user_metadata.birth,
-            };
-
-            const profileResult = await createProfile(newUser);
-
-            if (profileResult) {
-              // 2. 포인트 생성
-              const pointResult = await GetOrCreatePoint();
-
-              if (pointResult) {
-                console.log('프로필과 포인트 생성 완료');
-
-                // 3. user_metadata에서 needsProfileCreation 플래그 제거
-                await supabase.auth.updateUser({
-                  data: {
-                    ...user.user_metadata,
-                    needsProfileCreation: false,
-                  },
-                });
-              }
-            }
-          } catch (error) {
-            console.error('프로필 생성 중 오류:', error);
-          }
-        }
-      }
-    };
-
-    const {
-      data: { subscription },
-    } = supabase.auth.onAuthStateChange(handleAuthChange);
-
-    return () => subscription.unsubscribe();
-  }, []);
-
   return (
     <AuthProvider>
       <DirectChatProider>
