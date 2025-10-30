@@ -15,7 +15,6 @@ import { supabase } from './supabase';
 // 사용자 프로필 생성
 const createProfile = async (newUserProfile: ProfileInsert): Promise<boolean> => {
   try {
-    // 현재 사용자 세션 확인
     const {
       data: { session },
     } = await supabase.auth.getSession();
@@ -24,35 +23,22 @@ const createProfile = async (newUserProfile: ProfileInsert): Promise<boolean> =>
       return false;
     }
 
-    // 먼저 존재 여부 확인
-    const { data: existing, error: checkError } = await supabase
-      .from('profiles')
-      .select('id')
-      .eq('id', newUserProfile.id)
-      .maybeSingle();
+    const payload = {
+      ...newUserProfile,
+      avatar_url: newUserProfile.avatar_url || 'guest_image',
+    };
 
-    if (checkError) {
-      console.log('프로필 조회 실패:', checkError.message);
-      return false;
-    }
+    // ✅ 중복 생성 방지: upsert 사용
+    const { error } = await supabase.from('profiles').upsert([payload], { onConflict: 'id' });
 
-    if (existing) {
-      console.log('이미 프로필이 존재합니다:', existing.id);
-      return true;
-    }
+    if (error) throw error;
 
-    // 없으면 새로 생성
-    const { error } = await supabase.from('profiles').insert([{ ...newUserProfile }]);
+    console.log('✅ 프로필 생성 또는 업데이트 성공');
+    await new Promise(res => setTimeout(res, 400));
 
-    if (error) {
-      console.log('프로필 추가 실패:', error.message);
-      return false;
-    }
-
-    console.log('프로필 생성 성공');
     return true;
   } catch (err) {
-    console.log(`프로필 생성 오류 : ${err}`);
+    console.error('❌ 프로필 생성 오류:', err);
     return false;
   }
 };
