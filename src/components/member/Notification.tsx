@@ -278,14 +278,14 @@ export default function Notification({ isOpen, onClose, onRead }: NotificationPr
         }
         case '리뷰':
           if (item.restaurant_id) {
-            navigate(`/partner/review`);
+            navigate(`/partner/notification`);
           }
           break;
         case '매칭완료':
           navigate(`/member/profile/recentmatching`);
           break;
         case '매칭취소':
-          navigate(`/member/profile/recentmatching`);
+          navigate(`/member/profile/recentmatching?tab=recent`);
           break;
         case '이벤트':
           navigate(`/member/event`);
@@ -341,6 +341,7 @@ export default function Notification({ isOpen, onClose, onRead }: NotificationPr
             <div className="flex flex-col mt-5 gap-3 overflow-y-auto scrollbar-hide">
               {notifications.length > 0 ? (
                 <div className="flex flex-col gap-3">
+                  {/* 2025-10-30: Context 기반 notifications 사용 */}
                   {notifications.map(n => (
                     <motion.div
                       key={n.id}

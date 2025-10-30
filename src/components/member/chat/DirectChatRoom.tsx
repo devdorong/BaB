@@ -25,8 +25,6 @@ function DirectChatRoom({ chatId, onExit }: DirectChatRoomProps) {
 
   const DEFAULT_AVATAR = 'https://www.gravatar.com/avatar/?d=mp&s=200';
 
-  
-
   // 메세지가 개수가 많으면 하단으로 스크롤을 해야 함.
   // 새 메시지가 추가될 때마다 최신 메시지를 볼 수 있도록 해야 함.
   const messageEndRef = useRef<HTMLDivElement>(null);
@@ -87,28 +85,28 @@ function DirectChatRoom({ chatId, onExit }: DirectChatRoomProps) {
   }, [loading, messages]);
 
   // Supabase Realtime으로 메시지 실시간 동기화
-  useEffect(() => {
-    if (!chatId) return;
-    const subscription = supabase
-      .channel(`direct_messages_${chatId}`)
-      .on(
-        'postgres_changes',
-        {
-          event: '*',
-          schema: 'public',
-          table: 'direct_messages',
-          filter: `chat_id=eq.${chatId}`,
-        },
-        payload => {
-          loadMessages(chatId); // 2025-10-21 수정: 실시간 업데이트는 로딩 상태 표시 안함
-        },
-      )
-      .subscribe();
+  // useEffect(() => {
+  //   if (!chatId) return;
+  //   const subscription = supabase
+  //     .channel(`direct_messages_${chatId}`)
+  //     .on(
+  //       'postgres_changes',
+  //       {
+  //         event: '*',
+  //         schema: 'public',
+  //         table: 'direct_messages',
+  //         filter: `chat_id=eq.${chatId}`,
+  //       },
+  //       payload => {
+  //         loadMessages(chatId); // 2025-10-21 수정: 실시간 업데이트는 로딩 상태 표시 안함
+  //       },
+  //     )
+  //     .subscribe();
 
-    return () => {
-      subscription.unsubscribe();
-    };
-  }, [chatId, loadMessages, messages]);
+  //   return () => {
+  //     subscription.unsubscribe();
+  //   };
+  // }, [chatId, loadMessages, messages]);
 
   // 채팅방 ID가 변경이 되면 메시지를 다시 로드 (초기 로딩)
   // 2025-10-21 수정: 초기 로딩 시에만 로딩 상태 표시하도록 isInitialLoad: true 전달
