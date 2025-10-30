@@ -160,7 +160,7 @@ export const deleteMatching = async (matchingId: number): Promise<void> => {
       receiver_id: u.profile_id,
       title: '매칭연결이 취소되었습니다.',
       content: '',
-      target: 'all',
+      target: 'profiles',
       type: '매칭취소',
     }));
 
@@ -242,7 +242,7 @@ export const addMatchingParticipant = async (
       receiver_id: u.profile_id,
       title: '매칭연결이 완료되었습니다.',
       content: '',
-      target: 'all',
+      target: 'profiles',
       type: '매칭완료',
     }));
     const { error: notificationError } = await supabase.from('notifications').insert(notification);
