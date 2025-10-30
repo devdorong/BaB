@@ -254,7 +254,7 @@ function MemberSignupPage() {
         );
       } else {
         // 일반 알림 모달
-        openModal(msg.includes('가능') ? '가능' : '알림', msg, '닫기', '확인', () => {
+        openModal(msg.includes('가능') ? '중복확인' : '중복확인', msg, '', '확인', () => {
           closeModal();
         });
       }
@@ -269,7 +269,10 @@ function MemberSignupPage() {
       <div className="flex flex-col justify-center items-center gap-10 w-full max-w-[530px] text-center">
         <div className="flex flex-col justify-center items-center gap-8">
           {/* 반응형 로고 */}
-          <div className="transform transition-transform duration-300 scale-90 sm:scale-100 max-w-[200px] sm:max-w-none mx-auto">
+          <div
+            onClick={e => navigate(`/member`)}
+            className="transform transition-transform duration-300 scale-90 sm:scale-100 max-w-[200px] sm:max-w-none mx-auto cursor-pointer"
+          >
             <LogoLg />
           </div>
 

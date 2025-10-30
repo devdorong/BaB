@@ -236,7 +236,7 @@ function EventPage() {
           .filter(e => e.id === selectedEventId)
           .map(e => (
             <motion.div
-              className="w-full bg-white border-none rounded-[16px] flex flex-col items-center gap-[17px]"
+              className="bg-white border-none rounded-[16px] flex flex-col items-center gap-[17px]"
               initial={{ opacity: 0 }}
               animate={{ opacity: 1 }}
               exit={{ opacity: 0 }}
@@ -244,13 +244,13 @@ function EventPage() {
               key={e.id}
             >
               <GiftFill bgColor="#FFEDD5" color="#F97A18" size={20} padding={14} />
-              <div className="w-full flex flex-col items-center gap-[15px] text-md">
+              <div className="flex flex-col w-full items-center gap-[15px] text-md">
                 <span>이벤트 참여</span>
                 <p className="text-babgray-600">‘{e.title}’ 이벤트에 참여하시겠습니까?</p>
                 {e.title}
-                <div className="self-stretch w-full p-3.5 bg-bg-bg rounded-xl inline-flex flex-col justify-start items-start gap-2.5 overflow-hidden">
-                  <div className="self-stretch p-3.5 flex flex-col justify-start items-start gap-2.5">
-                    <div className="self-stretch justify-start">
+                <div className="w-full p-3.5 bg-bg-bg rounded-xl inline-flex flex-col justify-start items-start gap-2.5 overflow-hidden">
+                  <div className="w-full p-3.5 flex flex-col justify-start items-start gap-2.5">
+                    <div className="justify-start">
                       <span className="text-babgray-700 text-base font-bold font-['Noto_Sans_KR']">
                         이벤트 :{' '}
                       </span>
@@ -258,7 +258,7 @@ function EventPage() {
                         {e.title}
                       </span>
                     </div>
-                    <div className="self-stretch justify-start">
+                    <div className="justify-start">
                       <span className="text-babgray-700 text-base font-bold font-['Noto_Sans_KR']">
                         혜택 :{' '}
                       </span>
@@ -266,7 +266,7 @@ function EventPage() {
                         {e.benefit}
                       </span>
                     </div>
-                    <div className="self-stretch justify-start">
+                    <div className="justify-start">
                       <span className="text-babgray-700 text-base font-bold font-['Noto_Sans_KR']">
                         내용 :{' '}
                       </span>
@@ -274,7 +274,7 @@ function EventPage() {
                         {e.description}
                       </span>
                     </div>
-                    <div className="self-stretch justify-start">
+                    <div className="justify-start">
                       <span className="text-babgray-700 text-base font-bold font-['Noto_Sans_KR']">
                         기간 :{' '}
                       </span>
@@ -372,28 +372,26 @@ function EventPage() {
               </div>
 
               {/* 본문 */}
-              <div className={styles.eventContent}>
+              <div className={`${styles.eventContent}`}>
                 <h3 className={styles.eventTitle}>{event.title ?? ''}</h3>
                 <p className={styles.eventDesc}>{event.description ?? ''}</p>
                 <p className={styles.eventBenefit}> {event.benefit ?? ''}</p>
+                <div className="mt-auto flex flex-col gap-3">
+                  <p className={`${styles.eventDate} mt-auto flex flex-col gap-5`}>
+                    {event.start_date ?? ''} ~ {event.end_date ?? ''}
+                  </p>
 
-                <p className={styles.eventDate}>
-                  {event.start_date ?? ''} ~ {event.end_date ?? ''}
-                </p>
-
-                <div
-                  className={`${styles.eventButtonGroup} flex flex-col items-center justify-center`}
-                >
-                  <button
-                    disabled={event.status === '종료'}
-                    onClick={() => {
-                      if (event.status === '진행중') {
-                        handleViewModal(event.id);
-                      } else if (event.status === '예정') {
-                        handlePlannedModal(event.start_date);
-                      }
-                    }}
-                    className={`px-[14px] py-[8px] w-full rounded-[8px] text-nomal font-bold flex items-center justify-center gap-1
+                  <div className={`${styles.eventButtonGroup} flex flex-col items-center`}>
+                    <button
+                      disabled={event.status === '종료'}
+                      onClick={() => {
+                        if (event.status === '진행중') {
+                          handleViewModal(event.id);
+                        } else if (event.status === '예정') {
+                          handlePlannedModal(event.start_date);
+                        }
+                      }}
+                      className={`px-[14px] py-[8px] w-full rounded-[8px] text-nomal font-bold flex items-center justify-center gap-1
                     ${
                       event.status === '종료'
                         ? 'bg-babgray-150 text-babgray-600 opacity-50 cursor-not-allowed'
@@ -401,20 +399,21 @@ function EventPage() {
                           ? 'bg-babbutton-blue text-white'
                           : 'bg-bab-500 text-white'
                     }`}
-                  >
-                    {event.status === '진행중' && `참여하기`}
-                    {event.status === '예정' && dayjs(event.start_date).format('YYYY-MM-DD (ddd)')}
-                    {event.status === '종료' && `종료된 이벤트`}
-                  </button>
-                  {admin && (
-                    <button
-                      onClick={() => handleEditBt(event.id)}
-                      className="flex-1 flex items-center justify-center gap-2 p-2"
                     >
-                      <RiEditLine className="translate-y-0.5" /> 수정하기
-
+                      {event.status === '진행중' && `참여하기`}
+                      {event.status === '예정' &&
+                        dayjs(event.start_date).format('YYYY-MM-DD (ddd)')}
+                      {event.status === '종료' && `종료된 이벤트`}
                     </button>
-                  )}
+                    {admin && (
+                      <button
+                        onClick={() => handleEditBt(event.id)}
+                        className="flex-1 flex items-center justify-center gap-2 p-2"
+                      >
+                        <RiEditLine className="translate-y-0.5" /> 수정하기
+                      </button>
+                    )}
+                  </div>
                 </div>
               </div>
             </div>

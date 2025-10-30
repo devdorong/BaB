@@ -27,14 +27,19 @@ import { categoryColors, defaultCategoryColor } from '../../../ui/jy/categoryCol
 import { InterestBadge } from '../../../ui/tag';
 import ReviewMenu from '../../../components/member/ReviewMenu';
 import WriteReviewDetailComment from '../../../components/member/WriteReviewDetailComment';
+import { useAuth } from '@/contexts/AuthContext';
+import Modal from '@/ui/sdj/Modal';
+import { useModal } from '@/ui/sdj/ModalState';
 
 type TabKey = 'review' | 'info' | 'menus';
 const FOOD = '음식 종류';
 
 function ReviewDetailPage() {
   const navigate = useNavigate();
+  const { closeModal, modal, openModal } = useModal();
   const [writeOpen, setWriteOpen] = useState(false);
   const { id } = useParams<{ id: string }>();
+  const { user } = useAuth();
   const [restaurant, setRestaurant] = useState<RestaurantsDetailType | null>(null);
   const [restaurants, setRestaurants] = useState<RestaurantTypeRatingAvg[]>([]);
   const [userPos, setUserPos] = useState<{ lat: number; lng: number } | null>(null);
@@ -44,6 +49,7 @@ function ReviewDetailPage() {
   const [isFavorite, setIsFavorite] = useState(false);
   const [favoriteCount, setFavoriteCount] = useState(0);
   const [reviews, setReviews] = useState<ReviewWithPhotos[]>([]);
+  const [loginModalOpen, setLoginModalOpen] = useState(false);
 
   const goBack = () => {
     if (window.history && window.history.length > 1) navigate(-1);
@@ -372,8 +378,22 @@ function ReviewDetailPage() {
             <div className="mt-4 flex flex-wrap gap-5">
               <ButtonFillLG
                 style={{ fontWeight: 500, borderRadius: '24px' }}
-                onClick={() => setWriteOpen(true)}
+                onClick={() => {
+                  if (user) {
+                    setWriteOpen(true);
+                  } else if (!user) {
+                    setLoginModalOpen(true);
+                  }
+                }}
               >
+                <Modal
+                  isOpen={loginModalOpen}
+                  onClose={closeModal}
+                  titleText="로그인 확인"
+                  contentText="로그인이 필요한 서비스 입니다."
+                  submitButtonText="확인"
+                  onSubmit={() => navigate('/member/login')}
+                />
                 리뷰 작성하기
               </ButtonFillLG>
               <ButtonLineLg style={{ fontWeight: 500, borderRadius: '24px' }}>
