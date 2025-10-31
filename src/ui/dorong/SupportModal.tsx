@@ -183,7 +183,6 @@ const SupportModal = ({ setOpenModal }: SupportModalProps) => {
             </div>
             <div className="w-full flex flex-col gap-2">
               <p className="text-sm">문의 유형</p>
-              {/* 문의하는 사람의 이메일 */}
               <div className="w-full h-12 bg-white items-center relative">
                 <select
                   value={category}
@@ -221,7 +220,7 @@ const SupportModal = ({ setOpenModal }: SupportModalProps) => {
                 onChange={e => setContent(e.target.value)}
                 placeholder="문의내용을 자세히 입력해주세요"
                 maxLength={500}
-                required
+                required 
               />
               <p className="text-xs text-babgray-500 text-right">{content.length}/500</p>
             </div>
