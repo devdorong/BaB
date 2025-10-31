@@ -8,22 +8,24 @@ import { Settings5Fill, ShoppingCartFill, StarFill } from '../../ui/Icon';
 import { supabase } from '../../lib/supabase';
 
 export const badgeColors: Record<NotificationsProps['type'], string> = {
-  주문: 'bg-bab-500 text-white',
-  리뷰: 'bg-yellow-400 text-white',
-  시스템: 'bg-babbutton-blue text-white',
+  주문: 'bg-bab-500',
+  리뷰: 'bg-yellow-400',
+  시스템: 'bg-babbutton-blue',
   채팅: 'bg-yellow-100 text-yellow-700',
   매칭완료: 'bg-[#FFF1E6] text-[#FF5722]',
+  모집완료: 'bg-orange-100 text-orange-700',
   댓글: 'bg-green-100 text-green-700',
   매칭취소: 'bg-red-100 text-red-600',
   이벤트: 'bg-blue-100 text-blue-700',
 };
 
 export const borderColors: Record<NotificationsProps['type'], string> = {
-  주문: 'bg-bab-500 border-[#FF5722] border-l-[#FF5722]',
-  리뷰: 'bg-yellow-400 border-yellow-400 border-l-yellow-400',
-  시스템: 'bg-babbutton-blue border-blue-400 border-l-blue-400 ',
+  주문: 'border border-bab-500 border-l-bab-500 text-bab-500',
+  리뷰: 'border border-yellow-400 border-l-yellow-400 text-yellow-600',
+  시스템: 'border border-babbutton-blue border-l-babbutton-blue text-babbutton-blue',
   채팅: 'border border-yellow-400 border-l-yellow-400 text-yellow-600',
   매칭완료: 'border border-[#FF5722] border-l-[#FF5722] text-[#FF5722]',
+  모집완료: 'border border-orange-400 border-l-orange-400 text-orange-600',
   댓글: 'border border-green-400 border-l-green-400 text-green-600',
   매칭취소: 'border border-red-400 border-l-red-400 text-red-600',
   이벤트: 'border border-blue-400 border-l-blue-400 text-blue-600',
@@ -35,6 +37,7 @@ export const IconColors: Record<NotificationsProps['type'], string> = {
   시스템: 'bg-babbutton-blue',
   채팅: 'bg-yellow-400',
   매칭완료: 'bg-[#FF5722]',
+  모집완료: 'bg-orange-400',
   댓글: 'bg-green-500',
   매칭취소: 'bg-red-500',
   이벤트: 'bg-blue-500',
