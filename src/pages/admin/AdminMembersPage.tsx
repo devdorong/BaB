@@ -99,7 +99,7 @@ export default function UserManagementPage() {
             <select
               value={sortType}
               onChange={e => setSortType(e.target.value as '이름순' | '가입일순')}
-              className="border border-gray-300 rounded-full px-4 py-2 text-sm focus:outline-none focus:ring-1 focus:ring-orange-500"
+              className="appearance-none border border-gray-300 rounded-full px-4 py-2 text-sm focus:outline-none focus:ring-1 focus:ring-orange-500"
             >
               <option value="가입일순">가입일순</option>
               <option value="이름순">이름순</option>
@@ -206,7 +206,7 @@ export default function UserManagementPage() {
 
       {/* 하단 페이지네이션 */}
       <div className="flex justify-between p-8 items-center mt-4 text-sm text-gray-600">
-        <p>총 1,247명의 사용자</p>
+        <p>총 {sortedUsers.length}명의 사용자</p>
         <div className="flex items-center space-x-2">
           {Array.from({ length: 10 }, (_, i) => i + 1).map(num => (
             <button

@@ -249,7 +249,7 @@ function SupportPage() {
             </div>
           </div>
         </div>
-        {user ? (
+        {user && openModal ? (
           <SupportModal setOpenModal={setOpenModal} />
         ) : (
           <Modal
