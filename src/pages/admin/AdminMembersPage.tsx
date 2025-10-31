@@ -106,7 +106,9 @@ export default function UserManagementPage() {
             <select
               value={sortType}
               onChange={e => setSortType(e.target.value as '이름순' | '가입일순')}
-              className="border border-gray-300 rounded-full px-4 py-2 text-sm focus:outline-none focus:ring-1 focus:ring-bab-500"
+
+              className="appearance-none border border-gray-300 rounded-full px-4 py-2 text-sm focus:outline-none focus:ring-1 focus:ring-bab-500"
+
             >
               <option value="가입일순">가입일순</option>
               <option value="이름순">이름순</option>

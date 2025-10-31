@@ -162,7 +162,7 @@ function AdminReportsPage() {
 
   return (
     <div className="w-full min-h-screen bg-bg-bg p-8">
-      <h2 className="text-[23px] font-bold text-gray-800 mb-2">콘텐츠 및 커뮤니티</h2>
+      <h2 className="text-[23px] font-bold text-gray-800 mb-2">신고 내역</h2>
       <p className="text-[13px] text-gray-500 mb-6">신고된 채팅과 후기를 관리합니다.</p>
 
       {/* 검색 및 필터 */}

@@ -76,6 +76,13 @@ function EventWriteModal({ onClose, onSuccess }: EventWriteModalProps) {
       '취소',
       '등록',
       async () => {
+        const {
+          data: { user },
+          error: userError,
+        } = await supabase.auth.getUser();
+
+        if (userError || !user) throw userError;
+
         let imageUrl: string | null = null;
         if (image) {
           imageUrl = await uploadEventImage(image);
@@ -97,12 +104,42 @@ function EventWriteModal({ onClose, onSuccess }: EventWriteModalProps) {
           openModal('이벤트 등록', '이벤트 등록 중 오류가 발생했습니다.', '', '닫기', () =>
             onClose(),
           );
-        } else {
-          openModal('이벤트 등록', '이벤트가 성공적으로 등록되었습니다.', '', '확인', () => {
-            onSuccess?.();
-            onClose();
-          });
+          return;
         }
+
+        const now = new Date();
+        const eventStart = new Date(startDate);
+        const isSameDay = now.toISOString().slice(0, 10) === eventStart.toISOString().slice(0, 10);
+
+        if (isSameDay) {
+          const { data: allUserData, error: allUserError } = await supabase
+            .from('profiles')
+            .select('id');
+
+          if (!allUserData || allUserError) return;
+
+          const notification = allUserData.map(u => ({
+            profile_id: user.id,
+            receiver_id: u.id,
+            title: '새로운 이벤트가 시작되었습니다!',
+            content: '',
+            target: 'profiles',
+            type: '이벤트',
+          }));
+          const { error: notificationError } = await supabase
+            .from('notifications')
+            .insert(notification);
+
+          if (notificationError) {
+            console.error('알림 생성 실패:', notificationError);
+            // 알림은 실패해도 이벤트 등록은 성공으로 처리
+          }
+        }
+
+        openModal('이벤트 등록', '이벤트가 성공적으로 등록되었습니다.', '', '확인', () => {
+          onSuccess?.();
+          onClose();
+        });
       },
     );
   };

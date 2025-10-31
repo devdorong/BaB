@@ -1,18 +1,18 @@
-import { NavLink } from 'react-router-dom';
 import {
-  RiUserLine,
+  RiAlarmWarningLine,
+  RiFileListLine,
   RiGroupLine,
   RiHeart3Line,
-  RiFileListLine,
-  RiSettings3Line,
+  RiUserLine,
 } from 'react-icons/ri';
+import { NavLink } from 'react-router-dom';
 
 const adminMenu = [
   { name: '사용자 계정 관리', path: '/admin', icon: <RiUserLine /> },
   { name: '파트너 계정 관리', path: '/admin/partners', icon: <RiGroupLine /> },
   { name: '매칭 & 모임 관리', path: '/admin/matching', icon: <RiHeart3Line /> },
-  { name: '콘텐츠 & 커뮤니티', path: '/admin/reports', icon: <RiFileListLine /> },
-  { name: '시스템 관리', path: '/admin/settings', icon: <RiSettings3Line /> },
+  { name: '신고 내역', path: '/admin/reports', icon: <RiAlarmWarningLine /> },
+  { name: '문의 내역', path: '/admin/settings', icon: <RiFileListLine /> },
 ] as const;
 
 export default function AdminHeader() {
