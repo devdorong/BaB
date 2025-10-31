@@ -3,7 +3,7 @@ import { supabase } from '@/lib/supabase';
 import type { Database, Profile } from '@/types/bobType';
 import MemberActivityDetailModal from '@/ui/sdj/MemberActivityDetails';
 import dayjs from 'dayjs';
-import { useEffect, useMemo, useState } from 'react';
+import { useEffect, useMemo, useState, useCallback } from 'react';
 import { RiSearchLine } from 'react-icons/ri';
 
 type ProfileWithEmail = Profile & {
@@ -19,51 +19,59 @@ export default function UserManagementPage() {
   const [userList, setUserList] = useState<ProfileWithEmail[]>([]);
   const [search, setSearch] = useState('');
   const [sortType, setSortType] = useState<'이름순' | '가입일순'>('가입일순');
-
   const [memberDetail, setMemberDetail] = useState(false);
   const [loading, setLoading] = useState(true);
+  const [error, setError] = useState<string | null>(null);
 
   const category: ProfileStatus[] = ['활성', '정지', '탈퇴'];
 
-  const filterCategory = useMemo(() => {
-    if (statusFilter === '활성') return userList;
-    return userList.filter(user => user.status === statusFilter);
-  }, [userList, statusFilter]);
-
-  const handleMemberDetail = () => {
-    setMemberDetail(true);
-  };
-
   dayjs.locale('ko');
 
-  const fetchData = async () => {
-    setLoading(true);
-    const { data, error } = await supabase
-      .from('profiles_with_email')
-      .select('*')
-      .eq('role', 'member');
-    if (error) {
-      console.log('사용자 정보를 가져오는데 실패했습니다.', error.message);
+  const fetchData = useCallback(async () => {
+
+    try {
+      setLoading(true);
+      setError(null);
+
+      const { data, error: fetchError } = await supabase
+        .from('profiles_with_email')
+        .select('*')
+        .eq('role', 'member')
+        .eq('status', statusFilter);
+
+      if (fetchError) {
+        console.error('❌ Supabase 에러:', fetchError);
+        setError(fetchError.message);
+        setUserList([]);
+      } else {
+        setUserList(data || []);
+      }
+    } catch (err) {
+      console.error('❌ 예외 발생:', err);
+      setError(err instanceof Error ? err.message : '알 수 없는 오류');
+      setUserList([]);
+    } finally {
+      setLoading(false);
     }
-    // console.log(data);
-    setUserList(data || []);
-    setLoading(false);
-  };
+  }, [authUser, statusFilter]);
 
   useEffect(() => {
-    if (!authUser) return; // 세션 복원 전에는 실행하지 않음
     fetchData();
-  }, [authUser]);
+  }, []);
 
+  // 🔥 검색어 필터링만 수행 (statusFilter는 이미 쿼리에서 처리됨)
   const filteredUsers = useMemo(() => {
+    if (!search) return userList;
+
     const lower = search.toLowerCase();
-    return filterCategory.filter(
+    return userList.filter(
       user =>
         user.nickname?.toLowerCase().includes(lower) || user.email?.toLowerCase().includes(lower),
     );
-  }, [filterCategory, search]);
+  }, [userList, search]);
 
-  const sortedUsers = useMemo(() => {
+  // 정렬
+  const sortedUsers = useMemo(()  => {
     const users = [...filteredUsers];
 
     if (sortType === '이름순') {
@@ -74,16 +82,15 @@ export default function UserManagementPage() {
 
     return users;
   }, [filteredUsers, sortType]);
-  // console.log(sortedUsers);
+
   return (
     <div className="w-full min-h-screen bg-bg-bg text-babgray-800 font-semibold">
-      <div className="p-8">
+      <div className="p-8"> 
         <h2 className="text-[23px] font-bold text-gray-800 mb-2">사용자 관리</h2>
         <p className="text-[13px] text-gray-500 mb-6">
           플랫폼 사용자 계정을 관리하고 모니터링합니다.
         </p>
 
-        {/* 검색 및 필터 */}
         <div className="flex items-center justify-between mb-6 bg-white p-[25px] rounded-[16px] shadow">
           <div className="flex items-center space-x-2">
             <div className="relative">
@@ -93,20 +100,28 @@ export default function UserManagementPage() {
                 value={search}
                 onChange={e => setSearch(e.target.value)}
                 placeholder="닉네임, 이메일로 검색"
-                className="pl-10 pr-3 py-2 border border-gray-300 rounded-full text-sm w-64 focus:outline-none focus:ring-1 focus:ring-orange-500"
+                className="pl-10 pr-3 py-2 border border-gray-300 rounded-full text-sm w-64 focus:outline-none focus:ring-1 focus:ring-bab-500"
               />
             </div>
             <select
               value={sortType}
               onChange={e => setSortType(e.target.value as '이름순' | '가입일순')}
-              className="appearance-none border border-gray-300 rounded-full px-4 py-2 text-sm focus:outline-none focus:ring-1 focus:ring-orange-500"
+
+              className="appearance-none border border-gray-300 rounded-full px-4 py-2 text-sm focus:outline-none focus:ring-1 focus:ring-bab-500"
+
             >
               <option value="가입일순">가입일순</option>
               <option value="이름순">이름순</option>
             </select>
+            <button
+              onClick={fetchData}
+              disabled={loading}
+              className="border border-gray-300 rounded-full px-4 py-2 text-sm hover:bg-gray-50 disabled:opacity-50"
+            >
+              {loading ? '로딩중...' : '새로고침'}
+            </button>
           </div>
 
-          {/* 상태 필터 버튼 */}
           <div className="flex space-x-2">
             {category.map(item => (
               <button
@@ -114,7 +129,7 @@ export default function UserManagementPage() {
                 onClick={() => setStatusFilter(item)}
                 className={`px-4 py-1.5 rounded-full text-sm border ${
                   statusFilter === item
-                    ? 'text-orange-600 border-orange-400'
+                    ? 'text-bab-600 border-bab-400'
                     : 'border-gray-300 text-gray-600 hover:bg-gray-100'
                 }`}
               >
@@ -123,9 +138,14 @@ export default function UserManagementPage() {
             ))}
           </div>
         </div>
+
+        {error && (
+          <div className="mb-4 p-4 bg-red-50 border border-red-200 rounded-lg text-red-700 text-sm">
+            오류가 발생했습니다: {error}
+          </div>
+        )}
       </div>
 
-      {/* 테이블 */}
       <div className="w-full border border-gray-100 overflow-hidden">
         <table className="w-full text-sm">
           <thead className="bg-gray-100 text-gray-700">
@@ -154,7 +174,7 @@ export default function UserManagementPage() {
             ) : (
               <>
                 {sortedUsers.map((user, idx) => (
-                  <tr key={idx} className="border-b last:border-b-0 hover:bg-gray-50">
+                  <tr key={user.id || idx} className="border-b last:border-b-0 hover:bg-gray-50">
                     <td className="py-3 px-8 flex items-center space-x-3">
                       <img
                         src={
@@ -171,8 +191,8 @@ export default function UserManagementPage() {
                     <td className="py-3 px-8">{dayjs(user.created_at).format('YYYY-MM-DD')}</td>
                     <td className="py-3 px-8">{user.status}</td>
                     <td
-                      onClick={handleMemberDetail}
-                      className="py-3 px-8 text-orange-500 hover:underline cursor-pointer"
+                      onClick={() => setMemberDetail(true)}
+                      className="py-3 px-8 text-bab-500 hover:underline cursor-pointer"
                     >
                       상세보기
                     </td>
@@ -204,7 +224,6 @@ export default function UserManagementPage() {
         </table>
       </div>
 
-      {/* 하단 페이지네이션 */}
       <div className="flex justify-between p-8 items-center mt-4 text-sm text-gray-600">
         <p>총 {sortedUsers.length}명의 사용자</p>
         <div className="flex items-center space-x-2">
@@ -212,7 +231,7 @@ export default function UserManagementPage() {
             <button
               key={num}
               className={`w-7 h-7 rounded-full ${
-                num === 1 ? 'bg-orange-500 text-white' : 'hover:bg-gray-100 text-gray-600'
+                num === 1 ? 'bg-bab-500 text-white' : 'hover:bg-gray-100 text-gray-600'
               }`}
             >
               {num}

@@ -9,9 +9,10 @@ import { useNavigate } from 'react-router-dom';
 import { useModal } from '@/ui/sdj/ModalState';
 import Modal from '@/ui/sdj/Modal';
 import { Select } from 'antd';
+import { useAuth } from '@/contexts/AuthContext';
 function MemberSignupPage() {
   // ts
-  // const { signUp } = useAuth();
+  const { signUp } = useAuth();
   const { Option } = Select;
   const [name, setName] = useState('');
   const [nickName, setNickName] = useState('');
@@ -178,26 +179,19 @@ function MemberSignupPage() {
     }
 
     try {
-      // 회원가입만 진행 (프로필 생성은 ConfirmPage에서)
-      const { data, error } = await supabase.auth.signUp({
+      // ✅ AuthContext의 signUp 함수 사용
+      const { error } = await signUp({
         email,
         password: pw,
-        options: {
-          data: {
-            name,
-            nickName,
-            phone,
-            gender,
-            birth,
-            needsProfileCreation: true, // ✅ 플래그 설정
-          },
-          // ✅ 반드시 ConfirmPage로 리다이렉트
-          emailRedirectTo: `${window.location.origin}/auth/confirm`,
-        },
+        name,
+        nickName,
+        phone,
+        gender,
+        birth,
       });
 
       if (error) {
-        setMsg(`회원가입 오류 : ${error.message}`);
+        setMsg(`회원가입 오류 : ${error}`);
         return;
       }
 

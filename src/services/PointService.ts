@@ -1,3 +1,4 @@
+import { toast } from 'sonner';
 import { supabase } from '../lib/supabase';
 import type { Point_Changes, Profile_Points } from '../types/bobType';
 
@@ -359,6 +360,7 @@ export const givePoint = async (): Promise<boolean> => {
     }
 
     console.log('출석체크 완료: 10포인트 적립');
+    toast.success('출석체크 완료! 10포인트가 적립되었습니다 🎉', { position: 'top-center' });
     return true;
   } catch (err) {
     console.log('출석체크 중 오류:', err);

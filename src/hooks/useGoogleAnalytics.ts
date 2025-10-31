@@ -24,12 +24,12 @@ export const useGoogleAnalytics = () => {
     if (MEASUREMENT_ID) {
       // 테스트를 위해 로컬에서도 활성화 (나중에 주석 처리)
       if (window.location.hostname === 'localhost') {
-        console.log('🚫 로컬 환경 - GA4 초기화 건너뜀');
+        // console.log('🚫 로컬 환경 - GA4 초기화 건너뜀');
         return;
       }
 
       ReactGA.initialize(MEASUREMENT_ID); // debug 옵션 제거
-      console.log('✅ GA4 초기화 완료:', MEASUREMENT_ID);
+      // console.log('✅ GA4 초기화 완료:', MEASUREMENT_ID);
     }
   }, []); // 빈 배열로 한 번만 실행
 
@@ -41,7 +41,7 @@ export const useGoogleAnalytics = () => {
         hitType: 'pageview',
         page: location.pathname + location.search,
       });
-      console.log('📊 페이지뷰 전송:', location.pathname);
+      // console.log('📊 페이지뷰 전송:', location.pathname);
     }
   }, [location]); // location이 변경될 때마다 실행
 };
@@ -51,7 +51,7 @@ export const trackEvent = (eventName: string, parameters?: Record<string, any>) 
   if (MEASUREMENT_ID) {
     // localhost 체크 제거
     ReactGA.event(eventName, parameters);
-    console.log('🎯 이벤트 전송:', eventName, parameters);
+    // console.log('🎯 이벤트 전송:', eventName, parameters);
   }
 };
 
