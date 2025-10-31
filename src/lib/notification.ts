@@ -22,7 +22,7 @@ export const fetchNotificationData = async (): Promise<NotificationsProps[]> => 
   } = await supabase.auth.getUser();
 
   if (!user) {
-    console.error('사용자를 찾을 수 없습니다.');
+    // console.error('사용자를 찾을 수 없습니다.');
     return [];
   }
   const { data, error } = await supabase
@@ -45,7 +45,7 @@ export const fetchNotificationProfileData = async (): Promise<NotificationsProps
   } = await supabase.auth.getUser();
 
   if (!user) {
-    console.error('사용자를 찾을 수 없습니다.');
+    // console.error('사용자를 찾을 수 없습니다.');
     return [];
   }
 

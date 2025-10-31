@@ -278,7 +278,7 @@ export const AuthProvider = ({ children }: AuthProviderProps) => {
       }
       // supabase 에서 카카오 연동 해제
       // 사용자의 카카오 identity 찾기
-      const kakaoIdentity = user.identities?.find(item => item.provider === '카카오');
+      const kakaoIdentity = user.identities?.find(item => item.provider === 'kakao');
       if (!kakaoIdentity) {
         return { error: '카카오 계정 연동 정보를 찾을 수 없습니다.' };
       }
@@ -305,7 +305,7 @@ export const AuthProvider = ({ children }: AuthProviderProps) => {
       provider: 'google',
       options: {
         // 로그인 실행후 이동옵션
-        redirectTo: `${window.location.origin}`,
+        redirectTo: `${window.location.origin}/member`,
       },
     });
     // 오류발생시 체크 해보자.

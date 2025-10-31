@@ -397,13 +397,13 @@ const MatchingDetailPage = () => {
   };
 
   const handleDeleteMatching = async () => {
-    openModal('매칭 삭제', '매칭을 정말 삭제하시겠습니까?', '취소', '삭제하기', async () => {
+    openModal('매칭 취소', '매칭을 정말 취소하시겠습니까?', '취소', '취소하기', async () => {
       try {
         await deleteMatching(matchingId);
         closeModal();
         openModal(
-          '삭제 완료',
-          '매칭이 성공적으로 삭제되었습니다.',
+          '취소 완료',
+          '매칭이 성공적으로 취소되었습니다.',
           '닫기',
           '',
           () => {},
@@ -413,8 +413,8 @@ const MatchingDetailPage = () => {
             }, 0),
         );
       } catch (error) {
-        console.error('매칭 삭제 중 오류:', error);
-        openModal('오류 발생', '매칭을 삭제하는 중 문제가 발생했습니다.', '닫기');
+        console.error('매칭 취소 중 오류:', error);
+        openModal('오류 발생', '매칭을 취소하는 중 문제가 발생했습니다.', '닫기');
       }
     });
   };
@@ -693,7 +693,17 @@ const MatchingDetailPage = () => {
               <div className="w-full p-6 bg-white rounded-2xl shadow-[0_4px_4px_rgba(0,0,0,0.02)]">
                 <section className="w-full space-y-3">
                   {/* 조건별 버튼 */}
-                  {user?.id === userData?.id ? (
+                  {status !== 'waiting' ? (
+                    <button
+                      className="inline-flex w-full h-[50px] px-[15px] justify-center items-center rounded-lg 
+             bg-gray-300 text-white text-[16px] font-medium 
+             cursor-not-allowed opacity-70 
+             hover:bg-gray-400 hover:opacity-70 transition-colors duration-200"
+                      disabled
+                    >
+                      종료된매칭
+                    </button>
+                  ) : user?.id === userData?.id ? (
                     <ButtonFillLG className="w-full" onClick={handlecomplete}>
                       모집종료
                     </ButtonFillLG>
@@ -730,7 +740,7 @@ const MatchingDetailPage = () => {
                   {user?.id === userData?.id ? (
                     <ButtonLineLg className="w-full" onClick={handleDeleteMatching}>
                       <div className="flex gap-1 items-center justify-center">
-                        삭제하기 <RiCloseFill className="w-4 h-4" />
+                        취소하기 <RiCloseFill className="w-4 h-4" />
                       </div>
                     </ButtonLineLg>
                   ) : (
