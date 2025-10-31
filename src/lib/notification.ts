@@ -10,7 +10,16 @@ export interface NotificationsProps {
   content: string;
   target: NotificationTarget;
   created_at: string;
-  type: '주문' | '리뷰' | '시스템' | '채팅' | '매칭완료' | '댓글' | '매칭취소' | '이벤트';
+  type:
+    | '주문'
+    | '리뷰'
+    | '시스템'
+    | '채팅'
+    | '매칭완료'
+    | '모집완료'
+    | '댓글'
+    | '매칭취소'
+    | '이벤트';
   is_read: boolean;
   restaurant_id: number | null;
 }

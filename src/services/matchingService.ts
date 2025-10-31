@@ -227,24 +227,35 @@ export const addMatchingParticipant = async (
   if (currentCount + 1 === matching.desired_members) {
     await updateMatchingStatus(matchingId, 'full');
 
-    // 매칭 참가자 정보 불러오기
-    const { data: matchingUser, error: matchingUserError } = await supabase
-      .from('matching_participants')
-      .select('profile_id')
-      .eq('matching_id', matchingId);
+    // // 매칭 참가자 정보 불러오기
+    // const { data: matchingUser, error: matchingUserError } = await supabase
+    //   .from('matching_participants')
+    //   .select('profile_id')
+    //   .eq('matching_id', matchingId);
 
-    if (matchingUserError || !matchingUser?.length) {
-      return;
+    // if (matchingUserError || !matchingUser?.length) {
+    //   return;
+    // }
+
+    // 1. 매칭 정보에서 host_profile_id 가져오기
+    const { data: matchingData, error: matchingError } = await supabase
+      .from('matchings')
+      .select('host_profile_id, id')
+      .eq('id', matchingId)
+      .single();
+
+    if (matchingError || !matchingData) {
+      throw new Error('호스트 정보를 불러올 수 없습니다.');
     }
 
-    const notification = matchingUser.map(u => ({
+    const notification = {
       profile_id: profileId,
-      receiver_id: u.profile_id,
-      title: '매칭연결이 완료되었습니다.',
-      content: '',
+      receiver_id: matchingData.host_profile_id,
+      title: '모집이 완료되었습니다.',
+      content: `${matchingData.id}`,
       target: 'profiles',
-      type: '매칭완료',
-    }));
+      type: '모집완료',
+    };
     const { error: notificationError } = await supabase.from('notifications').insert(notification);
 
     if (notificationError) {
