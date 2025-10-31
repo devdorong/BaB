@@ -375,6 +375,7 @@ const MatchingDetailPage = () => {
     };
     fetchData();
   }, [matchingData]);
+
   const handlecomplete = async () => {
     openModal(
       '매칭 결제',
@@ -392,6 +393,33 @@ const MatchingDetailPage = () => {
       // 결제 미진행시
       async () => {
         await updateMatchingStatus(matchingId, 'completed');
+
+        // 매칭 참가자 정보 불러오기
+        const { data: matchingUser, error: matchingUserError } = await supabase
+          .from('matching_participants')
+          .select('profile_id')
+          .eq('matching_id', matchingId);
+
+        if (matchingUserError || !matchingUser?.length) {
+          return;
+        }
+
+        const notification = matchingUser.map(u => ({
+          profile_id: user?.id,
+          receiver_id: u.profile_id,
+          title: '매칭연결이 되었습니다.',
+          content: '',
+          target: 'profiles',
+          type: '매칭완료',
+        }));
+
+        const { error: notificationError } = await supabase
+          .from('notifications')
+          .insert(notification);
+
+        if (notificationError) {
+          throw new Error(notificationError.message);
+        }
       },
     );
   };

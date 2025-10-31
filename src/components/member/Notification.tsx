@@ -13,6 +13,7 @@ import {
   CheckLine,
   CloseFill,
   GiftFill,
+  GroupLine,
   Message2Fill,
   QuestionAnswerFill,
   Settings5Fill,
@@ -33,6 +34,7 @@ export const badgeColors: Record<NotificationsProps['type'], string> = {
   시스템: 'bg-babbutton-blue',
   채팅: 'bg-yellow-100 text-yellow-700',
   매칭완료: 'bg-[#FFF1E6] text-[#FF5722]',
+  모집완료: 'bg-orange-100 text-orange-700',
   댓글: 'bg-green-100 text-green-700',
   매칭취소: 'bg-red-100 text-red-600',
   이벤트: 'bg-blue-100 text-blue-700',
@@ -44,6 +46,7 @@ export const borderColors: Record<NotificationsProps['type'], string> = {
   시스템: 'border border-babbutton-blue border-l-babbutton-blue text-babbutton-blue',
   채팅: 'border border-yellow-400 border-l-yellow-400 text-yellow-600',
   매칭완료: 'border border-[#FF5722] border-l-[#FF5722] text-[#FF5722]',
+  모집완료: 'border border-orange-400 border-l-orange-400 text-orange-600',
   댓글: 'border border-green-400 border-l-green-400 text-green-600',
   매칭취소: 'border border-red-400 border-l-red-400 text-red-600',
   이벤트: 'border border-blue-400 border-l-blue-400 text-blue-600',
@@ -55,6 +58,7 @@ export const IconColors: Record<NotificationsProps['type'], string> = {
   시스템: 'bg-babbutton-blue',
   채팅: 'bg-yellow-400',
   매칭완료: 'bg-[#FF5722]',
+  모집완료: 'bg-orange-400',
   댓글: 'bg-green-500',
   매칭취소: 'bg-red-500',
   이벤트: 'bg-blue-500',
@@ -287,8 +291,12 @@ export default function Notification({ isOpen, onClose, onRead }: NotificationPr
         case '매칭취소':
           navigate(`/member/profile/recentmatching?tab=recent`);
           break;
+        case '모집완료': {
+          navigate(`/member/matching/${item.content}`);
+          break;
+        }
         case '이벤트':
-          navigate(`/member/event`);
+          navigate(`/member/events`);
           break;
         default:
           console.log('알 수 없는 알림 타입:', item.type);
@@ -342,44 +350,111 @@ export default function Notification({ isOpen, onClose, onRead }: NotificationPr
               {notifications.length > 0 ? (
                 <div className="flex flex-col gap-3">
                   {/* 2025-10-30: Context 기반 notifications 사용 */}
-                  {notifications.map(n => (
-                    <motion.div
-                      key={n.id}
-                      initial={{ opacity: 0, y: 20 }}
-                      animate={{ opacity: 1, y: 0 }}
-                      whileHover={{
-                        opacity: 0.7,
-                        transition: { duration: 0.6, ease: 'easeInOut' },
-                      }}
-                      className={`relative flex bg-white items-start gap-3 cursor-pointer border rounded-lg p-4 border-l-4 ${n.is_read === true ? ' border border-babgray border-l-4' : ` ${borderColors[n.type as NotificationsProps['type']].split(' ')[2]} ${borderColors[n.type as NotificationsProps['type']].split(' ')[1]}`}`}
-                      onClick={() => handleClick(n)}
-                    >
-                      <div
-                        className={`flex items-center justify-center w-10 h-10 rounded-md  ${IconColors[n.type as NotificationsProps['type']]}`}
-                      >
-                        {n.type === '매칭완료' ? (
-                          <CheckLine size={20} bgColor="none" />
-                        ) : n.type === '채팅' ? (
-                          <Message2Fill bgColor="none" size={20} />
-                        ) : n.type === '이벤트' ? (
-                          <GiftFill bgColor="#4382e7" size={20} />
-                        ) : n.type === '매칭취소' ? (
-                          <CloseFill bgColor="none" size={20} />
-                        ) : n.type === '댓글' ? (
-                          <QuestionAnswerFill bgColor="none" size={20} />
-                        ) : (
-                          <StarFill bgColor="none" size={20} />
-                        )}
+                  {notifications.filter(n => !n.is_read).length > 0 && (
+                    <>
+                      <div className="text-sm font-semibold text-gray-700 mb-2">
+                        읽지 않은 알림({notifications.filter(n => !n.is_read).length})
                       </div>
-                      {/* <div className="text-lg">{n.title}</div> */}
-                      <div className="flex-1">
-                        <p className="text-sm text-gray-900 font-medium">{n.title}</p>
-                        <p className="text-xs text-gray-400">
-                          {new Date(n.created_at).toLocaleString()}
-                        </p>
+                      {notifications
+                        .filter(n => !n.is_read)
+                        .sort(
+                          (a, b) =>
+                            new Date(b.created_at).getTime() - new Date(a.created_at).getTime(),
+                        )
+                        .map(n => (
+                          <motion.div
+                            key={n.id}
+                            initial={{ opacity: 0, y: 20 }}
+                            animate={{ opacity: 1, y: 0 }}
+                            whileHover={{
+                              opacity: 0.7,
+                              transition: { duration: 0.6, ease: 'easeInOut' },
+                            }}
+                            className={`relative flex bg-white items-start gap-3 cursor-pointer border rounded-lg p-4 border-l-4 ${n.is_read === true ? ' border border-babgray border-l-4' : ` ${borderColors[n.type as NotificationsProps['type']].split(' ')[2]} ${borderColors[n.type as NotificationsProps['type']].split(' ')[1]}`}`}
+                            onClick={() => handleClick(n)}
+                          >
+                            <div
+                              className={`flex items-center justify-center w-10 h-10 rounded-md  ${IconColors[n.type as NotificationsProps['type']]}`}
+                            >
+                              {n.type === '매칭완료' ? (
+                                <CheckLine size={20} bgColor="none" />
+                              ) : n.type === '채팅' ? (
+                                <Message2Fill bgColor="none" size={20} />
+                              ) : n.type === '이벤트' ? (
+                                <GiftFill bgColor="none" size={20} />
+                              ) : n.type === '매칭취소' ? (
+                                <CloseFill bgColor="none" size={20} />
+                              ) : n.type === '댓글' ? (
+                                <QuestionAnswerFill bgColor="none" size={20} />
+                              ) : n.type === '모집완료' ? (
+                                <GroupLine bgColor="none" size={20} />
+                              ) : (
+                                <StarFill bgColor="none" size={20} />
+                              )}
+                            </div>
+
+                            <div className="flex-1">
+                              <p className="text-sm text-gray-900 font-medium">{n.title}</p>
+                              <p className="text-xs text-gray-400">
+                                {new Date(n.created_at).toLocaleString()}
+                              </p>
+                            </div>
+                          </motion.div>
+                        ))}
+                    </>
+                  )}
+
+                  {/* 읽은 알림 */}
+                  {notifications.filter(n => n.is_read).length > 0 && (
+                    <>
+                      <div className="text-sm font-semibold text-gray-500 mb-2 mt-2">
+                        읽은 알림 ({notifications.filter(n => n.is_read).length})
                       </div>
-                    </motion.div>
-                  ))}
+                      {notifications
+                        .filter(n => n.is_read)
+                        .sort(
+                          (a, b) =>
+                            new Date(b.created_at).getTime() - new Date(a.created_at).getTime(), // 2025-10-27
+                        )
+                        .map(n => (
+                          <motion.div
+                            key={n.id}
+                            initial={{ opacity: 0, y: 20 }}
+                            animate={{ opacity: 1, y: 0 }}
+                            whileHover={{
+                              opacity: 0.7,
+                              transition: { duration: 0.6, ease: 'easeInOut' },
+                            }}
+                            className="relative flex bg-gray-50 items-start gap-3 cursor-pointer border rounded-lg p-4 border-l-4 border-gray-200"
+                            onClick={() => handleClick(n)}
+                          >
+                            <div className="flex items-center justify-center w-10 h-10 rounded-md bg-gray-300">
+                              {n.type === '매칭완료' ? (
+                                <CheckLine size={20} bgColor="none" />
+                              ) : n.type === '채팅' ? (
+                                <Message2Fill bgColor="none" size={20} />
+                              ) : n.type === '이벤트' ? (
+                                <GiftFill bgColor="none" size={20} />
+                              ) : n.type === '매칭취소' ? (
+                                <CloseFill bgColor="none" size={20} />
+                              ) : n.type === '댓글' ? (
+                                <QuestionAnswerFill bgColor="none" size={20} />
+                              ) : n.type === '모집완료' ? (
+                                <GroupLine bgColor="none" size={20} />
+                              ) : (
+                                <StarFill bgColor="none" size={20} />
+                              )}
+                            </div>
+                            <div className="flex-1">
+                              <p className="text-sm text-gray-600 font-medium">{n.title}</p>
+                              <p className="text-xs text-gray-400">
+                                {new Date(n.created_at).toLocaleString()}
+                              </p>
+                            </div>
+                          </motion.div>
+                        ))}
+                    </>
+                  )}
                 </div>
               ) : (
                 <div className="flex justify-center items-start min-h-[378px] text-babgray-500">
