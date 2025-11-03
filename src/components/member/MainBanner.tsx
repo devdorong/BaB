@@ -194,6 +194,10 @@ const MainBanner = () => {
             pauseOnMouseEnter: true,
           }}
           loop
+          style={{
+            height: '100%',
+            objectFit:"cover"
+          }}
         >
           {bannerImgs?.map(item => (
             <SwiperSlide key={item.id}>
