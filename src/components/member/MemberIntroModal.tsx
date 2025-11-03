@@ -12,7 +12,6 @@ const MemberIntroModal = () => {
   const navigate = useNavigate();
 
   useEffect(() => {
-    // ✅ 화면 크기 확인 (1024px 이상일 때만 표시)
     const checkDevice = () => {
       const isPc = window.innerWidth >= 1024;
       setIsDesktop(isPc);
@@ -23,7 +22,7 @@ const MemberIntroModal = () => {
   }, []);
 
   useEffect(() => {
-    if (!isDesktop) return; // ✅ 모바일이면 그냥 리턴
+    if (!isDesktop) return;
     const skipIntro = localStorage.getItem('skipMemberIntro');
     if (!skipIntro) setIsOpen(true);
   }, [isDesktop]);
@@ -45,7 +44,7 @@ const MemberIntroModal = () => {
     };
   }, [isOpen]);
 
-  if (!isDesktop) return null; // ✅ 모바일에선 완전히 렌더 안함
+  if (!isDesktop) return null;
 
   return (
     <AnimatePresence>
@@ -185,12 +184,13 @@ const MemberIntroModal = () => {
             </Swiper>
 
             {/* 하단 체크박스 */}
-            <div className="absolute bottom-4 left-0 right-0 flex justify-center items-center gap-2 text-sm text-white  py-2 z-10">
+            <div className="absolute bottom-4 left-0 right-0 flex justify-center items-center gap-2 text-sm text-white  py-2 z-10 cursor-pointer">
               <input
                 id="skipIntro"
                 type="checkbox"
                 checked={dontShowAgain}
                 onChange={e => setDontShowAgain(e.target.checked)}
+                style={{ cursor: 'pointer' }}
               />
               <label htmlFor="skipIntro" className="select-none cursor-pointer">
                 다음부터 보지 않기

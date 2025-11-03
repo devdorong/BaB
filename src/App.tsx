@@ -1,5 +1,3 @@
-import type { Session } from '@supabase/supabase-js';
-import { useEffect } from 'react';
 import { Outlet, Route, BrowserRouter as Router, Routes } from 'react-router-dom';
 import ProtectedRoute from './components/ProtectedRoute';
 import { AuthProvider } from './contexts/AuthContext';
@@ -9,8 +7,6 @@ import AdminLayout from './layout/AdminLayout';
 import BareLayout from './layout/BareLayout';
 import MemberLayout from './layout/MemberLayout';
 import PartnerLayout from './layout/PartnerLayout';
-import { createProfile } from './lib/propile';
-import { supabase } from './lib/supabase';
 import AdminMatchingPage from './pages/admin/AdminMatchingPage';
 import AdminMembersPage from './pages/admin/AdminMembersPage';
 import AdminPartnersPage from './pages/admin/AdminPartnersPage';
@@ -53,8 +49,6 @@ import PartnerLoginPage from './pages/PartnerLoginPage';
 import PartnerSignupPage from './pages/PartnerSignupPage';
 import PersonalPolicyPage from './pages/PersonalPolicyPage';
 import TermsofServicePage from './pages/TermsofServicePage';
-import { GetOrCreatePoint } from './services/PointService';
-import type { ProfileInsert } from './types/bobType';
 
 import { PartnerSignupProvider } from './contexts/PartnerSignupContext';
 
@@ -68,14 +62,14 @@ import MyReviewPage from './pages/member/profiles/MyReviewPage';
 import MyWritePage from './pages/member/profiles/MyWritePage';
 
 import { ProtectedMemberRoute } from './components/ProtectedMemberRoute';
-import { MenusProvider } from './contexts/MenuContext';
-import { PartnerRestaurantProvider } from './contexts/PartnerRestaurantContext';
-import HelpPage from './pages/member/profiles/HelpPage';
 import { Toaster } from './components/ui/sonner';
 import { ChatNotificationProvider } from './contexts/ChatNotificationContext';
+import { MenusProvider } from './contexts/MenuContext';
 import { NotificationRealTimeProvider } from './contexts/NotificationContext';
+import { PartnerRestaurantProvider } from './contexts/PartnerRestaurantContext';
 import { useGoogleAnalytics } from './hooks/useGoogleAnalytics';
 import ConfirmPage from './pages/auth/ConfirmPage';
+import HelpPage from './pages/member/profiles/HelpPage';
 
 const LayoutWithAnalytics = ({ children }: { children: React.ReactNode }) => {
   useGoogleAnalytics(); // Router 컨텍스트 내부에서 사용
@@ -100,7 +94,6 @@ function App() {
                     >
                       <Routes>
                         <Route path="/" element={<IndexPage />} />
-
                         {/* Member */}
                         <Route
                           path="/member"
