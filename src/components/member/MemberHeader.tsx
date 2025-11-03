@@ -402,7 +402,7 @@ const MemberHeader = () => {
                 </NavLink>
                 <NavLink
                   className={({ isActive }) =>
-                    `${isActive ? 'text-bab' : 'hover:text-bab transition-colors'}`
+                    `${isActive ? 'text-bab font-bold' : 'hover:text-bab transition-colors font-bold'}`
                   }
                   to="/perpolicy"
                   onClick={() => {

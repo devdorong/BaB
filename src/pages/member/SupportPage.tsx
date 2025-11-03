@@ -111,7 +111,7 @@ function SupportPage() {
             궁금한 점이 있으시면 언제든지 문의해주세요
           </span>
         </div>
-        <div className={styles.topCards}>
+        <div className={`${styles.topCards}`}>
           <div className="w-full shadow-[0px_4px_4px_0px_rgba(0,0,0,0.02)] bg-white border-none rounded-[16px] flex flex-col items-center gap-[17px] py-[15px] px-[50px]">
             <PhoneLine bgColor="#FFEDD5" color="#F97A18" size={20} padding={14} />
             <div className="flex flex-col items-center gap-[15px] text-md">
@@ -142,7 +142,7 @@ function SupportPage() {
       {/* 중단 */}
       <div className=" bg-white rounded-[18px] shadow-[0px_4px_4px_0px_rgba(0,0,0,0.02)]">
         <div className="p-[25px] flex flex-col gap-[27px]">
-          <div className="flex justify-between">
+          <div className="flex justify-between flex-wrap">
             <h3 className="font-bold text-[27px]">자주 묻는 질문</h3>
             {/* 클릭시 모달열리게 수정하기 */}
             <div
@@ -159,7 +159,8 @@ function SupportPage() {
           </div>
 
           {/* 태그 필터 */}
-          <div className="flex gap-[8px] justify-start">
+          
+          <div className="flex gap-[8px] justify-start flex-wrap">
             {categories.map(cat => (
               <TagButton
                 key={cat}
@@ -180,7 +181,7 @@ function SupportPage() {
                 <li key={i}>
                   <button
                     onClick={() => toggleFaq(i)}
-                    className="w-full flex justify-between items-center p-[16px] text-left bg-bg-bg rounded-[10px]"
+                    className="w-full flex flex-wrap justify-between items-center p-[16px] text-left bg-bg-bg rounded-[10px]"
                   >
                     <div className="flex gap-[10px] items-center">
                       <TagBadge bgColor={faq.tagBg} textColor={faq.tagText}>

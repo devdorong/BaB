@@ -233,7 +233,7 @@ function DirectChatRoom({ chatId, onExit }: DirectChatRoomProps) {
   const messageGroups = groupMessagesByDate(messages);
 
   return (
-    <div className="chat-room">
+    <div className="chat-room h-[calc(100dvh-26px)] ">
       {/* 채팅방 헤더 - 제목과 나가기 */}
       <div className="chat-room-header">
         {/* 채팅방 정보 */}

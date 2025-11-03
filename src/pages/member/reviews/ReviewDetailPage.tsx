@@ -316,20 +316,22 @@ function ReviewDetailPage() {
           {/* 헤더 정보 박스 */}
           <div className="px-5 py-4 md:px-8 md:py-6 bg-white rounded-t-3xl">
             <div className="flex items-center justify-between">
-              <div className="flex item-center justify-center gap-[14px] mb-[4px]">
-                <h1 className="text-[24px] lg:text-[30px] font-semibold ">{restaurant?.name}</h1>
-                {restaurant?.interests?.category === FOOD && (
-                  <InterestBadge
-                    bgColor={
-                      categoryColors[restaurant.interests.name]?.bg || defaultCategoryColor.bg
-                    }
-                    textColor={
-                      categoryColors[restaurant.interests.name]?.text || defaultCategoryColor.text
-                    }
-                  >
-                    {restaurant.interests.name}
-                  </InterestBadge>
-                )}
+              <div className="flex flex-col lg:flex-row item-center justify-center gap-[5px] lg:gap-[14px] mb-[4px]">
+                <h1 className="text-[20px] lg:text-[30px] font-semibold ">{restaurant?.name}</h1>
+                <div className="inline-flex">
+                  {restaurant?.interests?.category === FOOD && (
+                    <InterestBadge
+                      bgColor={
+                        categoryColors[restaurant.interests.name]?.bg || defaultCategoryColor.bg
+                      }
+                      textColor={
+                        categoryColors[restaurant.interests.name]?.text || defaultCategoryColor.text
+                      }
+                    >
+                      {restaurant.interests.name}
+                    </InterestBadge>
+                  )}
+                </div>
               </div>
               <div className="flex relative items-center gap-2 text-babgray-700">
                 <div
@@ -349,7 +351,7 @@ function ReviewDetailPage() {
             </div>
 
             {/* 평점/리뷰/거리 */}
-            <div className="mt-0 lg:mt-2 flex flex-col flex-wrap items-start gap-2 text-babgray-700">
+            <div className="mt-4 lg:mt-2 flex flex-col flex-wrap items-start gap-2 text-babgray-700">
               <div className="flex items-center gap-2">
                 <div className="flex items-center gap-1">
                   <RiStarFill className="text-[#FACC15] text-[16px]" />
@@ -400,7 +402,17 @@ function ReviewDetailPage() {
               <ButtonLineLg style={{ fontWeight: 500, borderRadius: '24px' }}>
                 전화하기
               </ButtonLineLg>
-              <ButtonLineLg style={{ fontWeight: 500, borderRadius: '24px' }}>길찾기</ButtonLineLg>
+              <ButtonLineLg
+                onClick={() =>
+                  window.open(
+                    `https://map.kakao.com/link/to/${restaurant!.name},${restaurant!.latitude},${restaurant!.longitude}`,
+                    '_blank',
+                  )
+                }
+                style={{ fontWeight: 500, borderRadius: '24px' }}
+              >
+                길찾기
+              </ButtonLineLg>
             </div>
           </div>
         </section>

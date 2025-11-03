@@ -242,7 +242,7 @@ function CommunityDetailPage() {
   if (!post) return <p>게시글을 찾을 수 없습니다.</p>;
 
   return (
-    <div className={`${styles.pageContainer} w-[1280px] h-full flex justify-between py-5 mx-auto`}>
+    <div className={`${styles.pageContainer} w-[1280px] h-full flex justify-between p-4 mx-auto`}>
       <div className={`${styles.leftSection} w-[844px] flex flex-col gap-10`}>
         {/* 게시글 영역 */}
         <div className="flex flex-col p-7 gap-6 bg-white rounded-2xl shadow-[0px_4px_4px_rgba(0,0,0,0.02)]">

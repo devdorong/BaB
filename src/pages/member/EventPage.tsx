@@ -75,7 +75,7 @@ function EventPage() {
       .from('event_participants')
       .select('id')
       .eq('event_id', eventId)
-      .eq('user_id', user.id)
+      .eq('profile_id', user.id)
       .maybeSingle();
 
     if (existing) {
@@ -85,7 +85,7 @@ function EventPage() {
 
     const { error } = await supabase.from('event_participants').insert({
       event_id: eventId,
-      user_id: user.id,
+      profile_id: user.id,
     });
 
     if (error) {
@@ -160,8 +160,13 @@ function EventPage() {
   };
 
   useEffect(() => {
-    document.body.style.overflow = eventModal ? 'hidden' : 'auto';
-  }, [modal, eventModal]);
+    const scrollLock = modal.isOpen || eventModal || viewModal || editPage;
+    document.body.style.overflow = scrollLock ? 'hidden' : 'auto';
+
+    return () => {
+      document.body.style.overflow = 'auto';
+    };
+  }, [modal.isOpen, eventModal, viewModal, editPage]);
 
   useEffect(() => {
     const checkAdmin = async (userId: string | unknown) => {
@@ -323,7 +328,7 @@ function EventPage() {
 
       {loading ? (
         [...Array(1)].map((_, i) => <EventCardSkeleton key={i} />)
-      ) : events.length > 0 ? (
+      ) : filterCategories.length > 0 ? (
         <div className={styles.eventGrid}>
           {filterCategories.map(event => (
             <div key={event.id} className={styles.eventCard}>
@@ -419,8 +424,16 @@ function EventPage() {
             </div>
           ))}
         </div>
+      ) : filterCategories.length === 0 ? (
+        <div className="w-full  p-6 bg-white rounded-2xl shadow-[0_4px_4px_rgba(0,0,0,0.02)]">
+          <div className="text-gray-600 text-center py-5">등록된 이벤트가 없습니다.</div>
+        </div>
       ) : (
-        <p className="text-gray-600 text-center py-5">이벤트 목록을 불러오는데 실패했습니다.</p>
+        <div className="flex justify-between flex-col gap-4 sm:flex-row items-center p-5 bg-white rounded-xl border border-gray-200">
+          <div className="text-gray-600 text-center py-5">
+            이벤트 목록을 불러오는데 실패했습니다.
+          </div>
+        </div>
       )}
       {/* 이벤트 카드 리스트 */}
 

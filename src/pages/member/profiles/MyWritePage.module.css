@@ -66,7 +66,7 @@
 
   .postCard {
     padding: 1rem 1.25rem;
-    gap: 0.75rem;
+    gap: 1rem;
   }
 
   .postList {
@@ -107,16 +107,16 @@
 /* ============================= */
 @media (max-width: 400px) {
   .pageContainer {
-    padding: 0.75rem;
+    padding: 1rem;
   }
 
   .postCard {
-    padding: 0.75rem;
+    padding: 1rem;
     gap: 0.5rem;
   }
 
   .postList {
-    gap: 0.75rem;
+    gap: 1rem;
   }
 
   .postCard p {
