@@ -98,15 +98,17 @@ const SupportModal = ({ setOpenModal }: SupportModalProps) => {
         console.error('프로필 정보를 불러오지 못했습니다:', profileError?.message);
         return;
       }
+
+      if (!category.trim()) {
+        openModal('문의 확인', '문의 유형을 선택 해주세요.', '확인');
+        return;
+      }
+      if (!title.trim() || !content.trim()) {
+        openModal('문의 확인', '제목 또는 문의내용을 입력 해주세요.', '확인');
+        return;
+      }
+
       openModal('문의 확인', '작성된 내용으로 문의하시겠습니까?', '취소', '확인', async () => {
-        if (!category.trim()) {
-          openModal('문의 확인', '문의 유형을 선택 해주세요.', '확인');
-          return;
-        }
-        if (!title.trim() || !content.trim()) {
-          openModal('문의 확인', '제목 또는 문의내용을 입력 해주세요.', '확인');
-          return;
-        }
         const newHelp: HelpInsert = {
           profile_id: profileData.id,
           help_type: category as HelpCategory,

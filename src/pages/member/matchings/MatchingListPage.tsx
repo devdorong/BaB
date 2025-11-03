@@ -14,6 +14,9 @@ import { BlackTag, GrayTag } from '@/ui/tag';
 import SortCategory from '@/components/member/SortCategory';
 import { SortMatchingCategory } from '@/components/member/SortMatchingOption';
 import AllCategory from '@/components/member/AllCategory';
+import { useAuth } from '@/contexts/AuthContext';
+import { useNavigate } from 'react-router-dom';
+import { ButtonFillMd, ButtonFillSm } from '@/ui/button';
 
 dayjs.extend(relativeTime);
 dayjs.locale('ko');
@@ -60,6 +63,8 @@ type ProcessedMatching = Matchings & {
 type SortOption = '최신순' | '거리순';
 
 const MatchingListPage = () => {
+  const { user: loginUser } = useAuth();
+  const navigate = useNavigate();
   const { closeModal, modal, openModal } = useModal();
 
   // State
@@ -271,6 +276,16 @@ const MatchingListPage = () => {
     setCurrentPage(1);
   };
 
+  const handleWriteClick = () => {
+    if (!loginUser) {
+      openModal('로그인 확인', '로그인이 필요합니다.', '닫기', '로그인', () =>
+        navigate('/member/login'),
+      );
+    } else {
+      navigate(`/member/matching/write`);
+    }
+  };
+
   // 정렬 옵션 변경 핸들러
   const handleSortChange = (option: SortOption) => {
     setSortOption(option);
@@ -289,7 +304,7 @@ const MatchingListPage = () => {
         {/* 검색 및 필터 영역 */}
         <div className="flex flex-col gap-4 sm:gap-6 p-5 sm:p-6 rounded-2xl bg-white shadow-[0_4px_4px_rgba(0,0,0,0.02)]">
           {/* 검색바 */}
-          <div className="flex  w-full gap-3 sm:gap-4 items-center">
+          <div className="flex w-full gap-3 sm:gap-4 items-center">
             <div
               onClick={() => document.getElementById('searchInput')?.focus()}
               className="flex w-full items-center bg-white border border-babgray rounded-3xl h-[50px] sm:h-[55px] px-4"
@@ -364,32 +379,29 @@ const MatchingListPage = () => {
                 }}
               />
             </div>
-            <div className="flex justify-start gap-[8px]">
-              <SortMatchingCategory sortOption={sortOption} setSortOption={setSortOption} />
+            <div className="flex justify-between items-center w-full flex-wrap">
+              <div className="flex justify-start gap-[8px]">
+                <SortMatchingCategory sortOption={sortOption} setSortOption={setSortOption} />
+              </div>
+              <ButtonFillMd onClick={handleWriteClick} className="flex justify-end">
+                등록하기
+              </ButtonFillMd>
             </div>
           </div>
         </div>
 
         {/* 매칭 리스트 */}
-        <div className="w-full py-6">
+        <div className="w-full py-6 ">
           <ul className="flex flex-col gap-y-6 sm:gap-y-8 list-none p-0 m-0">
             {loading ? (
               [...Array(4)].map((_, i) => <MatchCardSkeleton key={i} />)
-
             ) : filteredMatchings.length === 0 ? (
-              <li className="min-h-[calc(100vh/2.8)] flex items-center justify-center">
+              <li className="min-h-[calc(100vh/5)] flex items-center justify-center bg-white rounded-2xl shadow-[0_4px_4px_rgba(0,0,0,0.02)]">
                 <p className="text-center text-babgray-500 py-10">
                   해당 카테고리의 매칭이 없습니다.
                 </p>
               </li>
-
             ) : (
-              // <li className="min-h-[calc(100vh/2.8)] flex items-center justify-center">
-              //   <p className="text-center text-babgray-500 py-10">
-              //     해당 카테고리의 매칭이 없습니다.
-              //   </p>
-              // </li>
-
               paginatedMatchings.map((item, index) => {
                 const distance =
                   userPos && item.latitude && item.longitude

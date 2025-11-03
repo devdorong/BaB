@@ -10,7 +10,7 @@ import {
   RiMastercardLine,
   RiPhoneLine,
   RiUserLine,
-  RiVisaLine
+  RiVisaLine,
 } from 'react-icons/ri';
 import { Link, useNavigate } from 'react-router-dom';
 import { useAuth } from '../../../contexts/AuthContext';
@@ -36,8 +36,11 @@ interface PaymentMethod {
 }
 
 import { GrayTag, OrangeTag } from '../../../ui/tag';
+import { useModal } from '@/ui/sdj/ModalState';
+import Modal from '@/ui/sdj/Modal';
 
 function ProfilePage() {
+  const { closeModal, modal, openModal } = useModal();
   const { user, signOut } = useAuth();
   const { refreshPoint } = usePoint();
   // 네비게이터
@@ -435,7 +438,18 @@ function ProfilePage() {
                               </button>
                             )}
                             <button
-                              onClick={() => removePaymentMethod(method.id)}
+                              onClick={() => {
+                                openModal(
+                                  '삭제',
+                                  '선택하신 카드의 정보를 삭제하시겠습니까?',
+                                  '취소',
+                                  '삭제',
+                                  () => {
+                                    closeModal();
+                                    removePaymentMethod(method.id);
+                                  },
+                                );
+                              }}
                               className="hover:text-red-500 transition"
                               title="삭제"
                             >
@@ -532,6 +546,17 @@ function ProfilePage() {
         </div>
       </div>
       <PaymentInputModal isOpen={open} onClose={() => setOpen(false)} onSubmit={handleAddPayment} />
+      {modal.isOpen && (
+        <Modal
+          isOpen={modal.isOpen}
+          onClose={closeModal}
+          closeButtonText={modal.closeText}
+          contentText={modal.content}
+          submitButtonText={modal.submitText}
+          titleText={modal.title}
+          onSubmit={modal.onSubmit}
+        />
+      )}
     </div>
   );
 }
