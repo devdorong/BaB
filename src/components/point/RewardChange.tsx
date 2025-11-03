@@ -7,6 +7,7 @@ import { ButtonFillMd, ButtonLineMd } from '../../ui/button';
 import { changePoint, totalChangePoint } from '../../services/PointService';
 import { usePoint } from '../../contexts/PointContext';
 import { useAuth } from '../../contexts/AuthContext';
+import { toast } from 'sonner';
 
 const RewardChange = () => {
   const { user } = useAuth();
@@ -35,12 +36,17 @@ const RewardChange = () => {
     const result = await changePoint(coupon.id, coupon.required_points);
     if (result.success) {
       subPoint(coupon.required_points);
-      alert('쿠폰발급');
+      // alert('쿠폰발급');
+      toast.success('쿠폰이 정상적으로 발급되었습니다.', { position: 'top-center' });
+
       await refreshPoint();
       const total = await totalChangePoint();
       setTotalPoint(total);
     } else {
-      alert('쿠폰 발급 오류');
+      // alert('쿠폰 발급 오류');
+      toast.error('쿠폰 발급 중 오류가 발생했습니다. 다시 시도해주세요.', {
+        position: 'top-center',
+      });
     }
   };
 

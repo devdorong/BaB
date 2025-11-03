@@ -8,6 +8,7 @@ import { getProfile } from '../../lib/propile';
 import DaysSince from '../../components/partner/DaysSince';
 import { fetchInterests } from '../../lib/interests';
 import { Divider } from 'antd';
+import { getFavoriteCount } from '@/lib/restaurants';
 
 function RestaurantPage() {
   const { restaurant } = useRestaurant();
@@ -21,6 +22,8 @@ function RestaurantPage() {
   const [error, setError] = useState<string>('');
   // 사용자 닉네임
   const [nickName, setNickName] = useState<string>('');
+  // 단골손님 개수
+  const [favoriteCount, setFavoriteCount] = useState(0);
 
   const loadProfile = async () => {
     if (!user?.id) {
@@ -70,6 +73,15 @@ function RestaurantPage() {
     };
     loadCategories();
   }, []);
+
+  useEffect(() => {
+    const loadFavorite = async () => {
+      if (!restaurant) return;
+      const count = await getFavoriteCount(restaurant.id);
+      setFavoriteCount(count);
+    };
+    loadFavorite();
+  }, [restaurant]);
 
   const categoryName =
     categories.find(item => item.id === restaurant?.category_id)?.name || '알수없음';
@@ -170,7 +182,7 @@ function RestaurantPage() {
             <div className="flex flex-col items-center gap-2">
               <UserHeartLine bgColor="#DCFCE7" color="#22C55E" size={20} padding={14} />
               <span className="text-base text-gray-500">단골 고객</span>
-              <span className="text-lg font-semibold text-gray-800">{restaurant?.favorite}명</span>
+              <span className="text-lg font-semibold text-gray-800">{favoriteCount}명</span>
             </div>
             <div className="flex flex-col items-center gap-2">
               <AwardLine bgColor="#F3E8FF" color="#A855F7" size={20} padding={14} />

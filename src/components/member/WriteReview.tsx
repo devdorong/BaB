@@ -14,6 +14,7 @@ import type { Profile } from '../../types/bobType';
 import { insertReview } from '../../services/RestReviewService';
 import { supabase } from '../../lib/supabase';
 import { giveReviewPoint } from '../../services/PointService';
+import { toast } from 'sonner';
 
 type Props = {
   restaurantId: number;
@@ -143,9 +144,12 @@ function WriteReview({ open, onClose, onSubmit, onSuccess, restaurantId }: Props
     try {
       await giveReviewPoint();
       console.log('리뷰 작성 포인트 지급 완료');
-      alert('리뷰가 등록되었습니다!');
+      toast.success('리뷰작성 완료! 50포인트가 적립되었습니다 🎉', { position: 'top-center' });
     } catch (err) {
       console.error('리뷰 등록 중 오류:', err);
+      toast.success('리뷰 등록 중 오류가 발생했습니다. 다시 시도해주세요.', {
+        position: 'top-center',
+      });
     }
 
     const success = await insertReview({

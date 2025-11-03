@@ -9,6 +9,10 @@ import {
 import { ItalianFood } from '../tag';
 import TagBadge from '../TagBadge';
 import type { ReviewPhoto } from '../../lib/restaurants';
+import { useModal } from '../sdj/ModalState';
+import type React from 'react';
+import Modal from '../sdj/Modal';
+import { useState } from 'react';
 
 type Props = {
   imageUrl: string;
@@ -39,12 +43,43 @@ export default function MyreviewCard({
   isMyReview,
   onDelete,
 }: Props) {
+  const { modal, openModal, closeModal } = useModal();
+  const [isDeleting, setIsDeleting] = useState(false);
   const photoSrc =
     review_photos && review_photos.length > 0 ? review_photos[0].photo_url : imageUrl;
 
+  const handleCardClick = (e: React.MouseEvent<HTMLDivElement>) => {
+    if (modal.isOpen || isDeleting) {
+      // 모달 열림/삭제중에는 카드 네비게이션 막기
+      e.preventDefault();
+      e.stopPropagation();
+      return;
+    }
+    onClick?.();
+  };
+
+  const handleDeleteSubmit = (e: React.MouseEvent<HTMLButtonElement>) => {
+    e.stopPropagation();
+    e.preventDefault();
+    openModal(
+      '리뷰 삭제',
+      '이 리뷰를 정말 삭제하시겠어요? 삭제 후 복구할 수 없습니다.',
+      '취소',
+      '삭제',
+      async () => {
+        try {
+          setIsDeleting(true);
+          await onDelete?.();
+        } finally {
+          setIsDeleting(false);
+          closeModal();
+        }
+      },
+    );
+  };
   return (
     <div
-      onClick={onClick}
+      onClick={handleCardClick}
       className="relative w-full bg-white rounded-2xl overflow-hidden shadow-[0_4px_4px_rgba(0,0,0,0.02)] border border-black/5 cursor-pointer"
     >
       {/* 이미지 영역 */}
@@ -52,10 +87,7 @@ export default function MyreviewCard({
         {/* 삭제 버튼 (이미지 위, 카드 기준 고정) */}
         {isMyReview && (
           <button
-            onClick={e => {
-              e.stopPropagation(); // 카드 클릭 방지
-              onDelete?.();
-            }}
+            onClick={handleDeleteSubmit}
             className="absolute top-2 right-2 bg-red-500 text-white text-xs px-2 py-1 rounded-xl hover:bg-red-600 transition z-10"
           >
             삭제
@@ -100,6 +132,18 @@ export default function MyreviewCard({
           {comment}
         </p>
       </div>
+
+      {modal.isOpen && (
+        <Modal
+          isOpen={modal.isOpen}
+          onClose={closeModal}
+          titleText={modal.title}
+          contentText={modal.content}
+          closeButtonText={modal.closeText}
+          submitButtonText={modal.submitText}
+          onSubmit={modal.onSubmit}
+        />
+      )}
     </div>
   );
 }

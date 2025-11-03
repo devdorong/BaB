@@ -15,6 +15,7 @@ import {
   BreadcrumbPage,
   BreadcrumbSeparator,
 } from '../../../components/ui/breadcrumb';
+import { toast } from 'sonner';
 
 function MyReviewPage() {
   const navigate = useNavigate();
@@ -59,12 +60,13 @@ function MyReviewPage() {
 
   // 리뷰 삭제
   const handleDelete = async (reviewId: number) => {
-    const confirmDelete = window.confirm('리뷰 삭제?');
-    if (!confirmDelete) return;
+    // const confirmDelete = window.confirm('리뷰 삭제?');
+    // if (!confirmDelete) return;
 
     try {
       await deleteReviewById(reviewId);
       setReview(prev => prev.filter(rv => rv.review_id !== reviewId));
+      toast.success('리뷰가 삭제되었습니다.', { position: 'top-center' });
     } catch (error) {}
   };
 

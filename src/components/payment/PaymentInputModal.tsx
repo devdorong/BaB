@@ -1,6 +1,7 @@
 import React, { useState, useEffect } from 'react';
 import { X, CreditCard } from 'lucide-react';
 import { AnimatePresence, motion } from 'framer-motion';
+import { Select } from 'antd';
 
 interface PaymentInputModalProps {
   isOpen: boolean;
@@ -17,6 +18,8 @@ interface PaymentData {
   description: string;
 }
 
+type CardType = 'Master' | 'VISA';
+
 export const PaymentInputModal: React.FC<PaymentInputModalProps> = ({
   isOpen,
   onClose,
@@ -26,7 +29,7 @@ export const PaymentInputModal: React.FC<PaymentInputModalProps> = ({
   const [expiryDate, setExpiryDate] = useState('');
   const [cvv, setCvv] = useState('');
   const [cardHolder, setCardHolder] = useState('');
-  const [brand, setBrand] = useState('');
+  const [brand, setBrand] = useState('VISA');
   const [description, setDescription] = useState('');
 
   // 모달 열릴 때 스크롤 방지
@@ -187,12 +190,21 @@ export const PaymentInputModal: React.FC<PaymentInputModalProps> = ({
               {/* 카드 브랜드 */}
               <div>
                 <label className="block text-sm font-medium mb-2">카드 브랜드</label>
-                <input
-                  type="text"
+
+                <Select
                   value={brand}
-                  onChange={e => setBrand(e.target.value)}
-                  placeholder="VISA, MASTERCARD 등"
-                  className="w-full px-4 py-3 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-bab-500"
+                  suffixIcon={null}
+                  onChange={e => setBrand(e)}
+                  className=" bab-select-md w-full h-[50px]"
+                  classNames={{
+                    popup: {
+                      root: 'bab-select-dropdown',
+                    },
+                  }}
+                  options={[
+                    { label: 'VISA', value: 'VISA' },
+                    { label: 'MASTERCARD', value: 'MASTERCARD' },
+                  ]}
                 />
               </div>
 
