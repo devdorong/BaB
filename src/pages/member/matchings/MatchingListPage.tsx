@@ -346,7 +346,7 @@ const MatchingListPage = () => {
           <ul className="flex flex-col gap-y-6 sm:gap-y-8 list-none p-0 m-0">
             {loading ? (
               [...Array(4)].map((_, i) => <MatchCardSkeleton key={i} />)
-            ) : processedMatchings.length === 0 ? (
+            ) : filteredMatchings.length === 0 ? (
               <li className="min-h-[calc(100vh/2.8)] flex items-center justify-center">
                 <p className="text-center text-babgray-500 py-10">
                   해당 카테고리의 매칭이 없습니다.

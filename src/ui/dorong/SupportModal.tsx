@@ -9,6 +9,7 @@ import { RiArrowDownSLine } from 'react-icons/ri';
 import { useModal } from '../sdj/ModalState';
 import { supabase } from '../../lib/supabase';
 import { AnimatePresence, motion } from 'framer-motion';
+import { toast } from 'sonner';
 
 type SupportModalProps = {
   setOpenModal: React.Dispatch<React.SetStateAction<boolean>>;
@@ -124,6 +125,7 @@ const SupportModal = ({ setOpenModal }: SupportModalProps) => {
         openModal('문의 완료', '문의가 완료되었습니다.', '닫기');
         closeModal();
         setOpenModal(false);
+        toast.success('문의가 접수되었습니다.', { position: 'top-center' });
       });
     } catch (err) {
       console.error('handleSubmit 오류:', err);
@@ -158,14 +160,14 @@ const SupportModal = ({ setOpenModal }: SupportModalProps) => {
         transition={{ duration: 0.25 }}
       >
         <motion.div
-          className="flex flex-col items-center justify-center gap-10 px-8 py-8 bg-white rounded-[30px] shadow-[0_4px_4px_0_rgba(0,0,0,0.02)] overflow-hidden"
+          className="flex flex-col items-stretch gap-8 px-8 py-8 bg-white rounded-[30px] shadow-[0_4px_4px_0_rgba(0,0,0,0.02)] w-full max-w-[420px] max-h-[90vh] overflow-y-auto m-4"
           initial={{ scale: 0.95, opacity: 0 }}
           animate={{ scale: 1, opacity: 1 }}
           exit={{ scale: 0.95, opacity: 0 }}
           transition={{ duration: 0.25, ease: 'easeOut' }}
         >
           <p className="w-full flex items-start text-xl font-bold">1:1 문의하기</p>
-          <div className="flex flex-col items-start gap-7 w-[400px] text-babgray-700">
+          <div className="flex flex-col items-start gap-7 w-full min-w-0 text-babgray-700">
             <div className="w-full">
               <p className="text-sm">이름</p>
 
@@ -220,7 +222,7 @@ const SupportModal = ({ setOpenModal }: SupportModalProps) => {
                 onChange={e => setContent(e.target.value)}
                 placeholder="문의내용을 자세히 입력해주세요"
                 maxLength={500}
-                required 
+                required
               />
               <p className="text-xs text-babgray-500 text-right">{content.length}/500</p>
             </div>

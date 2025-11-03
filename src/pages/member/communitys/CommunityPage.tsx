@@ -18,6 +18,7 @@ import CommunityCardSkeleton from '../../../ui/sdj/CommunityCardSkeleton';
 import Modal from '../../../ui/sdj/Modal';
 import { BlueTag, GreenTag, PurpleTag } from '../../../ui/tag';
 import styles from './CommunityPage.module.css';
+import TagBadge from '@/ui/TagBadge';
 
 type CategoriesType = Database['public']['Tables']['posts']['Row']['post_category'];
 type CategoryTagType = Database['public']['Tables']['posts']['Row']['tag'];
@@ -70,9 +71,21 @@ function CommunityPage() {
   };
 
   const tagComponents: Record<FilteredTag, JSX.Element> = {
-    자유: <BlueTag>자유</BlueTag>,
-    'Q&A': <GreenTag>Q&A</GreenTag>,
-    TIP: <PurpleTag>TIP</PurpleTag>,
+    자유: (
+      <TagBadge bgColor="bg-babbutton-blue_back" textColor="text-babbutton-blue">
+        자유
+      </TagBadge>
+    ),
+    'Q&A': (
+      <TagBadge bgColor="bg-babbutton-green_back" textColor="text-babbutton-green">
+        Q&A
+      </TagBadge>
+    ),
+    TIP: (
+      <TagBadge bgColor="bg-babbutton-purple_back" textColor="text-babbutton-purple">
+        TIP
+      </TagBadge>
+    ),
   };
 
   const filteredPosts = posts
@@ -230,13 +243,17 @@ function CommunityPage() {
                   >
                     <div className="flex justify-between">
                       <div>{tagComponents[item.tag as FilteredTag] ?? item.tag}</div>
-                      <span className="text-babgray-500 text-[14px]">
+                      <span className="text-[12px] text-gray-500">
                         {dayjs(item.created_at).fromNow()}
                       </span>
                     </div>
                     <div className="flex flex-col gap-2">
-                      <p className="font-bold text-xl truncate">{item.title}</p>
-                      <p className="text-babgray-600 truncate">{item.content}</p>
+                      <p className="text-[18px] leading-6 font-bold text-gray-900 truncate">
+                        {item.title}
+                      </p>
+                      <p className="text-[15px] leading-6 font-medium text-gray-500 truncate">
+                        {item.content}
+                      </p>
                     </div>
                     <div className="flex justify-between text-babgray-600">
                       <p className="font-semibold truncate">

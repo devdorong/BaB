@@ -36,6 +36,9 @@ const MemberFooter = () => {
         <div className="flex justify-center font-bold">
           <p>© 2025 BaB.All rights reserved.</p>
         </div>
+        <div className="flex justify-center text-sm mt-1 text-babgray-500">
+          <p>dev.dorong@gmail.com | dev.gsheep@gmail.com | dev.seastj@gmail.com</p>
+        </div>
       </div>
     </footer>
   );
