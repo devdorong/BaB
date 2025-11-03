@@ -54,7 +54,7 @@ function ChatPage() {
   };
 
   return (
-    <div className="max-w-[1280px] text-center m-auto min-h-screen px-4 sm:px-6 lg:px-8 xl:px-0">
+    <div className="max-w-[1280px] text-center m-auto py-1 px-4 sm:px-6 lg:px-8 xl:px-0">
       {/* 페이지 경로 표시 (lg 이상에서만 표시) */}
       <div className="hidden lg:flex py-[15px]">
         <div
@@ -69,7 +69,7 @@ function ChatPage() {
         <div className="text-bab-500 text-[17px]">1:1채팅</div>
       </div>
       {/* 메인 채팅 컨테이너 - 사이드바와 메인 영역으로 구성 */}
-      <div className="mt-[20px] mb-[60px] flex flex-col lg:flex-row bg-white rounded-[16px] shadow-[0_4px_4px_rgba(0,0,0,0.02)] overflow-hidden">
+      <div className="mt-[20px] mb-[20px] lg:mb-[60px] flex flex-col lg:flex-row bg-white rounded-[16px] shadow-[0_4px_4px_rgba(0,0,0,0.02)] overflow-hidden">
         {/* 📱 모바일: 목록 or 채팅방 한쪽만 표시 */}
         {/* 💻 데스크탑: flex-row 로 양쪽 표시 */}
         {/* 왼쪽 사이드바 */}

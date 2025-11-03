@@ -20,7 +20,7 @@ function RecentMatchingPage() {
   const queryParams = new URLSearchParams(location.search);
   const defaultTab = queryParams.get('tab') === 'recent' ? 'recent' : 'yet';
   const [tab, setTab] = useState<TabKey>(defaultTab as TabKey);
-  
+
   const navigate = useNavigate();
   const { user } = useAuth();
   const [matchings, setMatchings] = useState<Matchings[]>([]);
@@ -97,21 +97,25 @@ function RecentMatchingPage() {
                   <div className="flex flex-col w-full">
                     <p className="text-[16px] font-bold pb-[15px]">매칭 통계</p>
                     <div className="flex lg:flex-col gap-[15px]">
-                      <div className="flex flex-col rounded-[12px] flex-1 lg:w-[200px] py-[16px] justify-center items-center bg-[#DCFCE7]">
-                        <div className="text-[22px] font-bold text-babbutton-green">
+                      <div className="gap-0.5 flex flex-col rounded-[12px] flex-1 lg:w-full py-[16px] justify-center items-center bg-[#DCFCE7]">
+                        <div className="text-[18px] lg:text-[22px] font-bold text-babbutton-green">
                           {matchings.length}
                         </div>
-                        <div className="text-[13px] text-babgray-500">총 매칭</div>
+                        <div className="text-[11px] lg:text-[13px] text-babgray-500">총 매칭</div>
                       </div>
-                      <div className="flex flex-col rounded-[12px] flex-1 lg:w-[200px] py-[16px] justify-center items-center bg-[#DBEAFE]">
-                        <div className="text-[22px] font-bold text-babbutton-blue">
+                      <div className="gap-0.5 flex flex-col rounded-[12px] flex-1 lg:w-full py-[16px] justify-center items-center bg-[#DBEAFE]">
+                        <div className="text-[18px] lg:text-[22px] font-bold text-babbutton-blue">
                           {endMatchings.filter(item => item.status === 'completed').length}
                         </div>
-                        <div className="text-[13px] text-babgray-500">성공한 매칭</div>
+                        <div className="text-[11px] lg:text-[13px] text-babgray-500">
+                          성공한 매칭
+                        </div>
                       </div>
-                      <div className="flex flex-col rounded-[12px] flex-1 lg:w-[200px] py-[16px] justify-center items-center bg-[#FFF2EE]">
-                        <div className="text-[22px] font-bold text-bab-500">{percent}%</div>
-                        <div className="text-[13px] text-babgray-500">성공률</div>
+                      <div className="gap-0.5 flex flex-col rounded-[12px] flex-1 lg:w-full py-[16px] justify-center items-center bg-[#FFF2EE]">
+                        <div className="text-[18px] lg:text-[22px] font-bold text-bab-500">
+                          {percent}%
+                        </div>
+                        <div className="text-[11px] lg:text-[13px] text-babgray-500">성공률</div>
                       </div>
                     </div>
                   </div>
@@ -161,15 +165,35 @@ function RecentMatchingPage() {
                 {/* 탭 콘텐츠 */}
                 {tab === 'recent' ? (
                   <section className="space-y-4">
-                    {endMatchings.map(i => (
-                      <RecentMatchingRecordItem key={i.id} endMatching={i} />
-                    ))}
+                    {endMatchings.length > 0 ? (
+                      <>
+                        {endMatchings.map(i => (
+                          <RecentMatchingRecordItem key={i.id} endMatching={i} />
+                        ))}
+                      </>
+                    ) : (
+                      <section className="w-full p-6 bg-white rounded-2xl shadow-[0_4px_8px_rgba(0,0,0,0.03)] transition-all hover:shadow-[0_6px_12px_rgba(0,0,0,0.05)]">
+                        <div className="h-[200px] flex text-gray-600 justify-center items-center w-full py-5">
+                          최근 매칭 기록이 없습니다.
+                        </div>
+                      </section>
+                    )}
                   </section>
                 ) : (
                   <section className="space-y-4">
-                    {expectedMatchings.map(i => (
-                      <YetMatchingRecordItem key={i.id} matching={i} />
-                    ))}
+                    {expectedMatchings.length > 0 ? (
+                      <>
+                        {expectedMatchings.map(i => (
+                          <YetMatchingRecordItem key={i.id} matching={i} />
+                        ))}
+                      </>
+                    ) : (
+                      <section className="w-full p-6 bg-white rounded-2xl shadow-[0_4px_8px_rgba(0,0,0,0.03)] transition-all hover:shadow-[0_6px_12px_rgba(0,0,0,0.05)]">
+                        <div className="h-[200px] flex text-gray-600 justify-center items-center w-full py-5">
+                          예정된 매칭 기록이 없습니다.
+                        </div>
+                      </section>
+                    )}
                   </section>
                 )}
               </div>

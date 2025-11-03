@@ -87,7 +87,7 @@ export const PaymentInputModal: React.FC<PaymentInputModalProps> = ({
       brand: brand,
       description: description,
     };
-    
+
     onSubmit(paymentData);
 
     // 폼 초기화
@@ -117,7 +117,7 @@ export const PaymentInputModal: React.FC<PaymentInputModalProps> = ({
           transition={{ duration: 0.25 }}
         >
           <motion.div
-            className="bg-white rounded-2xl w-full max-w-md shadow-xl"
+            className="bg-white rounded-2xl m-5 w-full max-w-md shadow-xl"
             initial={{ scale: 0.95, opacity: 0 }}
             animate={{ scale: 1, opacity: 1 }}
             exit={{ scale: 0.95, opacity: 0 }}

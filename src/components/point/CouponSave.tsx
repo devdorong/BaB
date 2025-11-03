@@ -5,6 +5,7 @@ import { supabase } from '../../lib/supabase';
 import type { Coupon, Database } from '../../types/bobType';
 import { getProfile } from '../../lib/propile';
 import { ButtonLineMd } from '@/ui/button';
+import { Divide } from 'lucide-react';
 
 interface ProfileCoupon {
   id: number;
@@ -67,9 +68,9 @@ const CouponPage = () => {
         <div>쿠폰함</div>
       </div>
       <div className="flex">
-        <div className="grid sm:grid-cols-2 lg:grid-cols-3 gap-[20px] w-full">
-          {coupons.length > 0 &&
-            (window.innerWidth < 640 ? mobileCouponList : coupons).map(item =>
+        {coupons.length > 0 ? (
+          <div className="grid sm:grid-cols-2 lg:grid-cols-3 gap-[20px] w-full">
+            {(window.innerWidth < 640 ? mobileCouponList : coupons).map(item =>
               item.coupons.map(coupon => (
                 <div
                   key={`${item.id}-${coupon.id}`}
@@ -90,7 +91,12 @@ const CouponPage = () => {
                 </div>
               )),
             )}
-        </div>
+          </div>
+        ) : (
+          <div className="h-[200px] flex text-gray-600 justify-center items-center w-full py-5">
+            보유중인 쿠폰이 없습니다.
+          </div>
+        )}
       </div>
       {/* 더보기 버튼 — 모바일에서만 보이게 */}
       {coupons.length > 3 && (

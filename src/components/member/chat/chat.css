@@ -3,6 +3,7 @@
   height: 100vh;
   display: flex;
   flex-direction: column;
+  background-color: #f9fafb;
 }
 /* 메인 채팅 컨테이너 - 사이드바와 채팅방을 나누는 레이아웃 */
 .chat-container {
@@ -34,7 +35,6 @@
 .chat-list {
   display: flex;
   flex-direction: column;
-  height: 100%;
   /* background-color: #f8f9fa; */
   /* border-right: 1px solid #e0e0e0; */
 }
@@ -42,7 +42,7 @@
 /* 채팅 목록 헤더 - 제목과 새 채팅 버튼 */
 .chat-list-header {
   padding: 20px;
-  border-bottom: 1px solid #e0e0e0;
+  border-bottom: 1px solid #e5e7eb;
   display: flex;
   justify-content: space-between;
   align-items: center;
@@ -78,7 +78,7 @@
 /* 사용자 검색 컨테이너 - 검색 입력과 결과 표시 */
 .user-search {
   padding: 16px;
-  border-bottom: 1px solid #e0e0e0;
+  border-bottom: 1px solid #e5e7eb;
   background-color: #fff;
   display: flex;
   /* align-items: center; */
@@ -340,7 +340,6 @@
 .chat-room {
   display: flex;
   flex-direction: column;
-  height: 100vh;
   /* background-color: beige; */
 }
 
@@ -350,7 +349,7 @@
   justify-content: space-between;
   align-items: center;
   padding: 22px 20px;
-  border-bottom: 1px solid #f0f0f0;
+  border-bottom: 1px solid #e5e7eb;
 }
 
 /* 1024px 이상일 때 숨김 */

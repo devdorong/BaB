@@ -13,40 +13,71 @@ type TabType = 'reward' | 'coupon' | 'rule';
 
 function PointSkeleton() {
   return (
-    <div id="root" className="flex flex-col min-h-screen">
-      <div className="flex-1 bg-bg-bg ">
-        <div className="flex flex-col max-w-[1280px] mx-auto animate-pulse px-4 sm:px-6 lg:px-8 xl:px-0">
-          <div className="flex py-[15px]">
-            <div className="h-5 w-16 bg-gray-200 rounded"></div>
+    <div id="root" className="flex flex-col min-h-screen bg-bg-bg animate-pulse">
+      {/* 전체 중앙정렬 */}
+      <div className="w-full flex justify-center">
+        {/* 컨텐츠 폭 제한 */}
+        <div className="w-full max-w-[1280px] px-4 sm:px-6 lg:px-8 xl:px-0">
+          {/* ======== 상단 프로필 헤더 ======== */}
+          <div className="hidden lg:flex items-center py-[15px] text-sm sm:text-base">
+            <div className="h-5 w-[60px] bg-gray-200 rounded"></div>
             <div className="flex pt-[3px] items-center px-[5px]">
               <RiArrowRightSLine className="text-gray-300" />
             </div>
-            <div className="h-5 w-10 bg-gray-200 rounded"></div>
+            <div className="h-5 w-[40px] bg-gray-200 rounded"></div>
           </div>
 
-          <div className="mt-[25px] mb-[60px] flex gap-[40px]">
-            {/* 왼쪽 카드 */}
-            <div className="w-[260px] h-[323px] bg-white rounded-[16px] shadow-[0px_4px_4px_rgba(0,0,0,0.02)] flex flex-col items-center justify-center">
-              <div className="w-[80px] h-[80px] bg-gray-200 rounded-full mb-8"></div>
-              <div className="h-9 w-[100px] bg-gray-200 rounded mb-2"></div>
-              <div className="h-5 w-[60px] bg-gray-100 rounded"></div>
-              <div className="w-full border-t border-gray-100 mt-4 mb-4"></div>
-              <div className="flex w-[172px] justify-between">
-                <div className="flex flex-col gap-3">
-                  <div className="h-8 w-[60px] bg-gray-200 rounded"></div>
-                  <div className="h-3 w-[60px] bg-gray-200 rounded"></div>
-                </div>
-                <div className="flex flex-col gap-3">
-                  <div className="h-8 w-[60px] bg-gray-200 rounded"></div>
-                  <div className="h-3 w-[60px] bg-gray-200 rounded"></div>
+          {/* ======== 본문 영역 ======== */}
+          <div className="mt-6 mb-14">
+            <div className="flex flex-col lg:flex-row lg:gap-8 gap-4 items-start">
+              {/* 왼쪽 프로필 카드 (모바일에서는 상단에 표시) */}
+              <div className="flex flex-col gap-5 items-center justify-center w-full lg:w-[300px]">
+                <div className="inline-flex w-full bg-white rounded-2xl shadow-[0_4px_4px_rgba(0,0,0,0.02)] p-6 flex-col items-center lg:w-[260px]">
+                  {/* 프로필 원형 */}
+                  <div className="w-[80px] h-[80px] bg-gray-200 rounded-full mb-8"></div>
+
+                  {/* 포인트 수치 */}
+                  <div className="text-center py-[23px]">
+                    <div className="h-8 w-[100px] bg-gray-200 rounded mx-auto mb-2"></div>
+                    <div className="h-4 w-[60px] bg-gray-100 rounded mx-auto"></div>
+                  </div>
+
+                  {/* 구분선 */}
+                  <div className="w-full border-babgray-100 border-[1px] my-3"></div>
+
+                  {/* 총 적립 / 사용 */}
+                  <div className="flex w-[172px] justify-between items-center">
+                    <div className="flex flex-col gap-2 items-center">
+                      <div className="h-6 w-[50px] bg-gray-200 rounded"></div>
+                      <div className="h-3 w-[40px] bg-gray-100 rounded"></div>
+                    </div>
+                    <div className="flex flex-col gap-2 items-center">
+                      <div className="h-6 w-[50px] bg-gray-200 rounded"></div>
+                      <div className="h-3 w-[40px] bg-gray-100 rounded"></div>
+                    </div>
+                  </div>
                 </div>
               </div>
-            </div>
 
-            {/* 오른쪽 카드 */}
-            <div className="flex flex-col gap-[25px] flex-1">
-              <div className="h-[50px] w-[400px] bg-white rounded-[10px] shadow-[0px_4px_4px_rgba(0,0,0,0.02)]"></div>
-              <div className="h-[400px] w-full bg-white rounded-[16px] shadow-[0px_4px_4px_rgba(0,0,0,0.02)]"></div>
+              {/* 오른쪽 컨텐츠 */}
+              <div className="w-full flex flex-col lg:gap-6 gap-4">
+                {/* 리워드/쿠폰/적립 탭 버튼 */}
+                <div className="flex flex-wrap justify-between items-center gap-[10px] bg-white rounded-xl shadow-[0_4px_4px_rgba(0,0,0,0.02)] p-3">
+                  <div className="h-[40px] flex-1 bg-gray-200 rounded-lg"></div>
+                  <div className="h-[40px] flex-1 bg-gray-200 rounded-lg"></div>
+                  <div className="h-[40px] flex-1 bg-gray-200 rounded-lg"></div>
+                </div>
+
+                {/* 하단 카드 (탭 컨텐츠 영역) */}
+                <div className="inline-flex w-full px-[20px] lg:px-[35px] py-[25px] flex-col justify-center bg-white rounded-[16px] shadow-[0px_4px_4px_0px_rgba(0,0,0,0.02)]">
+                  <div className="flex flex-col gap-4">
+                    <div className="h-[20px] w-[200px] bg-gray-200 rounded"></div>
+                    <div className="h-[20px] w-[150px] bg-gray-200 rounded"></div>
+                    <div className="h-[20px] w-[250px] bg-gray-200 rounded"></div>
+                    <div className="h-[20px] w-[180px] bg-gray-200 rounded"></div>
+                  </div>
+                </div>
+              </div>
             </div>
           </div>
         </div>
