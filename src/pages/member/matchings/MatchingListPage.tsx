@@ -21,6 +21,29 @@ dayjs.locale('ko');
 const FOOD_CATEGORY = '음식 종류';
 const ITEMS_PER_PAGE = 6;
 
+type RestaurantWithInterest = {
+  id: string;
+  name: string;
+  thumbnail_url: string;
+  address: string;
+  storeintro: string;
+  latitude: number;
+  longitude: number;
+  interests: {
+    name: string;
+  } | null;
+} | null;
+
+type ProfileData = {
+  id: string;
+  nickname: string;
+} | null;
+
+type MatchingWithJoin = Matchings & {
+  restaurants: RestaurantWithInterest;
+  profiles: ProfileData;
+};
+
 type ProcessedMatching = Matchings & {
   tags: Badge[];
   title: string;
@@ -96,29 +119,28 @@ const MatchingListPage = () => {
         .from('matchings')
         .select(
           `
-          *,
-          restaurants (
-            id,
-            name,
-            thumbnail_url,
-            address,
-            storeintro,
-            latitude,
-            longitude,
-            interests (
-              name
-            )
-          ),
-          profiles (
-            id,
-            nickname
+        *,
+        restaurants!inner (
+          id,
+          name,
+          thumbnail_url,
+          address,
+          storeintro,
+          latitude,
+          longitude,
+          interests (
+            name
           )
-        `,
+        ),
+        profiles (
+          id,
+          nickname
+        )
+      `,
         )
         .eq('status', 'waiting')
         .order('created_at', { ascending: false });
 
-      // 검색 기능
       if (searchQuery.trim() !== '') {
         matchingQuery = matchingQuery.or(
           `title.ilike.%${searchQuery.trim()}%,description.ilike.%${searchQuery.trim()}%`,
@@ -129,10 +151,12 @@ const MatchingListPage = () => {
 
       if (error) throw error;
 
-      // 데이터 처리
-      const processed: ProcessedMatching[] = (data || []).map(matching => {
+      // 3. 안전한 데이터 처리
+      const processed: ProcessedMatching[] = (data || []).map((matching: MatchingWithJoin) => {
         const restaurant = matching.restaurants;
-        const categoryName = restaurant?.interests?.name || '기타';
+
+        // null 체크 강화
+        const categoryName = restaurant?.interests?.name ?? '기타';
         const categoryColor = getColorByCategory(categoryName);
 
         const tags: Badge[] = [
@@ -152,13 +176,13 @@ const MatchingListPage = () => {
           ...matching,
           tags,
           category: categoryName,
-          title: matching.title || restaurant?.name || '',
-          description: matching.description || restaurant?.storeintro || '',
+          title: matching.title || restaurant?.name || '제목 없음',
+          description: matching.description || restaurant?.storeintro || '설명 없음',
           distanceKm: 0,
           area: restaurant?.address || '위치 정보 없음',
           timeAgo: matching.created_at ? formatTimeAgo(matching.created_at) : '',
-          latitude: restaurant?.latitude || 0,
-          longitude: restaurant?.longitude || 0,
+          latitude: restaurant?.latitude ?? 0,
+          longitude: restaurant?.longitude ?? 0,
           distanceNum,
         };
       });
@@ -171,7 +195,6 @@ const MatchingListPage = () => {
       setLoading(false);
     }
   };
-
   // 사용자 위치 가져오기
   useEffect(() => {
     if (!navigator.geolocation) {
@@ -187,7 +210,7 @@ const MatchingListPage = () => {
         });
       },
       err => {
-        console.error('위치 정보를 가져올 수 없습니다:', err);
+        // console.error('위치 정보를 가져올 수 없습니다:', err);
         setUserPos({ lng: 128.59396682562848, lat: 35.86823232723134 });
       },
       { enableHighAccuracy: true },
@@ -209,10 +232,16 @@ const MatchingListPage = () => {
 
   // 초기 매칭 데이터 로드 (userPos가 설정된 후)
   useEffect(() => {
-    if (userPos) {
+    let isMounted = true;
+
+    if (userPos && isMounted) {
       fetchMatchings('');
     }
-  }, [userPos]);
+
+    return () => {
+      isMounted = false;
+    };
+  }, [userPos]); // userPos가 변경될 때만 실행
 
   const waitingMatchings = processedMatchings.filter(item => item.status === 'waiting');
 
@@ -346,13 +375,21 @@ const MatchingListPage = () => {
           <ul className="flex flex-col gap-y-6 sm:gap-y-8 list-none p-0 m-0">
             {loading ? (
               [...Array(4)].map((_, i) => <MatchCardSkeleton key={i} />)
-            ) : processedMatchings.length === 0 ? (
-              <li className="min-h-[calc(100vh/2.8)] flex items-center justify-center">
-                <p className="text-center text-babgray-500 py-10">
-                  해당 카테고리의 매칭이 없습니다.
-                </p>
-              </li>
+            ) : paginatedMatchings.length === 0 ? (
+              <div className="w-full  p-6 bg-white rounded-2xl shadow-[0_4px_4px_rgba(0,0,0,0.02)]">
+                <div className="flex flex-col gap-5">
+                  <p className="text-gray-600 text-center py-12">
+                    해당 카테고리의 매칭이 없습니다.
+                  </p>
+                </div>
+              </div>
             ) : (
+              // <li className="min-h-[calc(100vh/2.8)] flex items-center justify-center">
+              //   <p className="text-center text-babgray-500 py-10">
+              //     해당 카테고리의 매칭이 없습니다.
+              //   </p>
+              // </li>
+
               paginatedMatchings.map((item, index) => {
                 const distance =
                   userPos && item.latitude && item.longitude

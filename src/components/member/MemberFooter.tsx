@@ -22,7 +22,7 @@ const MemberFooter = () => {
             </Link>
           </div>
           <div className="flex gap-4">
-            <Link to={`/instar`}>
+            <Link to={`https://www.instagram.com/`}>
               <Instagram color="black" bgColor="#E5E7EB" size={25} padding={8} />
             </Link>
             <Link to={`https://open.kakao.com/o/g833oUTh`}>
