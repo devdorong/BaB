@@ -139,10 +139,9 @@ function SettingsPage() {
         </div>
 
         <div className="flex flex-col gap-8">
-          <div className="p-5 flex-1 bg-white rounded-lg shadow-[0px_4px_4px_0px_rgba(0,0,0,0.02)] border flex flex-col justify-center gap-5">
+          {/* <div className="p-5 flex-1 bg-white rounded-lg shadow-[0px_4px_4px_0px_rgba(0,0,0,0.02)] border flex flex-col justify-center gap-5">
             <div className="flex gap-5 justify-between items-start">
               <div className="text-black text-lg font-bold">비밀번호</div>
-              {/* 클릭시 비밀번호 변경 모달 */}
               <ButtonFillMd>
                 <RiLock2Line size={20} />
                 <div>비밀번호 변경</div>
@@ -151,12 +150,9 @@ function SettingsPage() {
 
             <div className="flex flex-col gap-1">
               <div>비밀번호 변경</div>
-              <div className="text-xs font-medium">
-                {/* 비밀번호 마지막 변경일자 */}
-                마지막 변경: 2025년 8월 29일
-              </div>
+              <div className="text-xs font-medium">마지막 변경: 2025년 8월 29일</div>
             </div>
-          </div>
+          </div> */}
 
           <div className="p-5 flex-1 bg-white rounded-lg shadow-[0px_4px_4px_0px_rgba(0,0,0,0.02)] border flex flex-col justify-center gap-5">
             <div className="text-black text-lg font-bold">사업자 정보</div>

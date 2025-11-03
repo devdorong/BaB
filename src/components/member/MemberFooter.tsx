@@ -7,7 +7,7 @@ const MemberFooter = () => {
 
   return (
     <footer className="hidden lg:flex w-full bg-white border-t-2 text-gray-600">
-      <div className="flex flex-col w-full max-w-[1280px] mx-auto px-4 sm:px-6 lg:px-8 py-8 gap-6">
+      <div className="flex flex-col w-full max-w-[1280px] mx-auto px-4 sm:px-6 lg:px-8 py-8">
         {/* 상단 영역 */}
         <div className="flex justify-between">
           {/* 로고 */}
@@ -35,6 +35,9 @@ const MemberFooter = () => {
         </div>
         <div className="flex justify-center font-bold">
           <p>© 2025 BaB.All rights reserved.</p>
+        </div>
+        <div className="flex justify-center text-sm mt-1 text-babgray-500">
+          <p>dev.dorong@gmail.com | dev.gsheep@gmail.com | dev.seastj@gmail.com</p>
         </div>
       </div>
     </footer>

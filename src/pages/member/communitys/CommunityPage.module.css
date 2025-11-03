@@ -113,13 +113,13 @@
   .writeFormWhitBt {
     flex-direction: column;
     align-items: stretch;
-    gap: 0.75rem;
+    gap: 1rem;
   }
 
   .writeFormWhitBt input {
     width: 100%;
     font-size: 14px;
-    padding: 0.5rem 0.75rem;
+    padding: 0.5rem 1rem;
   }
 
   .writeFormWhitBt button {
@@ -133,7 +133,7 @@
 @media (max-width: 400px) {
   .pageContainer {
     width: 100%;
-    padding: 0.75rem;
+    padding: 1rem;
   }
 
   .writeFormWhitBt {
