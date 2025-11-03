@@ -150,7 +150,7 @@ const DirectChatList = ({ onChatSelect, onCreateChat, selectedChatId }: DirectCh
   };
 
   return (
-    <div className="chat-list min-h-screen flex bg-white">
+    <div className="chat-list h-[calc(100dvh-26px)] flex bg-white">
       {/* 채팅 목록 헤더 - 제목과 새 채팅 버튼 */}
       <div className="chat-list-header">
         <h2>1 : 1 채팅</h2>

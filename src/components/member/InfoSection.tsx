@@ -68,7 +68,7 @@ function InfoSection({
           <div>
             <h3 className="pt-5 lg:pt-0 text-[18px] font-semibold text-babgray-900 mb-3">지도</h3>
             {isMapLoaded ? (
-              <KkoMapDetail lat={lat} lng={lng} />
+              <KkoMapDetail  lat={lat} lng={lng} />
             ) : (
               <div className="py-10 text-center text-babgray-600 max-w-[1280px] mx-auto">
                 지도를 불러오는 중입니다...
