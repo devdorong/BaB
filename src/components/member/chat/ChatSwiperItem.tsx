@@ -2,6 +2,9 @@ import { useEffect, useRef, useState } from 'react';
 import { useDirectChat } from '../../../contexts/DirectChatContext';
 import type { ChatListItem, DirectChat } from '../../../types/chatType';
 import { exitDirectChat } from '@/services/directChatService';
+import { toast } from 'sonner';
+import { useModal } from '@/ui/sdj/ModalState';
+import Modal from '@/ui/sdj/Modal';
 
 interface ChatSwiperItemProps {
   chat: ChatListItem;
@@ -30,6 +33,7 @@ export const ChatSwiperItem = ({
     exitDirectChat: exitDirectChatFromContext,
   } = useDirectChat();
 
+  const { modal, openModal, closeModal } = useModal();
   const [offsetX, setOffsetX] = useState(0);
   const [isSwiped, setIsSwiped] = useState(false);
   const [isDragging, setIsDragging] = useState(false);
@@ -87,26 +91,32 @@ export const ChatSwiperItem = ({
 
   // 나가기 처리
   const handleExitChat = async () => {
-    const confirmExit = window.confirm('채팅방을 나가시겠습니까?');
-    if (!confirmExit) return;
-    try {
-      const success = await exitDirectChatFromContext(chat.id);
-      if (success) {
-        alert('채팅방을 나갔습니다.');
-        setIsSwiped(false);
-        setOffsetX(0);
-        setOpenChatId(null);
+    // const confirmExit = window.confirm('채팅방을 나가시겠습니까?');
+    // if (!confirmExit) return;
 
-        if (isSelected) {
-          onSelect();
+    openModal('채팅방 나가기', '채팅방을 나가시겠습니까?', '취소', '확인', async () => {
+      try {
+        const success = await exitDirectChatFromContext(chat.id);
+        if (success) {
+          // alert('채팅방을 나갔습니다.');
+          toast.info('채팅방을 나갔습니다.', { position: 'top-center' });
+          setIsSwiped(false);
+          setOffsetX(0);
+          setOpenChatId(null);
+
+          if (isSelected) {
+            onSelect();
+          }
+        } else {
+          // alert('채팅방 나가기에 실패했습니다.');
+          toast.error('채팅방 나가기에 실패했습니다.', { position: 'top-center' });
         }
-      } else {
-        alert('채팅방 나가기에 실패했습니다.');
+      } catch (error) {
+        console.error('채팅방 나가기 오류:', error);
+        // alert('채팅방 나가기 중 오류가 발생했습니다.');
+        toast.error('채팅방 나가기에 실패했습니다.', { position: 'top-center' });
       }
-    } catch (error) {
-      console.error('채팅방 나가기 오류:', error);
-      alert('채팅방 나가기 중 오류가 발생했습니다.');
-    }
+    });
   };
 
   return (
@@ -173,6 +183,17 @@ export const ChatSwiperItem = ({
           </div>
         </div>
       </div>
+      {modal.isOpen && (
+        <Modal
+          isOpen={modal.isOpen}
+          onClose={closeModal}
+          titleText={modal.title}
+          contentText={modal.content}
+          closeButtonText={modal.closeText}
+          submitButtonText={modal.submitText}
+          onSubmit={modal.onSubmit}
+        />
+      )}
     </div>
   );
 };

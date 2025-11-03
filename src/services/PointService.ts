@@ -62,7 +62,7 @@ export const GetOrCreatePoint = async (): Promise<Profile_Points | null> => {
 
     if (!user) throw new Error('로그인 필요');
 
-    // 1️⃣ 프로필 존재 확인 (FK 안전성 보장)
+    // 프로필 존재 확인 (FK 안전성 보장)
     const { data: profile, error: profileError } = await supabase
       .from('profiles')
       .select('id')
@@ -70,10 +70,10 @@ export const GetOrCreatePoint = async (): Promise<Profile_Points | null> => {
       .single();
 
     if (profileError || !profile) {
-      throw new Error('⚠️ 프로필이 존재하지 않아 포인트를 생성할 수 없습니다.');
+      throw new Error('프로필이 존재하지 않아 포인트를 생성할 수 없습니다.');
     }
 
-    // 2️⃣ 기존 포인트 조회
+    // 기존 포인트 조회
     const { data: existingPoint, error: selectError } = await supabase
       .from('profile_points')
       .select('*')
@@ -86,7 +86,7 @@ export const GetOrCreatePoint = async (): Promise<Profile_Points | null> => {
       return existingPoint;
     }
 
-    // 3️⃣ 포인트 신규 생성
+    // 포인트 신규 생성
     console.log('포인트가 없어서 새로 생성합니다.');
     const { data: newPoint, error: insertError } = await supabase
       .from('profile_points')
@@ -100,7 +100,7 @@ export const GetOrCreatePoint = async (): Promise<Profile_Points | null> => {
     if (insertError) {
       // 동시성 예외 (중복 insert)
       if (insertError.code === '23505') {
-        console.log('⚠️ 동시 생성 감지, 기존 데이터 재조회');
+        console.log('동시 생성 감지, 기존 데이터 재조회');
         const { data: retryData } = await supabase
           .from('profile_points')
           .select('*')
@@ -111,7 +111,7 @@ export const GetOrCreatePoint = async (): Promise<Profile_Points | null> => {
       throw insertError;
     }
 
-    console.log('✅ 새 포인트 생성 완료:', newPoint.point);
+    console.log('새 포인트 생성 완료:', newPoint.point);
     return newPoint;
   } catch (error) {
     console.error('❌ GetOrCreatePoint 에러:', error);
@@ -424,7 +424,8 @@ export const giveReviewPoint = async (): Promise<boolean> => {
       console.log('포인트 업데이트 실패 :', updateError);
       throw updateError;
     }
-    console.log('리뷰작성포인트 완료, 50포인트 적립');
+    // console.log('리뷰작성포인트 완료, 50포인트 적립');
+
     return true;
   } catch (err) {
     return false;

@@ -135,6 +135,16 @@ html {
   font-weight: 500 !important;
 }
 
+/* 덜 둥글게 쓰고 싶은 곳에 사용할 모디파이어 */
+.bab-select-md .ant-select-selector {
+  border-radius: 8px !important; /* rounded-lg */
+  border-color: #ff5722 !important; /* bab-500 */
+}
+
+.bab-select-sm .ant-select-selector {
+  border-radius: 6px !important; /* rounded-md */
+}
+
 /* dropdown 패널 */
 .bab-select-dropdown .ant-select-item {
   font-family: 'Noto Sans KR', sans-serif !important;

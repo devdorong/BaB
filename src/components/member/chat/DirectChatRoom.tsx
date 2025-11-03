@@ -4,6 +4,7 @@ import { supabase } from '../../../lib/supabase';
 import type { DirectMessage } from '../../../types/chatType';
 import MessageInput from './MessageInput';
 import { RiArrowLeftLine, RiArrowLeftSLine } from 'react-icons/ri';
+import { toast } from 'sonner';
 
 // 날짜별 메시지 그룹 타입 정의 - 같은 날짜의 메세지들을 그룹핑
 // 원본데이터를 가공하고 마무리 별도의 파일에 type으로 정의안함.
@@ -187,23 +188,24 @@ function DirectChatRoom({ chatId, onExit }: DirectChatRoomProps) {
   }, []);
 
   // 채팅방 나가기 처리 함수
-  const handleExitChat = async () => {
-    if (window.confirm('채팅방을 나가시겠습니까?')) {
-      try {
-        const success = await exitDirectChat(chatId);
-        if (success) {
-          alert('채팅방을 나갔습니다.');
-          // 페이지 새로고침 또는 채팅방 목록으로 이동
-          window.location.reload();
-        } else {
-          alert('채팅방 나가기에 실패했습니다.');
-        }
-      } catch (error) {
-        console.error('채팅방 나가기 오류:', error);
-        alert('채팅방 나가기 중 오류가 발생했습니다.');
-      }
-    }
-  };
+  // const handleExitChat = async () => {
+  //   if (window.confirm('채팅방을 나가시겠습니까?')) {
+  //     try {
+  //       const success = await exitDirectChat(chatId);
+  //       if (success) {
+  //         // alert('채팅방을 나갔습니다.');
+  //         toast.info('채팅방을 나갔습니다.', { position: 'top-center' });
+  //         // 페이지 새로고침 또는 채팅방 목록으로 이동
+  //         window.location.reload();
+  //       } else {
+  //         alert('채팅방 나가기에 실패했습니다.');
+  //       }
+  //     } catch (error) {
+  //       console.error('채팅방 나가기 오류:', error);
+  //       alert('채팅방 나가기 중 오류가 발생했습니다.');
+  //     }
+  //   }
+  // };
 
   // 에러 상태일 때
   if (error) {
