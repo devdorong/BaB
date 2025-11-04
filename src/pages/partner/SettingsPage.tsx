@@ -1,12 +1,13 @@
 import { RiEditLine, RiImageLine, RiLock2Line } from 'react-icons/ri';
 import { ButtonFillMd, GrayButtonFillSm } from '../../ui/button';
 import { UserFill } from '../../ui/Icon';
-import { useEffect, useState } from 'react';
+import { useEffect, useRef, useState } from 'react';
 import PartnerBoardHeader from '../../components/PartnerBoardHeader';
 import { useAuth } from '../../contexts/AuthContext';
-import type { Profile } from '../../types/bobType';
-import { getProfile } from '../../lib/propile';
+import type { Profile, Restaurants, RestaurantsUpdate } from '../../types/bobType';
+import { getProfile, removeAvatar } from '../../lib/propile';
 import { useRestaurant } from '../../contexts/PartnerRestaurantContext';
+import { removeRestaurant, updateRestaurant, uploadRestaurant } from '@/lib/restaurants';
 
 function SettingsPage() {
   const { restaurant } = useRestaurant();
@@ -38,6 +39,20 @@ function SettingsPage() {
   const [error, setError] = useState<string>('');
   // 사용자 닉네임
   const [nickName, setNickName] = useState<string>('');
+  // 아바타 이미지를 위한 생태관리
+  // 레스토랑
+  const [restaurants, setRestaurants] = useState<Restaurants | null>(null);
+  // 이미지 업로드 상태 표현
+  const [uploading, setUploading] = useState<boolean>(false);
+  // 실제 파일
+  const [selectedFile, setSelectedFile] = useState<File | null>(null);
+  // 사용자가 새로운 이미지 선택시, 즉 편집 중인 경우 원본 URL 보관용
+  const [originalRestUrl, setOriginalRestUrl] = useState<string | null>(null);
+  // 이미지 제거 요청 상태(그러나, 실제 file 제거는 수정확인 버튼 눌렀을 때 처리)
+  const [imageRemovalRequest, setImageRemovalRequest] = useState<boolean>(false);
+  // input type = "file" 태그 참조
+  const fileInputRef = useRef<HTMLInputElement>(null);
+
   const loadProfile = async () => {
     if (!user?.id) {
       setError('사용자정보 없음');
@@ -73,6 +88,66 @@ function SettingsPage() {
     loadProfile();
   }, [user?.id]);
 
+  // 저장하기
+  const handlesaveImg = async (file?: File) => {
+    if (!user?.id) return;
+    try {
+      let imgUrl = originalRestUrl; // 원본 img
+      if (imageRemovalRequest) {
+        // storage에 실제 이미지 제거
+        const imgsuccess = await removeRestaurant(String(restaurant?.id));
+        if (imgsuccess) {
+          imgUrl = null;
+        }
+      }
+
+      if (file) {
+        setUploading(true);
+        const uploadedImageUrl = await uploadRestaurant(file, String(restaurant?.id));
+        setUploading(false);
+        if (uploadedImageUrl) imgUrl = uploadedImageUrl;
+      }
+
+      const payload: RestaurantsUpdate = {
+        thumbnail_url: imgUrl,
+      };
+
+      const success = await updateRestaurant(payload, String(restaurant?.id));
+      if (!success) {
+        return;
+      }
+      setRestaurants(prev => (prev ? { ...prev, thumbnail_url: imgUrl } : prev));
+      setOriginalRestUrl(imgUrl);
+      setSelectedFile(null);
+      setImageRemovalRequest(false);
+    } catch (err) {
+      console.log(err);
+    }
+  };
+
+  // 이미지 선택 처리
+  const handleImageSelect = async (e: React.ChangeEvent<HTMLInputElement>) => {
+    const file = e.target.files?.[0];
+    if (!file) return;
+
+    // 파일 형식 검증
+    const allowedTypes = ['image/jpeg', 'image/png', 'image/gif'];
+    if (!allowedTypes.includes(file.type)) {
+      // alert창 수정할것
+      alert(`지원하지 않는 파일 형식`);
+      return;
+    }
+
+    // 파일 크기 검증 (5MB 제한)
+    const maxSize = 5 * 1024 * 1024;
+    if (file.size > maxSize) {
+      alert(`파일 크기 큼`);
+      return;
+    }
+
+    await handlesaveImg(file);
+  };
+
   // ===========
 
   useEffect(() => {
@@ -88,7 +163,13 @@ function SettingsPage() {
           <div className="p-5 flex-1 gap-5 bg-white rounded-lg shadow-[0px_4px_4px_0px_rgba(0,0,0,0.02)] border flex flex-col justify-between items-center">
             {/* 파트너 프로필 이미지 사진 */}
             <div className="flex flex-col gap-2.5 justify-between items-center">
-              <UserFill size={20} bgColor="#FF5722" padding={30} />
+              <div className="w-[100px] h-[100px] rounded-full">
+                <img
+                  src={String(restaurant?.thumbnail_url)}
+                  alt="아바타"
+                  className="w-full h-full object-cover  rounded-full object-center"
+                />
+              </div>
               <div className="flex flex-col  items-center">
                 {/* 파트너 닉네임 */}
                 <div className="text-black font-bold">{profileData?.nickname}</div>
@@ -97,10 +178,19 @@ function SettingsPage() {
               </div>
             </div>
             {/* 클릭시 사진등록 후 바로 변경 */}
-            <ButtonFillMd className="w-full">
+            <ButtonFillMd onClick={() => fileInputRef.current?.click()} className="w-full">
               <RiImageLine />
               <p>사진 변경</p>
             </ButtonFillMd>
+
+            {/* 파일 입력 */}
+            <input
+              type="file"
+              ref={fileInputRef}
+              accept="image/*"
+              style={{ display: 'none' }}
+              onChange={handleImageSelect}
+            />
           </div>
 
           <div className="p-5 flex-1 bg-white rounded-lg shadow-[0px_4px_4px_0px_rgba(0,0,0,0.02)] border flex flex-col justify-center gap-5">

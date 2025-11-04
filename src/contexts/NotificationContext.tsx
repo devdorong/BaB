@@ -119,7 +119,7 @@ export const NotificationRealTimeProvider = ({ children }: { children: React.Rea
 
     // Auth 상태 변경 감지
     authSubscriptionRef.current = supabase.auth.onAuthStateChange(async (event, session) => {
-      console.log('Auth 상태 변경:', event);
+      // console.log('Auth 상태 변경:', event);
 
       if (event === 'SIGNED_OUT') {
         // 로그아웃 시 정리
@@ -133,20 +133,18 @@ export const NotificationRealTimeProvider = ({ children }: { children: React.Rea
       } else if (event === 'SIGNED_IN' && session?.user) {
         // 다른 유저로 로그인한 경우에만 재설정
         if (currentUserIdRef.current && currentUserIdRef.current !== session.user.id) {
-          console.log('다른 유저로 로그인, 재설정 필요');
+          // console.log('다른 유저로 로그인, 재설정 필요');
           currentUserIdRef.current = null;
           await setupRealTime();
         } else if (!currentUserIdRef.current) {
           // currentUserIdRef가 null인 경우 (로그아웃 후 첫 로그인)
-          console.log('로그아웃 후 첫 로그인, 설정 시작');
+          // console.log('로그아웃 후 첫 로그인, 설정 시작');
           await setupRealTime();
         } else {
-          console.log('같은 유저의 SIGNED_IN 이벤트, 스킵');
+          // console.log('같은 유저의 SIGNED_IN 이벤트, 스킵');
         }
       }
     });
-    // document.addEventListener('visibilitychange', handleVisibilityChange);
-
     // 2025-10-30 로그인 직후(SESSION/SIGNED_IN)에도 즉시 알림 개수 표시되도록 구독 재설정
     // if (!authSubscriptionRef.current) {
     //   authSubscriptionRef.current = supabase.auth.onAuthStateChange(async event => {
