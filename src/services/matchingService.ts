@@ -1,3 +1,4 @@
+import { fetchProfileInterests } from '@/lib/interests';
 import { supabase } from '../lib/supabase';
 import type { Matchings, MatchingsInsert, MatchingsUpdate } from '../types/bobType';
 
@@ -532,20 +533,61 @@ export const updateMatchingStatus = async (
   }
 };
 
-export const findQuickMatchingCandidate = async () => {
+export const findQuickMatchingCandidate = async (userId: string) => {
+  const { data, error: interest_idError } = await supabase
+    .from('profile_interests')
+    .select('interest_id')
+    .eq('profile_id', userId);
+  if (interest_idError) {
+    console.log(interest_idError.message);
+    return;
+  }
+
+  const interestIds: number[] = data.map(i => i.interest_id);
+  // console.log(interestIds);
+
   const { data: matchings, error } = await supabase
     .from('matchings')
-    .select('id, desired_members, status, created_at, restaurant_id, title, description')
+    .select(`id, desired_members, status, created_at, restaurant_id, title, description`)
     .eq('status', 'waiting')
     .order('created_at', { ascending: true });
 
   if (error) throw error;
   if (!matchings?.length) return null;
 
+  const restaurantIds: number[] = matchings.map(m => m.restaurant_id);
+
+  const { data: restaurants, error: rErr } = await supabase
+    .from('restaurants')
+    .select('id, category_id')
+    .in('id', restaurantIds);
+
+  if (rErr) throw rErr;
+  console.log('식당 데이터:', restaurants);
+
+  const merged = matchings.map(m => {
+    const restaurant = restaurants.find(r => r.id === m.restaurant_id);
+    return {
+      ...m,
+      restaurant,
+    };
+  });
+
+  console.log('매칭+식당 합쳐진 데이터:', merged);
+
+  const matchingWithInterest = merged.filter(m => interestIds.includes(m.restaurant?.category_id));
+  console.log('관심사 일치 매칭:', matchingWithInterest);
+
+  const targetPool = matchingWithInterest.length ? matchingWithInterest : merged;
+
   const withCounts = await Promise.all(
-    matchings.map(async m => {
+    targetPool.map(async m => {
       const count = await getParticipantCount(m.id);
-      return { ...m, participantCount: count, remaining: m.desired_members - count };
+      return {
+        ...m,
+        participantCount: count,
+        remaining: m.desired_members - count,
+      };
     }),
   );
 

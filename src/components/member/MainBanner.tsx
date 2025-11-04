@@ -108,7 +108,8 @@ const MainBanner = () => {
   const fetchPreview = useCallback(async () => {
     setLoadingPreview(true);
     try {
-      const candidate = await findQuickMatchingCandidate();
+      if (!user) return;
+      const candidate = await findQuickMatchingCandidate(user.id);
       setPreview(candidate);
     } catch {
       setPreview(null);
@@ -179,7 +180,8 @@ const MainBanner = () => {
   useEffect(() => {
     const fetch = async () => {
       try {
-        const candidate = await findQuickMatchingCandidate();
+        if (!user) return;
+        const candidate = await findQuickMatchingCandidate(user.id);
         setPreview(candidate);
       } catch (e) {
         setPreview(null);
