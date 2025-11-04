@@ -1,14 +1,14 @@
+import type { HelpWithComment } from '@/pages/member/profiles/HelpPage';
 import dayjs from 'dayjs';
-import { useAuth } from '../../contexts/AuthContext';
-import type { Help } from '../../types/bobType';
-import { ButtonFillMd } from '../button';
-import { useEffect } from 'react';
 import { AnimatePresence, motion } from 'framer-motion';
+import { useEffect } from 'react';
+import { useAuth } from '../../contexts/AuthContext';
+import { ButtonFillMd } from '../button';
 import styles from './HelpDetailModal.module.css';
 
 type HelpDetailModalProps = {
   isOpen: (value: React.SetStateAction<boolean>) => void;
-  help: Help;
+  help: HelpWithComment;
 };
 
 function HelpDetailModal({ isOpen, help }: HelpDetailModalProps) {
@@ -83,6 +83,15 @@ function HelpDetailModal({ isOpen, help }: HelpDetailModalProps) {
               <p className="text-sm">문의내용</p>
               <div className="w-full px-2.5 py-3 bg-white border-b items-center">
                 <div className="font-semibold whitespace-pre-line break-words">{help.contents}</div>
+              </div>
+            </div>
+
+            <div className="w-full">
+              <p className="text-sm">문의답변</p>
+              <div className="w-full px-2.5 py-3 bg-white border-b items-center">
+                <div className="font-semibold whitespace-pre-line break-words">
+                  {help.comment?.content ? help.comment?.content : <div>답변 대기중 입니다.</div>}
+                </div>
               </div>
             </div>
 

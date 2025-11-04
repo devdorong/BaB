@@ -11,30 +11,39 @@ import {
 import { useNavigate } from 'react-router-dom';
 import { useAuth } from '../../../contexts/AuthContext';
 import { supabase } from '../../../lib/supabase';
-import type { Help } from '../../../types/bobType';
+import type { Help, HelpComment } from '../../../types/bobType';
 import CommunityCardSkeleton from '../../../ui/sdj/CommunityCardSkeleton';
 import Modal from '../../../ui/sdj/Modal';
 import { useModal } from '../../../ui/sdj/ModalState';
 import HelpDetailModal from '../../../ui/sdj/HelpDetailModal';
 import styles from './HelpPage.module.css';
 
+export type HelpWithComment = Help & {
+  comment?: HelpComment;
+};
+
 function HelpPage() {
   const { user } = useAuth();
   const navigate = useNavigate();
   const { closeModal, modal, openModal } = useModal();
   const [csList, setCsList] = useState<Help[]>([]);
-  const [selectedHelp, setSelectedHelp] = useState<Help | null>(null);
+  const [selectedHelp, setSelectedHelp] = useState<HelpWithComment | null>(null);
   const [loading, setLoading] = useState(true);
   const [helpDetailModal, setHelpDetailModal] = useState(false);
 
   const loadhelp = async () => {
-    const { data, error } = await supabase.from('helps').select('*').eq('profile_id', user?.id);
+    const { data, error } = await supabase
+      .from('helps')
+      .select(`*,help_comments(id,help_id,profile_id,content)`)
+      .eq('profile_id', user?.id);
+
+    const mappedData = data?.map(item => ({ ...item, comment: item.help_comments?.[0] || null }));
 
     if (error) {
       openModal('문의 정보', '문의 내역을 불러오는데 실패했습니다', '닫기');
       console.log(error.message);
     }
-    setCsList(data || []);
+    setCsList(mappedData || []);
     setLoading(false);
   };
 
