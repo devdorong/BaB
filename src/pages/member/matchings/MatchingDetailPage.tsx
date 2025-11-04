@@ -20,6 +20,7 @@ import { useKakaoLoader } from '../../../hooks/useKakaoLoader';
 import { getProfile } from '../../../lib/propile';
 import {
   addMatchingParticipant,
+  checkUserAlreadyInActiveMatching,
   deleteMatching,
   getMatchingParticipants,
   getMatchings,
@@ -448,6 +449,19 @@ const MatchingDetailPage = () => {
   };
 
   const handleParticipation = async () => {
+    
+    if (!user) return;
+
+    const isAlready = await checkUserAlreadyInActiveMatching(user.id);
+
+    if (isAlready) {
+      closeModal();
+      openModal('빠른매칭', '이미 참여중인 매칭이있습니다.\n확인해주세요.', '', '확인', () =>
+        navigate('/member/profile/recentmatching'),
+      );
+      return;
+    }
+
     openModal(
       '매칭 참여',
       '매칭에 참여하시겠습니까?',

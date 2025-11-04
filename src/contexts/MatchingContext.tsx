@@ -121,7 +121,6 @@ export const MatchingProvider = ({ children }: MatchingProviderProps) => {
       } else {
         // 시연용: 레스토랑이 없으면 목업 ID 사용 (1번 레스토랑이 존재한다고 가정 우리의 경우 제일 상위레스토랑이 8번 샐러디)
         // 실제 운영 시: 새 레스토랑 생성 로직 추가 필요
-        console.log(`레스토랑 미등재: "${formData.selectedPlace.name}" - 자동 생성`);
         // 새 레스토랑 생성 (관리자 계정으로)
         console.log(`레스토랑 미등재: "${formData.selectedPlace.name}" - 자동 생성`);
         const ADMIN_PROFILE_ID = '9a6b3286-408c-49d3-8224-450792a1a624';

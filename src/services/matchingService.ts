@@ -512,6 +512,7 @@ export const joinMatchingById = async (matchingId: number, userId: string) => {
   return { success: true };
 };
 
+// 매칭의 status 만 변경
 export const updateMatchingStatus = async (
   matchingId: number,
   newStatus: 'waiting' | 'full' | 'completed' | 'cancel',
@@ -597,3 +598,29 @@ export const getMatchingsWithRestaurantsAndStatus = async (): Promise<any[]> => 
   }
   return data ?? [];
 };
+
+/**
+ * - 현재 로그인한 유저가 대기중인 매칭에 참여중인지 여부 확인함수
+ * @param userId 유저 id
+ * @returns 참여중이면 true, 참여중이지 않으면 false
+ */
+// 현재 로그인한 유저가 매칭에 참가상태인지 아닌지
+export async function checkUserAlreadyInActiveMatching(userId: string) {
+  const { data, error } = await supabase
+    .from('matching_participants')
+    .select(
+      `
+      matching_id,
+      matchings!inner ( status )
+    `,
+    )
+    .eq('profile_id', userId)
+    .in('matchings.status', ['waiting', 'full']);
+
+  if (error) {
+    console.error('참여 중 매칭 조회 오류:', error);
+    return false;
+  }
+
+  return data && data.length > 0;
+}

@@ -15,7 +15,11 @@ import { useAuth } from '@/contexts/AuthContext';
 import { toast } from 'sonner';
 
 import '../../css/buttonStyles.css';
-import { findQuickMatchingCandidate, joinMatchingById } from '@/services/matchingService';
+import {
+  checkUserAlreadyInActiveMatching,
+  findQuickMatchingCandidate,
+  joinMatchingById,
+} from '@/services/matchingService';
 import TagBadge from '@/ui/TagBadge';
 import { categoryColors, defaultCategoryColor } from '@/ui/jy/categoryColors';
 import MatchingModal from '@/ui/dorong/MatchingModal';
@@ -86,7 +90,10 @@ const MainBanner = () => {
   useEffect(() => {
     const getBannerData = async () => {
       try {
-        const { data, error } = await supabase.from('banners').select('*');
+        const { data, error } = await supabase
+          .from('banners')
+          .select('*')
+          .order('id', { ascending: false });
         if (error) throw new Error(`배너 이미지를 불러오지 못했습니다. : ${error.message}`);
         setBannerImgs(data || []);
       } catch (error) {
@@ -97,6 +104,7 @@ const MainBanner = () => {
     };
     getBannerData();
   }, []);
+
   const fetchPreview = useCallback(async () => {
     setLoadingPreview(true);
     try {
@@ -117,6 +125,16 @@ const MainBanner = () => {
       return;
     }
 
+    const isAlready = await checkUserAlreadyInActiveMatching(user.id);
+
+    if (isAlready) {
+      closeModal();
+      openModal('빠른매칭', '이미 참여중인 매칭이있습니다.\n확인해주세요.', '', '확인', () =>
+        navigate('/member/profile/recentmatching'),
+      );
+      return;
+    }
+
     // 모달 먼저 열고
     setPreview(null);
     setLoadingPreview(true);
@@ -126,13 +144,29 @@ const MainBanner = () => {
       '닫기',
       '참가하기',
       async () => {
+        console.log('매칭정보', preview);
         if (!preview) return;
         try {
           const res = await joinMatchingById(preview.id, user.id);
+          console.log('레스정보', res);
+          if (res.message) {
+            closeModal();
+            openModal('빠른매칭', res.message, '닫기', '');
+            return;
+          }
           if (res.success) {
             // navigate(`/member/matching/${preview.id}`);
+            closeModal();
+            openModal(
+              '빠른매칭',
+              '빠른매칭에 성공했습니다.\n 해당매칭 정보로 이동합니다',
+              '',
+              '확인',
+              () => navigate(`/member/matching/${preview.id}`),
+            );
           }
-        } finally {
+        } catch (error) {
+          console.log(error);
           closeModal();
         }
       },
@@ -196,7 +230,7 @@ const MainBanner = () => {
           loop
           style={{
             height: '100%',
-            objectFit:"cover"
+            objectFit: 'cover',
           }}
         >
           {bannerImgs?.map(item => (

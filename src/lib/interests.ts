@@ -46,11 +46,11 @@ export const fetchProfileInterests = async (ProfileId: string): Promise<string[]
       // 타입가드
       .filter((name): name is string => name !== null && name !== undefined)
   );
+};
   // return typeData?.map(row => row.interests?.name).filter(Boolean) ?? [];
   // const interestNames = data?.map((row: any) => row.interests?.name) ?? [];
   // const validInterestNames = interestNames.filter(Boolean);
   // return validInterestNames;
-};
 
 // 관심사 저장
 export const saveProfileInterests = async (

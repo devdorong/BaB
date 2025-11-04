@@ -3,6 +3,7 @@ import { RiAddLine } from 'react-icons/ri';
 import { useNavigate } from 'react-router-dom';
 import { useAuth } from '../../contexts/AuthContext';
 import {
+  checkUserAlreadyInActiveMatching,
   getMatchingsWithRestaurant,
   type MatchingWithRestaurant,
 } from '../../services/matchingService';
@@ -102,14 +103,25 @@ const MachingIndex = () => {
     fetchAndProcessMatchings();
   }, []);
 
-  const handleButtonClick = () => {
+  const handleButtonClick = async () => {
     if (!user) {
       openModal('로그인 확인', '로그인이 필요합니다.', '닫기', '로그인', () =>
         navigate('/member/login'),
       );
-    } else {
-      navigate('/member/matching/write');
+      return;
     }
+
+    const isAlready = await checkUserAlreadyInActiveMatching(user.id);
+
+    if (isAlready) {
+      closeModal();
+      openModal('빠른매칭', '이미 참여중인 매칭이있습니다.\n확인해주세요.', '', '확인', () =>
+        navigate('/member/profile/recentmatching'),
+      );
+      return;
+    }
+
+    navigate('/member/matching/write');
   };
 
   // 현재위치 가져오기

@@ -38,7 +38,7 @@ export default function MainReviewCard({
   return (
     <div
       onClick={onClick}
-      className="group w-full sm:w-[280px] md:w-[300px] lg:w-[312px] bg-white rounded-2xl overflow-hidden shadow-[0_4px_4px_rgba(0,0,0,0.02)] border border-black/5 cursor-pointer"
+      className="group w-full bg-white rounded-2xl overflow-hidden shadow-[0_4px_4px_rgba(0,0,0,0.02)] border border-black/5 cursor-pointer"
     >
       {/* 이미지 영역 */}
       <div className="relative overflow-hidden">
