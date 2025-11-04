@@ -1,5 +1,7 @@
 import { useEffect, useState } from 'react';
 import {
+  RiArrowLeftSLine,
+  RiArrowRightSLine,
   RiCalendarLine,
   RiMapLine,
   RiMapPinLine,
@@ -31,6 +33,7 @@ const RecentMatchingRecordItem = ({ endMatching }: RecentMatchingRecordItemProps
   const [participants, setParticipants] = useState<
     { id: number; nickname: string; avatar_url: string }[]
   >([]);
+
   const isoString = endMatching.met_at;
   const formatted = dayjs(isoString).format('YYYY-MM-DD HH:mm');
 
@@ -152,7 +155,7 @@ const RecentMatchingRecordItem = ({ endMatching }: RecentMatchingRecordItemProps
       <section className="w-full p-6 bg-white rounded-2xl shadow-[0_4px_8px_rgba(0,0,0,0.03)] transition-all hover:shadow-[0_6px_12px_rgba(0,0,0,0.05)]">
         <div className="flex gap-5 items-start">
           {/* 호스트 프로필 */}
-          <div className="relative shrink-0">
+          <div className="hidden lg:flex relative shrink-0">
             <img
               src={
                 profileData?.avatar_url !== 'guest_image'

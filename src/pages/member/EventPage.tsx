@@ -35,6 +35,8 @@ function EventPage() {
 
   const [admin, setAdmin] = useState(false);
 
+  const [prevEvents, setPrevEvents] = useState<Events[]>([]);
+
   const statusTags: EventFilterState[] = ['전체', '진행중', '예정', '종료'];
 
   const handleEditBt = (id: number) => {
@@ -51,6 +53,7 @@ function EventPage() {
 
     if (today.isBefore(startDate)) return '예정';
     if (today.isAfter(endDate)) return '종료';
+
     return '진행중';
   };
 
@@ -198,11 +201,45 @@ function EventPage() {
         종료: 3,
       };
 
+      // 현재 이벤트 상태 계산
       const mapped = withBadge.map(e => ({
         ...e,
         status: getStatusByDate(e.start_date, e.end_date),
       }));
 
+      const ChangeBadgeEvents = mapped.filter(item => {
+        const prev = prevEvents.find(p => p.id === item.id);
+        return prev && prev.status === '예정' && item.status === '진행중';
+      });
+
+      if (ChangeBadgeEvents.length > 0) {
+        try {
+          const { data: allUserEvent, error: allUserEventError } = await supabase
+            .from('profiles')
+            .select('id');
+
+          if (!allUserEvent && allUserEventError) return;
+
+          const notification = allUserEvent.map(u => ({
+            profile_id: u.id,
+            receiver_id: u.id,
+            title: '새로운 이벤트가 시작되었습니다!',
+            content: '',
+            target: 'profiles',
+            type: '이벤트',
+          }));
+
+          const { error: notificationError } = await supabase
+            .from('notifications')
+            .insert(notification);
+          if (notificationError) {
+            console.error('알림 생성 실패:', notificationError);
+            // 알림은 실패해도 이벤트 등록은 성공으로 처리
+          }
+        } catch (error) {
+          console.error('이벤트 알림 오류');
+        }
+      }
       // 정렬
       const sorted = mapped.sort((a, b) => {
         return statusOrder[a.status] - statusOrder[b.status];

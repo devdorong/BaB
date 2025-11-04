@@ -1,21 +1,11 @@
-import React, { useEffect, useState } from 'react';
-import { BrandTag, GrayTag } from '../../../ui/tag';
-import RestaurantCard from '../../../ui/jy/RestaurantCard';
-import { Link, useNavigate } from 'react-router-dom';
+import { useEffect, useState } from 'react';
+import { RiArrowLeftSLine, RiArrowRightSLine } from 'react-icons/ri';
+import { useNavigate } from 'react-router-dom';
+import { toast } from 'sonner';
 import { deleteReviewById, fetchMyReviewData, type MyReviewData } from '../../../lib/myreviews';
 import { supabase } from '../../../lib/supabase';
 import MyreviewCard from '../../../ui/jy/MyReviewCard';
 import { categoryColors, defaultCategoryColor } from '../../../ui/jy/categoryColors';
-import { RiArrowLeftSLine, RiArrowRightSLine } from 'react-icons/ri';
-import {
-  Breadcrumb,
-  BreadcrumbItem,
-  BreadcrumbLink,
-  BreadcrumbList,
-  BreadcrumbPage,
-  BreadcrumbSeparator,
-} from '../../../components/ui/breadcrumb';
-import { toast } from 'sonner';
 
 function MyReviewPage() {
   const navigate = useNavigate();

@@ -41,8 +41,6 @@ const MemberHeader = () => {
   const [nickName, setNickName] = useState<string>('');
   // 알림 패널 온오프
   const [isOpen, setIsOpen] = useState(false);
-  // 알림 개수
-  const [notificationcount, setNotificationcount] = useState<NotificationsProps[]>([]);
   // 모바일
   const [menuOpen, setMenuOpen] = useState(false);
   const isAdmin = profileData?.role === 'admin';
@@ -78,48 +76,48 @@ const MemberHeader = () => {
     }
   };
 
-  const loadNotification = async () => {
-    const data = await fetchNotificationProfileData();
-    setNotificationcount(data);
-  };
-  useEffect(() => {
-    loadNotification();
+  // const loadNotification = async () => {
+  //   const data = await fetchNotificationProfileData();
+  //   setNotificationcount(data);
+  // };
+  // useEffect(() => {
+  //   loadNotification();
 
-    const existing = supabase.getChannels().find(c => c.topic === 'realtime:public:notifications');
-    if (existing) return;
+  //   const existing = supabase.getChannels().find(c => c.topic === 'realtime:public:notifications');
+  //   if (existing) return;
 
-    const channel = supabase
-      .channel('notifications-realtime')
-      .on('postgres_changes', { event: '*', schema: 'public', table: 'notifications' }, payload => {
-        if (payload.eventType === 'INSERT') {
-          setNotificationcount(prev => {
-            const exists = prev.some(n => n.id === (payload.new as NotificationsProps).id);
-            if (exists) return prev;
-            const updated = [payload.new as NotificationsProps, ...prev];
-            return updated.sort(
-              (a, b) =>
-                (a.is_read ? 1 : 0) - (b.is_read ? 1 : 0) ||
-                new Date(b.created_at).getTime() - new Date(a.created_at).getTime(),
-            );
-          });
-        } else if (payload.eventType === 'UPDATE') {
-          setNotificationcount(prev => {
-            const updated = prev.map(n =>
-              n.id === payload.new.id ? (payload.new as NotificationsProps) : n,
-            );
-            return updated.sort(
-              (a, b) =>
-                (a.is_read ? 1 : 0) - (b.is_read ? 1 : 0) ||
-                new Date(b.created_at).getTime() - new Date(a.created_at).getTime(),
-            );
-          });
-        }
-      })
-      .subscribe();
-    return () => {
-      supabase.removeChannel(channel);
-    };
-  }, []);
+  //   const channel = supabase
+  //     .channel('notifications-realtime')
+  //     .on('postgres_changes', { event: '*', schema: 'public', table: 'notifications' }, payload => {
+  //       if (payload.eventType === 'INSERT') {
+  //         setNotificationcount(prev => {
+  //           const exists = prev.some(n => n.id === (payload.new as NotificationsProps).id);
+  //           if (exists) return prev;
+  //           const updated = [payload.new as NotificationsProps, ...prev];
+  //           return updated.sort(
+  //             (a, b) =>
+  //               (a.is_read ? 1 : 0) - (b.is_read ? 1 : 0) ||
+  //               new Date(b.created_at).getTime() - new Date(a.created_at).getTime(),
+  //           );
+  //         });
+  //       } else if (payload.eventType === 'UPDATE') {
+  //         setNotificationcount(prev => {
+  //           const updated = prev.map(n =>
+  //             n.id === payload.new.id ? (payload.new as NotificationsProps) : n,
+  //           );
+  //           return updated.sort(
+  //             (a, b) =>
+  //               (a.is_read ? 1 : 0) - (b.is_read ? 1 : 0) ||
+  //               new Date(b.created_at).getTime() - new Date(a.created_at).getTime(),
+  //           );
+  //         });
+  //       }
+  //     })
+  //     .subscribe();
+  //   return () => {
+  //     supabase.removeChannel(channel);
+  //   };
+  // }, []);
 
   // id로 닉네임을 받아옴
   useEffect(() => {
