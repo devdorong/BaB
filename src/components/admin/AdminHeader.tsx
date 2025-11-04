@@ -5,7 +5,7 @@ import {
   RiHeart3Line,
   RiUserLine,
 } from 'react-icons/ri';
-import { NavLink } from 'react-router-dom';
+import { NavLink, useNavigate } from 'react-router-dom';
 
 const adminMenu = [
   { name: '사용자 계정 관리', path: '/admin', icon: <RiUserLine /> },
@@ -16,9 +16,18 @@ const adminMenu = [
 ] as const;
 
 export default function AdminHeader() {
+  const navigate = useNavigate();
   return (
     <div className="fixed left-0 top-0 w-[260px] min-h-full bg-black text-white border-r border-neutral-800">
-      <div className="p-6 border-b border-white text-2xl font-bold">관리자 패널</div>
+      <div className="p-6 border-b border-white text-2xl font-bold justify-between flex">
+        <span>관리자 패널</span>
+        <button
+          onClick={() => navigate('/member')}
+          className="border border-gray-300 rounded-full px-4 py-2 text-sm hover:bg-gray-50 disabled:opacity-50 hover:text-black"
+        >
+          홈
+        </button>
+      </div>
 
       <nav className="flex flex-col w-[260px] mt-6 space-y-4 pl-6">
         {adminMenu.map(item => (

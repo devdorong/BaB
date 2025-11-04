@@ -1,6 +1,7 @@
 import { supabase } from '@/lib/supabase';
 import type { Help } from '@/types/bobType';
 import AdminSupportDetailModal from '@/ui/sdj/AdminSupportDetailModal';
+import dayjs from 'dayjs';
 import { useEffect, useState } from 'react';
 import { RiCheckboxCircleLine } from 'react-icons/ri';
 
@@ -22,6 +23,7 @@ function AdminReportsPage() {
     const { data, error } = await supabase
       .from('helps')
       .select(`*,profiles(id,nickname)`)
+      .order('status', { ascending: true })
       .order('created_at', { ascending: false });
 
     if (error) return console.log(`문의내역 불러오기 실패 : ${error.message}`);
@@ -47,15 +49,18 @@ function AdminReportsPage() {
           <div
             key={idx}
             onClick={() => handleHelpModal(help)}
-            className="flex flex-col gap-1 p-6 border cursor-pointer w-full rounded-2xl"
+            className={`flex flex-col gap-1 p-6 border cursor-pointer w-full rounded-2xl ${help.status ? '' : 'border-bab'}`}
           >
-            <div className="flex items-center gap-1">
-              <p>문의 유형 : {help.help_type}</p>
-              {help.status === false ? (
-                <RiCheckboxCircleLine className="text-babgray-300" />
-              ) : (
-                <RiCheckboxCircleLine className="text-babbutton-green" />
-              )}
+            <div className="flex items-center gap-1 justify-between">
+              <div className='flex items-center gap-1'>
+                <p>문의 유형 : {help.help_type}</p>
+                {help.status === false ? (
+                  <RiCheckboxCircleLine className="text-babgray-300" />
+                ) : (
+                  <RiCheckboxCircleLine className="text-babbutton-green" />
+                )}
+              </div>
+              <p className='text-babgray-600'>{dayjs(help.created_at).format('YYYY-MM-DD HH:mm')}</p>
             </div>
             <p className="text-babgray-800 truncate">{help.title}</p>
             <p className="text-babgray-600 truncate">{help.contents}</p>

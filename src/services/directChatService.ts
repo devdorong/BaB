@@ -889,14 +889,14 @@ export async function exitDirectChat(chatId: string): Promise<ChatApiResponse<bo
 
     const systemMessage = `${currentUserNickname}님이 채팅방을 나갔습니다.`;
 
-    console.log('시스템 메시지 전송 시작:', {
-      chat_id: chatId,
-      sender_id: currentUser.id,
-      content: systemMessage,
-      is_system_message: true,
-      otherUserId: otherUserId,
-      currentUserNickname: currentUserNickname,
-    });
+    // console.log('시스템 메시지 전송 시작:', {
+    //   chat_id: chatId,
+    //   sender_id: currentUser.id,
+    //   content: systemMessage,
+    //   is_system_message: true,
+    //   otherUserId: otherUserId,
+    //   currentUserNickname: currentUserNickname,
+    // });
 
     const { data: systemMessageData, error: systemMessageError } = await supabase
       .from('direct_messages')
@@ -914,14 +914,14 @@ export async function exitDirectChat(chatId: string): Promise<ChatApiResponse<bo
       console.error('시스템 메시지 전송 오류:', systemMessageError);
       // 시스템 메시지 실패해도 채팅방 나가기는 계속 진행
     } else {
-      console.log('시스템 메시지 전송 성공:', systemMessageData);
-      console.log('저장된 시스템 메시지 상세:', {
-        id: systemMessageData.id,
-        content: systemMessageData.content,
-        is_system_message: systemMessageData.is_system_message,
-        chat_id: systemMessageData.chat_id,
-        sender_id: systemMessageData.sender_id,
-      });
+      // console.log('시스템 메시지 전송 성공:', systemMessageData);
+      // console.log('저장된 시스템 메시지 상세:', {
+      //   id: systemMessageData.id,
+      //   content: systemMessageData.content,
+      //   is_system_message: systemMessageData.is_system_message,
+      //   chat_id: systemMessageData.chat_id,
+      //   sender_id: systemMessageData.sender_id,
+      // });
     }
 
     // 3단계: 논리적 삭제 (현재 사용자의 active 상태를 false로 설정하고 나간 시점 기록)

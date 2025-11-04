@@ -123,7 +123,7 @@ export const ChatSwiperItem = ({
     <div className="relative overflow-hidden">
       {/* 나가기 버튼 (뒤에 고정) */}
       <div
-        className="absolute right-0 top-0 h-full w-[80px] bg-red-500 text-white flex items-center justify-center text-sm font-semibold"
+        className="absolute right-0 top-0 h-full w-[80px] bg-red-500 text-white flex items-center justify-center text-sm font-semibold cursor-pointer"
         onClick={handleExitChat}
       >
         나가기

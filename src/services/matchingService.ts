@@ -563,7 +563,7 @@ export const findQuickMatchingCandidate = async (userId: string) => {
     .in('id', restaurantIds);
 
   if (rErr) throw rErr;
-  console.log('식당 데이터:', restaurants);
+  // console.log('식당 데이터:', restaurants);
 
   const merged = matchings.map(m => {
     const restaurant = restaurants.find(r => r.id === m.restaurant_id);
@@ -573,10 +573,10 @@ export const findQuickMatchingCandidate = async (userId: string) => {
     };
   });
 
-  console.log('매칭+식당 합쳐진 데이터:', merged);
+  // console.log('매칭+식당 합쳐진 데이터:', merged);
 
   const matchingWithInterest = merged.filter(m => interestIds.includes(m.restaurant?.category_id));
-  console.log('관심사 일치 매칭:', matchingWithInterest);
+  // console.log('관심사 일치 매칭:', matchingWithInterest);
 
   const targetPool = matchingWithInterest.length ? matchingWithInterest : merged;
 
