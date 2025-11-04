@@ -1,34 +1,65 @@
-import { supabase } from '@/lib/supabase';
-import type { Help } from '@/types/bobType';
+import type { AdminReportsPageProps } from '@/pages/admin/AdminSettingsPage';
+import dayjs from 'dayjs';
 import { AnimatePresence, motion } from 'framer-motion';
-import { useEffect, useState } from 'react';
-import { useParams } from 'react-router-dom';
+import { useState } from 'react';
 import { ButtonFillMd } from '../button';
+import { supabase } from '@/lib/supabase';
+import { useAuth } from '@/contexts/AuthContext';
+import { useModal } from './ModalState';
+import Modal from './Modal';
 
 type AdminSupportDetailModalProps = {
   isOpen: (value: React.SetStateAction<boolean>) => void;
-};
-type HelpWithProfile = Help & {
-  profiles: { id: string; nickname: string };
+  helpDetail: AdminReportsPageProps;
 };
 
-function AdminSupportDetailModal({ isOpen }: AdminSupportDetailModalProps) {
-  const { id } = useParams();
-  const [helpDetail, setHelpDetail] = useState<HelpWithProfile | null>(null);
-  const fetchData = async () => {
+function AdminSupportDetailModal({ isOpen, helpDetail }: AdminSupportDetailModalProps) {
+  const [helpAnswer, setHelpAnswer] = useState('');
+  const { user } = useAuth();
+  const profileId = user?.id;
+
+  const { closeModal, modal, openModal } = useModal();
+
+  const insertData = async (helpId: number, profileId: string, content: string) => {
     const { data, error } = await supabase
+      .from('help_comments')
+      .insert([{ help_id: helpId, profile_id: profileId, content: helpAnswer }])
+      .select();
+
+    if (error) {
+      console.error('답변 등록 실패:', error.message);
+      return null;
+    }
+    const { error: updateError } = await supabase
       .from('helps')
-      .select(`*,profiles(id,nickname)`)
-      .eq('profile_id', id)
-      .single();
-    if (error) return console.log('문의내역을 가지고 오지 못했습니다.', error.message);
-    setHelpDetail(data || null);
+      .update({ status: true })
+      .eq('help_id', helpId);
+
+    if (updateError) console.error('상태 업데이트 실패:', updateError.message);
     console.log(data);
+
+    return data;
   };
 
-  useEffect(() => {
-    fetchData();
-  }, []);
+  const handleInsertClick = async () => {
+    if (!helpDetail || !profileId) {
+      return;
+    }
+    if (helpAnswer.trim()) {
+      openModal('안내', '문의 답변을 입력해주세요', '닫기', '확인', () => {
+        return;
+      });
+    }
+
+    const result = await insertData(helpDetail.help_id, profileId, helpAnswer);
+    if (result) {
+      openModal('안내', '답변이 등록되었습니다.', '닫기', '', () => {
+        setHelpAnswer('');
+        isOpen(false);
+      });
+    }
+  };
+
   if (!isOpen) return;
   return (
     <AnimatePresence>
@@ -50,19 +81,20 @@ function AdminSupportDetailModal({ isOpen }: AdminSupportDetailModalProps) {
 
           <div
             className={`flex flex-col items-start gap-4 w-[400px] max-h-[70%] overflow-y-auto text-babgray-700`}
-            style={{ scrollbarGutter: 'stable both-edges' }}
           >
             <div className="w-full">
               <p className="text-sm">답변상태</p>
               <div className="w-full h-12 px-2.5 py-3 border-b items-center">
-                <div className="font-semibold">답변대기중</div>
+                <div className="font-semibold">
+                  {helpDetail.status === false ? '답변 대기중' : '답변 완료'}
+                </div>
               </div>
             </div>
 
             <div className="w-full">
-              <p className="text-sm">이메일</p>
+              <p className="text-sm">닉네임</p>
               <div className="w-full h-12 px-2.5 py-3 bg-white border-b items-center">
-                <div className="font-semibold">{helpDetail?.profiles.nickname}</div>
+                <div className="font-semibold">{helpDetail.profiles?.nickname}</div>
               </div>
             </div>
 
@@ -70,8 +102,7 @@ function AdminSupportDetailModal({ isOpen }: AdminSupportDetailModalProps) {
               <p className="text-sm">문의 일자</p>
               <div className="w-full h-12 px-2.5 py-3 bg-white border-b items-center">
                 <div className="font-semibold">
-                  {/* {dayjs(help.created_at).format('YYYY-MM-DD HH:mm')} */}
-                  1월2일
+                  {dayjs(helpDetail.created_at).format('YYYY-MM-DD HH:mm')}
                 </div>
               </div>
             </div>
@@ -79,14 +110,14 @@ function AdminSupportDetailModal({ isOpen }: AdminSupportDetailModalProps) {
             <div className="w-full">
               <p className="text-sm">문의유형</p>
               <div className="w-full h-12 px-2.5 py-3 bg-white border-b items-center">
-                <div className="font-semibold">계정</div>
+                <div className="font-semibold">{helpDetail.help_type}</div>
               </div>
             </div>
 
             <div className="w-full">
               <p className="text-sm">문의제목</p>
               <div className="w-full px-2.5 py-3 bg-white border-b items-center">
-                <div className="font-semibold">ㅜㅜ</div>
+                <div className="font-semibold">{helpDetail.title}</div>
               </div>
             </div>
 
@@ -94,12 +125,25 @@ function AdminSupportDetailModal({ isOpen }: AdminSupportDetailModalProps) {
               <p className="text-sm">문의내용</p>
               <div className="w-full px-2.5 py-3 bg-white border-b items-center">
                 <div className="font-semibold whitespace-pre-line break-words">
-                  ㅠㅠㅠㅠㅠㅠㅠㅠㅠ
+                  {helpDetail.contents}
                 </div>
               </div>
             </div>
 
+            <div className="flex flex-col w-full gap-4">
+              <p className="text-sm">문의 답변</p>
+              <textarea
+                value={helpAnswer}
+                placeholder="답변 내용을 입력해주세요."
+                onChange={e => setHelpAnswer(e.target.value)}
+                className="w-full rounded-lg border border-gray-300 px-3 py-2 text-sm focus:border-[#FF5722] focus:ring-1 focus:ring-[#FF5722] outline-none resize-none"
+              />
+            </div>
+
             <div className="w-full inline-flex items-center gap-4">
+              <ButtonFillMd onClick={handleInsertClick} className="flex-1">
+                답변하기
+              </ButtonFillMd>
               <ButtonFillMd
                 style={{ backgroundColor: '#e5e7eb', color: '#5C5C5C' }}
                 className="flex-1 hover:!bg-gray-300"
@@ -109,6 +153,17 @@ function AdminSupportDetailModal({ isOpen }: AdminSupportDetailModalProps) {
               </ButtonFillMd>
             </div>
           </div>
+          {modal.isOpen && (
+            <Modal
+              isOpen={modal.isOpen}
+              onClose={closeModal}
+              titleText={modal.title}
+              contentText={modal.content}
+              closeButtonText={modal.closeText}
+              submitButtonText={modal.submitText}
+              onSubmit={modal.onSubmit}
+            />
+          )}
         </motion.div>
       </motion.div>
     </AnimatePresence>
