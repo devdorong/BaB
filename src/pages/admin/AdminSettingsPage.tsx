@@ -3,15 +3,17 @@ import type { Help } from '@/types/bobType';
 import AdminSupportDetailModal from '@/ui/sdj/AdminSupportDetailModal';
 import { useEffect, useState } from 'react';
 
-type AdminReportsPageProps = Help & {
+export type AdminReportsPageProps = Help & {
   profiles?: { id: string; nickname: string } | null;
 };
 
 function AdminReportsPage() {
   const [helpList, setHelpList] = useState<AdminReportsPageProps[]>([]);
+  const [helpDetail, setHelpDetail] = useState<AdminReportsPageProps | null>(null);
   const [helpModal, setHelpModal] = useState(false);
 
-  const handleHelpModal = () => {
+  const handleHelpModal = (help: AdminReportsPageProps) => {
+    setHelpDetail(help);
     setHelpModal(true);
   };
 
@@ -43,7 +45,7 @@ function AdminReportsPage() {
         {helpList.map((help, idx) => (
           <div
             key={idx}
-            onClick={handleHelpModal}
+            onClick={() => handleHelpModal(help)}
             className="flex flex-col gap-1 p-6 border cursor-pointer w-full rounded-2xl"
           >
             <p>문의 유형 : {help.help_type}</p>
@@ -55,7 +57,9 @@ function AdminReportsPage() {
           </div>
         ))}
       </div>
-      {helpModal && <AdminSupportDetailModal isOpen={() => setHelpModal(false)} />}
+      {helpModal && helpDetail && (
+        <AdminSupportDetailModal helpDetail={helpDetail} isOpen={() => setHelpModal(false)} />
+      )}
 
       {/* 하단 페이지네이션 */}
       <div className="flex justify-between items-center mt-4 text-sm text-babgray-600">
