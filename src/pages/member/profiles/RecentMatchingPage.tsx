@@ -1,5 +1,6 @@
 import { useEffect, useState } from 'react';
 import {
+  RiArrowLeftSLine,
   RiArrowRightSLine,
   RiCalendarLine,
   RiHistoryLine,
@@ -26,6 +27,20 @@ function RecentMatchingPage() {
   const [matchings, setMatchings] = useState<Matchings[]>([]);
   const [endMatchings, setEndMatchings] = useState<Matchings[]>([]);
   const [expectedMatchings, setExpectedMatchings] = useState<Matchings[]>([]);
+
+  // 페이지네이션
+  const [currentPage, setCurrentPage] = useState(1);
+  const [itemsPerPage, setItemsPerPage] = useState(5);
+
+  // 예정된 매칭
+  const startIdx = (currentPage - 1) * itemsPerPage;
+  const endIdx = startIdx + itemsPerPage;
+  const currentItems = expectedMatchings.slice(startIdx, endIdx);
+  const totalPages = Math.ceil(expectedMatchings.length / itemsPerPage);
+
+  // 완료된 매칭
+  const currentEndItems = endMatchings.slice(startIdx, endIdx);
+  const totalEndPages = Math.ceil(endMatchings.length / itemsPerPage);
 
   useEffect(() => {
     const fetchUserMatchings = async () => {
@@ -165,11 +180,41 @@ function RecentMatchingPage() {
                 {/* 탭 콘텐츠 */}
                 {tab === 'recent' ? (
                   <section className="space-y-4">
-                    {endMatchings.length > 0 ? (
+                    {currentEndItems.length > 0 ? (
                       <>
-                        {endMatchings.map(i => (
+                        {currentEndItems.map(i => (
                           <RecentMatchingRecordItem key={i.id} endMatching={i} />
                         ))}
+
+                        <div className="flex justify-center gap-2 !mt-10">
+                          <button
+                            disabled={currentPage === 1}
+                            onClick={() => setCurrentPage(p => Math.max(p - 1, 1))}
+                            className="p-2  bg-bg-bg rounded disabled:opacity-50 hover:bg-bab hover:text-white"
+                          >
+                            <RiArrowLeftSLine size={16} />
+                          </button>
+
+                          {Array.from({ length: totalEndPages }).map((_, idx) => (
+                            <button
+                              key={idx + 1}
+                              onClick={() => setCurrentPage(idx + 1)}
+                              className={`p-2 py-0 rounded hover:bg-bab hover:text-white ${
+                                currentPage === idx + 1 ? 'text-bab' : 'bg-bg-bg'
+                              }`}
+                            >
+                              {idx + 1}
+                            </button>
+                          ))}
+
+                          <button
+                            disabled={currentPage === totalEndPages}
+                            onClick={() => setCurrentPage(p => Math.min(p + 1, totalEndPages))}
+                            className="p-2 bg-bg-bg rounded disabled:opacity-50 hover:bg-bab hover:text-white"
+                          >
+                            <RiArrowRightSLine size={16} />
+                          </button>
+                        </div>
                       </>
                     ) : (
                       <section className="w-full p-6 bg-white rounded-2xl shadow-[0_4px_8px_rgba(0,0,0,0.03)] transition-all hover:shadow-[0_6px_12px_rgba(0,0,0,0.05)]">
@@ -181,11 +226,41 @@ function RecentMatchingPage() {
                   </section>
                 ) : (
                   <section className="space-y-4">
-                    {expectedMatchings.length > 0 ? (
+                    {currentItems.length > 0 ? (
                       <>
-                        {expectedMatchings.map(i => (
+                        {currentItems.map(i => (
                           <YetMatchingRecordItem key={i.id} matching={i} />
                         ))}
+
+                        <div className="flex justify-center gap-2 !mt-10">
+                          <button
+                            disabled={currentPage === 1}
+                            onClick={() => setCurrentPage(p => Math.max(p - 1, 1))}
+                            className="p-2  bg-bg-bg rounded disabled:opacity-50 hover:bg-bab hover:text-white"
+                          >
+                            <RiArrowLeftSLine size={16} />
+                          </button>
+
+                          {Array.from({ length: totalPages }).map((_, idx) => (
+                            <button
+                              key={idx + 1}
+                              onClick={() => setCurrentPage(idx + 1)}
+                              className={`p-2 py-0 rounded hover:bg-bab hover:text-white ${
+                                currentPage === idx + 1 ? 'text-bab' : 'bg-bg-bg'
+                              }`}
+                            >
+                              {idx + 1}
+                            </button>
+                          ))}
+
+                          <button
+                            disabled={currentPage === totalPages}
+                            onClick={() => setCurrentPage(p => Math.min(p + 1, totalPages))}
+                            className="p-2 bg-bg-bg rounded disabled:opacity-50 hover:bg-bab hover:text-white"
+                          >
+                            <RiArrowRightSLine size={16} />
+                          </button>
+                        </div>
                       </>
                     ) : (
                       <section className="w-full p-6 bg-white rounded-2xl shadow-[0_4px_8px_rgba(0,0,0,0.03)] transition-all hover:shadow-[0_6px_12px_rgba(0,0,0,0.05)]">

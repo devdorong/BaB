@@ -3,7 +3,7 @@ export const RecentMatchingRecordSkeleton = () => {
     <section className="w-full p-6 bg-white rounded-2xl shadow-[0_4px_8px_rgba(0,0,0,0.03)] animate-pulse">
       <div className="flex gap-5 items-start">
         {/* 프로필 */}
-        <div className="w-14 h-14 rounded-full bg-gray-200" />
+        <div className="hidden lg:flex w-14 h-14 rounded-full bg-gray-200" />
 
         {/* 오른쪽 내용 */}
         <div className="flex flex-col flex-1 gap-4">

@@ -116,7 +116,7 @@ function EventWriteModal({ onClose, onSuccess }: EventWriteModalProps) {
             .from('profiles')
             .select('id');
 
-          if (!allUserData || allUserError) return;
+          if (!allUserData && allUserError) return;
 
           const notification = allUserData.map(u => ({
             profile_id: user.id,
