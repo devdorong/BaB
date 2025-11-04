@@ -1,6 +1,7 @@
 import dayjs from 'dayjs';
 import { supabase } from './supabase';
-import type { Restaurants } from '../types/bobType';
+import type { Restaurants, RestaurantsUpdate } from '../types/bobType';
+import { getMyRestaurant } from '@/services/restaurants';
 
 export interface RestaurantsType {
   id: number;
@@ -315,7 +316,7 @@ export const getAvgMyRatingScore = async () => {
 };
 
 export const getRestaurantById = async (
-  restaurantId: number,
+  restaurantId: number | string,
 ): Promise<RestaurantsDetailType | null> => {
   try {
     const { data, error } = await supabase
@@ -425,7 +426,7 @@ export const insertReviewComment = async (reviewId: number, content: string) => 
       profile_id: user.id,
       receiver_id: reviewAuthorId,
       title: `${restaurantName}사장님이 리뷰에 답글을 남기셨습니다.`,
-      content: `답글등록됨`,
+      content: `${reviewData.restaurant_id}`,
       target: 'all',
       type: '댓글',
     },
@@ -471,4 +472,157 @@ export const fetchRestaurantMenus = async (
 
   if (error) throw new Error(`메뉴 불러오기 실패: ${error.message}`);
   return data ?? [];
+};
+
+// 가게 이미지 업로드
+export const uploadRestaurant = async (
+  file: File,
+  RestaurantId: string,
+): Promise<string | null> => {
+  try {
+    // 파일 형식 검증
+    const allowedTypes = ['image/jpeg', 'image/png', 'image/gif', 'image/webp'];
+    if (!allowedTypes.includes(file.type)) {
+      throw new Error(`지원하지 않는 파일 형식입니다. 허용 형식: ${allowedTypes.join(', ')}`);
+    }
+    // 기존에 만약 아바타 이미지가 있으면 무조건 삭제부터 합니다.
+    const result = await cleanupUserRestaurants(RestaurantId);
+    if (!result) {
+      console.log('파일 못 지웠어요.');
+    }
+
+    // 파일명이 중복되지 않도록 이름을 생성함.
+    const fileExt = file.name.split('.').pop();
+    const fileName = `${RestaurantId}-${Date.now()}.${fileExt}`;
+    const filePath = `restaurants/${fileName}`;
+
+    // 파일 업로드 : upload(파일명, 실제파일, 옵션)
+    const { error } = await supabase.storage.from('store_photos').upload(filePath, file, {
+      cacheControl: '3600', // 3600 초는 1시간 동안 파일 캐시 적용
+      upsert: false, // 동일한 파일명은 덮어씌운다.
+    });
+    if (error) {
+      throw new Error(`업로드 실패 : ${error.message}`);
+    }
+    //  https 문자열로 주소를 알아내서 활용
+    const {
+      data: { publicUrl },
+    } = supabase.storage.from('store_photos').getPublicUrl(filePath);
+
+    return publicUrl;
+  } catch (err) {
+    throw new Error(`가게 이미지 업로드 오류가 발생했습니다. : ${err}`);
+  }
+};
+
+// 가게 이미지는 한장을 유지해야 하므로 모두 제거하는 기능 필요
+export const cleanupUserRestaurants = async (RestaurantId: string): Promise<boolean> => {
+  try {
+    const { data, error: listError } = await supabase.storage
+      .from('store_photos')
+      .list('restaurants', { limit: 1000 });
+    if (listError) {
+      console.log(`목록 요청 에러 : ${listError.message}`);
+      return false;
+    }
+    // userId 에 해당하는 것만 필터링 해서 삭제해야 함.
+    if (data && data.length > 0) {
+      const userFile = data.filter(item => item.name.startsWith(`${RestaurantId}-`));
+      if (userFile && userFile.length > 0) {
+        const filePaths = userFile.map(item => `restaurants/${item.name}`);
+        const { error: removeError } = await supabase.storage
+          .from('store_photos')
+          .remove(filePaths);
+        if (removeError) {
+          console.log(`파일 삭제 에러 : ${removeError.message}`);
+          return false;
+        }
+        return true;
+      }
+    }
+    return true;
+  } catch (error) {
+    console.log(`아바타 이미지 전체 삭제 오류 : ${error}`);
+    return false;
+  }
+};
+
+// 레스토랑 이미지 제거
+export const removeRestaurant = async (RestaurantId: string | number): Promise<boolean> => {
+  try {
+    // 현재 로그인 한 사용자의 avartar_url 을 읽어와야 합니다.
+    // 여기서 파일명을 추출함.
+    const idstr = String(RestaurantId);
+    const restaurant = await getRestaurantById(idstr);
+    // 사용자의 avatar_url 이 없다면
+    if (!restaurant?.thumbnail_url) {
+      return true; // 작업완료
+    }
+    // 1. 만약 avartar_url 이 존재하면 이름 파악, 파일 삭제
+    let deleteSuccess = false;
+    try {
+      // url 에 파일명을 찾아야 함. (url 로 변환하면 path 와 파일구분이 수월함)
+      const url = new URL(restaurant.thumbnail_url);
+      const pathParts = url.pathname.split('/');
+      const publicIndex = pathParts.indexOf('public');
+      if (publicIndex !== -1 && publicIndex + 1 < pathParts.length) {
+        const bucketName = pathParts[publicIndex + 1];
+        const filePath = pathParts.slice(publicIndex + 2).join('/');
+        // 실제로 찾아낸 bucketName 과 filePath 로 삭제
+        const { data, error } = await supabase.storage.from(bucketName).remove([filePath]);
+        if (error) {
+          throw new Error('파일을 찾았지만, 삭제에는 실패했어요.');
+        }
+        // 파일 삭제 성공
+        deleteSuccess = true;
+      }
+    } catch (err) {}
+    // 2. 만약 avatar_url 을 제대로 파싱 못했다면?
+    if (!deleteSuccess) {
+      try {
+        // 전체 목록을 일단 읽어옴.
+        const { data: files, error: listError } = await supabase.storage
+          .from('store_photos')
+          .list('restaurants', { limit: 1000 });
+
+        if (!listError && files && files.length > 0) {
+          const userFiles = files.filter(item => TimeRanges.name.startsWith(`${RestaurantId}-`));
+          if (userFiles.length > 0) {
+            const filePath = userFiles.map(item => `restaurants/${item.name}`);
+            const { error } = await supabase.storage.from('store_photos').remove(filePath);
+            if (!error) {
+              deleteSuccess = true;
+            }
+          }
+        }
+      } catch (error) {
+        console.log(error);
+      }
+    }
+    return true;
+  } catch (error) {
+    console.log(error);
+  }
+  return false;
+};
+
+export const updateRestaurant = async (
+  editRestaurant: RestaurantsUpdate,
+  restaurantId: string,
+): Promise<boolean> => {
+  try {
+    const { error } = await supabase
+      .from('restaurants')
+      .update({ ...editRestaurant })
+      .eq('id', restaurantId);
+
+    if (error) {
+      console.log(error.message);
+      return false;
+    }
+    return true;
+  } catch (err) {
+    console.log(err);
+    return false;
+  }
 };

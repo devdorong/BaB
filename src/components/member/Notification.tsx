@@ -295,6 +295,10 @@ export default function Notification({ isOpen, onClose, onRead }: NotificationPr
           navigate(`/member/matching/${item.content}`);
           break;
         }
+        case '댓글': {
+          navigate(`/member/reviews/${item.content}`);
+          break;
+        }
         case '이벤트':
           navigate(`/member/events`);
           break;
