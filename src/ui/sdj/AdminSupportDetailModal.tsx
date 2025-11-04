@@ -1,24 +1,24 @@
+import { useAuth } from '@/contexts/AuthContext';
+import { supabase } from '@/lib/supabase';
 import type { AdminReportsPageProps } from '@/pages/admin/AdminSettingsPage';
 import dayjs from 'dayjs';
 import { AnimatePresence, motion } from 'framer-motion';
-import { useState } from 'react';
+import { useEffect, useState } from 'react';
 import { ButtonFillMd } from '../button';
-import { supabase } from '@/lib/supabase';
-import { useAuth } from '@/contexts/AuthContext';
-import { useModal } from './ModalState';
 import Modal from './Modal';
+import { useModal } from './ModalState';
 
 type AdminSupportDetailModalProps = {
-  isOpen: (value: React.SetStateAction<boolean>) => void;
+  onClose: () => void;
   helpDetail: AdminReportsPageProps;
 };
 
-function AdminSupportDetailModal({ isOpen, helpDetail }: AdminSupportDetailModalProps) {
+function AdminSupportDetailModal({ onClose, helpDetail }: AdminSupportDetailModalProps) {
   const [helpAnswer, setHelpAnswer] = useState('');
   const { user } = useAuth();
   const profileId = user?.id;
 
-  const { closeModal, modal, openModal } = useModal();
+  const { closeModal, modal, openModal, x } = useModal();
 
   const insertData = async (helpId: number, profileId: string, content: string) => {
     const { data, error } = await supabase
@@ -30,13 +30,12 @@ function AdminSupportDetailModal({ isOpen, helpDetail }: AdminSupportDetailModal
       console.error('답변 등록 실패:', error.message);
       return null;
     }
-    const { error: updateError } = await supabase
+    const { data: updated, error: updateError } = await supabase
       .from('helps')
       .update({ status: true })
       .eq('help_id', helpId);
 
     if (updateError) console.error('상태 업데이트 실패:', updateError.message);
-    console.log(data);
 
     return data;
   };
@@ -45,22 +44,40 @@ function AdminSupportDetailModal({ isOpen, helpDetail }: AdminSupportDetailModal
     if (!helpDetail || !profileId) {
       return;
     }
-    if (helpAnswer.trim()) {
-      openModal('안내', '문의 답변을 입력해주세요', '닫기', '확인', () => {
-        return;
-      });
+
+    if (!helpAnswer.trim()) {
+      openModal('안내', '문의 답변을 입력해주세요', '닫기');
+      return;
     }
 
     const result = await insertData(helpDetail.help_id, profileId, helpAnswer);
+
     if (result) {
-      openModal('안내', '답변이 등록되었습니다.', '닫기', '', () => {
-        setHelpAnswer('');
-        isOpen(false);
-      });
+      openModal(
+        '안내',
+        '답변이 등록되었습니다.',
+        '확인',
+        '',
+        () => {},
+        () => {
+          onClose();
+        },
+        () => {
+          onClose();
+        },
+      );
+    } else {
+      openModal('오류', '답변 등록에 실패했습니다.', '닫기');
     }
   };
 
-  if (!isOpen) return;
+  useEffect(() => {
+    document.body.style.overflow = 'hidden';
+    return () => {
+      document.body.style.overflow = 'auto';
+    };
+  }, []);
+
   return (
     <AnimatePresence>
       <motion.div
@@ -147,7 +164,7 @@ function AdminSupportDetailModal({ isOpen, helpDetail }: AdminSupportDetailModal
               <ButtonFillMd
                 style={{ backgroundColor: '#e5e7eb', color: '#5C5C5C' }}
                 className="flex-1 hover:!bg-gray-300"
-                onClick={() => isOpen(false)}
+                onClick={() => onClose()}
               >
                 닫기
               </ButtonFillMd>
@@ -162,6 +179,7 @@ function AdminSupportDetailModal({ isOpen, helpDetail }: AdminSupportDetailModal
               closeButtonText={modal.closeText}
               submitButtonText={modal.submitText}
               onSubmit={modal.onSubmit}
+              onX={modal.onX}
             />
           )}
         </motion.div>
