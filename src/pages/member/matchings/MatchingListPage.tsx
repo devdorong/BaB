@@ -17,6 +17,7 @@ import AllCategory from '@/components/member/AllCategory';
 import { useAuth } from '@/contexts/AuthContext';
 import { useNavigate } from 'react-router-dom';
 import { ButtonFillMd, ButtonFillSm } from '@/ui/button';
+import { checkUserAlreadyInActiveMatching } from '@/services/matchingService';
 
 dayjs.extend(relativeTime);
 dayjs.locale('ko');
@@ -63,7 +64,7 @@ type ProcessedMatching = Matchings & {
 type SortOption = '최신순' | '거리순';
 
 const MatchingListPage = () => {
-  const { user: loginUser } = useAuth();
+  const { user } = useAuth();
   const navigate = useNavigate();
   const { closeModal, modal, openModal } = useModal();
 
@@ -276,14 +277,25 @@ const MatchingListPage = () => {
     setCurrentPage(1);
   };
 
-  const handleWriteClick = () => {
-    if (!loginUser) {
+  const handleWriteClick = async () => {
+    if (!user) {
       openModal('로그인 확인', '로그인이 필요합니다.', '닫기', '로그인', () =>
         navigate('/member/login'),
       );
-    } else {
-      navigate(`/member/matching/write`);
+      return;
     }
+
+    const isAlready = await checkUserAlreadyInActiveMatching(user.id);
+
+    if (isAlready) {
+      closeModal();
+      openModal('빠른매칭', '이미 참여중인 매칭이있습니다.\n확인해주세요.', '', '확인', () =>
+        navigate('/member/profile/recentmatching'),
+      );
+      return;
+    }
+    
+    navigate(`/member/matching/write`);
   };
 
   // 정렬 옵션 변경 핸들러
