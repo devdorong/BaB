@@ -127,8 +127,10 @@ const YetMatchingRecordItem = ({ matching }: YetMatchingRecordItemProps) => {
         <div className="lg:flex hidden relative shrink-0">
           <img
             src={
-              profileData?.avatar_url !== 'guest_image'
-                ? profileData?.avatar_url
+              profileData?.avatar_url
+                ? profileData.avatar_url === 'guest_image'
+                  ? `https://www.gravatar.com/avatar/?d=mp&s=200`
+                  : profileData.avatar_url
                 : 'https://www.gravatar.com/avatar/?d=mp&s=200'
             }
             alt="호스트"
