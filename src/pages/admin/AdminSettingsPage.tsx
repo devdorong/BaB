@@ -1,6 +1,8 @@
 import { supabase } from '@/lib/supabase';
 import type { Help } from '@/types/bobType';
 import AdminSupportDetailModal from '@/ui/sdj/AdminSupportDetailModal';
+import Modal from '@/ui/sdj/Modal';
+import { useModal } from '@/ui/sdj/ModalState';
 import dayjs from 'dayjs';
 import { useEffect, useState } from 'react';
 import { RiCheckboxCircleLine } from 'react-icons/ri';
@@ -10,13 +12,19 @@ export type AdminReportsPageProps = Help & {
 };
 
 function AdminReportsPage() {
+  const { closeModal, modal, openModal } = useModal();
   const [helpList, setHelpList] = useState<AdminReportsPageProps[]>([]);
   const [helpDetail, setHelpDetail] = useState<AdminReportsPageProps | null>(null);
   const [helpModal, setHelpModal] = useState(false);
 
   const handleHelpModal = (help: AdminReportsPageProps) => {
-    setHelpDetail(help);
-    setHelpModal(true);
+    if (help.status === true) {
+      openModal('답변완료', '답변이 완료된 문의글 입니다.', '닫기');
+    }
+    if (help?.status === false) {
+      setHelpDetail(help);
+      setHelpModal(true);
+    }
   };
 
   const fetchData = async () => {
@@ -34,7 +42,7 @@ function AdminReportsPage() {
 
   useEffect(() => {
     fetchData();
-  }, [helpList, helpDetail]);
+  }, [modal, helpModal]);
 
   return (
     <div className="w-full min-h-screen bg-bg-bg p-8">
@@ -52,7 +60,7 @@ function AdminReportsPage() {
             className={`flex flex-col gap-1 p-6 border cursor-pointer w-full rounded-2xl ${help.status ? '' : 'border-bab'}`}
           >
             <div className="flex items-center gap-1 justify-between">
-              <div className='flex items-center gap-1'>
+              <div className="flex items-center gap-1">
                 <p>문의 유형 : {help.help_type}</p>
                 {help.status === false ? (
                   <RiCheckboxCircleLine className="text-babgray-300" />
@@ -60,7 +68,9 @@ function AdminReportsPage() {
                   <RiCheckboxCircleLine className="text-babbutton-green" />
                 )}
               </div>
-              <p className='text-babgray-600'>{dayjs(help.created_at).format('YYYY-MM-DD HH:mm')}</p>
+              <p className="text-babgray-600">
+                {dayjs(help.created_at).format('YYYY-MM-DD HH:mm')}
+              </p>
             </div>
             <p className="text-babgray-800 truncate">{help.title}</p>
             <p className="text-babgray-600 truncate">{help.contents}</p>
@@ -70,8 +80,18 @@ function AdminReportsPage() {
           </div>
         ))}
       </div>
-      {helpModal && helpDetail && (
+      {helpModal && helpDetail?.status === false ? (
         <AdminSupportDetailModal helpDetail={helpDetail} onClose={() => setHelpModal(false)} />
+      ) : (
+        <Modal
+          isOpen={modal.isOpen}
+          onClose={closeModal}
+          titleText={modal.title}
+          contentText={modal.content}
+          closeButtonText={modal.closeText}
+          submitButtonText={modal.submitText}
+          onSubmit={modal.onSubmit}
+        />
       )}
 
       {/* 하단 페이지네이션 */}

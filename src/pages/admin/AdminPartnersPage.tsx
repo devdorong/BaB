@@ -11,6 +11,7 @@ type ProfileWithEmail = Profile & {
   created_at: string;
 };
 
+export type RestaurantStatus = Database['public']['Tables']['restaurants']['Row']['status'];
 export type ProfileStatus = '정상' | '정지' | '탈퇴';
 
 export default function AdminPartnersPage() {
@@ -19,6 +20,8 @@ export default function AdminPartnersPage() {
   const [userList, setUserList] = useState<ProfileWithEmail[]>([]);
   const [search, setSearch] = useState('');
   const [sortType, setSortType] = useState<'이름순' | '가입일순'>('가입일순');
+
+  const [partnerSignup, setParterSignup] = useState<RestaurantStatus>('pending');
 
   const [memberDetail, setMemberDetail] = useState(false);
   const [loading, setLoading] = useState(true);
@@ -181,17 +184,17 @@ export default function AdminPartnersPage() {
                     )}
                     <td className="py-3 px-8">
                       {user.status === '활성' && (
-                        <button className="border border-gray-300 text-gray-600 text-xs px-3 py-1 rounded-full hover:bg-gray-100">
+                        <button className="text-gray-600 text-xs px-3 py-1 hover:bg-gray-100">
                           정지
                         </button>
                       )}
                       {user.status === '정지' && (
-                        <button className="border border-red-300 text-red-500 text-xs px-3 py-1 rounded-full hover:bg-red-50">
+                        <button className="text-red-500 text-xs px-3 py-1 hover:bg-red-50">
                           탈퇴
                         </button>
                       )}
                       {user.status === '탈퇴' && (
-                        <button className="border border-green-300 text-green-600 text-xs px-3 py-1 rounded-full hover:bg-green-50">
+                        <button className="text-green-600 text-xs px-3 py-1 hover:bg-green-50">
                           복원
                         </button>
                       )}
