@@ -1,10 +1,26 @@
+import type { ProfileWithEmail } from '@/pages/admin/AdminMembersPage';
+import { getUserMatchings } from '@/services/matchingService';
+import type { Matchings } from '@/types/bobType';
+import dayjs from 'dayjs';
 import { AnimatePresence, motion } from 'framer-motion';
+import { useEffect, useState } from 'react';
 
 interface MemberActivityModalProps {
   onClose: () => void;
+  user?: ProfileWithEmail;
 }
 
-export default function MemberActivityDetailModal({ onClose }: MemberActivityModalProps) {
+export default function MemberActivityDetailModal({ onClose, user }: MemberActivityModalProps) {
+  if (!user) return;
+  const [matcings, setMatcings] = useState<Matchings[]>([]);
+  const fetch = async () => {
+    const data = await getUserMatchings(user.id);
+    setMatcings(data);
+    console.log(data);
+  };
+  useEffect(() => {
+    fetch();
+  }, []);
   return (
     <AnimatePresence>
       <motion.div
@@ -27,13 +43,15 @@ export default function MemberActivityDetailModal({ onClose }: MemberActivityMod
           {/* 프로필 영역 */}
           <div className="flex items-center mb-6">
             <img
-              src="https://placekitten.com/60/60"
+              src={`${user?.avatar_url === 'guest_image' ? 'https://www.gravatar.com/avatar/?d=mp&s=200' : user?.avatar_url}`}
               alt="avatar"
               className="w-14 h-14 rounded-full object-cover mr-4"
             />
             <div>
-              <p className="text-lg font-medium">사용자 닉네임</p>
-              <p className="text-sm text-gray-500">가입일</p>
+              <p className="text-lg font-medium">{user.nickname}</p>
+              <p className="text-sm text-gray-500">
+                {dayjs(user.created_at).format('YYYY-MM-DD HH:mm')}
+              </p>
             </div>
           </div>
 
@@ -48,13 +66,19 @@ export default function MemberActivityDetailModal({ onClose }: MemberActivityMod
               </tr>
             </thead>
             <tbody>
-              <tr className="border-b last:border-0">
-                <td className="py-3 px-4 align-top text-gray-700">매칭일</td>
-                <td className="py-3 px-4">
-                  <div>(닉네임: 닉네임/아이디)</div>
-                </td>
-                <td className="py-3 px-4 align-top text-gray-700">장소</td>
-              </tr>
+              {matcings.map(i => (
+                <tr key={i.id} className="border-b last:border-0">
+                  <td className="py-3 px-4 align-top text-gray-700">
+                    {dayjs(i.created_at).format('YYYY-MM-DD')}
+                  </td>
+                  <td className="py-3 px-4">
+                    <div>{i.title}</div>
+                  </td>
+                  <td className="py-3 px-4 align-top text-gray-700">
+                    {i.restaurant_id}
+                  </td>
+                </tr>
+              ))}
             </tbody>
           </table>
 

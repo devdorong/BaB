@@ -345,6 +345,7 @@ const MatchingListPage = () => {
 
           {/* 카테고리 필터 */}
           <div className="hidden lg:flex flex-wrap gap-2 justify-start sm:justify-start">
+           
             <button
               onClick={() => handleCategoryChange('전체')}
               className={`px-4 py-2 rounded-full text-sm ${

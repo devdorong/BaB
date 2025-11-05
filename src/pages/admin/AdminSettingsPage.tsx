@@ -67,7 +67,7 @@ function AdminReportsPage() {
             onClick={() => handleHelpModal(help)}
             className={`flex flex-col gap-1 p-6 border cursor-pointer w-full rounded-2xl ${help.status ? '' : 'border-bab'}`}
           >
-            <div className="flex items-center gap-1 justify-between">
+            <div className="flex items-center gap-1 justify-between ">
               <div className="flex items-center gap-1">
                 <p>문의 유형 : {help.help_type}</p>
                 {help.status === false ? (
@@ -80,8 +80,8 @@ function AdminReportsPage() {
                 {dayjs(help.created_at).format('YYYY-MM-DD HH:mm')}
               </p>
             </div>
-            <p className="text-babgray-800 truncate">{help.title}</p>
-            <p className="text-babgray-600 truncate">{help.contents}</p>
+            <p className="text-babgray-800 truncate max-w-[1500px]">{help.title}</p>
+            <p className="text-babgray-600 truncate max-w-[1500px]">{help.contents}</p>
             <div className="flex gap-1">
               문의 회원 : <p className="font-bold"> {help.profiles?.nickname ?? '탈퇴회원'}</p>
             </div>

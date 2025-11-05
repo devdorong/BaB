@@ -34,6 +34,7 @@ const MatchingWritePage = () => {
     submitMatching,
     isLoading,
     error,
+    resetForm,
   } = useMatching();
 
   const [isMapModalOpen, setIsMapModalOpen] = useState(false);
@@ -73,9 +74,9 @@ const MatchingWritePage = () => {
   };
   const selectedHeadCounts = memberMap[formData.desiredMembers] || '';
 
-  // useEffect(() => {
-  //   console.log(formData.selectedPlace);
-  // }, [formData]);
+  useEffect(() => {
+    resetForm();
+  }, []);
 
   return (
     <ConfigProvider locale={locale}>

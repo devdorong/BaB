@@ -413,17 +413,17 @@ const PartnerHeader = () => {
             {open && (
               <div
                 ref={menuRef}
-                className="absolute left-4 bottom-4 bg-white border border-gray-200 rounded-md shadow-md py-2 w-32 z-50"
+                className="absolute left-4 bottom-4 bg-white border border-gray-200 rounded-md shadow-md p-2 w-32 z-50"
               >
                 <button
                   onClick={handleLogout}
-                  className="w-full px-4 py-2 text-left text-sm text-gray-700 hover:bg-gray-100"
+                  className="w-full px-4 py-2 text-left text-sm text-gray-700 rounded-sm hover:bg-gray-100"
                 >
                   로그아웃
                 </button>
                 <button
                   onClick={() => navigate('/')}
-                  className="w-full px-4 py-2 text-left text-sm text-gray-700 hover:bg-gray-100"
+                  className="w-full px-4 py-2 text-left text-sm text-gray-700 rounded-sm hover:bg-gray-100"
                 >
                   메인페이지로
                 </button>
