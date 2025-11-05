@@ -70,6 +70,7 @@ import { PartnerRestaurantProvider } from './contexts/PartnerRestaurantContext';
 import { useGoogleAnalytics } from './hooks/useGoogleAnalytics';
 import ConfirmPage from './pages/auth/ConfirmPage';
 import HelpPage from './pages/member/profiles/HelpPage';
+import AdminPartnerSignupDetailPage from './pages/admin/AdminPartnerSignupDetailPage';
 
 const LayoutWithAnalytics = ({ children }: { children: React.ReactNode }) => {
   useGoogleAnalytics(); // Router 컨텍스트 내부에서 사용
@@ -213,6 +214,7 @@ function App() {
                         >
                           <Route index element={<AdminMembersPage />} />
                           <Route path="partners" element={<AdminPartnersPage />} />
+                          <Route path="partners/:id" element={<AdminPartnerSignupDetailPage />} />
                           <Route path="matching" element={<AdminMatchingPage />} />
                           <Route path="reports" element={<AdminReportsPage />} />
                           <Route path="settings" element={<AdminSettingsPage />} />
