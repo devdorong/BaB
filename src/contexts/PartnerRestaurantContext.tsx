@@ -5,6 +5,7 @@ import { useAuth } from './AuthContext';
 
 interface PartnerRestaurantContextType {
   restaurant: Restaurants | null;
+  setRestaurant: React.Dispatch<React.SetStateAction<Restaurants | null>>;
   refreshRestaurant: () => Promise<void>;
 }
 
@@ -24,7 +25,7 @@ export const PartnerRestaurantProvider = ({ children }: { children: React.ReactN
   }, [user?.id]);
 
   return (
-    <PartnerRestaurantContext.Provider value={{ restaurant, refreshRestaurant }}>
+    <PartnerRestaurantContext.Provider value={{ restaurant, refreshRestaurant, setRestaurant }}>
       {children}
     </PartnerRestaurantContext.Provider>
   );

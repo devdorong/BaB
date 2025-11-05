@@ -486,10 +486,10 @@ export const uploadRestaurant = async (
       throw new Error(`지원하지 않는 파일 형식입니다. 허용 형식: ${allowedTypes.join(', ')}`);
     }
     // 기존에 만약 아바타 이미지가 있으면 무조건 삭제부터 합니다.
-    const result = await cleanupUserRestaurants(RestaurantId);
-    if (!result) {
-      console.log('파일 못 지웠어요.');
-    }
+    // const result = await cleanupUserRestaurants(RestaurantId);
+    // if (!result) {
+    //   console.log('파일 못 지웠어요.');
+    // }
 
     // 파일명이 중복되지 않도록 이름을 생성함.
     const fileExt = file.name.split('.').pop();
@@ -548,7 +548,7 @@ export const cleanupUserRestaurants = async (RestaurantId: string): Promise<bool
 };
 
 // 레스토랑 이미지 제거
-export const removeRestaurant = async (RestaurantId: string | number): Promise<boolean> => {
+export const removeRestaurantImg = async (RestaurantId: string | number): Promise<boolean> => {
   try {
     // 현재 로그인 한 사용자의 avartar_url 을 읽어와야 합니다.
     // 여기서 파일명을 추출함.
@@ -576,7 +576,9 @@ export const removeRestaurant = async (RestaurantId: string | number): Promise<b
         // 파일 삭제 성공
         deleteSuccess = true;
       }
-    } catch (err) {}
+    } catch (err) {
+      console.log('URL 파싱 방식 실패, 대체 방법 시도:', err);
+    }
     // 2. 만약 avatar_url 을 제대로 파싱 못했다면?
     if (!deleteSuccess) {
       try {
@@ -586,7 +588,7 @@ export const removeRestaurant = async (RestaurantId: string | number): Promise<b
           .list('restaurants', { limit: 1000 });
 
         if (!listError && files && files.length > 0) {
-          const userFiles = files.filter(item => TimeRanges.name.startsWith(`${RestaurantId}-`));
+          const userFiles = files.filter(item => item.name.startsWith(`${RestaurantId}-`));
           if (userFiles.length > 0) {
             const filePath = userFiles.map(item => `restaurants/${item.name}`);
             const { error } = await supabase.storage.from('store_photos').remove(filePath);

@@ -1,3 +1,4 @@
+import { useAdminHeader } from '@/contexts/AdminLayoutContext';
 import { useAuth } from '@/contexts/AuthContext';
 import { getProfile } from '@/lib/propile';
 import type { Profile } from '@/types/bobType';
@@ -135,6 +136,7 @@ export const mockReports = [
 function AdminReportsPage() {
   // 사용자 닉네임
   const [nickName, setNickName] = useState<string>('');
+  const { setHeader } = useAdminHeader();
 
   const statusBadge = (status: string) => {
     switch (status) {
@@ -159,11 +161,14 @@ function AdminReportsPage() {
         return null;
     }
   };
+  useEffect(() => {
+    setHeader('신고 내역', '신고된 채팅과 후기를 관리합니다.');
+  }, []);
 
   return (
     <div className="w-full min-h-screen bg-bg-bg p-8">
-      <h2 className="text-[23px] font-bold text-gray-800 mb-2">신고 내역</h2>
-      <p className="text-[13px] text-gray-500 mb-6">신고된 채팅과 후기를 관리합니다.</p>
+      {/* <h2 className="text-[23px] font-bold text-gray-800 mb-2">신고 내역</h2>
+      <p className="text-[13px] text-gray-500 mb-6">신고된 채팅과 후기를 관리합니다.</p> */}
 
       {/* 검색 및 필터 */}
       <div className="flex flex-col gap-6 items-start justify-start mb-6 bg-white p-[25px] rounded-[16px] shadow">

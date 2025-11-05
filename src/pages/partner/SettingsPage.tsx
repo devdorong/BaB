@@ -1,21 +1,23 @@
-import { RiEditLine, RiImageLine, RiLock2Line } from 'react-icons/ri';
-import { ButtonFillMd, GrayButtonFillSm } from '../../ui/button';
-import { UserFill } from '../../ui/Icon';
+import { removeRestaurantImg, updateRestaurant, uploadRestaurant } from '@/lib/restaurants';
 import { useEffect, useRef, useState } from 'react';
+import { RiImageLine } from 'react-icons/ri';
 import PartnerBoardHeader from '../../components/PartnerBoardHeader';
 import { useAuth } from '../../contexts/AuthContext';
-import type { Profile, Restaurants, RestaurantsUpdate } from '../../types/bobType';
-import { getProfile, removeAvatar } from '../../lib/propile';
 import { useRestaurant } from '../../contexts/PartnerRestaurantContext';
-import { removeRestaurant, updateRestaurant, uploadRestaurant } from '@/lib/restaurants';
+import { getProfile } from '../../lib/propile';
+import type { Profile, Restaurants, RestaurantsUpdate } from '../../types/bobType';
+import { ButtonFillMd } from '../../ui/button';
+import { useModal } from '@/ui/sdj/ModalState';
+import Modal from '@/ui/sdj/Modal';
 
 function SettingsPage() {
-  const { restaurant } = useRestaurant();
+  const { restaurant, setRestaurant } = useRestaurant();
   const [settings, setSettings] = useState({
     sms: false,
     newLogin: false,
   });
   const [userId, setUserId] = useState('');
+  const { openModal, closeModal, modal } = useModal();
 
   const handleToggle = (key: keyof typeof settings) => {
     setSettings(prev => ({ ...prev, [key]: !prev[key] }));
@@ -90,21 +92,20 @@ function SettingsPage() {
 
   // 저장하기
   const handlesaveImg = async (file?: File) => {
-    if (!user?.id) return;
+    if (!user?.id || !restaurant) return;
+
     try {
+      setUploading(true);
       let imgUrl = originalRestUrl; // 원본 img
-      if (imageRemovalRequest) {
-        // storage에 실제 이미지 제거
-        const imgsuccess = await removeRestaurant(String(restaurant?.id));
-        if (imgsuccess) {
-          imgUrl = null;
-        }
+
+      if (file && restaurant.thumbnail_url) {
+        await removeRestaurantImg(String(restaurant.id));
+        // console.log('기존 이미지 삭제완료');
       }
 
       if (file) {
-        setUploading(true);
-        const uploadedImageUrl = await uploadRestaurant(file, String(restaurant?.id));
-        setUploading(false);
+        const uploadedImageUrl = await uploadRestaurant(file, String(restaurant.id));
+
         if (uploadedImageUrl) imgUrl = uploadedImageUrl;
       }
 
@@ -112,16 +113,21 @@ function SettingsPage() {
         thumbnail_url: imgUrl,
       };
 
-      const success = await updateRestaurant(payload, String(restaurant?.id));
-      if (!success) {
-        return;
+      const success = await updateRestaurant(payload, String(restaurant.id));
+      if (!success) throw new Error('레스토랑 이미지 업데이트 실패');
+
+      if (setRestaurant) {
+        setRestaurant({ ...restaurant, thumbnail_url: imgUrl });
       }
+
       setRestaurants(prev => (prev ? { ...prev, thumbnail_url: imgUrl } : prev));
       setOriginalRestUrl(imgUrl);
       setSelectedFile(null);
       setImageRemovalRequest(false);
     } catch (err) {
       console.log(err);
+    } finally {
+      setUploading(false);
     }
   };
 
@@ -134,14 +140,16 @@ function SettingsPage() {
     const allowedTypes = ['image/jpeg', 'image/png', 'image/gif'];
     if (!allowedTypes.includes(file.type)) {
       // alert창 수정할것
-      alert(`지원하지 않는 파일 형식`);
+      // alert(`지원하지 않는 파일 형식`);
+      openModal('파일업로드', '지원하지 않는 파일 형식 입니다.', '닫기', '');
       return;
     }
 
     // 파일 크기 검증 (5MB 제한)
     const maxSize = 5 * 1024 * 1024;
     if (file.size > maxSize) {
-      alert(`파일 크기 큼`);
+      // alert(`파일 크기 큽니다. 최대 (5MB)`);
+      openModal('파일업로드', '파일 크기 큽니다. 최대 (5MB)', '닫기', '');
       return;
     }
 
@@ -150,10 +158,10 @@ function SettingsPage() {
 
   // ===========
 
-  useEffect(() => {
-    console.log(user?.app_metadata.provider);
-    console.log(restaurant);
-  }, []);
+  // useEffect(() => {
+  //   console.log(user?.app_metadata.provider);
+  //   console.log(restaurant);
+  // }, []);
 
   return (
     <>
@@ -165,7 +173,10 @@ function SettingsPage() {
             <div className="flex flex-col gap-2.5 justify-between items-center">
               <div className="w-[100px] h-[100px] rounded-full">
                 <img
-                  src={String(restaurant?.thumbnail_url)}
+                  src={
+                    String(restaurant?.thumbnail_url) ||
+                    'https://www.gravatar.com/avatar/?d=mp&s=200'
+                  }
                   alt="아바타"
                   className="w-full h-full object-cover  rounded-full object-center"
                 />
@@ -342,6 +353,17 @@ function SettingsPage() {
             </div>
           </div>
         </div>
+        {modal.isOpen && (
+          <Modal
+            isOpen={modal.isOpen}
+            onClose={closeModal}
+            titleText={modal.title}
+            contentText={modal.content}
+            closeButtonText={modal.closeText}
+            submitButtonText={modal.submitText}
+            onSubmit={modal.onSubmit}
+          />
+        )}
       </div>
     </>
   );
