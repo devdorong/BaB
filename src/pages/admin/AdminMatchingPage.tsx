@@ -1,12 +1,14 @@
 import Chart from '@/components/admin/Chart';
 import MonthChart from '@/components/admin/MonthChart';
 import MonthCart from '@/components/admin/MonthChart';
+import { useAdminHeader } from '@/contexts/AdminLayoutContext';
 import { useAuth } from '@/contexts/AuthContext';
 import type { RestaurantsDetailType } from '@/lib/restaurants';
 import { supabase } from '@/lib/supabase';
 import {
   getMatchings,
   getMatchingsWithRestaurant,
+  getMatchingsWithRestaurantImage,
   getMatchingsWithRestaurantsAndStatus,
   getParticipantCount,
   getUserMatchings,
@@ -32,15 +34,31 @@ import {
   RiUser5Line,
   RiUserLine,
 } from 'react-icons/ri';
+type MatchingWithRestaurantImage = Matchings & {
+  restaurants: {
+    id: number;
+    name: string;
+    address: string;
+    latitude: number | null;
+    longitude: number | null;
+    category_id: number | null;
+    storeintro: string | null;
+    thumbnail_url: string | null;
+    interests: {
+      name: string;
+    } | null;
+  } | null;
+};
 
 function AdminMatchingPage() {
+  const { setHeader } = useAdminHeader();
   const { user } = useAuth();
   const [place, setPlace] = useState<RestaurantsDetailType | null>(null);
   const [interest, setInterest] = useState<string | null>(null);
   const [profileData, setProfileData] = useState<Partial<Profile> | null>(null);
   const [loading, setLoading] = useState(true);
   const [headCount, setHeadCount] = useState(0);
-  const [matchings, setMatchings] = useState<MatchingWithRestaurant[]>([]);
+  const [matchings, setMatchings] = useState<MatchingWithRestaurantImage[]>([]);
   const [endMatchings, setEndMatchings] = useState<Matchings[]>([]);
   const [expectedMatchings, setExpectedMatchings] = useState<Matchings[]>([]);
 
@@ -48,7 +66,9 @@ function AdminMatchingPage() {
     const loadRecentMatchings = async () => {
       try {
         const all = await getMatchingsWithRestaurant();
-        setMatchings(all);
+        const alls = await getMatchingsWithRestaurantImage();
+        // console.log(alls);
+        setMatchings(alls);
 
         // console.log(all);
       } catch (err) {
@@ -57,6 +77,7 @@ function AdminMatchingPage() {
     };
 
     loadRecentMatchings();
+    setHeader('매칭 및 모임 관리', '사용자 매칭 현황과 모임을 관리합니다.');
   }, []);
 
   const statusBadge = (status: string) => {
@@ -85,8 +106,8 @@ function AdminMatchingPage() {
 
   return (
     <div className="w-full min-h-screen bg-bg-bg p-8">
-      <h2 className="text-[23px] font-bold text-gray-800 mb-2">매칭 및 모임 관리</h2>
-      <p className="text-[13px] text-gray-500 mb-6">사용자 매칭 현황과 모임을 관리합니다.</p>
+      {/* <h2 className="text-[23px] font-bold text-gray-800 mb-2">매칭 및 모임 관리</h2>
+      <p className="text-[13px] text-gray-500 mb-6">사용자 매칭 현황과 모임을 관리합니다.</p> */}
       <div className="flex flex-col gap-4">
         <div className="flex gap-5 items-center">
           <div className="flex flex-col flex-1 gap-6 bg-white p-[25px] rounded-[16px] shadow h-[350px]">
@@ -116,9 +137,8 @@ function AdminMatchingPage() {
                     <div className="relative shrink-0">
                       <img
                         src={
-                          profileData?.avatar_url !== 'guest_image'
-                            ? profileData?.avatar_url
-                            : 'https://www.gravatar.com/avatar/?d=mp&s=200'
+                          i.restaurants?.thumbnail_url ||
+                          'https://www.gravatar.com/avatar/?d=mp&s=200'
                         }
                         alt="호스트"
                         className="w-14 h-14 rounded-full object-cover border border-gray-200"

@@ -57,6 +57,34 @@ export const getMatchingsWithRestaurant = async (): Promise<MatchingWithRestaura
   return data ?? [];
 };
 
+export const getMatchingsWithRestaurantImage = async () => {
+  const { data, error } = await supabase
+    .from('matchings')
+    .select(
+      `
+      *,
+      restaurants (
+        id,
+        name,
+        address,
+        latitude,
+        longitude,
+        category_id,
+        storeintro,
+        thumbnail_url,
+        interests (
+          name
+        )
+      )
+    `,
+    )
+    .order('created_at', { ascending: false });
+  if (error) {
+    throw new Error(error.message);
+  }
+  return data ?? [];
+};
+
 // 매칭 아이디로 매칭 정보 불러오기
 export const getMatchingById = async (matchingId: number): Promise<Matchings> => {
   const { data, error } = await supabase

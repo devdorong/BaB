@@ -1,3 +1,4 @@
+import { useAdminHeader } from '@/contexts/AdminLayoutContext';
 import { useAuth } from '@/contexts/AuthContext';
 import { supabase } from '@/lib/supabase';
 import type { Database, Profile } from '@/types/bobType';
@@ -14,6 +15,7 @@ type ProfileWithEmail = Profile & {
 export type ProfileStatus = Database['public']['Tables']['profiles']['Row']['status'];
 
 export default function UserManagementPage() {
+  const { setHeader } = useAdminHeader();
   const { user: authUser } = useAuth();
   const [statusFilter, setStatusFilter] = useState<ProfileStatus>('활성');
   const [userList, setUserList] = useState<ProfileWithEmail[]>([]);
@@ -28,7 +30,6 @@ export default function UserManagementPage() {
   dayjs.locale('ko');
 
   const fetchData = useCallback(async () => {
-
     try {
       setLoading(true);
       setError(null);
@@ -56,6 +57,7 @@ export default function UserManagementPage() {
   }, [authUser, statusFilter]);
 
   useEffect(() => {
+    setHeader('사용자 관리', '플랫폼 사용자 계정을 관리하고 모니터링합니다.');
     fetchData();
   }, []);
 
@@ -71,7 +73,7 @@ export default function UserManagementPage() {
   }, [userList, search]);
 
   // 정렬
-  const sortedUsers = useMemo(()  => {
+  const sortedUsers = useMemo(() => {
     const users = [...filteredUsers];
 
     if (sortType === '이름순') {
@@ -85,13 +87,13 @@ export default function UserManagementPage() {
 
   return (
     <div className="w-full min-h-screen bg-bg-bg text-babgray-800 font-semibold">
-      <div className="p-8"> 
-        <h2 className="text-[23px] font-bold text-gray-800 mb-2">사용자 관리</h2>
+      <div className="p-8">
+        {/* <h2 className="text-[23px] font-bold text-gray-800 mb-2">사용자 관리</h2>
         <p className="text-[13px] text-gray-500 mb-6">
           플랫폼 사용자 계정을 관리하고 모니터링합니다.
-        </p>
+        </p> */}
 
-        <div className="flex items-center justify-between mb-6 bg-white p-[25px] rounded-[16px] shadow">
+        <div className="flex w-full items-center justify-between bg-white p-[25px] rounded-[16px] shadow">
           <div className="flex items-center space-x-2">
             <div className="relative">
               <RiSearchLine className="absolute left-3 top-2.5 text-gray-400" />
@@ -106,9 +108,7 @@ export default function UserManagementPage() {
             <select
               value={sortType}
               onChange={e => setSortType(e.target.value as '이름순' | '가입일순')}
-
               className="appearance-none border border-gray-300 rounded-full px-4 py-2 text-sm focus:outline-none focus:ring-1 focus:ring-bab-500"
-
             >
               <option value="가입일순">가입일순</option>
               <option value="이름순">이름순</option>
@@ -146,82 +146,84 @@ export default function UserManagementPage() {
         )}
       </div>
 
-      <div className="w-full border border-gray-100 overflow-hidden">
-        <table className="w-full text-sm">
-          <thead className="bg-gray-100 text-gray-700">
-            <tr>
-              <th className="py-3 px-8 text-left">이름</th>
-              <th className="py-3 px-8 text-left">이메일</th>
-              <th className="py-3 px-8 text-left">가입일</th>
-              <th className="py-3 px-8 text-left">상태</th>
-              <th className="py-3 px-8 text-left">활동내역</th>
-              <th className="py-3 px-8 text-left">관리</th>
-            </tr>
-          </thead>
-          <tbody>
-            {loading ? (
+      <div className="px-8">
+        <div className="w-full bg-white p-[25px] border border-gray-100 overflow-hidden rounded-[16px] shadow">
+          <table className="w-full text-sm">
+            <thead className="bg-gray-100 text-gray-700">
               <tr>
-                <td colSpan={6} className="py-10 text-center text-gray-400">
-                  사용자 목록을 불러오는 중입니다...
-                </td>
+                <th className="py-3 px-8 text-left">이름</th>
+                <th className="py-3 px-8 text-left">이메일</th>
+                <th className="py-3 px-8 text-left">가입일</th>
+                <th className="py-3 px-8 text-left">상태</th>
+                <th className="py-3 px-8 text-left">활동내역</th>
+                <th className="py-3 px-8 text-left">관리</th>
               </tr>
-            ) : sortedUsers.length === 0 ? (
-              <tr>
-                <td colSpan={6} className="py-10 text-center text-gray-400">
-                  표시할 사용자가 없습니다.
-                </td>
-              </tr>
-            ) : (
-              <>
-                {sortedUsers.map((user, idx) => (
-                  <tr key={user.id || idx} className="border-b last:border-b-0 hover:bg-gray-50">
-                    <td className="py-3 px-8 flex items-center space-x-3">
-                      <img
-                        src={
-                          user.avatar_url === 'guest_image'
-                            ? `https://www.gravatar.com/avatar/?d=mp&s=200`
-                            : user.avatar_url
-                        }
-                        alt="avatar"
-                        className="w-8 h-8 rounded-full object-cover"
-                      />
-                      <span>{user.nickname}</span>
-                    </td>
-                    <td className="py-3 px-8">{user.email}</td>
-                    <td className="py-3 px-8">{dayjs(user.created_at).format('YYYY-MM-DD')}</td>
-                    <td className="py-3 px-8">{user.status}</td>
-                    <td
-                      onClick={() => setMemberDetail(true)}
-                      className="py-3 px-8 text-bab-500 hover:underline cursor-pointer"
-                    >
-                      상세보기
-                    </td>
-                    {memberDetail && (
-                      <MemberActivityDetailModal onClose={() => setMemberDetail(false)} />
-                    )}
-                    <td className="py-3 px-8">
-                      {user.status === '활성' && (
-                        <button className="border border-gray-300 text-gray-600 text-xs px-3 py-1 rounded-full hover:bg-gray-100">
-                          정지
-                        </button>
+            </thead>
+            <tbody>
+              {loading ? (
+                <tr>
+                  <td colSpan={6} className="py-10 text-center text-gray-400">
+                    사용자 목록을 불러오는 중입니다...
+                  </td>
+                </tr>
+              ) : sortedUsers.length === 0 ? (
+                <tr>
+                  <td colSpan={6} className="py-10 text-center text-gray-400">
+                    표시할 사용자가 없습니다.
+                  </td>
+                </tr>
+              ) : (
+                <>
+                  {sortedUsers.map((user, idx) => (
+                    <tr key={user.id || idx} className="border-b last:border-b-0 hover:bg-gray-50">
+                      <td className="py-3 px-8 flex items-center space-x-3">
+                        <img
+                          src={
+                            user.avatar_url === 'guest_image'
+                              ? `https://www.gravatar.com/avatar/?d=mp&s=200`
+                              : user.avatar_url
+                          }
+                          alt="avatar"
+                          className="w-8 h-8 rounded-full object-cover"
+                        />
+                        <span>{user.nickname}</span>
+                      </td>
+                      <td className="py-3 px-8">{user.email}</td>
+                      <td className="py-3 px-8">{dayjs(user.created_at).format('YYYY-MM-DD')}</td>
+                      <td className="py-3 px-8">{user.status}</td>
+                      <td
+                        onClick={() => setMemberDetail(true)}
+                        className="py-3 px-8 text-bab-500 hover:underline cursor-pointer"
+                      >
+                        상세보기
+                      </td>
+                      {memberDetail && (
+                        <MemberActivityDetailModal onClose={() => setMemberDetail(false)} />
                       )}
-                      {user.status === '정지' && (
-                        <button className="border border-red-300 text-red-500 text-xs px-3 py-1 rounded-full hover:bg-red-50">
-                          탈퇴
-                        </button>
-                      )}
-                      {user.status === '탈퇴' && (
-                        <button className="border border-green-300 text-green-600 text-xs px-3 py-1 rounded-full hover:bg-green-50">
-                          복원
-                        </button>
-                      )}
-                    </td>
-                  </tr>
-                ))}
-              </>
-            )}
-          </tbody>
-        </table>
+                      <td className="py-3 px-8">
+                        {user.status === '활성' && (
+                          <button className="border border-gray-300 text-gray-600 text-xs px-3 py-1 rounded-full hover:bg-gray-100">
+                            정지
+                          </button>
+                        )}
+                        {user.status === '정지' && (
+                          <button className="border border-red-300 text-red-500 text-xs px-3 py-1 rounded-full hover:bg-red-50">
+                            탈퇴
+                          </button>
+                        )}
+                        {user.status === '탈퇴' && (
+                          <button className="border border-green-300 text-green-600 text-xs px-3 py-1 rounded-full hover:bg-green-50">
+                            복원
+                          </button>
+                        )}
+                      </td>
+                    </tr>
+                  ))}
+                </>
+              )}
+            </tbody>
+          </table>
+        </div>
       </div>
 
       <div className="flex justify-between p-8 items-center mt-4 text-sm text-gray-600">

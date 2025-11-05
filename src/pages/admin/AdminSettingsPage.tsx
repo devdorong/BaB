@@ -1,3 +1,4 @@
+import { useAdminHeader } from '@/contexts/AdminLayoutContext';
 import { supabase } from '@/lib/supabase';
 import type { Help } from '@/types/bobType';
 import AdminSupportDetailModal from '@/ui/sdj/AdminSupportDetailModal';
@@ -10,6 +11,7 @@ export type AdminReportsPageProps = Help & {
 };
 
 function AdminReportsPage() {
+  const { setHeader } = useAdminHeader();
   const [helpList, setHelpList] = useState<AdminReportsPageProps[]>([]);
   const [helpDetail, setHelpDetail] = useState<AdminReportsPageProps | null>(null);
   const [helpModal, setHelpModal] = useState(false);
@@ -36,10 +38,14 @@ function AdminReportsPage() {
     fetchData();
   }, [helpList, helpDetail]);
 
+  useEffect(() => {
+    setHeader('문의 내역', '1:1 문의 내역을 관리합니다.');
+  }, []);
+
   return (
     <div className="w-full min-h-screen bg-bg-bg p-8">
-      <h2 className="text-[23px] font-bold text-gray-800 mb-2">문의 내역</h2>
-      <p className="text-[13px] text-babgray-500 mb-6">1:1 문의 내역을 관리합니다.</p>
+      {/* <h2 className="text-[23px] font-bold text-gray-800 mb-2">문의 내역</h2>
+      <p className="text-[13px] text-babgray-500 mb-6">1:1 문의 내역을 관리합니다.</p> */}
 
       {/* 검색 및 필터 */}
       <div className="flex flex-col w-full gap-6 items-start justify-start mb-6 bg-white p-[25px] rounded-[16px] shadow">
@@ -52,7 +58,7 @@ function AdminReportsPage() {
             className={`flex flex-col gap-1 p-6 border cursor-pointer w-full rounded-2xl ${help.status ? '' : 'border-bab'}`}
           >
             <div className="flex items-center gap-1 justify-between">
-              <div className='flex items-center gap-1'>
+              <div className="flex items-center gap-1">
                 <p>문의 유형 : {help.help_type}</p>
                 {help.status === false ? (
                   <RiCheckboxCircleLine className="text-babgray-300" />
@@ -60,7 +66,9 @@ function AdminReportsPage() {
                   <RiCheckboxCircleLine className="text-babbutton-green" />
                 )}
               </div>
-              <p className='text-babgray-600'>{dayjs(help.created_at).format('YYYY-MM-DD HH:mm')}</p>
+              <p className="text-babgray-600">
+                {dayjs(help.created_at).format('YYYY-MM-DD HH:mm')}
+              </p>
             </div>
             <p className="text-babgray-800 truncate">{help.title}</p>
             <p className="text-babgray-600 truncate">{help.contents}</p>

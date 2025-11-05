@@ -15,6 +15,7 @@ import Modal from '../../ui/sdj/Modal';
 import { useModal } from '../../ui/sdj/ModalState';
 import MatchCard, { type Badge } from '../MatchCard';
 import { supabase } from '@/lib/supabase';
+import { toast } from 'sonner';
 
 type ProcessedMatching = Matchings & {
   tags: Badge[];
@@ -222,6 +223,16 @@ const MachingIndex = () => {
         >
           더보기
         </ButtonLineMd>
+        {/* <button
+          onClick={() =>
+            toast.success(
+              '글씨가너무길어요 글씨가너무길어요글씨가너무길어요글씨가너무길어요글씨가너무길어요',
+              { position: 'top-center' },
+            )
+          }
+        >
+          토스트
+        </button> */}
       </div>
 
       {modal.isOpen && (

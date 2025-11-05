@@ -1,3 +1,4 @@
+import { useAdminHeader } from '@/contexts/AdminLayoutContext';
 import { useAuth } from '@/contexts/AuthContext';
 import { supabase } from '@/lib/supabase';
 import type { Database, Profile } from '@/types/bobType';
@@ -14,6 +15,7 @@ type ProfileWithEmail = Profile & {
 export type ProfileStatus = '정상' | '정지' | '탈퇴';
 
 export default function AdminPartnersPage() {
+  const { setHeader } = useAdminHeader();
   const { user: authUser } = useAuth();
   const [statusFilter, setStatusFilter] = useState<ProfileStatus>('정상');
   const [userList, setUserList] = useState<ProfileWithEmail[]>([]);
@@ -74,14 +76,17 @@ export default function AdminPartnersPage() {
 
     return users;
   }, [filteredUsers, sortType]);
+  useEffect(() => {
+    setHeader('파트너 관리', '플랫폼 파트너 계정을 관리하고 모니터링합니다.');
+  }, []);
   // console.log(sortedUsers);
   return (
     <div className="w-full min-h-screen bg-bg-bg text-babgray-800 font-semibold">
       <div className="p-8">
-        <h2 className="text-[23px] font-bold text-gray-800 mb-2">파트너 관리</h2>
+        {/* <h2 className="text-[23px] font-bold text-gray-800 mb-2">파트너 관리</h2>
         <p className="text-[13px] text-gray-500 mb-6">
           플랫폼 파트너 계정을 관리하고 모니터링합니다.
-        </p>
+        </p> */}
 
         {/* 검색 및 필터 */}
         <div className="flex items-center justify-between mb-6 bg-white p-[25px] rounded-[16px] shadow">
