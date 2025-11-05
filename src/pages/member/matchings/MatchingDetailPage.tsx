@@ -449,7 +449,6 @@ const MatchingDetailPage = () => {
   };
 
   const handleParticipation = async () => {
-    
     if (!user) return;
 
     const isAlready = await checkUserAlreadyInActiveMatching(user.id);
