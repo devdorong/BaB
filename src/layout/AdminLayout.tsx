@@ -91,7 +91,7 @@ function AdminTopBar() {
         onClick={() => setOpen(!open)}
       >
         <img
-          src={`${profileData?.avatar_url}`}
+          src={`${profileData?.avatar_url === 'guest_image' ? 'https://www.gravatar.com/avatar/?d=mp&s=200' : profileData?.avatar_url}`}
           alt="admin"
           className="w-8 h-8 rounded-full border"
         />
@@ -139,7 +139,7 @@ function AdminLayout() {
         <div className="flex-1 ml-[260px] flex flex-col">
           <AdminTopBar />
 
-          <main className="flex-1 overflow-y-auto mt-[87px]">
+          <main className="flex-1 overflow-y-auto mt-[87px] ">
             <Outlet />
           </main>
         </div>

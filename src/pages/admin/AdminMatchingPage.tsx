@@ -65,7 +65,6 @@ function AdminMatchingPage() {
   useEffect(() => {
     const loadRecentMatchings = async () => {
       try {
-        const all = await getMatchingsWithRestaurant();
         const alls = await getMatchingsWithRestaurantImage();
         // console.log(alls);
         setMatchings(alls);
@@ -83,20 +82,22 @@ function AdminMatchingPage() {
   const statusBadge = (status: string) => {
     switch (status) {
       case 'cancel':
-        return <span className="px-2 py-1 text-xs rounded-full bg-red-100 text-red-700">취소</span>;
+        return (
+          <span className="px-2  py-1 text-xs rounded-full bg-red-100 text-red-700">취소</span>
+        );
       case 'completed':
         return (
-          <span className="px-2 py-1 text-xs rounded-full bg-green-100 text-green-700">완료</span>
+          <span className="px-2  py-1 text-xs rounded-full bg-green-100 text-green-700">완료</span>
         );
       case 'waiting':
         return (
-          <span className="px-2 py-1 text-xs rounded-full bg-purple-100 text-purple-700">
-            진행중
+          <span className="px-2  py-1 text-xs rounded-full bg-purple-100 text-purple-700">
+            진행
           </span>
         );
       case 'full':
         return (
-          <span className="px-2 py-1 text-xs rounded-full bg-blue-100 text-blue-700">예정</span>
+          <span className="px-2  py-1 text-xs rounded-full bg-blue-100 text-blue-700">예정</span>
         );
 
       default:
@@ -109,30 +110,30 @@ function AdminMatchingPage() {
       {/* <h2 className="text-[23px] font-bold text-gray-800 mb-2">매칭 및 모임 관리</h2>
       <p className="text-[13px] text-gray-500 mb-6">사용자 매칭 현황과 모임을 관리합니다.</p> */}
       <div className="flex flex-col gap-4">
-        <div className="flex gap-5 items-center">
-          <div className="flex flex-col flex-1 gap-6 bg-white p-[25px] rounded-[16px] shadow h-[350px]">
+        <div className="flex w-full gap-5 items-center">
+          <div className="flex flex-col w-[45%] flex-1 gap-6 bg-white p-[25px] rounded-[16px] shadow h-[350px]">
             <h3 className="font-bold">매칭 성공률</h3>
             <Chart />
           </div>
-          <div className="flex flex-col flex-1 gap-6 bg-white p-[25px] rounded-[16px] shadow h-[350px]">
+          <div className="flex flex-col w-[45%] flex-1 gap-6 bg-white p-[25px] rounded-[16px] shadow h-[350px]">
             <h3 className="font-bold">월별 매칭 현황</h3>
             <MonthChart />
           </div>
         </div>
-        <div className="flex flex-col w-full gap-6 bg-white p-[25px] rounded-[16px] shadow h-[350px]">
+        <div className="flex flex-col w-full h-full gap-6 bg-white p-[25px] rounded-[16px] shadow">
           <h3 className="font-bold">진행중인 모임</h3>
-          <div className="flex">
-            {matchings.slice(0, 3).map(i => {
+          <div className="grid grid-cols-3 gap-4">
+            {matchings.slice(0, 6).map(i => {
               const isoString = i.met_at;
               const formatted = dayjs(isoString).format('YYYY-MM-DD HH:mm');
 
               return (
-                <div
-                  key={i.id}
-                  className="w-full p-4 bg-white rounded-2xl shadow-[0_4px_8px_rgba(0,0,0,0.03)] transition-all hover:shadow-[0_6px_12px_rgba(0,0,0,0.05)]"
-                >
-                  <div className="mb-4">{statusBadge(i.status)}</div>
-                  <div className="flex gap-5 items-start">
+                <div key={i.id} className="w-full p-4 border bg-white rounded-2xl transition-all ">
+                  <div className="mb-4 flex  items-center gap-6">
+                    <div>{statusBadge(i.status)}</div>
+                    <div>{i.title}</div>
+                  </div>
+                  <div className="flex gap-5 items-center">
                     {/* 호스트 프로필 */}
                     <div className="relative shrink-0">
                       <img
@@ -146,7 +147,7 @@ function AdminMatchingPage() {
                     </div>
 
                     {/* 오른쪽 내용 */}
-                    <div className="flex flex-col flex-1 gap-3">
+                    <div className="flex flex-col flex-1">
                       {/* 상단: 이름 + 상태 */}
                       <div className="flex justify-between items-center">
                         <div className="flex items-center gap-3"></div>

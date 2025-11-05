@@ -15,8 +15,9 @@ import { useModal } from '../../ui/sdj/ModalState';
 import TagBadge from '../../ui/TagBadge';
 import styles from './EventPage.module.css';
 import { AnimatePresence, motion } from 'framer-motion';
+import { updatedEventStatus } from '@/services/eventService';
 
-type EventState = Database['public']['Tables']['events']['Row']['status'];
+export type EventState = Database['public']['Tables']['events']['Row']['status'];
 type EventFilterState = EventState | '전체';
 
 function EventPage() {
@@ -207,6 +208,20 @@ function EventPage() {
         status: getStatusByDate(e.start_date, e.end_date),
       }));
 
+      const changedEvents = mapped.filter(
+        e => e.status !== withBadge.find(orig => orig.id === e.id)?.status,
+      );
+      
+      if (changedEvents.length > 0) {
+        await Promise.all(
+          changedEvents.map(e =>
+            updatedEventStatus({
+              id: e.id,
+              newStatus: e.status,
+            }),
+          ),
+        );
+      }
       const ChangeBadgeEvents = mapped.filter(item => {
         const prev = prevEvents.find(p => p.id === item.id);
         return prev && prev.status === '예정' && item.status === '진행중';

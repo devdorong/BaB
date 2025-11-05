@@ -449,7 +449,6 @@ const MatchingDetailPage = () => {
   };
 
   const handleParticipation = async () => {
-    
     if (!user) return;
 
     const isAlready = await checkUserAlreadyInActiveMatching(user.id);
@@ -735,7 +734,7 @@ const MatchingDetailPage = () => {
               <div className="w-full p-6 bg-white rounded-2xl shadow-[0_4px_4px_rgba(0,0,0,0.02)]">
                 <section className="w-full space-y-3">
                   {/* 조건별 버튼 */}
-                  {status !== 'waiting' ? (
+                  {status !== 'waiting' && status !== 'full'  ? (
                     <button
                       className="inline-flex w-full h-[50px] px-[15px] justify-center items-center rounded-lg 
              bg-gray-300 text-white text-[16px] font-medium 

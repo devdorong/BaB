@@ -79,6 +79,7 @@ export default function AdminPartnersPage() {
 
     return users;
   }, [filteredUsers, sortType]);
+
   useEffect(() => {
     setHeader('파트너 관리', '플랫폼 파트너 계정을 관리하고 모니터링합니다.');
   }, []);
@@ -101,13 +102,13 @@ export default function AdminPartnersPage() {
                 value={search}
                 onChange={e => setSearch(e.target.value)}
                 placeholder="닉네임, 이메일로 검색"
-                className="pl-10 pr-3 py-2 border border-gray-300 rounded-full text-sm w-64 focus:outline-none focus:ring-1 focus:ring-bab"
+                className="pl-10 pr-3 py-2 border border-gray-300 rounded-full text-sm w-64 focus:outline-none focus:border-bab-500"
               />
             </div>
             <select
               value={sortType}
               onChange={e => setSortType(e.target.value as '이름순' | '가입일순')}
-              className="appearance-none border border-gray-300 rounded-full px-4 py-2 text-sm focus:outline-none focus:ring-1 focus:ring-bab"
+              className="appearance-none border border-gray-300 rounded-full px-4 py-2 text-sm focus:outline-none focus:border-bab-500"
             >
               <option value="가입일순">가입일순</option>
               <option value="이름순">이름순</option>
@@ -166,9 +167,11 @@ export default function AdminPartnersPage() {
                     <td className="py-3 px-8 flex items-center space-x-3">
                       <img
                         src={
-                          user.avatar_url === 'guest_image'
-                            ? `https://www.gravatar.com/avatar/?d=mp&s=200`
-                            : user.avatar_url
+                        user.avatar_url
+                              ? user.avatar_url === 'guest_image'
+                                ? `https://www.gravatar.com/avatar/?d=mp&s=200`
+                                : user.avatar_url
+                              : 'https://www.gravatar.com/avatar/?d=mp&s=200'
                         }
                         alt="avatar"
                         className="w-8 h-8 rounded-full object-cover"

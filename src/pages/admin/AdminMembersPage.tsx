@@ -7,7 +7,7 @@ import dayjs from 'dayjs';
 import { useEffect, useMemo, useState, useCallback } from 'react';
 import { RiSearchLine } from 'react-icons/ri';
 
-type ProfileWithEmail = Profile & {
+export type ProfileWithEmail = Profile & {
   email: string;
   created_at: string;
 };
@@ -24,6 +24,7 @@ export default function UserManagementPage() {
   const [memberDetail, setMemberDetail] = useState(false);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
+  const [selectedUser, setSelectedUser] = useState<ProfileWithEmail | null>(null);
 
   const category: ProfileStatus[] = ['활성', '정지', '탈퇴'];
 
@@ -102,13 +103,14 @@ export default function UserManagementPage() {
                 value={search}
                 onChange={e => setSearch(e.target.value)}
                 placeholder="닉네임, 이메일로 검색"
-                className="pl-10 pr-3 py-2 border border-gray-300 rounded-full text-sm w-64 focus:outline-none focus:ring-1 focus:ring-bab-500"
+                className="pl-10 pr-3 py-2 border border-gray-300 rounded-full text-sm w-64 focus:outline-none  focus:border-bab-500"
               />
             </div>
+
             <select
               value={sortType}
               onChange={e => setSortType(e.target.value as '이름순' | '가입일순')}
-              className="appearance-none border border-gray-300 rounded-full px-4 py-2 text-sm focus:outline-none focus:ring-1 focus:ring-bab-500"
+              className="appearance-none border border-gray-300 rounded-full px-4 py-2 text-sm focus:outline-none focus:border-bab-500 "
             >
               <option value="가입일순">가입일순</option>
               <option value="이름순">이름순</option>
@@ -179,9 +181,11 @@ export default function UserManagementPage() {
                       <td className="py-3 px-8 flex items-center space-x-3">
                         <img
                           src={
-                            user.avatar_url === 'guest_image'
-                              ? `https://www.gravatar.com/avatar/?d=mp&s=200`
-                              : user.avatar_url
+                            user.avatar_url
+                              ? user.avatar_url === 'guest_image'
+                                ? `https://www.gravatar.com/avatar/?d=mp&s=200`
+                                : user.avatar_url
+                              : 'https://www.gravatar.com/avatar/?d=mp&s=200'
                           }
                           alt="avatar"
                           className="w-8 h-8 rounded-full object-cover"
@@ -192,14 +196,12 @@ export default function UserManagementPage() {
                       <td className="py-3 px-8">{dayjs(user.created_at).format('YYYY-MM-DD')}</td>
                       <td className="py-3 px-8">{user.status}</td>
                       <td
-                        onClick={() => setMemberDetail(true)}
+                        onClick={() => setSelectedUser(user)}
                         className="py-3 px-8 text-bab-500 hover:underline cursor-pointer"
                       >
                         상세보기
                       </td>
-                      {memberDetail && (
-                        <MemberActivityDetailModal onClose={() => setMemberDetail(false)} />
-                      )}
+
                       <td className="py-3 px-8">
                         {user.status === '활성' && (
                           <button className="border border-gray-300 text-gray-600 text-xs px-3 py-1 rounded-full hover:bg-gray-100">
@@ -242,6 +244,9 @@ export default function UserManagementPage() {
           <span className="text-gray-400">›</span>
         </div>
       </div>
+      {selectedUser && (
+        <MemberActivityDetailModal user={selectedUser} onClose={() => setSelectedUser(null)} />
+      )}
     </div>
   );
 }

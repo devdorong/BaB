@@ -73,6 +73,20 @@ export type Database = {
             referencedRelation: "profiles"
             referencedColumns: ["id"]
           },
+          {
+            foreignKeyName: "comment_likes_profile_id_fkey"
+            columns: ["profile_id"]
+            isOneToOne: false
+            referencedRelation: "profiles_with_email"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "comment_likes_profile_id_fkey"
+            columns: ["profile_id"]
+            isOneToOne: false
+            referencedRelation: "restaurants_with_profiles_and_email"
+            referencedColumns: ["profile_id"]
+          },
         ]
       }
       comments: {
@@ -128,6 +142,20 @@ export type Database = {
             isOneToOne: false
             referencedRelation: "profiles"
             referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "comments_profile_id_fkey"
+            columns: ["profile_id"]
+            isOneToOne: false
+            referencedRelation: "profiles_with_email"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "comments_profile_id_fkey"
+            columns: ["profile_id"]
+            isOneToOne: false
+            referencedRelation: "restaurants_with_profiles_and_email"
+            referencedColumns: ["profile_id"]
           },
         ]
       }
@@ -220,6 +248,20 @@ export type Database = {
             referencedColumns: ["id"]
           },
           {
+            foreignKeyName: "direct_chats_user1_id_fkey"
+            columns: ["user1_id"]
+            isOneToOne: false
+            referencedRelation: "profiles_with_email"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "direct_chats_user1_id_fkey"
+            columns: ["user1_id"]
+            isOneToOne: false
+            referencedRelation: "restaurants_with_profiles_and_email"
+            referencedColumns: ["profile_id"]
+          },
+          {
             foreignKeyName: "direct_chats_user2_id_fkey"
             columns: ["user2_id"]
             isOneToOne: false
@@ -232,6 +274,20 @@ export type Database = {
             isOneToOne: false
             referencedRelation: "profiles"
             referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "direct_chats_user2_id_fkey"
+            columns: ["user2_id"]
+            isOneToOne: false
+            referencedRelation: "profiles_with_email"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "direct_chats_user2_id_fkey"
+            columns: ["user2_id"]
+            isOneToOne: false
+            referencedRelation: "restaurants_with_profiles_and_email"
+            referencedColumns: ["profile_id"]
           },
         ]
       }
@@ -288,6 +344,20 @@ export type Database = {
             referencedRelation: "profiles"
             referencedColumns: ["id"]
           },
+          {
+            foreignKeyName: "direct_messages_sender_id_fkey"
+            columns: ["sender_id"]
+            isOneToOne: false
+            referencedRelation: "profiles_with_email"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "direct_messages_sender_id_fkey"
+            columns: ["sender_id"]
+            isOneToOne: false
+            referencedRelation: "restaurants_with_profiles_and_email"
+            referencedColumns: ["profile_id"]
+          },
         ]
       }
       event_participants: {
@@ -330,6 +400,20 @@ export type Database = {
             isOneToOne: false
             referencedRelation: "profiles"
             referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "event_participants_profile_id_fkey"
+            columns: ["profile_id"]
+            isOneToOne: false
+            referencedRelation: "profiles_with_email"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "event_participants_profile_id_fkey"
+            columns: ["profile_id"]
+            isOneToOne: false
+            referencedRelation: "restaurants_with_profiles_and_email"
+            referencedColumns: ["profile_id"]
           },
         ]
       }
@@ -428,6 +512,20 @@ export type Database = {
             referencedRelation: "profiles"
             referencedColumns: ["id"]
           },
+          {
+            foreignKeyName: "help_comments_profile_id_fkey"
+            columns: ["profile_id"]
+            isOneToOne: false
+            referencedRelation: "profiles_with_email"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "help_comments_profile_id_fkey"
+            columns: ["profile_id"]
+            isOneToOne: false
+            referencedRelation: "restaurants_with_profiles_and_email"
+            referencedColumns: ["profile_id"]
+          },
         ]
       }
       helps: {
@@ -475,6 +573,20 @@ export type Database = {
             isOneToOne: false
             referencedRelation: "profiles"
             referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "help_profile_id_fkey"
+            columns: ["profile_id"]
+            isOneToOne: false
+            referencedRelation: "profiles_with_email"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "help_profile_id_fkey"
+            columns: ["profile_id"]
+            isOneToOne: false
+            referencedRelation: "restaurants_with_profiles_and_email"
+            referencedColumns: ["profile_id"]
           },
         ]
       }
@@ -540,6 +652,20 @@ export type Database = {
             referencedRelation: "profiles"
             referencedColumns: ["id"]
           },
+          {
+            foreignKeyName: "matching_participants_profile_id_fkey"
+            columns: ["profile_id"]
+            isOneToOne: false
+            referencedRelation: "profiles_with_email"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "matching_participants_profile_id_fkey"
+            columns: ["profile_id"]
+            isOneToOne: false
+            referencedRelation: "restaurants_with_profiles_and_email"
+            referencedColumns: ["profile_id"]
+          },
         ]
       }
       matchings: {
@@ -595,11 +721,32 @@ export type Database = {
             referencedColumns: ["id"]
           },
           {
+            foreignKeyName: "matchings_host_profile_id_fkey"
+            columns: ["host_profile_id"]
+            isOneToOne: false
+            referencedRelation: "profiles_with_email"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "matchings_host_profile_id_fkey"
+            columns: ["host_profile_id"]
+            isOneToOne: false
+            referencedRelation: "restaurants_with_profiles_and_email"
+            referencedColumns: ["profile_id"]
+          },
+          {
             foreignKeyName: "matchings_restaurant_id_fkey"
             columns: ["restaurant_id"]
             isOneToOne: false
             referencedRelation: "restaurants"
             referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "matchings_restaurant_id_fkey"
+            columns: ["restaurant_id"]
+            isOneToOne: false
+            referencedRelation: "restaurants_with_profiles_and_email"
+            referencedColumns: ["restaurant_id"]
           },
         ]
       }
@@ -641,6 +788,13 @@ export type Database = {
             isOneToOne: false
             referencedRelation: "restaurants"
             referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "menus_restaurant_id_fkey"
+            columns: ["restaurant_id"]
+            isOneToOne: false
+            referencedRelation: "restaurants_with_profiles_and_email"
+            referencedColumns: ["restaurant_id"]
           },
         ]
       }
@@ -695,6 +849,20 @@ export type Database = {
             isOneToOne: false
             referencedRelation: "profiles"
             referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "notifications_profile_id_fkey"
+            columns: ["profile_id"]
+            isOneToOne: false
+            referencedRelation: "profiles_with_email"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "notifications_profile_id_fkey"
+            columns: ["profile_id"]
+            isOneToOne: false
+            referencedRelation: "restaurants_with_profiles_and_email"
+            referencedColumns: ["profile_id"]
           },
         ]
       }
@@ -768,6 +936,20 @@ export type Database = {
             referencedRelation: "profiles"
             referencedColumns: ["id"]
           },
+          {
+            foreignKeyName: "orders_profile_id_fkey"
+            columns: ["profile_id"]
+            isOneToOne: false
+            referencedRelation: "profiles_with_email"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "orders_profile_id_fkey"
+            columns: ["profile_id"]
+            isOneToOne: false
+            referencedRelation: "restaurants_with_profiles_and_email"
+            referencedColumns: ["profile_id"]
+          },
         ]
       }
       partner_applications: {
@@ -806,6 +988,20 @@ export type Database = {
             isOneToOne: false
             referencedRelation: "profiles"
             referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "partner_applications_profile_id_fkey"
+            columns: ["profile_id"]
+            isOneToOne: false
+            referencedRelation: "profiles_with_email"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "partner_applications_profile_id_fkey"
+            columns: ["profile_id"]
+            isOneToOne: false
+            referencedRelation: "restaurants_with_profiles_and_email"
+            referencedColumns: ["profile_id"]
           },
         ]
       }
@@ -855,6 +1051,20 @@ export type Database = {
             referencedRelation: "profiles"
             referencedColumns: ["id"]
           },
+          {
+            foreignKeyName: "payment_methods_profile_id_fkey"
+            columns: ["profile_id"]
+            isOneToOne: false
+            referencedRelation: "profiles_with_email"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "payment_methods_profile_id_fkey"
+            columns: ["profile_id"]
+            isOneToOne: false
+            referencedRelation: "restaurants_with_profiles_and_email"
+            referencedColumns: ["profile_id"]
+          },
         ]
       }
       point_changes: {
@@ -893,6 +1103,20 @@ export type Database = {
             isOneToOne: false
             referencedRelation: "profiles"
             referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "point_change_profile_id_fkey"
+            columns: ["profile_id"]
+            isOneToOne: false
+            referencedRelation: "profiles_with_email"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "point_change_profile_id_fkey"
+            columns: ["profile_id"]
+            isOneToOne: false
+            referencedRelation: "restaurants_with_profiles_and_email"
+            referencedColumns: ["profile_id"]
           },
         ]
       }
@@ -957,6 +1181,20 @@ export type Database = {
             referencedRelation: "profiles"
             referencedColumns: ["id"]
           },
+          {
+            foreignKeyName: "posts_profile_id_fkey"
+            columns: ["profile_id"]
+            isOneToOne: false
+            referencedRelation: "profiles_with_email"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "posts_profile_id_fkey"
+            columns: ["profile_id"]
+            isOneToOne: false
+            referencedRelation: "restaurants_with_profiles_and_email"
+            referencedColumns: ["profile_id"]
+          },
         ]
       }
       profile_blocks: {
@@ -997,6 +1235,20 @@ export type Database = {
             referencedColumns: ["id"]
           },
           {
+            foreignKeyName: "fk_blocked"
+            columns: ["blocked_profile_id"]
+            isOneToOne: false
+            referencedRelation: "profiles_with_email"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "fk_blocked"
+            columns: ["blocked_profile_id"]
+            isOneToOne: false
+            referencedRelation: "restaurants_with_profiles_and_email"
+            referencedColumns: ["profile_id"]
+          },
+          {
             foreignKeyName: "fk_blocker"
             columns: ["profile_id"]
             isOneToOne: false
@@ -1009,6 +1261,20 @@ export type Database = {
             isOneToOne: false
             referencedRelation: "profiles"
             referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "fk_blocker"
+            columns: ["profile_id"]
+            isOneToOne: false
+            referencedRelation: "profiles_with_email"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "fk_blocker"
+            columns: ["profile_id"]
+            isOneToOne: false
+            referencedRelation: "restaurants_with_profiles_and_email"
+            referencedColumns: ["profile_id"]
           },
         ]
       }
@@ -1059,6 +1325,20 @@ export type Database = {
             referencedRelation: "profiles"
             referencedColumns: ["id"]
           },
+          {
+            foreignKeyName: "user_coupons_profile_id_fkey"
+            columns: ["profile_id"]
+            isOneToOne: false
+            referencedRelation: "profiles_with_email"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "user_coupons_profile_id_fkey"
+            columns: ["profile_id"]
+            isOneToOne: false
+            referencedRelation: "restaurants_with_profiles_and_email"
+            referencedColumns: ["profile_id"]
+          },
         ]
       }
       profile_interests: {
@@ -1099,6 +1379,20 @@ export type Database = {
             referencedRelation: "profiles"
             referencedColumns: ["id"]
           },
+          {
+            foreignKeyName: "user_interests_profile_id_fkey"
+            columns: ["profile_id"]
+            isOneToOne: false
+            referencedRelation: "profiles_with_email"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "user_interests_profile_id_fkey"
+            columns: ["profile_id"]
+            isOneToOne: false
+            referencedRelation: "restaurants_with_profiles_and_email"
+            referencedColumns: ["profile_id"]
+          },
         ]
       }
       profile_points: {
@@ -1135,11 +1429,25 @@ export type Database = {
             referencedRelation: "profiles"
             referencedColumns: ["id"]
           },
+          {
+            foreignKeyName: "user_points_profile_id_fkey"
+            columns: ["profile_id"]
+            isOneToOne: true
+            referencedRelation: "profiles_with_email"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "user_points_profile_id_fkey"
+            columns: ["profile_id"]
+            isOneToOne: true
+            referencedRelation: "restaurants_with_profiles_and_email"
+            referencedColumns: ["profile_id"]
+          },
         ]
       }
       profiles: {
         Row: {
-          avatar_url: string
+          avatar_url: string | null
           avg_rating: number
           birth: string
           comment: string | null
@@ -1152,7 +1460,7 @@ export type Database = {
           status: Database["public"]["Enums"]["profile_status_enum"]
         }
         Insert: {
-          avatar_url?: string
+          avatar_url?: string | null
           avg_rating?: number
           birth: string
           comment?: string | null
@@ -1165,7 +1473,7 @@ export type Database = {
           status?: Database["public"]["Enums"]["profile_status_enum"]
         }
         Update: {
-          avatar_url?: string
+          avatar_url?: string | null
           avg_rating?: number
           birth?: string
           comment?: string | null
@@ -1232,6 +1540,20 @@ export type Database = {
             referencedColumns: ["id"]
           },
           {
+            foreignKeyName: "reports_accused_profile_id_fkey"
+            columns: ["accused_profile_id"]
+            isOneToOne: false
+            referencedRelation: "profiles_with_email"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "reports_accused_profile_id_fkey"
+            columns: ["accused_profile_id"]
+            isOneToOne: false
+            referencedRelation: "restaurants_with_profiles_and_email"
+            referencedColumns: ["profile_id"]
+          },
+          {
             foreignKeyName: "reports_reporter_id_fkey"
             columns: ["reporter_id"]
             isOneToOne: false
@@ -1244,6 +1566,20 @@ export type Database = {
             isOneToOne: false
             referencedRelation: "profiles"
             referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "reports_reporter_id_fkey"
+            columns: ["reporter_id"]
+            isOneToOne: false
+            referencedRelation: "profiles_with_email"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "reports_reporter_id_fkey"
+            columns: ["reporter_id"]
+            isOneToOne: false
+            referencedRelation: "restaurants_with_profiles_and_email"
+            referencedColumns: ["profile_id"]
           },
         ]
       }
@@ -1277,6 +1613,13 @@ export type Database = {
             isOneToOne: false
             referencedRelation: "restaurants"
             referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "restaurant_interests_restaurant_id_fkey"
+            columns: ["restaurant_id"]
+            isOneToOne: false
+            referencedRelation: "restaurants_with_profiles_and_email"
+            referencedColumns: ["restaurant_id"]
           },
         ]
       }
@@ -1366,6 +1709,20 @@ export type Database = {
             referencedRelation: "profiles"
             referencedColumns: ["id"]
           },
+          {
+            foreignKeyName: "restaurants_profile_id_fkey"
+            columns: ["profile_id"]
+            isOneToOne: false
+            referencedRelation: "profiles_with_email"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "restaurants_profile_id_fkey"
+            columns: ["profile_id"]
+            isOneToOne: false
+            referencedRelation: "restaurants_with_profiles_and_email"
+            referencedColumns: ["profile_id"]
+          },
         ]
       }
       restaurants_favorites: {
@@ -1400,11 +1757,32 @@ export type Database = {
             referencedColumns: ["id"]
           },
           {
+            foreignKeyName: "favorite_restaurants_profile_id_fkey"
+            columns: ["profile_id"]
+            isOneToOne: false
+            referencedRelation: "profiles_with_email"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "favorite_restaurants_profile_id_fkey"
+            columns: ["profile_id"]
+            isOneToOne: false
+            referencedRelation: "restaurants_with_profiles_and_email"
+            referencedColumns: ["profile_id"]
+          },
+          {
             foreignKeyName: "favorite_restaurants_restaurant_id_fkey"
             columns: ["restaurant_id"]
             isOneToOne: false
             referencedRelation: "restaurants"
             referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "favorite_restaurants_restaurant_id_fkey"
+            columns: ["restaurant_id"]
+            isOneToOne: false
+            referencedRelation: "restaurants_with_profiles_and_email"
+            referencedColumns: ["restaurant_id"]
           },
         ]
       }
@@ -1444,6 +1822,20 @@ export type Database = {
             isOneToOne: false
             referencedRelation: "profiles"
             referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "review_comments_profile_id_fkey"
+            columns: ["profile_id"]
+            isOneToOne: false
+            referencedRelation: "profiles_with_email"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "review_comments_profile_id_fkey"
+            columns: ["profile_id"]
+            isOneToOne: false
+            referencedRelation: "restaurants_with_profiles_and_email"
+            referencedColumns: ["profile_id"]
           },
           {
             foreignKeyName: "review_comments_review_id_fkey"
@@ -1527,11 +1919,32 @@ export type Database = {
             referencedColumns: ["id"]
           },
           {
+            foreignKeyName: "reviews_profile_id_fkey"
+            columns: ["profile_id"]
+            isOneToOne: false
+            referencedRelation: "profiles_with_email"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "reviews_profile_id_fkey"
+            columns: ["profile_id"]
+            isOneToOne: false
+            referencedRelation: "restaurants_with_profiles_and_email"
+            referencedColumns: ["profile_id"]
+          },
+          {
             foreignKeyName: "reviews_restaurant_id_fkey"
             columns: ["restaurant_id"]
             isOneToOne: false
             referencedRelation: "restaurants"
             referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "reviews_restaurant_id_fkey"
+            columns: ["restaurant_id"]
+            isOneToOne: false
+            referencedRelation: "restaurants_with_profiles_and_email"
+            referencedColumns: ["restaurant_id"]
           },
         ]
       }
@@ -1575,6 +1988,13 @@ export type Database = {
             referencedRelation: "restaurants"
             referencedColumns: ["id"]
           },
+          {
+            foreignKeyName: "sales_restaurant_id_fkey"
+            columns: ["restaurant_id"]
+            isOneToOne: false
+            referencedRelation: "restaurants_with_profiles_and_email"
+            referencedColumns: ["restaurant_id"]
+          },
         ]
       }
     }
@@ -1591,6 +2011,46 @@ export type Database = {
         Update: {
           id?: string | null
           nickname?: string | null
+        }
+        Relationships: []
+      }
+      profiles_with_email: {
+        Row: {
+          avatar_url: string | null
+          avg_rating: number | null
+          birth: string | null
+          comment: string | null
+          created_at: string | null
+          email: string | null
+          gender: boolean | null
+          id: string | null
+          name: string | null
+          nickname: string | null
+          phone: string | null
+          role: Database["public"]["Enums"]["user_role"] | null
+          status: Database["public"]["Enums"]["profile_status_enum"] | null
+        }
+        Relationships: []
+      }
+      restaurants_with_profiles_and_email: {
+        Row: {
+          address: string | null
+          created_at: string | null
+          owner_avatar_url: string | null
+          owner_email: string | null
+          owner_gender: boolean | null
+          owner_name: string | null
+          owner_nickname: string | null
+          owner_phone: string | null
+          owner_role: Database["public"]["Enums"]["user_role"] | null
+          profile_id: string | null
+          restaurant_id: number | null
+          restaurant_name: string | null
+          restaurant_phone: string | null
+          restaurant_status:
+            | Database["public"]["Enums"]["restaurant_status_enum"]
+            | null
+          restaurant_thumbnail_url: string | null
         }
         Relationships: []
       }
