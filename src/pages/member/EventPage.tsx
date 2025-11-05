@@ -260,6 +260,7 @@ function EventPage() {
         return statusOrder[a.status] - statusOrder[b.status];
       });
       setEvents(sorted);
+      setPrevEvents(mapped);
     };
     fetchData();
   }, [eventModal, editPage]);
