@@ -2,6 +2,8 @@ import { useAdminHeader } from '@/contexts/AdminLayoutContext';
 import { supabase } from '@/lib/supabase';
 import type { Help } from '@/types/bobType';
 import AdminSupportDetailModal from '@/ui/sdj/AdminSupportDetailModal';
+import Modal from '@/ui/sdj/Modal';
+import { useModal } from '@/ui/sdj/ModalState';
 import dayjs from 'dayjs';
 import { useEffect, useState } from 'react';
 import { RiCheckboxCircleLine } from 'react-icons/ri';
@@ -11,14 +13,23 @@ export type AdminReportsPageProps = Help & {
 };
 
 function AdminReportsPage() {
+
   const { setHeader } = useAdminHeader();
+
+  const { closeModal, modal, openModal } = useModal();
+
   const [helpList, setHelpList] = useState<AdminReportsPageProps[]>([]);
   const [helpDetail, setHelpDetail] = useState<AdminReportsPageProps | null>(null);
   const [helpModal, setHelpModal] = useState(false);
 
   const handleHelpModal = (help: AdminReportsPageProps) => {
-    setHelpDetail(help);
-    setHelpModal(true);
+    if (help.status === true) {
+      openModal('답변완료', '답변이 완료된 문의글 입니다.', '닫기');
+    }
+    if (help?.status === false) {
+      setHelpDetail(help);
+      setHelpModal(true);
+    }
   };
 
   const fetchData = async () => {
@@ -36,7 +47,7 @@ function AdminReportsPage() {
 
   useEffect(() => {
     fetchData();
-  }, [helpList, helpDetail]);
+  }, [modal, helpModal]);
 
   useEffect(() => {
     setHeader('문의 내역', '1:1 문의 내역을 관리합니다.');
@@ -78,8 +89,18 @@ function AdminReportsPage() {
           </div>
         ))}
       </div>
-      {helpModal && helpDetail && (
+      {helpModal && helpDetail?.status === false ? (
         <AdminSupportDetailModal helpDetail={helpDetail} onClose={() => setHelpModal(false)} />
+      ) : (
+        <Modal
+          isOpen={modal.isOpen}
+          onClose={closeModal}
+          titleText={modal.title}
+          contentText={modal.content}
+          closeButtonText={modal.closeText}
+          submitButtonText={modal.submitText}
+          onSubmit={modal.onSubmit}
+        />
       )}
 
       {/* 하단 페이지네이션 */}

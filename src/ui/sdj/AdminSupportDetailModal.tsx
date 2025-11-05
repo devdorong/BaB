@@ -15,6 +15,8 @@ type AdminSupportDetailModalProps = {
 
 function AdminSupportDetailModal({ onClose, helpDetail }: AdminSupportDetailModalProps) {
   const [helpAnswer, setHelpAnswer] = useState('');
+  const [isSubmitting, setIsSubmitting] = useState(false);
+
   const { user } = useAuth();
   const profileId = user?.id;
 
@@ -41,6 +43,9 @@ function AdminSupportDetailModal({ onClose, helpDetail }: AdminSupportDetailModa
   };
 
   const handleInsertClick = async () => {
+    if (isSubmitting) return;
+    setIsSubmitting(true);
+
     if (!helpDetail || !profileId) {
       return;
     }
@@ -69,6 +74,7 @@ function AdminSupportDetailModal({ onClose, helpDetail }: AdminSupportDetailModa
     } else {
       openModal('오류', '답변 등록에 실패했습니다.', '닫기');
     }
+    setIsSubmitting(false);
   };
 
   useEffect(() => {

@@ -28,6 +28,7 @@
       profile_status_enum: '활성' | '정지' | '탈퇴';
       report_status_enum: '대기' | '차단' | '검토완료';
       report_type_enum: '사용자' | '가게' | '댓글' | '리뷰' | '게시글' | '매칭' | '채팅';
+      restaurant_status_enum: 'draft' | 'pending' | 'approved' | 'rejected';
       sales_status_enum: '정산 전' | '정산 대기' | '정산 완료';
       user_role: 'member' | 'partner' | 'admin';
     };
