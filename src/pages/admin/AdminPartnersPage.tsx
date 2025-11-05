@@ -1,38 +1,45 @@
 import { useAdminHeader } from '@/contexts/AdminLayoutContext';
 import { useAuth } from '@/contexts/AuthContext';
 import { supabase } from '@/lib/supabase';
-import type { Database, Profile } from '@/types/bobType';
+import type { Database } from '@/types/bobType';
 import MemberActivityDetailModal from '@/ui/sdj/MemberActivityDetails';
 import dayjs from 'dayjs';
 import { useEffect, useMemo, useState } from 'react';
 import { RiSearchLine } from 'react-icons/ri';
-
-type ProfileWithEmail = Profile & {
-  email: string;
-  created_at: string;
-};
+import AdminPartnerSignupDetailPage from './AdminPartnerSignupDetailPage';
+import { useNavigate, useParams } from 'react-router-dom';
 
 export type RestaurantStatus = Database['public']['Tables']['restaurants']['Row']['status'];
-export type ProfileStatus = '정상' | '정지' | '탈퇴';
+export type RestaurantWithProfile =
+  Database['public']['Views']['restaurants_with_profiles_and_email']['Row'];
 
 export default function AdminPartnersPage() {
+  const navigate = useNavigate();
   const { setHeader } = useAdminHeader();
   const { user: authUser } = useAuth();
-  const [statusFilter, setStatusFilter] = useState<ProfileStatus>('정상');
-  const [userList, setUserList] = useState<ProfileWithEmail[]>([]);
+  const { id } = useParams();
+  const [userList, setUserList] = useState<RestaurantWithProfile[]>([]);
   const [search, setSearch] = useState('');
   const [sortType, setSortType] = useState<'이름순' | '가입일순'>('가입일순');
 
-  const [partnerSignup, setParterSignup] = useState<RestaurantStatus>('pending');
+  const [signupDetail, setSignupDetail] = useState(false);
 
+  const [statusFilter, setStatusFilter] = useState<RestaurantStatus>('pending');
+  const categories: { label: string; value: RestaurantStatus }[] = [
+    { label: '대기', value: 'pending' },
+    { label: '완료', value: 'approved' },
+    { label: '거절', value: 'rejected' },
+    { label: '임시', value: 'draft' },
+  ];
   const [memberDetail, setMemberDetail] = useState(false);
   const [loading, setLoading] = useState(true);
 
-  const category: ProfileStatus[] = ['정상', '정지', '탈퇴'];
+  const handleDetail = () => {
+    navigate(`/admin/partners/${id}`);
+  };
 
   const filterCategory = useMemo(() => {
-    if (statusFilter === '정상') return userList;
-    return userList.filter(user => user.status === statusFilter);
+    return userList.filter(user => user.restaurant_status === statusFilter);
   }, [userList, statusFilter]);
 
   const handleMemberDetail = () => {
@@ -44,13 +51,12 @@ export default function AdminPartnersPage() {
   const fetchData = async () => {
     setLoading(true);
     const { data, error } = await supabase
-      .from('profiles_with_email')
-      .select('*')
-      .eq('role', 'partner');
+      .from('restaurants_with_profiles_and_email')
+      .select(`*`)
+      .eq('owner_role', 'partner');
     if (error) {
       console.log('파트너 정보를 가져오는데 실패했습니다.', error.message);
     }
-    // console.log(data);
     setUserList(data || []);
     setLoading(false);
   };
@@ -64,7 +70,8 @@ export default function AdminPartnersPage() {
     const lower = search.toLowerCase();
     return filterCategory.filter(
       user =>
-        user.nickname?.toLowerCase().includes(lower) || user.email?.toLowerCase().includes(lower),
+        user.owner_nickname?.toLowerCase().includes(lower) ||
+        user.owner_email?.toLowerCase().includes(lower),
     );
   }, [filterCategory, search]);
 
@@ -72,17 +79,18 @@ export default function AdminPartnersPage() {
     const users = [...filteredUsers];
 
     if (sortType === '이름순') {
-      users.sort((a, b) => a.nickname.localeCompare(b.nickname, 'ko'));
+      users.sort((a, b) => (a.owner_nickname ?? '').localeCompare(b.owner_nickname ?? '', 'ko'));
     } else if (sortType === '가입일순') {
       users.sort((a, b) => dayjs(b.created_at).valueOf() - dayjs(a.created_at).valueOf());
     }
 
     return users;
   }, [filteredUsers, sortType]);
+
   useEffect(() => {
     setHeader('파트너 관리', '플랫폼 파트너 계정을 관리하고 모니터링합니다.');
   }, []);
-  // console.log(sortedUsers);
+
   return (
     <div className="w-full min-h-screen bg-bg-bg text-babgray-800 font-semibold">
       <div className="p-8">
@@ -116,17 +124,17 @@ export default function AdminPartnersPage() {
 
           {/* 상태 필터 버튼 */}
           <div className="flex space-x-2">
-            {category.map(item => (
+            {categories.map(item => (
               <button
-                key={item}
-                onClick={() => setStatusFilter(item)}
+                key={item.value}
+                onClick={() => setStatusFilter(item.value)}
                 className={`px-4 py-1.5 rounded-full text-sm border ${
-                  statusFilter === item
+                  statusFilter === item.value
                     ? 'text-bab border-bab'
                     : 'border-gray-300 text-gray-600 hover:bg-gray-100'
                 }`}
               >
-                {item}
+                {item.label}
               </button>
             ))}
           </div>
@@ -166,18 +174,20 @@ export default function AdminPartnersPage() {
                     <td className="py-3 px-8 flex items-center space-x-3">
                       <img
                         src={
-                          user.avatar_url === 'guest_image'
-                            ? `https://www.gravatar.com/avatar/?d=mp&s=200`
-                            : user.avatar_url
+                          user.restaurant_thumbnail_url
+                            ? user.restaurant_thumbnail_url === 'guest_image'
+                              ? `https://www.gravatar.com/avatar/?d=mp&s=200`
+                              : user.restaurant_thumbnail_url
+                            : 'https://www.gravatar.com/avatar/?d=mp&s=200'
                         }
                         alt="avatar"
                         className="w-8 h-8 rounded-full object-cover"
                       />
-                      <span>{user.name}</span>
+                      <span>{user.owner_name}</span>
                     </td>
-                    <td className="py-3 px-8">{user.email}</td>
+                    <td className="py-3 px-8">{user.owner_email}</td>
                     <td className="py-3 px-8">{dayjs(user.created_at).format('YYYY-MM-DD')}</td>
-                    <td className="py-3 px-8">{user.nickname}</td>
+                    <td className="py-3 px-8">{user.owner_nickname}</td>
                     <td
                       onClick={handleMemberDetail}
                       className="py-3 px-8 text-bab hover:underline cursor-pointer"
@@ -187,20 +197,28 @@ export default function AdminPartnersPage() {
                     {memberDetail && (
                       <MemberActivityDetailModal onClose={() => setMemberDetail(false)} />
                     )}
-                    <td className="py-3 px-8">
-                      {user.status === '활성' && (
+                    <td className="py-3 px-2">
+                      {user.restaurant_status === 'rejected' && (
                         <button className="text-gray-600 text-xs px-3 py-1 hover:bg-gray-100">
-                          정지
+                          파트너 거절
                         </button>
                       )}
-                      {user.status === '정지' && (
-                        <button className="text-red-500 text-xs px-3 py-1 hover:bg-red-50">
-                          탈퇴
+                      {user.restaurant_status === 'draft' && (
+                        <button className="text-gray-600 text-xs px-3 py-1 hover:bg-gray-100">
+                          임시 저장중
                         </button>
                       )}
-                      {user.status === '탈퇴' && (
+                      {user.restaurant_status === 'pending' && (
+                        <button
+                          onClick={handleDetail}
+                          className="text-bab text-xs px-3 py-1 hover:bg-red-50"
+                        >
+                          파트너 대기
+                        </button>
+                      )}
+                      {user.restaurant_status === 'approved' && (
                         <button className="text-green-600 text-xs px-3 py-1 hover:bg-green-50">
-                          복원
+                          파트너 승인
                         </button>
                       )}
                     </td>

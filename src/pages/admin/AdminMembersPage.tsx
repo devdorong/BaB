@@ -179,9 +179,11 @@ export default function UserManagementPage() {
                       <td className="py-3 px-8 flex items-center space-x-3">
                         <img
                           src={
-                            user.avatar_url === 'guest_image'
-                              ? `https://www.gravatar.com/avatar/?d=mp&s=200`
-                              : user.avatar_url
+                            user.avatar_url
+                              ? user.avatar_url === 'guest_image'
+                                ? `https://www.gravatar.com/avatar/?d=mp&s=200`
+                                : user.avatar_url
+                              : 'https://www.gravatar.com/avatar/?d=mp&s=200'
                           }
                           alt="avatar"
                           className="w-8 h-8 rounded-full object-cover"

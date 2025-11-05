@@ -13,7 +13,6 @@ export type AdminReportsPageProps = Help & {
 };
 
 function AdminReportsPage() {
-
   const { setHeader } = useAdminHeader();
 
   const { closeModal, modal, openModal } = useModal();
