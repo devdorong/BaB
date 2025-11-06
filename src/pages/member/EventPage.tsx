@@ -211,7 +211,7 @@ function EventPage() {
       const changedEvents = mapped.filter(
         e => e.status !== withBadge.find(orig => orig.id === e.id)?.status,
       );
-      
+
       if (changedEvents.length > 0) {
         await Promise.all(
           changedEvents.map(e =>
@@ -366,12 +366,11 @@ function EventPage() {
               onClick={() => setSelectCategories(tag)}
               className="rounded-2xl cursor-pointer"
             >
-              <TagBadge
-                bgColor={selectCategories === tag ? 'bg-bab' : 'bg-gray-100'}
-                textColor={selectCategories === tag ? 'text-white' : 'text-gray-700'}
+              <button
+                className={`py-2 px-4 inline-flex items-center justify-center rounded-full text-[14px] text-babgray-700 ${selectCategories === tag ? 'bg-bab text-white hover:bg-bab-600' : 'bg-gray-100 text-gray-700 hover:bg-babgray-200'}`}
               >
                 {tag}
-              </TagBadge>
+              </button>
             </button>
           ))}
         </div>
