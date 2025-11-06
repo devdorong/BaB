@@ -131,6 +131,14 @@
 - **React 18 + Vite**
 - **TypeScript**
 - **TailwindCSS**
+- **Emotion**
+- **Ant Design**
+- **NivoChart**
+- **KakaoMap**
+- **Swiper**
+- **React-Paginate**
+- **Shadcn**
+- **Dayjs**
 
 ### Backend
 
