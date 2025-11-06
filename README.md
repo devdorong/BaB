@@ -5,10 +5,10 @@
 회원은 관심사 기반으로 매칭을 개설하거나 참여할 수 있으며,  
 실시간 알림, 채팅, 이벤트, 포인트 시스템 등을 통해 풍부한 사용자 경험을 제공합니다.
 
-- [버셀(Vercel)](https://bab-mu.vercel.app/)
+- [Vercel](https://bab-mu.vercel.app/)
 - [FINAL PROJECT | 발표자료(Canva)](https://www.canva.com/design/DAG0bfs2dMM/BHjeLE9q5M3ojFDzhMGDWg/view?utm_content=DAG0bfs2dMM&utm_campaign=designshare&utm_medium=link2&utm_source=uniquelinks&utlId=h3fb29822c1)
-- [노션(Nosion)](https://www.notion.so/BaB-Bond-and-Bite-25a9fbf813128005b175d85700a6efbe?source=copy_link)
-- [피그마(Pigma)](https://www.figma.com/design/qTCTAbUeuW745ZyUkUgzy3/%ED%94%84%EB%A1%9C%EC%A0%9D%ED%8A%B8--BaB-?node-id=2437-15260&t=YYJ5j0Vi7IGXkQTR-1)
+- [Notion](https://www.notion.so/BaB-Bond-and-Bite-25a9fbf813128005b175d85700a6efbe?source=copy_link)
+- [Figma](https://www.figma.com/design/qTCTAbUeuW745ZyUkUgzy3/%ED%94%84%EB%A1%9C%EC%A0%9D%ED%8A%B8--BaB-?node-id=2437-15260&t=YYJ5j0Vi7IGXkQTR-1)
 
 ---
 
@@ -17,13 +17,16 @@
 | 항목           | 내용                                                                                                                    |
 | -------------- | ----------------------------------------------------------------------------------------------------------------------- |
 | **프로젝트명** | BaB (밥)                                                                                                                |
+| **기획** | Readdy.ai, Chat GPT                                                                                                                |
 | **개발기간**   | 2025.09 ~ 진행중 (2025.11.13(완료예정))                                                                                 |
 | **Front-end**  | React (Vite), TypeScript, Tailwind CSS, Emotion, Ant Design, NivoChart, KakaoMap, Swiper, React-Paginate, Shadcn, Dayjs |
-| **Back-end**   | Supabase (PostgreSQL, Auth, Storage, Realtime), GA4                                                                     |
+| **Back-end**   | Supabase (PostgreSQL, Auth, Storage, Realtime),                                                                     |
+| **SEO 분석**   | GA4                          |
 | **Design**     | Figma                                                                                                                   |
 | **배포**       | Vercel                                                                                                                  |
 | **협업**       | GoogleSheet, GitHub, Slack                                                                                              |
 | **주요 기능**  | 회원가입/로그인(OAuth), 매칭, 채팅, 알림, 이벤트, 리뷰, 포인트, 파트너 관리, 관리자 대시보드                            |
+
 
 ---
 
@@ -168,3 +171,124 @@
 - [x] 관리자 통계 대시보드 개선
 - [ ] 성능 최적화 (lazy loading 예정)
 - [ ] 결제 시스템 완전 연동
+
+---
+
+# 📑 PRD – BaB (Bond and Bite)
+
+## 1. 프로젝트 개요 (Overview)
+
+- **앱 이름:** BaB (Bond and Bite)
+- **한 줄 소개:** 혼자 먹기 아쉬운 순간, 함께할 밥친구를 찾고 만남 준비까지 간편하게 관리하는 매칭 플랫폼
+- **슬로건:** “Bond and Bite”
+- **핵심 목표:**
+    - 혼밥의 제약 해소 + 즉시성 매칭
+    - 약속 준비 과정 간소화 (체크리스트/템플릿)
+    - 안전하고 가벼운 만남 경험 제공
+
+---
+
+## 2. 문제 정의 (Problem Statement)
+
+- 혼자 먹기 어려운 음식(2인 이상 주문, 매장 제약 등) 존재
+- 기존 밥친구 앱은 친목·모임 중심이라 부담이 큼
+- 준비 과정(시간/장소/메뉴) 정리 번거로움
+- 카톡/메모 공유 시 → **누락·중복·비효율**
+
+---
+
+## 3. 목표 및 가치 (Goals & Values)
+
+**목표**
+
+- 반경 2km 내에서 빠르고 간단한 매칭
+- 신뢰 기반의 안전한 만남
+- 가벼운 네트워킹 경험 제공
+- 모임 준비까지 원스톱 지원
+
+**가치**
+
+- 연결 (Bond) / 즐거움 (Fun) / 편리함 (Convenience) / 다양성 (Choice) / 체계적 준비 (Ready)
+
+---
+
+## 4. 타깃 사용자 / 페르소나
+
+**대학생 A**
+
+- 상황: 고깃집·샤브샤브 등 혼자 못 가 포기 많음
+- 니즈: 또래와 안전하게 가볍게 식사
+- 페일포인트: 신뢰 부족, 치안 불안
+
+**직장인 B**
+
+- 상황: 회사 근처에서 즉흥적으로 한 끼 해결 원함
+- 니즈: 빠른 매칭, 다양한 교류
+- 페일포인트: 매칭 지연, 무응답
+
+**자취생/유학생 C**
+
+- 상황: 혼자선 못 먹는 메뉴가 많음
+- 니즈: 근처 사람과 부담 없는 만남
+- 페일포인트: 어색함, 안전 우려
+
+---
+
+## 5. 사용자 니즈 & 페일포인트
+
+**니즈**: 근처 즉시 매칭 / 안전·신뢰 / 메뉴·맛집 기반 / 준비 과정 단순화
+
+**페일포인트**: 매칭 실패 / 안전 이슈 / 복잡한 UX / 합의 과정 비효율
+
+---
+
+## 6. 핵심 기능 (Core Features – MVP)
+
+- **위치 기반 탐색:** 반경 2km 내 사용자 매칭
+- **메뉴/맛집 기반 매칭:** 같은 메뉴 희망자 연결
+- **1회성 옵션:** “이번만 만나고 끝” 선택
+- **기본 채팅:** 약속 장소·시간 조율
+- **체크리스트:**
+    - 약속 준비 리스트 자동 생성(장소/시간/결제 방식 등)
+    - 맛집/메뉴 **투표 리스트**로 선택 보조
+    - **모임 템플릿** 재사용
+- **신뢰 장치:** 프로필 인증, 신고/차단, 후기 시스템
+
+---
+
+## 7. 확장 기능 (Nice to Have)
+
+AI 맛집 추천·매칭 / 그룹·정기 모임 체크리스트 / 포인트 보상 / 리뷰·신뢰도 점수 / 커뮤니티 템플릿 공유
+
+---
+
+## 8. 사용자 여정 (User Journey)
+
+1. 앱 실행 → 주변 맛집 탐색
+2. 메뉴 선택 & 매칭 요청
+3. 반경 내 사용자 매칭 → 채팅
+4. 체크리스트 자동 생성(시간·장소 확정, 메뉴/맛집 투표, 결제 합의)
+5. 식사
+6. 후기 작성 & 기록 저장
+7. 필요 시 모임 리스트 재활용
+
+---
+
+## 9. 기대 효과 (Expected Outcomes)
+
+**사용자:** 혼밥 해소 / 즉흥적 만남 / 준비 과정 단순화
+
+**비즈니스:** DAU 증대 / 지역 상권 활성화 / 재방문·재사용 증가
+
+---
+
+## 10. 성공 지표 (Success Metrics)
+
+DAU / 매칭 성공률 / 재방문율 / 평균 매칭 소요 시간 / 체크리스트 생성·재활용 횟수
+
+---
+
+# 팀원 Notion 주소
+- 전도현 : https://www.notion.so/About-Me-2069fbf8131280f899b0c956db8b84ff
+- 김지양 : https://www.notion.so/2163900c3ef280348281c9ea6ba0dc07
+- 신동재 : https://www.notion.so/DONGJAE-SHIN-21d56f06c7398060a3f1fd42aad01a6f?source=copy_link
