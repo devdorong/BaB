@@ -29,7 +29,6 @@ export default function CategorySelect({
   onChange: (v: number) => void;
 }) {
   const [categories, setCategories] = useState<{ id: number; name: string }[]>([]);
-  
 
   useEffect(() => {
     const loadCategories = async () => {
