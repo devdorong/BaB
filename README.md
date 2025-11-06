@@ -136,7 +136,6 @@
 
 - **Supabase**
 - **Vercel**
-- **GA4(Google Analytics 4)**
 
 ---
 
@@ -289,6 +288,6 @@ DAU / 매칭 성공률 / 재방문율 / 평균 매칭 소요 시간 / 체크리�
 ---
 
 # 팀원 Notion 주소
-- 전도현 : https://www.notion.so/About-Me-2069fbf8131280f899b0c956db8b84ff
-- 김지양 : https://www.notion.so/2163900c3ef280348281c9ea6ba0dc07
-- 신동재 : https://www.notion.so/DONGJAE-SHIN-21d56f06c7398060a3f1fd42aad01a6f?source=copy_link
+- [전도현](https://www.notion.so/About-Me-2069fbf8131280f899b0c956db8b84ff)
+- [김지양](https://www.notion.so/2163900c3ef280348281c9ea6ba0dc07)
+- [신동재](https://www.notion.so/DONGJAE-SHIN-21d56f06c7398060a3f1fd42aad01a6f?source=copy_link)
