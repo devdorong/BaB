@@ -43,16 +43,16 @@
   </thead>
   <tbody>
     <tr>
-      <td><a href="https://www.notion.so/About-Me-2069fbf8131280f899b0c956db8b84ff">전도현</a></td>
+      <td><a href="https://www.notion.so/About-Me-2069fbf8131280f899b0c956db8b84ff" target="_blank" >전도현</a></td>
       <td>라우터 구성, 초기 Supabase 연동, 주기적 코드점검으로 오류 해결, 멤버 회원가입 및 로그인  <br/> 매칭 시스템 설계 및 구현, 카카오맵 기반
         주변가게 연동, 고객센터 디자인작업, 파트너 회원가입 및 로그인 <br/> 레스토랑 연동, 메뉴 관리 구성</td>
     </tr>
     <tr>
-      <td><a href="https://www.notion.so/DONGJAE-SHIN-21d56f06c7398060a3f1fd42aad01a6f?source=copy_link">신동재</a></td>
+      <td><a href="https://www.notion.so/DONGJAE-SHIN-21d56f06c7398060a3f1fd42aad01a6f?source=copy_link" target="_blank" >신동재</a></td>
       <td>커뮤니티, 이벤트, 고객센터, 프로필메뉴 (내가 쓴 게시글, 문의내역, 차단), 파트너 대시보드, 매출 및 정산 <br/> 계정 및 보안, 어드민 사용자 계정 관리, 파트너 계정 관리, 문의내역 답글 기능, OK/Cancel 모달</td>
     </tr>
     <tr>
-      <td><a href="https://www.notion.so/2163900c3ef280348281c9ea6ba0dc07">김지양</a></td>
+      <td><a href="https://www.notion.so/2163900c3ef280348281c9ea6ba0dc07" target="_blank" >김지양</a></td>
       <td>맛집추천, 디테일페이지, 프로필페이지, 프로필 수정, 관심사 선택, 포인트 적립 및 사용, 1:1 채팅, 알림시스템 <br/> 즐겨찾는 식당(찜 기능),  내가 쓴 리뷰, 파트너 회원 리뷰 알림기능, 파트너 리뷰 답글기능  <br/> 어드민 매칭 관리페이지 차트표현</td>
     </tr>
   </tbody>
