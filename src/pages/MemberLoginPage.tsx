@@ -106,7 +106,7 @@ function MemberLoginPage() {
               <span className="text-white text-base font-semibold">로그인</span>
             </button>
 
-            {msg && (
+            {/* {msg && (
               <p
                 className={`mt-4 p-3 rounded-lg text-center border ${
                   msg.includes('성공')
@@ -116,7 +116,7 @@ function MemberLoginPage() {
               >
                 {msg}
               </p>
-            )}
+            )} */}
           </div>
         </form>
 
