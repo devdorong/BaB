@@ -22,12 +22,23 @@ const MemberFooter = () => {
             </Link>
           </div>
           <div className="flex gap-4">
-            <Link to={`https://www.instagram.com/`}>
+            <a
+              href="https://www.instagram.com/"
+              target="_blank" // 새 창에서 열기
+              rel="noopener noreferrer" // 보안 및 성능상 권장
+              title="인스타그램" // 마우스 오버 시 표시되는 툴팁
+            >
               <Instagram color="black" bgColor="#E5E7EB" size={25} padding={8} />
-            </Link>
-            <Link to={`https://open.kakao.com/o/g833oUTh`}>
+            </a>
+
+            <a
+              href="https://open.kakao.com/o/g833oUTh"
+              target="_blank" // 새 창에서 열기
+              rel="noopener noreferrer" // 보안 및 성능상 권장
+              title="카카오톡 오픈링크" // 마우스 오버 시 표시되는 툴팁
+            >
               <KakaoTalk color="black" bgColor="#E5E7EB" size={25} padding={8} />
-            </Link>
+            </a>
           </div>
         </div>
         <div className="text-babgray-500">

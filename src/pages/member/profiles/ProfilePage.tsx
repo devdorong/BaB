@@ -214,6 +214,20 @@ function ProfilePage() {
   if (!user) {
     setTimeout(() => navigate('/member'), 0);
   }
+  const handleSignout = () => {
+    openModal(
+      '회원탈퇴',
+      '정말 회원탈퇴를 진행하시겠습니까?\n 탈퇴후에는 기존 정보가 모두 사라집니다.',
+      '취소',
+      '탈퇴하기',
+      () => {
+        closeModal();
+        openModal('회원탈퇴', '카카오 문의로 회원정보를 남겨주세요', '', '확인', () => {
+          window.location.href = 'https://open.kakao.com/o/g833oUTh';
+        });
+      },
+    );
+  };
 
   return (
     <div className="flex bg-bg-bg min-h-screen justify-center">
@@ -528,7 +542,10 @@ function ProfilePage() {
               </div>
               {/* 로그아웃 및 회원탈퇴 */}
               <div className="flex gap-2 justify-end lg:pb-[28px]">
-                <div className="text-center justify-start text-babgray-400 text-base font-medium">
+                <div
+                  onClick={handleSignout}
+                  className="text-center justify-start text-babgray-400 text-base font-medium cursor-pointer"
+                >
                   회원탈퇴
                 </div>
                 <div className="text-center justify-start text-babgray-400 text-base font-medium">
