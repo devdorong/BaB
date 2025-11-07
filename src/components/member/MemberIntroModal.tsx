@@ -184,7 +184,7 @@ const MemberIntroModal = () => {
             </Swiper>
 
             {/* 하단 체크박스 */}
-            {/* <div className="absolute bottom-4 left-0 right-0 flex justify-center items-center gap-2 text-sm text-white  py-2 z-10 cursor-pointer">
+            <div className="absolute bottom-4 left-0 right-0 flex justify-center items-center gap-2 text-sm text-white  py-2 z-10 cursor-pointer">
               <input
                 id="skipIntro"
                 type="checkbox"
@@ -195,7 +195,7 @@ const MemberIntroModal = () => {
               <label htmlFor="skipIntro" className="select-none cursor-pointer">
                 다음부터 보지 않기
               </label>
-            </div> */}
+            </div>
           </motion.div>
         </motion.div>
       )}
