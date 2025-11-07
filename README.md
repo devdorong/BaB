@@ -249,4 +249,38 @@
 
 ## 프로젝트 관련 링크
 
-[Vercel](https://bab-mu.vercel.app/) | [Project 발표자료(Canva)](https://www.canva.com/design/DAG0bfs2dMM/BHjeLE9q5M3ojFDzhMGDWg/view?utm_content=DAG0bfs2dMM&utm_campaign=designshare&utm_medium=link2&utm_source=uniquelinks&utlId=h3fb29822c1) | [Notion](https://www.notion.so/BaB-Bond-and-Bite-25a9fbf813128005b175d85700a6efbe?source=copy_link) | [Figma](https://www.figma.com/design/qTCTAbUeuW745ZyUkUgzy3/%ED%94%84%EB%A1%9C%EC%A0%9D%ED%8A%B8--BaB-?node-id=2437-15260&t=YYJ5j0Vi7IGXkQTR-1)
+<div style="text-align: left;">
+  <!-- Vercel -->
+  <a href="https://bab-mu.vercel.app/">
+    <img
+      src="https://img.shields.io/badge/vercel-%23000000.svg?style=for-the-badge&logo=vercel&logoColor=white"
+      alt="Gmail"
+    />
+  </a>
+ 
+  <!-- Notion -->
+  <a href="https://www.notion.so/BaB-Bond-and-Bite-25a9fbf813128005b175d85700a6efbe" target="_blank">
+    <img
+      src="https://img.shields.io/badge/Notion-000000?style=for-the-badge&logo=Notion&logoColor=white"
+      alt="Notion"
+    />
+  </a>
+ 
+  <!-- Figma -->
+  <a href="https://www.figma.com/design/qTCTAbUeuW745ZyUkUgzy3/%ED%94%84%EB%A1%9C%EC%A0%9D%ED%8A%B8--BaB-?node-id=829-9905&t=yYCNjHoKpIhDMsex-1" target="_blank">
+    <img
+      src="https://img.shields.io/badge/figma-%23F24E1E.svg?style=for-the-badge&logo=figma&logoColor=white"
+      alt="Notion"
+    />
+  </a>
+ 
+  <!-- Canva -->
+  <a href="https://www.canva.com/design/DAG0bfs2dMM/BHjeLE9q5M3ojFDzhMGDWg/view?utm_content=DAG0bfs2dMM&utm_campaign=designshare&utm_medium=link2&utm_source=uniquelinks&utlId=h3fb29822c1" target="_blank">
+    <img
+      src="https://img.shields.io/badge/Canva-%2300C4CC.svg?style=for-the-badge&logo=Canva&logoColor=white"
+      alt="Notion"
+    />
+  </a>
+</div>
+
+<!-- [Vercel](https://bab-mu.vercel.app/) | [Project 발표자료(Canva)](https://www.canva.com/design/DAG0bfs2dMM/BHjeLE9q5M3ojFDzhMGDWg/view?utm_content=DAG0bfs2dMM&utm_campaign=designshare&utm_medium=link2&utm_source=uniquelinks&utlId=h3fb29822c1) | [Notion](https://www.notion.so/BaB-Bond-and-Bite-25a9fbf813128005b175d85700a6efbe?source=copy_link) | [Figma](https://www.figma.com/design/qTCTAbUeuW745ZyUkUgzy3/%ED%94%84%EB%A1%9C%EC%A0%9D%ED%8A%B8--BaB-?node-id=2437-15260&t=YYJ5j0Vi7IGXkQTR-1) -->
