@@ -17,16 +17,15 @@
 | 항목           | 내용                                                                                                                    |
 | -------------- | ----------------------------------------------------------------------------------------------------------------------- |
 | **프로젝트명** | BaB (밥)                                                                                                                |
-| **기획** | Readdy.ai, Chat GPT                                                                                                                |
+| **기획**       | Readdy.ai, Chat GPT                                                                                                     |
 | **개발기간**   | 2025.09 ~ 진행중 (2025.11.13(완료예정))                                                                                 |
 | **Front-end**  | React (Vite), TypeScript, Tailwind CSS, Emotion, Ant Design, NivoChart, KakaoMap, Swiper, React-Paginate, Shadcn, Dayjs |
-| **Back-end**   | Supabase (PostgreSQL, Auth, Storage, Realtime),                                                                     |
-| **SEO 분석**   | GA4                          |
+| **Back-end**   | Supabase (PostgreSQL, Auth, Storage, Realtime),                                                                         |
+| **SEO 분석**   | GA4                                                                                                                     |
 | **Design**     | Figma                                                                                                                   |
 | **배포**       | Vercel                                                                                                                  |
 | **협업**       | GoogleSheet, GitHub, Slack                                                                                              |
 | **주요 기능**  | 회원가입/로그인(OAuth), 매칭, 채팅, 알림, 이벤트, 리뷰, 포인트, 파트너 관리, 관리자 대시보드                            |
-
 
 ---
 
@@ -108,20 +107,19 @@
 
 ## 🧱 폴더 구조 (요약)
 
-| 경로                   | 설명                                         |
-| -------------------- | ------------------------------------------ |
-| `src/components/`    | 공통 UI 및 기능 컴포넌트                            |
-| `src/contexts/`      | 전역 상태 관리 (Auth, Modal, Matching 등)         |
-| `src/hooks/`         | 커스텀 훅                                      |
-| `src/lib/`           | Supabase 초기 설정 및 서비스 로직                    |
-| `src/pages/member/`  | 일반 사용자용 페이지                                |
-| `src/pages/partner/` | 파트너(사장님)용 페이지                              |
-| `src/pages/admin/`   | 관리자 페이지                                    |
-| `src/services/`      | CRUD 및 API 통신 서비스 함수                       |
-| `src/types/`         | TypeScript 타입 정의 파일                        |
+| 경로                 | 설명                                                   |
+| -------------------- | ------------------------------------------------------ |
+| `src/components/`    | 공통 UI 및 기능 컴포넌트                               |
+| `src/contexts/`      | 전역 상태 관리 (Auth, Modal, Matching 등)              |
+| `src/hooks/`         | 커스텀 훅                                              |
+| `src/lib/`           | Supabase 초기 설정 및 서비스 로직                      |
+| `src/pages/member/`  | 일반 사용자용 페이지                                   |
+| `src/pages/partner/` | 파트너(사장님)용 페이지                                |
+| `src/pages/admin/`   | 관리자 페이지                                          |
+| `src/services/`      | CRUD 및 API 통신 서비스 함수                           |
+| `src/types/`         | TypeScript 타입 정의 파일                              |
 | `src/ui/`            | UI 컴포넌트 및 스타일 시스템 (Button, Modal, Badge 등) |
-| `App.tsx / main.tsx` | 라우팅 및 프로젝트 진입점                             |
-
+| `App.tsx / main.tsx` | 라우팅 및 프로젝트 진입점                              |
 
 ## 💡 기술 스택 상세
 
@@ -188,9 +186,9 @@
 - **한 줄 소개:** 혼자 먹기 아쉬운 순간, 함께할 밥친구를 찾고 만남 준비까지 간편하게 관리하는 매칭 플랫폼
 - **슬로건:** “Bond and Bite”
 - **핵심 목표:**
-    - 혼밥의 제약 해소 + 즉시성 매칭
-    - 약속 준비 과정 간소화 (체크리스트/템플릿)
-    - 안전하고 가벼운 만남 경험 제공
+  - 혼밥의 제약 해소 + 즉시성 매칭
+  - 약속 준비 과정 간소화 (체크리스트/템플릿)
+  - 안전하고 가벼운 만남 경험 제공
 
 ---
 
@@ -255,9 +253,9 @@
 - **1회성 옵션:** “이번만 만나고 끝” 선택
 - **기본 채팅:** 약속 장소·시간 조율
 - **체크리스트:**
-    - 약속 준비 리스트 자동 생성(장소/시간/결제 방식 등)
-    - 맛집/메뉴 **투표 리스트**로 선택 보조
-    - **모임 템플릿** 재사용
+  - 약속 준비 리스트 자동 생성(장소/시간/결제 방식 등)
+  - 맛집/메뉴 **투표 리스트**로 선택 보조
+  - **모임 템플릿** 재사용
 - **신뢰 장치:** 프로필 인증, 신고/차단, 후기 시스템
 
 ---
@@ -293,3 +291,23 @@ AI 맛집 추천·매칭 / 그룹·정기 모임 체크리스트 / 포인트 보
 DAU / 매칭 성공률 / 재방문율 / 평균 매칭 소요 시간 / 체크리스트 생성·재활용 횟수
 
 ---
+
+## 참여자 연락처
+
+### 전도현
+
+- Notion : https://www.notion.so/About-Me-2069fbf8131280f899b0c956db8b84ff?source=copy_link
+- Github : https://github.com/devdorong
+- Email : dev.dorong@gmail.com
+
+### 김지양
+
+- Notion : https://www.notion.so/2163900c3ef280348281c9ea6ba0dc07
+- Github : https://github.com/devgsheep
+- Email : dev.gsheep@gmail.com
+
+### 신동재
+
+- Notion : https://www.notion.so/DONGJAE-SHIN-21d56f06c7398060a3f1fd42aad01a6f?source=copy_link
+- Github : https://github.com/seastj
+- Email : dev.seastj@gmail.com
