@@ -103,7 +103,7 @@ const MessageInput = ({ chatId }: MessageInputProps) => {
           />
           {/* 메시지 전송 버튼 */}
           <button
-            type="submit"
+            type="button"
             className="send-button"
             disabled={!message.trim() || sending} // 빈 메시지거나 전송중일때 비활성
           >
