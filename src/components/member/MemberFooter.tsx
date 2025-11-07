@@ -32,7 +32,7 @@ const MemberFooter = () => {
             </a>
 
             <a
-              href="https://open.kakao.com/o/g833oUTh"
+              href="https://open.kakao.com/o/sf561R0h"
               target="_blank" // 새 창에서 열기
               rel="noopener noreferrer" // 보안 및 성능상 권장
               title="카카오톡 오픈링크" // 마우스 오버 시 표시되는 툴팁

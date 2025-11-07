@@ -53,6 +53,7 @@ export default function OperatingHours({
             placeholder="오픈 시간"
             className="w-[250px] h-[44px] rounded-3xl border border-babgray-300 px-3"
             classNames={{ popup: { root: 'bab-time-picker-panel' } as any }}
+            needConfirm={false}
           />
 
           <span className="text-babgray-600">~</span>
@@ -65,6 +66,7 @@ export default function OperatingHours({
             placeholder="마감 시간"
             className="w-[250px] h-[44px] rounded-3xl border border-babgray-300 px-3 focus:border-bab"
             classNames={{ popup: { root: 'bab-time-picker-panel' } as any }}
+            needConfirm={false}
           />
         </div>
       </div>

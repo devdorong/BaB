@@ -223,7 +223,7 @@ function ProfilePage() {
       () => {
         closeModal();
         openModal('회원탈퇴', '카카오 문의로 회원정보를 남겨주세요', '', '확인', () => {
-          window.location.href = 'https://open.kakao.com/o/g833oUTh';
+          window.location.href = 'https://open.kakao.com/o/sf561R0h';
         });
       },
     );
