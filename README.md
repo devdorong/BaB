@@ -29,7 +29,7 @@
 | **프로젝트명** | BaB (밥)                                                                                                                |
 | **기획**       | Readdy.ai, Chat GPT                                                                                                     |
 | **개발기간**   | 2025.09 ~ 진행중 (2025.11.13(완료예정))                                                                                 |
-| **Front-end**  | React (Vite), TypeScript, Tailwind CSS, Emotion, Ant Design, NivoChart, KakaoMap, Swiper, React-Paginate, Shadcn, Dayjs |
+| **Front-end**  | React (Vite), TypeScript, Tailwind CSS, Emotion, Ant Design, NivoChart, KakaoMap<br/> Swiper, React-Paginate, Shadcn, Dayjs |
 | **Back-end**   | Supabase (PostgreSQL, Auth, Storage, Realtime),                                                                         |
 | **SEO 분석**   | GA4                                                                                                                     |
 | **Design**     | Figma                                                                                                                   |
