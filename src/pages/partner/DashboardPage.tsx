@@ -232,7 +232,7 @@ function DashboardPage() {
             </div>
             {/* 차트활용 한 주 동안의 매출 그래프 */}
             <div className="flex justify-center items-center">
-              <img src="public/chart1.png" alt="통계그래프" />
+              <img src="/chart1.png" alt="통계그래프" />
             </div>
             <div className="flex items-center text-babgray-500">
               <p>총계 :</p>
@@ -248,7 +248,7 @@ function DashboardPage() {
             {/* 한 주 동안의 주문내역의 메뉴이름 내림차순 정렬 */}
             <div className="flex-1 flex items-center justify-center">
               {' '}
-              <img src="public/chart2.png" alt="통계그래프" />
+              <img src="/chart2.png" alt="통계그래프" />
             </div>
             <div className="flex items-center text-babgray-500">
               <p>총 주문 :</p>
