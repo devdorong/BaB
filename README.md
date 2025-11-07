@@ -5,10 +5,44 @@
 회원은 관심사 기반으로 매칭을 개설하거나 참여할 수 있으며,  
 실시간 알림, 채팅, 이벤트, 포인트 시스템 등을 통해 풍부한 사용자 경험을 제공합니다.
 
-- [Vercel](https://bab-mu.vercel.app/)
+<!-- - [Vercel](https://bab-mu.vercel.app/)
 - [Project 발표자료(Canva)](https://www.canva.com/design/DAG0bfs2dMM/BHjeLE9q5M3ojFDzhMGDWg/view?utm_content=DAG0bfs2dMM&utm_campaign=designshare&utm_medium=link2&utm_source=uniquelinks&utlId=h3fb29822c1)
 - [Notion](https://www.notion.so/BaB-Bond-and-Bite-25a9fbf813128005b175d85700a6efbe?source=copy_link)
-- [Figma](https://www.figma.com/design/qTCTAbUeuW745ZyUkUgzy3/%ED%94%84%EB%A1%9C%EC%A0%9D%ED%8A%B8--BaB-?node-id=2437-15260&t=YYJ5j0Vi7IGXkQTR-1)
+- [Figma](https://www.figma.com/design/qTCTAbUeuW745ZyUkUgzy3/%ED%94%84%EB%A1%9C%EC%A0%9D%ED%8A%B8--BaB-?node-id=2437-15260&t=YYJ5j0Vi7IGXkQTR-1) -->
+
+<div style="text-align: left;">
+  <!-- Vercel -->
+  <a href="https://bab-mu.vercel.app/">
+    <img
+      src="https://img.shields.io/badge/vercel-%23000000.svg?style=for-the-badge&logo=vercel&logoColor=white"
+      alt="Gmail"
+    />
+  </a>
+ 
+  <!-- Notion -->
+  <a href="https://www.notion.so/BaB-Bond-and-Bite-25a9fbf813128005b175d85700a6efbe" target="_blank">
+    <img
+      src="https://img.shields.io/badge/Notion-000000?style=for-the-badge&logo=Notion&logoColor=white"
+      alt="Notion"
+    />
+  </a>
+ 
+  <!-- Figma -->
+  <a href="https://www.figma.com/design/qTCTAbUeuW745ZyUkUgzy3/%ED%94%84%EB%A1%9C%EC%A0%9D%ED%8A%B8--BaB-?node-id=829-9905&t=yYCNjHoKpIhDMsex-1" target="_blank">
+    <img
+      src="https://img.shields.io/badge/figma-%23F24E1E.svg?style=for-the-badge&logo=figma&logoColor=white"
+      alt="Notion"
+    />
+  </a>
+ 
+  <!-- Canva -->
+  <a href="https://www.canva.com/design/DAG0bfs2dMM/BHjeLE9q5M3ojFDzhMGDWg/view?utm_content=DAG0bfs2dMM&utm_campaign=designshare&utm_medium=link2&utm_source=uniquelinks&utlId=h3fb29822c1" target="_blank">
+    <img
+      src="https://img.shields.io/badge/Canva-%2300C4CC.svg?style=for-the-badge&logo=Canva&logoColor=white"
+      alt="Notion"
+    />
+  </a>
+</div>
 
 ---
 
@@ -24,18 +58,18 @@
 
 ## 🛠 기술 및 프로젝트 요약
 
-| 항목           | 내용                                                                                                                    |
-| -------------- | ----------------------------------------------------------------------------------------------------------------------- |
-| **프로젝트명** | BaB (밥)                                                                                                                |
-| **기획**       | Readdy.ai, Chat GPT                                                                                                     |
-| **개발기간**   | 2025.09 ~ 진행중 (2025.11.13(완료예정))                                                                                 |
+| 항목           | 내용                                                                                                                        |
+| -------------- | --------------------------------------------------------------------------------------------------------------------------- |
+| **프로젝트명** | BaB (밥)                                                                                                                    |
+| **기획**       | Readdy.ai, Chat GPT                                                                                                         |
+| **개발기간**   | 2025.09 ~ 진행중 (2025.11.13(완료예정))                                                                                     |
 | **Front-end**  | React (Vite), TypeScript, Tailwind CSS, Emotion, Ant Design, NivoChart, KakaoMap<br/> Swiper, React-Paginate, Shadcn, Dayjs |
-| **Back-end**   | Supabase (PostgreSQL, Auth, Storage, Realtime),                                                                         |
-| **SEO 분석**   | GA4                                                                                                                     |
-| **Design**     | Figma                                                                                                                   |
-| **배포**       | Vercel                                                                                                                  |
-| **협업**       | GoogleSheet, GitHub, Slack                                                                                              |
-| **주요 기능**  | 회원가입/로그인(OAuth), 매칭, 채팅, 알림, 이벤트, 리뷰, 포인트, 파트너 관리, 관리자 대시보드                            |
+| **Back-end**   | Supabase (PostgreSQL, Auth, Storage, Realtime),                                                                             |
+| **SEO 분석**   | GA4                                                                                                                         |
+| **Design**     | Figma                                                                                                                       |
+| **배포**       | Vercel                                                                                                                      |
+| **협업**       | GoogleSheet, GitHub, Slack                                                                                                  |
+| **주요 기능**  | 회원가입/로그인(OAuth), 매칭, 채팅, 알림, 이벤트, 리뷰, 포인트, 파트너 관리, 관리자 대시보드                                |
 
 ---
 
@@ -191,8 +225,6 @@
 
 ---
 
-
-
 ## 참여자 연락처
 
 ### 전도현
@@ -214,7 +246,7 @@
 - Email : dev.seastj@gmail.com
 
 ---
+
 ## 프로젝트 관련 링크
 
 [Vercel](https://bab-mu.vercel.app/) | [Project 발표자료(Canva)](https://www.canva.com/design/DAG0bfs2dMM/BHjeLE9q5M3ojFDzhMGDWg/view?utm_content=DAG0bfs2dMM&utm_campaign=designshare&utm_medium=link2&utm_source=uniquelinks&utlId=h3fb29822c1) | [Notion](https://www.notion.so/BaB-Bond-and-Bite-25a9fbf813128005b175d85700a6efbe?source=copy_link) | [Figma](https://www.figma.com/design/qTCTAbUeuW745ZyUkUgzy3/%ED%94%84%EB%A1%9C%EC%A0%9D%ED%8A%B8--BaB-?node-id=2437-15260&t=YYJ5j0Vi7IGXkQTR-1)
-
