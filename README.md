@@ -7,7 +7,7 @@
 
 - [Vercel](https://bab-mu.vercel.app/)
 - [Project 발표자료(Canva)](https://www.canva.com/design/DAG0bfs2dMM/BHjeLE9q5M3ojFDzhMGDWg/view?utm_content=DAG0bfs2dMM&utm_campaign=designshare&utm_medium=link2&utm_source=uniquelinks&utlId=h3fb29822c1)
-- [Notion](https://www.notion.so/BaB-Bond-and-Bite-25a9fbf813128005b175d85700a6efbe?source=copy_link)
+- :notion-logo: [Notion](https://www.notion.so/BaB-Bond-and-Bite-25a9fbf813128005b175d85700a6efbe?source=copy_link)
 - [Figma](https://www.figma.com/design/qTCTAbUeuW745ZyUkUgzy3/%ED%94%84%EB%A1%9C%EC%A0%9D%ED%8A%B8--BaB-?node-id=2437-15260&t=YYJ5j0Vi7IGXkQTR-1)
 
 ---
