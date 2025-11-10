@@ -179,7 +179,7 @@ function PartnerSignupPage() {
       console.error(`${bucket} 업로드 실패:`, error.message);
       return null;
     }
-    if (bucket === 'business_docs') return data.path;
+    // if (bucket === 'business_docs') return data.path;
     const { data: urlData } = supabase.storage.from(bucket).getPublicUrl(data.path);
     return urlData?.publicUrl ?? null;
   };
@@ -195,7 +195,6 @@ function PartnerSignupPage() {
     });
   };
 
-  
   const toggleOne = (key: keyof typeof agreements) => {
     setAgreements(prev => ({ ...prev, [key]: !prev[key] }));
   };
@@ -229,9 +228,9 @@ function PartnerSignupPage() {
         return;
       }
 
-      await submitApplication(thumbnailUrl);
+      await submitApplication(thumbnailUrl, businessUrl);
 
-      navigate('/partner');
+      // navigate('/partner');
     } finally {
       setSubmitting(false);
     }

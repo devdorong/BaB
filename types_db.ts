@@ -1640,6 +1640,7 @@ export type Database = {
       restaurants: {
         Row: {
           address: string
+          business_docs: string | null
           business_number: string | null
           category_id: number | null
           closeday: string[] | null
@@ -1661,6 +1662,7 @@ export type Database = {
         }
         Insert: {
           address: string
+          business_docs?: string | null
           business_number?: string | null
           category_id?: number | null
           closeday?: string[] | null
@@ -1682,6 +1684,7 @@ export type Database = {
         }
         Update: {
           address?: string
+          business_docs?: string | null
           business_number?: string | null
           category_id?: number | null
           closeday?: string[] | null
@@ -2056,6 +2059,7 @@ export type Database = {
       restaurants_with_profiles_and_email: {
         Row: {
           address: string | null
+          business_docs: string | null
           business_number: string | null
           category_id: number | null
           category_name: string | null

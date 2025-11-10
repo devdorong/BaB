@@ -47,7 +47,7 @@ interface PartnerSignupContextType {
   formData: PartnerFormData;
   setFormData: (data: Partial<PartnerFormData>) => void;
   saveDraft: () => Promise<void>;
-  submitApplication: (thumbnailUrl?: string) => Promise<void>;
+  submitApplication: (thumbnailUrl?: string, businessUrl?: string) => Promise<void>;
   resetForm: () => void;
   loading: boolean;
   modal: ModalState;
@@ -75,8 +75,37 @@ export function PartnerSignupProvider({ children }: PartnerSignupProviderProps) 
   const [profileData, setProfileData] = useState<Profile | null>(null);
   // 에러메세지
   const [error, setError] = useState<string>('');
-  const { modal, openModal, closeModal } = useModal();
+  // const { modal, openModal, closeModal } = useModal();
   const navigate = useNavigate();
+  const [modal, setModal] = useState<ModalState>({
+    isOpen: false,
+    title: '',
+    content: '',
+    closeText: '',
+    submitText: '',
+    onSubmit: undefined,
+  });
+
+  const openModal = (
+    title: string,
+    content: string,
+    closeText: string = '',
+    submitText: string = '',
+    onSubmit?: () => void,
+  ) => {
+    setModal({
+      isOpen: true,
+      title,
+      content,
+      closeText,
+      submitText,
+      onSubmit,
+    });
+  };
+
+  const closeModal = () => {
+    setModal(prev => ({ ...prev, isOpen: false }));
+  };
 
   // 사용자 프로필 정보
   const loadProfile = async () => {
@@ -170,7 +199,7 @@ export function PartnerSignupProvider({ children }: PartnerSignupProviderProps) 
     }
   };
 
-  const submitApplication = async (thumbnailUrl?: string) => {
+  const submitApplication = async (thumbnailUrl?: string, businessUrl?: string) => {
     try {
       setLoading(true);
       if (!user) {
@@ -195,29 +224,31 @@ export function PartnerSignupProvider({ children }: PartnerSignupProviderProps) 
           longitude: formData.longitude,
           category_id: formData.categoryId,
           thumbnail_url: thumbnailUrl || formData.thumbnailUrl,
+          business_docs: businessUrl || formData.businessFile,
           status: 'pending',
         },
       ]);
       if (error) throw error;
 
       // 프로필 업데이트 (role 을 patner 로)
-      const { error: updateError } = await supabase
-        .from('profiles')
-        .update({ role: 'partner' })
-        .eq('id', profileData?.id);
+      // const { error: updateError } = await supabase
+      //   .from('profiles')
+      //   .update({ role: 'partner' })
+      //   .eq('id', profileData?.id);
 
-      if (updateError) {
-        console.error(updateError);
+      // if (updateError) {
+      //   console.error(updateError);
 
-        openModal('오류', '프로필 업데이트 중 오류가 발생했습니다.', '닫기', '', () =>
-          closeModal(),
-        );
-        return;
-      }
+      //   openModal('오류', '프로필 업데이트 중 오류가 발생했습니다.', '닫기', '', () =>
+      //     closeModal(),
+      //   );
+      //   return;
+      // }
 
-      openModal('성공', '신청이 완료되었습니다! 승인 후 연락드리겠습니다.', '', '확인', () =>
-        closeModal(),
-      );
+      openModal('성공', '신청이 완료되었습니다! 승인 후 연락드리겠습니다.', '', '확인', () => {
+        closeModal();
+        setTimeout(() => navigate('/member'), 100);
+      });
     } catch (err) {
       console.error(err);
 
