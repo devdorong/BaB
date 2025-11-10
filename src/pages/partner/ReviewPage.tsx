@@ -182,74 +182,78 @@ function ReviewPage() {
         {/* 하단 */}
         <div className="w-full flex flex-col gap-6">
           {sortedReviews.map(review => (
-            <>
-              <div key={review.review_id} className="w-full flex flex-col gap-6">
-                <div className="self-stretch w-full px-6 py-6 bg-white rounded-lg shadow-[0px_4px_4px_0px_rgba(0,0,0,0.02)] border border-babgray-150 inline-flex flex-col justify-start items-start gap-2.5">
-                  <div className="w-full flex flex-col justify-start items-start gap-4">
-                    <div className="self-stretch flex flex-col justify-start items-start gap-5">
-                      <div className="w-full flex flex-col justify-start items-start gap-5">
-                        <div className="inline-flex justify-start items-center gap-3">
-                          <div className="w-12 h-12 rounded-full bg-gray-100 overflow-hidden">
-                            {review.profiles?.avatar_url && (
-                              <img
-                                src={
-                                  review.profiles?.avatar_url !== 'guest_image'
-                                    ? review.profiles?.avatar_url
-                                    : 'https://www.gravatar.com/avatar/?d=mp&s=200'
-                                }
-                                alt="프로필 이미지"
-                                className="w-full h-full object-cover object-center"
-                              />
-                            )}
-                          </div>
-                          <div className="flex flex-col justify-start items-start">
-                            <div className="text-[14px] justify-start text-babgray-600">
+            <div key={review.review_id} className="w-full flex flex-col gap-6">
+              <div className="self-stretch w-full px-6 py-6 bg-white rounded-lg shadow-[0px_4px_4px_0px_rgba(0,0,0,0.02)] border border-babgray-150 flex flex-col justify-start items-start gap-2.5">
+                <div className="w-full flex flex-col items-start gap-4">
+                  <div className="self-stretch flex flex-col items-start gap-5">
+                    <div className="w-full flex flex-col items-start gap-5">
+                      <div className="flex items-center gap-3 w-full">
+                        <div className="w-12 h-12 rounded-full bg-gray-100 overflow-hidden">
+                          {review.profiles?.avatar_url && (
+                            <img
+                              src={
+                                review.profiles?.avatar_url !== 'guest_image'
+                                  ? review.profiles?.avatar_url
+                                  : 'https://www.gravatar.com/avatar/?d=mp&s=200'
+                              }
+                              alt="프로필 이미지"
+                              className="w-full h-full object-cover object-center"
+                            />
+                          )}
+                        </div>
+                        <div className="flex flex-col flex-1 justify-start items-start">
+                          <div className="flex w-full justify-between">
+                            <div className="text-[14px] text-babgray-600">
                               {review.profiles?.nickname}
                             </div>
-                            <div className="inline-flex justify-start items-center gap-1.5">
-                              <div className="flex items-center gap-0.5 pt-1">
-                                {Array.from({ length: 5 }).map((_, i) => (
-                                  <RiStarFill
-                                    key={i}
-                                    className={`text-[16px] ${
-                                      i < (review.rating_food ?? 0)
-                                        ? 'text-yellow-400' // 채워진 별 (노란색)
-                                        : 'text-gray-300' // 채워지지않은 별 (회색)
-                                    }`}
-                                  />
-                                ))}
-                              </div>
-                              <div className="justify-start">
-                                <span className="text-babgray-600 text-[14px] font-normal ">
-                                  · {new Date(review.created_at).toLocaleDateString()}
-                                </span>
-                              </div>
+                            <div className="text-xs justify-right text-babgray-400 cursor-pointer hover:text-red-500">
+                              신고하기
+                            </div>
+                          </div>
+                          <div className="flex justify-start items-center gap-1.5">
+                            <div className="flex items-center gap-0.5 pt-1">
+                              {Array.from({ length: 5 }).map((_, i) => (
+                                <RiStarFill
+                                  key={i}
+                                  className={`text-[16px] ${
+                                    i < (review.rating_food ?? 0)
+                                      ? 'text-yellow-400' // 채워진 별 (노란색)
+                                      : 'text-gray-300' // 채워지지않은 별 (회색)
+                                  }`}
+                                />
+                              ))}
+                            </div>
+                            <div className="justify-start">
+                              <span className="text-babgray-600 text-[14px] font-normal ">
+                                · {new Date(review.created_at).toLocaleDateString()}
+                              </span>
                             </div>
                           </div>
                         </div>
-                        <div className="self-stretch justify-start text-babgray-700 text-base font-normal ">
-                          {review.comment}
-                        </div>
-                        {/* 이미지 섹션 */}
-                        {review.review_photos?.length > 0 && (
-                          <div className="flex flex-wrap gap-5">
-                            {review.review_photos.map(photo => (
-                              <div
-                                key={photo.photo_id}
-                                className="w-[200px] h-[200px] rounded-lg overflow-hidden border border-black/5 shadow-[0_4px_4px_rgba(0,0,0,0.02)]"
-                              >
-                                <img
-                                  src={photo.photo_url}
-                                  alt="리뷰 사진"
-                                  className="w-full h-full object-cover"
-                                />
-                              </div>
-                            ))}
-                          </div>
-                        )}
                       </div>
-                      <WriteReviewComment reviewId={review.review_id} />
-                      {/* <div className="self-stretch px-5 py-4 bg-bab-100 border-l-4 border-bab-500 flex flex-col justify-start items-start gap-2.5">
+                      <div className="self-stretch justify-start text-babgray-700 text-base font-normal ">
+                        {review.comment}
+                      </div>
+                      {/* 이미지 섹션 */}
+                      {review.review_photos?.length > 0 && (
+                        <div className="flex flex-wrap gap-5">
+                          {review.review_photos.map(photo => (
+                            <div
+                              key={photo.photo_id}
+                              className="w-[200px] h-[200px] rounded-lg overflow-hidden border border-black/5 shadow-[0_4px_4px_rgba(0,0,0,0.02)]"
+                            >
+                              <img
+                                src={photo.photo_url}
+                                alt="리뷰 사진"
+                                className="w-full h-full object-cover"
+                              />
+                            </div>
+                          ))}
+                        </div>
+                      )}
+                    </div>
+                    <WriteReviewComment reviewId={review.review_id} />
+                    {/* <div className="self-stretch px-5 py-4 bg-bab-100 border-l-4 border-bab-500 flex flex-col justify-start items-start gap-2.5">
                       <div className="self-stretch inline-flex justify-start items-center gap-2 text-bab">
                         <div className="w-full inline-flex flex-col justify-center items-center gap-1.5">
                           <div className="self-stretch justify-start text-bab-700 text-base font-normal ">
@@ -261,8 +265,8 @@ function ReviewPage() {
                         </div>
                       </div>
                     </div> */}
-                    </div>
-                    {/* <div className="self-stretch pl-2 pt-4 border-t border-babgray-100 inline-flex justify-between items-center">
+                  </div>
+                  {/* <div className="self-stretch pl-2 pt-4 border-t border-babgray-100 inline-flex justify-between items-center">
                     <div className="w-4 h-4 relative overflow-hidden text-babgray-300">
                       <RiHeartLine />
                     </div>
@@ -285,10 +289,9 @@ function ReviewPage() {
                       </div>
                     </div>
                   </div> */}
-                  </div>
                 </div>
               </div>
-            </>
+            </div>
           ))}
         </div>
       </div>
