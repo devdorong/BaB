@@ -5,6 +5,8 @@ import { useNavigate } from 'react-router-dom';
 import { useAuth } from '../../../contexts/AuthContext';
 import { getProfile, removeAvatar, updateProfile, uploadAvatar } from '../../../lib/propile';
 import type { Profile, ProfileUpdate } from '../../../types/bobType';
+import { supabase } from '@/lib/supabase';
+import { toast } from 'sonner';
 
 function EditPage() {
   const navigate = useNavigate();
@@ -40,6 +42,11 @@ function EditPage() {
   const [passwordMessage, setPasswordMessage] = useState<string>('');
   const [isUpdating, setIsUpdating] = useState(false);
   const [pwErr, setPwErr] = useState<{ current?: string; next?: string; confirm?: string }>({});
+  // 닉네임 중복
+  const [msg, setMsg] = useState('');
+  const [isCheckingNick, setIsCheckingNick] = useState(false);
+  const [isNickAvailable, setIsNickAvailable] = useState<boolean | null>(null);
+  const [msgColor, setMsgColor] = useState('text-babgray-400');
 
   const [intro, setIntro] = useState('');
   const nickMax = 20;
@@ -79,6 +86,51 @@ function EditPage() {
     loadProfile();
   }, [user?.id]);
 
+  // ================= 25.11.10 수정 ======================
+  // 닉네임 중복 체크
+  const handleCheckNick = async (e: React.MouseEvent<HTMLButtonElement>) => {
+    if (!nickName.trim()) {
+      setMsg('닉네임을 입력하세요.');
+      return;
+    }
+
+    setIsCheckingNick(true);
+    setIsNickAvailable(null);
+
+    const { data, error } = await supabase
+      .from('profiles')
+      .select('id')
+      .eq('nickname', nickName)
+      .maybeSingle();
+
+    setIsCheckingNick(false);
+
+    if (error) {
+      console.error('닉네임 중복체크 오류:', error.message);
+      setMsg('닉네임 확인 중 오류가 발생했습니다.');
+      return;
+    }
+
+    if (data) {
+      setIsNickAvailable(false);
+      setMsg('이미 사용 중인 닉네임입니다.');
+    } else {
+      setIsNickAvailable(true);
+      setMsg('사용 가능한 닉네임입니다.');
+    }
+  };
+
+  useEffect(() => {
+    if (isNickAvailable === true) {
+      setMsgColor('text-green-600');
+    } else if (isNickAvailable === false) {
+      setMsgColor('text-red-500');
+    }
+    // null일 때는 그대로 유지
+  }, [msg]); // msg가 바뀔 때만 색상 변경
+
+  // =====================================================
+
   // 비밀번호 에러
   const PasswordErrorMsg = () => {
     // 전부 비우고 시작
@@ -111,7 +163,28 @@ function EditPage() {
     if (!user?.id || isUpdating) return;
 
     setIsUpdating(true);
+
     try {
+      // 닉네임 유효성 검사
+      if (!nickName.trim()) {
+        setMsg('닉네임을 입력하세요.');
+        toast.warning('닉네임을 입력하세요.', { position: 'top-center' });
+        return;
+      }
+
+      if (isNickAvailable === false) {
+        setMsg('이미 사용 중인 닉네임입니다.');
+        toast.error('닉네임을 입력하세요.', { position: 'top-center' });
+        return;
+      }
+
+      // 중복체크를 안 했을 때도 막기
+      if (isNickAvailable === null) {
+        setMsg('닉네임 중복 확인을 먼저 해주세요.');
+        toast.info('닉네임 중복 확인을 먼저 해주세요.', { position: 'top-center' });
+        return;
+      }
+
       // 비밀번호 변경 요청이 있는지 체크
       const wantChangePw = currentPassword || newPassword || confirmPassword;
       if (wantChangePw) {
@@ -177,6 +250,7 @@ function EditPage() {
       setSelectedFile(null);
       setImageRemovalRequest(false);
       navigate('/member/profile');
+      toast.success('프로필 변경이 완료되었습니다.', { position: 'top-center' });
     } catch (err) {
       console.log(err);
     } finally {
@@ -328,15 +402,28 @@ function EditPage() {
                     <div className="flex items-center gap-1 text-babgray-900">
                       닉네임 <span className="text-bab-500">*</span>
                     </div>
-                    <div className="w-full h-[45px] px-3.5 py-3 bg-white rounded-3xl outline outline-1 outline-offset-[-1px] outline-babgray-300 inline-flex items-center">
-                      <input
-                        type="text"
-                        value={nickName}
-                        onChange={e => setNickName(e.target.value.slice(0, nickMax))}
-                        className="flex text-babgray-700 outline-none text-[16px] placeholder:text-babgray-400"
-                        placeholder="닉네임을 입력하세요"
-                      />
+                    <div className="flex gap-3 justify-center">
+                      <div className="w-full h-[45px] px-3.5 py-3 bg-white rounded-lg outline outline-1 outline-offset-[-1px] outline-babgray-300 inline-flex items-center">
+                        <input
+                          type="text"
+                          value={nickName}
+                          onChange={(e: React.ChangeEvent<HTMLInputElement>) =>
+                            setNickName(e.target.value.slice(0, nickMax))
+                          }
+                          className="flex text-babgray-700 outline-none text-[16px] placeholder:text-babgray-400"
+                          placeholder="닉네임을 입력하세요"
+                        />
+                      </div>
+                      <ButtonFillMd
+                        style={{ height: 46 }}
+                        type="button"
+                        onClick={handleCheckNick}
+                        disabled={isCheckingNick}
+                      >
+                        중복확인
+                      </ButtonFillMd>
                     </div>
+                    {msg && <div className={`text-[13px] ${msgColor}`}>{msg}</div>}
                     <div className="text-[12px] text-babgray-400">
                       {nickName.length}/{nickMax}
                     </div>
@@ -349,7 +436,7 @@ function EditPage() {
                       value={intro}
                       onChange={e => setIntro(e.target.value.slice(0, introMax))}
                       rows={3}
-                      className="w-full rounded-2xl outline outline-1 outline-offset-[-1px] outline-babgray-300 px-3.5 py-3 text-[14px] text-babgray-700 placeholder:text-babgray-400 resize-none"
+                      className="w-full rounded-lg outline outline-1 outline-offset-[-1px] outline-babgray-300 px-3.5 py-3 text-[14px] text-babgray-700 placeholder:text-babgray-400 resize-none"
                       placeholder="소개를 입력하세요"
                     />
                     <div className="text-[12px] text-babgray-400">
@@ -389,7 +476,7 @@ function EditPage() {
                         {/* 현재 비밀번호 */}
                         <div className="flex justify-between items-center">
                           <div className="text-babgray-700 text-nowrap">현재 비밀번호</div>
-                          <div className="relative w-[200px] lg:w-[500px] h-[45px] px-3.5 py-3 bg-white rounded-3xl outline outline-1 outline-offset-[-1px] outline-babgray-300 inline-flex items-center">
+                          <div className="relative w-[200px] lg:w-[500px] h-[45px] px-3.5 py-3 bg-white rounded-lg outline outline-1 outline-offset-[-1px] outline-babgray-300 inline-flex items-center">
                             <input
                               type="password"
                               value={currentPassword}
@@ -412,7 +499,7 @@ function EditPage() {
                         {/* 새 비밀번호 */}
                         <div className="flex justify-between items-center">
                           <div className="text-babgray-700 text-nowrap">새 비밀번호</div>
-                          <div className="relative w-[200px] lg:w-[500px] h-[45px] px-3.5 py-3 bg-white rounded-3xl outline outline-1 outline-offset-[-1px] outline-babgray-300 inline-flex items-center">
+                          <div className="relative w-[200px] lg:w-[500px] h-[45px] px-3.5 py-3 bg-white rounded-lg outline outline-1 outline-offset-[-1px] outline-babgray-300 inline-flex items-center">
                             <input
                               type="password"
                               value={newPassword}
@@ -435,7 +522,7 @@ function EditPage() {
                         {/* 새 비밀번호 확인 */}
                         <div className="flex justify-between items-center">
                           <div className="text-babgray-700 text-nowrap">새 비밀번호 확인</div>
-                          <div className="relative w-[200px] lg:w-[500px] h-[45px] px-3.5 py-3 bg-white rounded-3xl outline outline-1 outline-offset-[-1px] outline-babgray-300 inline-flex items-center">
+                          <div className="relative w-[200px] lg:w-[500px] h-[45px] px-3.5 py-3 bg-white rounded-lg outline outline-1 outline-offset-[-1px] outline-babgray-300 inline-flex items-center">
                             <input
                               type="password"
                               value={confirmPassword}
@@ -464,7 +551,7 @@ function EditPage() {
               <div className="pt-2">
                 <button
                   type="button"
-                  className="w-full h-[46px] rounded-xl lg:rounded-full bg-bab-500 text-white font-semibold shadow-[0_4px_4px_rgba(0,0,0,0.02)]"
+                  className="w-full h-[46px] rounded-lg bg-bab-500 text-white font-semibold shadow-[0_4px_4px_rgba(0,0,0,0.02)]"
                   onClick={handleSaveProfile}
                 >
                   저장

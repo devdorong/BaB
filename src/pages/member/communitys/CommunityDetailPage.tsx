@@ -11,9 +11,12 @@ import { useModal } from '../../../ui/sdj/ModalState';
 import ReportsModal from '../../../ui/sdj/ReportsModal';
 import TagBadge from '../../../ui/TagBadge';
 import styles from './CommunityDetailPage.module.css';
+import { useDirectChat } from '@/contexts/DirectChatContext';
+import type { ChatListItem } from '@/types/chatType';
+import { findOrCreateDirectChat } from '@/services/directChatService';
 
 type PostWithProfile = Posts & {
-  profiles: { id: string; nickname: string } | null;
+  profiles: { id: string; nickname: string; avatar_url: string } | null;
 };
 
 type CommentWithProfile = Comment & {
@@ -53,6 +56,7 @@ function CommunityDetailPage() {
 
   const [isAdmin, setIsAdmin] = useState(false);
   const [isAuthor, setIsAuthor] = useState(false);
+  const { setCurrentChat, loadMessages, loadChats } = useDirectChat();
 
   const fetchComments = async () => {
     if (!post?.id) return;
@@ -113,7 +117,43 @@ function CommunityDetailPage() {
       return;
     }
     openModal('채팅', '해당 게시글 작성자와 채팅을 하시겠습니까?', '취소', '확인', async () => {
-      navigate(`/member/profile/chat`);
+      try {
+        const {
+          data: { user },
+          error: userError,
+        } = await supabase.auth.getUser();
+        if (userError || !user) throw new Error('로그인 정보를 불러올 수 없음');
+
+        const { data: postData, error: postError } = await supabase
+          .from('posts')
+          .select('id, profile_id')
+          .eq('id', id)
+          .single();
+
+        if (postError) {
+          throw new Error(`${postError.message}`);
+        }
+
+        const { success, data: chatRoom } = await findOrCreateDirectChat(postData.profile_id);
+        if (!success || !chatRoom?.id) throw new Error('채팅방 생성 실패');
+        const chatData: ChatListItem = {
+          id: chatRoom.id,
+          other_user: {
+            id: postData.profile_id,
+            nickname: post?.profiles?.nickname ?? '호스트',
+            avatar_url: post?.profiles?.avatar_url ?? null,
+            email: '',
+          },
+          last_message: undefined,
+          unread_count: 0,
+          is_new_chat: false,
+        };
+        setCurrentChat(chatData);
+        await loadMessages(chatData.id);
+        navigate(`/member/profile/chat`, { state: { chatId: chatRoom.id } });
+      } catch (err) {
+        console.log(err);
+      }
     });
   };
 

@@ -55,6 +55,9 @@ import PaymentModal from '../../../components/payment/PaymentModal'; // 결제 �
 import { BankCardLine } from '../../../ui/Icon';
 import { InterestBadge } from '../../../ui/tag';
 import ReportsModal from '../../../ui/sdj/ReportsModal';
+import type { ChatListItem } from '@/types/chatType';
+import { findOrCreateDirectChat } from '@/services/directChatService';
+import { useDirectChat } from '@/contexts/DirectChatContext';
 
 type ProcessedMatching = Matchings & {
   tags: Badge[];
@@ -103,6 +106,7 @@ const DEFAULT_AVATAR = 'https://www.gravatar.com/avatar/?d=mp&s=200';
 
 const MatchingDetailPage = () => {
   const { user } = useAuth();
+  const { setCurrentChat, loadMessages, loadChats } = useDirectChat();
   const navigate = useNavigate();
   const isMapLoaded = useKakaoLoader();
   const { id } = useParams<{ id: string }>();
@@ -552,6 +556,48 @@ const MatchingDetailPage = () => {
     }
   };
 
+  const handleChatClick = async () => {
+    try {
+      const {
+        data: { user },
+        error: userError,
+      } = await supabase.auth.getUser();
+      if (userError || !user) throw new Error('로그인 정보를 불러올 수 없음');
+
+      const { data: matching, error: matchingError } = await supabase
+        .from('matchings')
+        .select('desired_members, status, host_profile_id')
+        .eq('id', matchingId)
+        .single();
+
+      if (matchingError) {
+        throw new Error(`매칭 조회 실패: ${matchingError.message}`);
+      }
+      if (matching.status !== 'waiting') {
+        throw new Error('이미 진행 중이거나 종료된 매칭입니다');
+      }
+      const { success, data: chatRoom } = await findOrCreateDirectChat(matching.host_profile_id);
+      if (!success || !chatRoom?.id) throw new Error('채팅방 생성 실패');
+      const chatData: ChatListItem = {
+        id: chatRoom.id,
+        other_user: {
+          id: matching.host_profile_id,
+          nickname: userData?.nickname ?? '호스트',
+          avatar_url: userData?.avatar_url ?? null,
+          email: '',
+        },
+        last_message: undefined,
+        unread_count: 0,
+        is_new_chat: false,
+      };
+      setCurrentChat(chatData);
+      await loadMessages(chatData.id);
+      navigate(`/member/profile/chat`, { state: { chatId: chatRoom.id } });
+    } catch (err) {
+      console.log(err);
+    }
+  };
+
   useEffect(() => {}, [matchingData, matchingId]);
 
   if (loading || !matchingData || !restaurant) {
@@ -734,7 +780,7 @@ const MatchingDetailPage = () => {
               <div className="w-full p-6 bg-white rounded-2xl shadow-[0_4px_4px_rgba(0,0,0,0.02)]">
                 <section className="w-full space-y-3">
                   {/* 조건별 버튼 */}
-                  {status !== 'waiting' && status !== 'full'  ? (
+                  {status !== 'waiting' && status !== 'full' ? (
                     <button
                       className="inline-flex w-full h-[50px] px-[15px] justify-center items-center rounded-lg 
              bg-gray-300 text-white text-[16px] font-medium 
@@ -770,7 +816,8 @@ const MatchingDetailPage = () => {
                   ) : (
                     <ButtonLineLg
                       className="w-full"
-                      onClick={() => navigate(`/member/profile/chat`)}
+                      // onClick={() => navigate(`/member/profile/chat`)}
+                      onClick={() => handleChatClick()}
                     >
                       <div className="flex gap-1 items-center justify-center">
                         1:1 채팅 <RiChat3Line className="w-4 h-4" />
