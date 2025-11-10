@@ -49,10 +49,8 @@ export default function AdminPartnersPage() {
 
   const fetchData = async () => {
     setLoading(true);
-    const { data, error } = await supabase
-      .from('restaurants_with_profiles_and_email')
-      .select(`*`)
-      .eq('owner_role', 'partner');
+    const { data, error } = await supabase.from('restaurants_with_profiles_and_email').select(`*`);
+    // .eq('owner_role', 'partner');
     if (error) {
       console.log('파트너 정보를 가져오는데 실패했습니다.', error.message);
     }

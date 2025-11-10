@@ -20,6 +20,52 @@ function AdminPartnerSignupDetailPage() {
     (a, b) => dayOrder.indexOf(a) - dayOrder.indexOf(b),
   );
 
+  // const handleApproved = () => {
+  //   openModal(
+  //     '파트너 승인',
+  //     '해당 파트너 신청서를 승인하시겠습니까?',
+  //     '취소',
+  //     '승인',
+  //     async () => {
+  //       const { error } = await supabase
+  //         .from('restaurants')
+  //         .update({ status: 'approved' })
+  //         .eq('id', restaurant?.restaurant_id);
+
+  //       if (error) {
+  //         openModal('오류', `승인중 오류 발생 : ${error.message}`, '닫기');
+  //         return;
+  //       }
+
+  //       const { error: updateError } = await supabase
+  //         .from('profiles')
+  //         .update({ role: 'partner' })
+  //         .eq('id', restaurant?.profile_id);
+
+  //       if (updateError) {
+  //         console.error(updateError);
+  //       }
+  //       openModal(
+  //         '승인',
+  //         '파트너 승인 완료',
+  //         '',
+  //         '확인',
+  //         () => {
+  //           closeModal();
+  //           setTimeout(() => navigate(`/admin/partners`), 100);
+  //         },
+  //         () => {
+  //           // navigate(`/admin/partners`);
+  //           closeModal();
+  //         },
+  //       );
+  //     },
+  //     // () => {
+  //     //   // navigate(`/admin/partners/${restaurant?.restaurant_id}`);
+  //     //   closeModal();
+  //     // },
+  //   );
+  // };
   const handleApproved = () => {
     openModal(
       '파트너 승인',
@@ -27,10 +73,19 @@ function AdminPartnerSignupDetailPage() {
       '취소',
       '승인',
       async () => {
+        // 승인 버튼 클릭 시
         const { error } = await supabase
           .from('restaurants')
           .update({ status: 'approved' })
           .eq('id', restaurant?.restaurant_id);
+
+        if (error) {
+          closeModal(); // 현재 모달 닫고
+          setTimeout(() => {
+            openModal('오류', `승인중 오류 발생 : ${error.message}`, '닫기');
+          }, 100);
+          return;
+        }
 
         const { error: updateError } = await supabase
           .from('profiles')
@@ -41,33 +96,15 @@ function AdminPartnerSignupDetailPage() {
           console.error(updateError);
         }
 
-        if (error) {
-          openModal('오류', `승인중 오류 발생 : ${error.message}`, '닫기');
-          return;
-        }
-        openModal(
-          '승인',
-          '파트너 승인 완료',
-          '',
-          '확인',
-          () => {
+        closeModal(); // 현재 모달 닫고
+        setTimeout(() => {
+          openModal('승인', '파트너 승인 완료', '', '확인', () => {
             closeModal();
-            setTimeout(() => navigate(`/admin/partners`), 100);
-          },
-          () => {
-            // navigate(`/admin/partners`);
-            closeModal();
-          },
-        );
+            navigate(`/admin/partners`);
+          });
+        }, 100);
       },
-      () => {
-        // navigate(`/admin/partners/${restaurant?.restaurant_id}`);
-        closeModal();
-      },
-      () => {
-        // navigate(`/admin/partners/${restaurant?.restaurant_id}`);
-        closeModal();
-      },
+      undefined, // 취소 버튼은 기본 동작(closeModal)만 수행
     );
   };
 
@@ -215,7 +252,7 @@ function AdminPartnerSignupDetailPage() {
                   </div>
                   <div className="flex w-full justify-start font-bold text-babgray-800">
                     {sortedDays.length > 0 ? (
-                      <div className="flex gap-2">
+                      <div className="flex">
                         {sortedDays.map((day, idx) => (
                           <span
                             key={idx}
@@ -235,7 +272,7 @@ function AdminPartnerSignupDetailPage() {
               {/* 매장 소개 */}
               <div className="flex-1 flex flex-col gap-4 border-b pb-3">
                 <div className="flex gap-1">
-                  <div className="text-nowrap text-[14px] text-babgray-700">사업자 등록증</div>
+                  <div className="text-nowrap text-[14px] text-babgray-700">매장 소개</div>
                   <span className="text-bab-500">*</span>
                 </div>
                 <div className="flex w-full justify-start font-bold text-babgray-800">
@@ -255,9 +292,13 @@ function AdminPartnerSignupDetailPage() {
                   <label className="flex items-center gap-1 text-gray-700 font-medium">
                     사업자 등록증 <span className="text-bab-500">*</span>
                   </label>
-                  <label className="h-40 flex flex-col items-center justify-center border-2 border-dashed border-babgray-200 rounded-2xl text-sm text-babgray-500  overflow-hidden">
-                    <div className="cursor-pointer">사진</div>
-                  </label>
+                  <a href={`${restaurant.business_docs}`} target="_blank">
+                    <label className="h-40 flex flex-col items-center justify-center border-2 border-dashed border-babgray-200 rounded-2xl text-sm text-babgray-500  overflow-hidden cursor-pointer">
+                      <div className="cursor-pointer">
+                        {restaurant.restaurant_name}의 사업자 등록증
+                      </div>
+                    </label>
+                  </a>
                 </div>
 
                 {/* 매장 대표 이미지 (공개 URL) */}
