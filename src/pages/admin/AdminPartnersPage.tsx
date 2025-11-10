@@ -5,13 +5,14 @@ import type { Database } from '@/types/bobType';
 import MemberActivityDetailModal from '@/ui/sdj/MemberActivityDetails';
 import dayjs from 'dayjs';
 import { useEffect, useMemo, useState } from 'react';
-import { RiSearchLine } from 'react-icons/ri';
-import AdminPartnerSignupDetailPage from './AdminPartnerSignupDetailPage';
+import { RiArrowLeftSLine, RiArrowRightSLine, RiSearchLine } from 'react-icons/ri';
 import { useNavigate, useParams } from 'react-router-dom';
 
 export type RestaurantStatus = Database['public']['Tables']['restaurants']['Row']['status'];
 export type RestaurantWithProfile =
   Database['public']['Views']['restaurants_with_profiles_and_email']['Row'];
+
+const ITEMS_PER_PAGE = 10;
 
 export default function AdminPartnersPage() {
   const navigate = useNavigate();
@@ -22,29 +23,27 @@ export default function AdminPartnersPage() {
   const [search, setSearch] = useState('');
   const [sortType, setSortType] = useState<'이름순' | '가입일순'>('가입일순');
 
-  const [signupDetail, setSignupDetail] = useState(false);
+  const [currentPage, setCurrentPage] = useState(1);
 
   const [statusFilter, setStatusFilter] = useState<RestaurantStatus>('pending');
   const categories: { label: string; value: RestaurantStatus }[] = [
     { label: '대기', value: 'pending' },
-    { label: '완료', value: 'approved' },
+    { label: '승인', value: 'approved' },
     { label: '거절', value: 'rejected' },
     { label: '임시', value: 'draft' },
   ];
   const [memberDetail, setMemberDetail] = useState(false);
   const [loading, setLoading] = useState(true);
 
-  const handleDetail = () => {
-    navigate(`/admin/partners/${id}`);
+  const handleDetail = (restaurant: RestaurantWithProfile) => {
+    navigate(`/admin/partners/${restaurant.restaurant_id}`, {
+      state: { restaurant },
+    });
   };
 
   const filterCategory = useMemo(() => {
     return userList.filter(user => user.restaurant_status === statusFilter);
   }, [userList, statusFilter]);
-
-  const handleMemberDetail = () => {
-    setMemberDetail(true);
-  };
 
   dayjs.locale('ko');
 
@@ -87,6 +86,11 @@ export default function AdminPartnersPage() {
     return users;
   }, [filteredUsers, sortType]);
 
+  // 페이지네이션
+  const totalPages = Math.ceil(sortedUsers.length / ITEMS_PER_PAGE);
+  const startIdx = (currentPage - 1) * ITEMS_PER_PAGE;
+  const paginatedList = sortedUsers.slice(startIdx, startIdx + ITEMS_PER_PAGE);
+
   useEffect(() => {
     setHeader('파트너 관리', '플랫폼 파트너 계정을 관리하고 모니터링합니다.');
   }, []);
@@ -115,7 +119,7 @@ export default function AdminPartnersPage() {
             <select
               value={sortType}
               onChange={e => setSortType(e.target.value as '이름순' | '가입일순')}
-              className="appearance-none border border-gray-300 rounded-full px-4 py-2 text-sm focus:outline-none focus:border-bab-500"
+              className="appearance-none cursor-pointer border border-gray-300 rounded-full px-4 py-2 text-sm focus:outline-none focus:border-bab-500"
             >
               <option value="가입일순">가입일순</option>
               <option value="이름순">이름순</option>
@@ -150,7 +154,7 @@ export default function AdminPartnersPage() {
               <th className="py-3 px-8 text-left">이메일</th>
               <th className="py-3 px-8 text-left">가입일</th>
               <th className="py-3 px-8 text-left">매장정보</th>
-              <th className="py-3 px-8 text-left">정산내역</th>
+              {/* <th className="py-3 px-8 text-left">정산내역</th> */}
               <th className="py-3 px-8 text-left">상태</th>
             </tr>
           </thead>
@@ -161,7 +165,7 @@ export default function AdminPartnersPage() {
                   파트너 목록을 불러오는 중입니다...
                 </td>
               </tr>
-            ) : sortedUsers.length === 0 ? (
+            ) : paginatedList.length === 0 ? (
               <tr>
                 <td colSpan={6} className="py-10 text-center text-gray-400">
                   표시할 파트너가 없습니다.
@@ -169,12 +173,11 @@ export default function AdminPartnersPage() {
               </tr>
             ) : (
               <>
-                {sortedUsers.map((user, idx) => (
+                {paginatedList.map((user, idx) => (
                   <tr key={idx} className="border-b last:border-b-0 hover:bg-gray-50">
                     <td className="py-3 px-8 flex items-center space-x-3">
                       <img
                         src={
-
                           user.restaurant_thumbnail_url
                             ? user.restaurant_thumbnail_url === 'guest_image'
                               ? `https://www.gravatar.com/avatar/?d=mp&s=200`
@@ -189,38 +192,32 @@ export default function AdminPartnersPage() {
                     <td className="py-3 px-8">{user.owner_email}</td>
                     <td className="py-3 px-8">{dayjs(user.created_at).format('YYYY-MM-DD')}</td>
                     <td className="py-3 px-8">{user.owner_nickname}</td>
-                    <td
+                    {/* <td
                       onClick={handleMemberDetail}
                       className="py-3 px-8 text-bab hover:underline cursor-pointer"
                     >
                       상세보기
-                    </td>
+                    </td> */}
                     {memberDetail && (
                       <MemberActivityDetailModal onClose={() => setMemberDetail(false)} />
                     )}
                     <td className="py-3 px-2">
                       {user.restaurant_status === 'rejected' && (
-                        <button className="text-gray-600 text-xs px-3 py-1 hover:bg-gray-100">
-                          파트너 거절
-                        </button>
+                        <div className="text-gray-600 text-xs px-3 py-1 ">파트너 거절</div>
                       )}
                       {user.restaurant_status === 'draft' && (
-                        <button className="text-gray-600 text-xs px-3 py-1 hover:bg-gray-100">
-                          임시 저장중
-                        </button>
+                        <div className="text-gray-600 text-xs px-3 py-1 ">임시 저장중</div>
                       )}
                       {user.restaurant_status === 'pending' && (
-                        <button
-                          onClick={handleDetail}
-                          className="text-bab text-xs px-3 py-1 hover:bg-red-50"
+                        <div
+                          onClick={() => handleDetail(user)}
+                          className="text-bab text-xs px-3 py-1 cursor-pointer"
                         >
                           파트너 대기
-                        </button>
+                        </div>
                       )}
                       {user.restaurant_status === 'approved' && (
-                        <button className="text-green-600 text-xs px-3 py-1 hover:bg-green-50">
-                          파트너 승인
-                        </button>
+                        <div className="text-green-600 text-xs px-3 py-1 ">파트너 승인</div>
                       )}
                     </td>
                   </tr>
@@ -234,19 +231,39 @@ export default function AdminPartnersPage() {
       {/* 하단 페이지네이션 */}
       <div className="flex justify-between p-8 items-center mt-4 text-sm text-gray-600">
         <p>총 {sortedUsers.length}명의 파트너</p>
-        <div className="flex items-center space-x-2">
-          {Array.from({ length: 10 }, (_, i) => i + 1).map(num => (
+
+        {/* 페이지네이션 */}
+        {paginatedList.length > 0 && (
+          <div className="flex justify-center gap-2 mt-4 sm:mt-6 flex-wrap">
             <button
-              key={num}
-              className={`w-7 h-7 rounded-full ${
-                num === 1 ? 'bg-bab text-white' : 'hover:bg-gray-100 text-gray-600'
-              }`}
+              disabled={currentPage === 1}
+              onClick={() => setCurrentPage(p => Math.max(p - 1, 1))}
+              className="p-2 bg-bg-bg rounded hover:bg-bab hover:text-white disabled:opacity-50 transition"
             >
-              {num}
+              <RiArrowLeftSLine size={16} />
             </button>
-          ))}
-          <span className="text-gray-400">›</span>
-        </div>
+
+            {Array.from({ length: totalPages }).map((_, idx) => (
+              <button
+                key={idx + 1}
+                onClick={() => setCurrentPage(idx + 1)}
+                className={`p-2 py-0 rounded hover:bg-bab hover:text-white ${
+                  currentPage === idx + 1 ? 'text-bab' : 'bg-bg-bg'
+                }`}
+              >
+                {idx + 1}
+              </button>
+            ))}
+
+            <button
+              disabled={currentPage === totalPages}
+              onClick={() => setCurrentPage(p => Math.min(p + 1, totalPages))}
+              className="p-2 bg-white rounded hover:bg-bab hover:text-white disabled:opacity-50 transition"
+            >
+              <RiArrowRightSLine size={16} />
+            </button>
+          </div>
+        )}
       </div>
     </div>
   );

@@ -5,7 +5,7 @@ import type { Database, Profile } from '@/types/bobType';
 import MemberActivityDetailModal from '@/ui/sdj/MemberActivityDetails';
 import dayjs from 'dayjs';
 import { useEffect, useMemo, useState, useCallback } from 'react';
-import { RiSearchLine } from 'react-icons/ri';
+import { RiArrowLeftSLine, RiArrowRightSLine, RiSearchLine } from 'react-icons/ri';
 
 export type ProfileWithEmail = Profile & {
   email: string;
@@ -14,6 +14,8 @@ export type ProfileWithEmail = Profile & {
 
 export type ProfileStatus = Database['public']['Tables']['profiles']['Row']['status'];
 
+const ITEMS_PER_PAGE = 10;
+
 export default function UserManagementPage() {
   const { setHeader } = useAdminHeader();
   const { user: authUser } = useAuth();
@@ -21,10 +23,11 @@ export default function UserManagementPage() {
   const [userList, setUserList] = useState<ProfileWithEmail[]>([]);
   const [search, setSearch] = useState('');
   const [sortType, setSortType] = useState<'이름순' | '가입일순'>('가입일순');
-  const [memberDetail, setMemberDetail] = useState(false);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
   const [selectedUser, setSelectedUser] = useState<ProfileWithEmail | null>(null);
+
+  const [currentPage, setCurrentPage] = useState(1);
 
   const category: ProfileStatus[] = ['활성', '정지', '탈퇴'];
 
@@ -62,7 +65,11 @@ export default function UserManagementPage() {
     fetchData();
   }, []);
 
-  // 🔥 검색어 필터링만 수행 (statusFilter는 이미 쿼리에서 처리됨)
+  useEffect(() => {
+    fetchData();
+  }, [statusFilter]);
+
+  // 검색어 필터링만 수행 (statusFilter는 이미 쿼리에서 처리됨)
   const filteredUsers = useMemo(() => {
     if (!search) return userList;
 
@@ -85,6 +92,11 @@ export default function UserManagementPage() {
 
     return users;
   }, [filteredUsers, sortType]);
+
+  // 페이지네이션
+  const totalPages = Math.ceil(sortedUsers.length / ITEMS_PER_PAGE);
+  const startIdx = (currentPage - 1) * ITEMS_PER_PAGE;
+  const paginatedList = sortedUsers.slice(startIdx, startIdx + ITEMS_PER_PAGE);
 
   return (
     <div className="w-full min-h-screen bg-bg-bg text-babgray-800 font-semibold">
@@ -110,7 +122,7 @@ export default function UserManagementPage() {
             <select
               value={sortType}
               onChange={e => setSortType(e.target.value as '이름순' | '가입일순')}
-              className="appearance-none border border-gray-300 rounded-full px-4 py-2 text-sm focus:outline-none focus:border-bab-500 "
+              className="appearance-none border border-gray-300 rounded-full px-4 py-2 text-sm cursor-pointer focus:outline-none focus:border-bab-500 "
             >
               <option value="가입일순">가입일순</option>
               <option value="이름순">이름순</option>
@@ -158,7 +170,7 @@ export default function UserManagementPage() {
                 <th className="py-3 px-8 text-left">가입일</th>
                 <th className="py-3 px-8 text-left">상태</th>
                 <th className="py-3 px-8 text-left">활동내역</th>
-                <th className="py-3 px-8 text-left">관리</th>
+                <th className="py-3 px-8 text-left">상태</th>
               </tr>
             </thead>
             <tbody>
@@ -176,7 +188,7 @@ export default function UserManagementPage() {
                 </tr>
               ) : (
                 <>
-                  {sortedUsers.map((user, idx) => (
+                  {paginatedList.map((user, idx) => (
                     <tr key={user.id || idx} className="border-b last:border-b-0 hover:bg-gray-50">
                       <td className="py-3 px-8 flex items-center space-x-3">
                         <img
@@ -203,20 +215,14 @@ export default function UserManagementPage() {
                       </td>
 
                       <td className="py-3 px-8">
-                        {user.status === '활성' && (
-                          <button className="border border-gray-300 text-gray-600 text-xs px-3 py-1 rounded-full hover:bg-gray-100">
-                            정지
-                          </button>
+                        {user.status === '탈퇴' && (
+                          <div className=" text-gray-600 text-xs px-1 py-1">탈퇴</div>
                         )}
                         {user.status === '정지' && (
-                          <button className="border border-red-300 text-red-500 text-xs px-3 py-1 rounded-full hover:bg-red-50">
-                            탈퇴
-                          </button>
+                          <div className=" text-red-500 text-xs px-1 py-1 ">정지</div>
                         )}
-                        {user.status === '탈퇴' && (
-                          <button className="border border-green-300 text-green-600 text-xs px-3 py-1 rounded-full hover:bg-green-50">
-                            복원
-                          </button>
+                        {user.status === '활성' && (
+                          <div className=" text-green-600 text-xs px-1 py-1 ">활성</div>
                         )}
                       </td>
                     </tr>
@@ -230,7 +236,7 @@ export default function UserManagementPage() {
 
       <div className="flex justify-between p-8 items-center mt-4 text-sm text-gray-600">
         <p>총 {sortedUsers.length}명의 사용자</p>
-        <div className="flex items-center space-x-2">
+        {/* <div className="flex items-center space-x-2">
           {Array.from({ length: 10 }, (_, i) => i + 1).map(num => (
             <button
               key={num}
@@ -242,7 +248,41 @@ export default function UserManagementPage() {
             </button>
           ))}
           <span className="text-gray-400">›</span>
-        </div>
+            </div>
+        </div> */}
+
+        {/* 페이지네이션 */}
+        {paginatedList.length > 0 && (
+          <div className="flex justify-center gap-2 mt-4 sm:mt-6 flex-wrap">
+            <button
+              disabled={currentPage === 1}
+              onClick={() => setCurrentPage(p => Math.max(p - 1, 1))}
+              className="p-2 bg-bg-bg rounded hover:bg-bab hover:text-white disabled:opacity-50 transition"
+            >
+              <RiArrowLeftSLine size={16} />
+            </button>
+
+            {Array.from({ length: totalPages }).map((_, idx) => (
+              <button
+                key={idx + 1}
+                onClick={() => setCurrentPage(idx + 1)}
+                className={`p-2 py-0 rounded hover:bg-bab hover:text-white ${
+                  currentPage === idx + 1 ? 'text-bab' : 'bg-bg-bg'
+                }`}
+              >
+                {idx + 1}
+              </button>
+            ))}
+
+            <button
+              disabled={currentPage === totalPages}
+              onClick={() => setCurrentPage(p => Math.min(p + 1, totalPages))}
+              className="p-2 bg-white rounded hover:bg-bab hover:text-white disabled:opacity-50 transition"
+            >
+              <RiArrowRightSLine size={16} />
+            </button>
+          </div>
+        )}
       </div>
       {selectedUser && (
         <MemberActivityDetailModal user={selectedUser} onClose={() => setSelectedUser(null)} />
