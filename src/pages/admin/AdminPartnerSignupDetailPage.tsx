@@ -1,17 +1,75 @@
 import Modal from '@/ui/sdj/Modal';
 import { useModal } from '@/ui/sdj/ModalState';
-import { useLocation, useParams } from 'react-router-dom';
+import { useLocation, useNavigate, useParams } from 'react-router-dom';
 import type { RestaurantWithProfile } from './AdminPartnersPage';
 import dayjs from 'dayjs';
+import { supabase } from '@/lib/supabase';
 
 function AdminPartnerSignupDetailPage() {
-  const { id } = useParams();
+  const navigate = useNavigate();
   const location = useLocation();
   const restaurant = location.state.restaurant as RestaurantWithProfile | undefined;
 
   const { closeModal, modal, openModal } = useModal();
 
   dayjs.locale('ko');
+
+  const dayOrder = ['월', '화', '수', '목', '금', '토', '일'];
+
+  const sortedDays = [...(restaurant?.closeday || [])].sort(
+    (a, b) => dayOrder.indexOf(a) - dayOrder.indexOf(b),
+  );
+
+  const handleApproved = () => {
+    openModal(
+      '파트너 승인',
+      '해당 파트너 신청서를 승인하시겠습니까?',
+      '취소',
+      '승인',
+      async () => {
+        const { error } = await supabase
+          .from('restaurants')
+          .update({ status: 'approved' })
+          .eq('id', restaurant?.restaurant_id);
+
+        const { error: updateError } = await supabase
+          .from('profiles')
+          .update({ role: 'partner' })
+          .eq('id', restaurant?.profile_id);
+
+        if (updateError) {
+          console.error(updateError);
+        }
+
+        if (error) {
+          openModal('오류', `승인중 오류 발생 : ${error.message}`, '닫기');
+          return;
+        }
+        openModal(
+          '승인',
+          '파트너 승인 완료',
+          '',
+          '확인',
+          () => {
+            closeModal();
+            setTimeout(() => navigate(`/admin/partners`), 100);
+          },
+          () => {
+            // navigate(`/admin/partners`);
+            closeModal();
+          },
+        );
+      },
+      () => {
+        // navigate(`/admin/partners/${restaurant?.restaurant_id}`);
+        closeModal();
+      },
+      () => {
+        // navigate(`/admin/partners/${restaurant?.restaurant_id}`);
+        closeModal();
+      },
+    );
+  };
 
   // state가 없을 경우 대비
   if (!restaurant) {
@@ -156,12 +214,12 @@ function AdminPartnerSignupDetailPage() {
                     <span className="text-bab-500">*</span>
                   </div>
                   <div className="flex w-full justify-start font-bold text-babgray-800">
-                    {restaurant.closeday && restaurant.closeday.length > 0 ? (
+                    {sortedDays.length > 0 ? (
                       <div className="flex gap-2">
-                        {restaurant.closeday.map((day, idx) => (
+                        {sortedDays.map((day, idx) => (
                           <span
                             key={idx}
-                            className="w-11 h-11 rounded-xl flex justify-center items-center text-base font-medium transition bg-bab text-white border border-bab"
+                            className="w-11 h-11 rounded-xl flex justify-center items-center text-base font-medium transition"
                           >
                             {day}
                           </span>
@@ -175,16 +233,14 @@ function AdminPartnerSignupDetailPage() {
               </div>
 
               {/* 매장 소개 */}
-              <div className="flex flex-col w-full gap-2">
-                <div className="flex">
-                  <div>매장소개</div>
+              <div className="flex-1 flex flex-col gap-4 border-b pb-3">
+                <div className="flex gap-1">
+                  <div className="text-nowrap text-[14px] text-babgray-700">사업자 등록증</div>
                   <span className="text-bab-500">*</span>
                 </div>
-                <div>매장소개</div>
-                <p className="text-xs text-babgray-500 text-right">
-                  {/* {(formData.storeIntro ?? '').length}/500 */}
-                  0/500
-                </p>
+                <div className="flex w-full justify-start font-bold text-babgray-800">
+                  {restaurant.storeintro}
+                </div>
               </div>
             </section>
 
@@ -199,8 +255,8 @@ function AdminPartnerSignupDetailPage() {
                   <label className="flex items-center gap-1 text-gray-700 font-medium">
                     사업자 등록증 <span className="text-bab-500">*</span>
                   </label>
-                  <label className="h-40 flex flex-col items-center justify-center border-2 border-dashed border-babgray-200 rounded-2xl text-sm text-babgray-500 cursor-pointer overflow-hidden">
-                    <div>사업자 등록증 사진</div>
+                  <label className="h-40 flex flex-col items-center justify-center border-2 border-dashed border-babgray-200 rounded-2xl text-sm text-babgray-500  overflow-hidden">
+                    <div className="cursor-pointer">사진</div>
                   </label>
                 </div>
 
@@ -210,7 +266,10 @@ function AdminPartnerSignupDetailPage() {
                     매장 사진 <span className="text-bab-500">*</span>
                   </label>
                   <label className="h-40 flex flex-col items-center justify-center border-2 border-dashed border-babgray-200 rounded-2xl text-sm text-babgray-500 cursor-pointer overflow-hidden">
-                    매장 사진
+                    <img
+                      src={restaurant.restaurant_thumbnail_url ?? '사진이 없습니다'}
+                      alt="매장사진"
+                    />
                   </label>
                 </div>
               </div>
@@ -221,18 +280,18 @@ function AdminPartnerSignupDetailPage() {
           <div className="flex gap-4">
             <button
               type="button"
-              className="flex-1 h-14 border border-babgray-300 rounded-lg font-bold text-babgray-600 disabled:opacity-60"
+              className="flex-1 h-14 border border-babgray-300 rounded-lg font-bold text-babgray-600 disabled:opacity-60 hover:bg-babgray-400 hover:text-white cursor-pointer"
             >
               거절
             </button>
-            <button
-              type="submit"
-              className="flex-1 h-14 bg-bab text-white rounded-lg font-bold disabled:opacity-60"
+            <div
+              onClick={handleApproved}
+              className="flex-1 flex h-14 bg-bab text-white rounded-lg font-bold disabled:opacity-60 hover:bg-bab-600 cursor-pointer justify-center items-center"
               //   disabled={submitting}
             >
               {/* {submitting ? '신청 중...' : '신청하기'} */}
               승인
-            </button>
+            </div>
           </div>
         </form>
       </div>{' '}
