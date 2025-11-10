@@ -1553,6 +1553,13 @@ export type Database = {
             referencedColumns: ['id'];
           },
           {
+            foreignKeyName: 'user_interests_interest_id_fkey';
+            columns: ['interest_id'];
+            isOneToOne: false;
+            referencedRelation: 'restaurants_with_profiles_and_email';
+            referencedColumns: ['category_id'];
+          },
+          {
             foreignKeyName: 'user_interests_profile_id_fkey';
             columns: ['profile_id'];
             isOneToOne: false;
@@ -1795,6 +1802,13 @@ export type Database = {
             referencedColumns: ['id'];
           },
           {
+            foreignKeyName: 'restaurant_interests_interest_id_fkey';
+            columns: ['interest_id'];
+            isOneToOne: false;
+            referencedRelation: 'restaurants_with_profiles_and_email';
+            referencedColumns: ['category_id'];
+          },
+          {
             foreignKeyName: 'restaurant_interests_restaurant_id_fkey';
             columns: ['restaurant_id'];
             isOneToOne: false;
@@ -1881,6 +1895,13 @@ export type Database = {
             isOneToOne: false;
             referencedRelation: 'interests';
             referencedColumns: ['id'];
+          },
+          {
+            foreignKeyName: 'restaurants_category_id_fkey';
+            columns: ['category_id'];
+            isOneToOne: false;
+            referencedRelation: 'restaurants_with_profiles_and_email';
+            referencedColumns: ['category_id'];
           },
           {
             foreignKeyName: 'restaurants_profile_id_fkey';
@@ -2222,7 +2243,15 @@ export type Database = {
       restaurants_with_profiles_and_email: {
         Row: {
           address: string | null;
+          business_number: string | null;
+          category_id: number | null;
+          category_name: string | null;
+          category_type: string | null;
+          closeday: string[] | null;
+          closetime: string | null;
           created_at: string | null;
+          favorite: number | null;
+          opentime: string | null;
           owner_avatar_url: string | null;
           owner_email: string | null;
           owner_gender: boolean | null;
@@ -2236,6 +2265,8 @@ export type Database = {
           restaurant_phone: string | null;
           restaurant_status: Database['public']['Enums']['restaurant_status_enum'] | null;
           restaurant_thumbnail_url: string | null;
+          send_avg_rating: number | null;
+          storeintro: string | null;
         };
         Relationships: [];
       };
