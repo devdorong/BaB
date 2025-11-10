@@ -80,8 +80,8 @@ function AdminReportsPage() {
                 {dayjs(help.created_at).format('YYYY-MM-DD HH:mm')}
               </p>
             </div>
-            <p className="text-babgray-800 truncate max-w-[1500px]">{help.title}</p>
-            <p className="text-babgray-600 truncate max-w-[1500px]">{help.contents}</p>
+            <p className="text-babgray-800 line-clamp-2">{help.title}</p>
+            <p className="text-babgray-600 line-clamp-2">{help.contents}</p>
             <div className="flex gap-1">
               문의 회원 : <p className="font-bold"> {help.profiles?.nickname ?? '탈퇴회원'}</p>
             </div>

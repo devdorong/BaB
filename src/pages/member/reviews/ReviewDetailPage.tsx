@@ -399,7 +399,13 @@ function ReviewDetailPage() {
                 />
                 리뷰 작성하기
               </ButtonFillLG>
-              <ButtonLineLg style={{ fontWeight: 500, borderRadius: '24px' }}>
+
+              <ButtonLineLg
+                onClick={() =>
+                  window.open(`https://place.map.kakao.com/${restaurant!.kakao_place_id}`, '_blank')
+                }
+                style={{ fontWeight: 500, borderRadius: '24px' }}
+              >
                 전화하기
               </ButtonLineLg>
               <ButtonLineLg

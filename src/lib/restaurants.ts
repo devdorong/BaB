@@ -56,6 +56,7 @@ export interface RestaurantsDetailType {
   category_id?: number | null;
   interests?: { id: number; name: string; category?: string } | null;
   reviews: { count: number }[];
+  kakao_place_id?: string;
 }
 
 export type Review = {

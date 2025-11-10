@@ -379,19 +379,15 @@ const MatchingDetailPage = () => {
 
   const handlecomplete = async () => {
     openModal(
-      '매칭 결제',
-      '선결제를 진행 하시겠습니까?',
-      '아니오',
-
-      <div className="flex items-center gap-2">
-        <BankCardLine color="none" bgColor="none" size={16} />
-        <p>결제하기</p>
+      '매칭 마감',
+      <div>
+        매칭 모집을 마감하시겠습니까?
+        <br />
+        마감 이후에는, 참여자와 1대1 채팅으로 소통해주세요!
       </div>,
-      // 결제 진행시
-      () => {
-        (closeModal(), setIsPaymentModalOpen(true));
-      },
-      // 결제 미진행시
+      '아니오',
+      '마감하기',
+      // 모집 마감 클릭시
       async () => {
         await updateMatchingStatus(matchingId, 'completed');
 
@@ -421,6 +417,23 @@ const MatchingDetailPage = () => {
         if (notificationError) {
           throw new Error(notificationError.message);
         }
+
+        closeModal();
+        openModal(
+          '매칭 마감',
+          <div>
+            매칭 모집이 마감되었습니다.
+            <br />
+            n참여자와 1대1 채팅으로 소통해주세요!
+          </div>,
+          '',
+          '확인',
+          () => {
+            setTimeout(() => {
+              navigate('/member/profile/recentmatching?tab=recent');
+            }, 100);
+          },
+        );
       },
     );
   };
@@ -577,6 +590,11 @@ const MatchingDetailPage = () => {
                       >
                         {matchingData.tags[0].label}
                       </InterestBadge>
+                      {headCount === matchingData.desired_members && (
+                        <InterestBadge>모집완료</InterestBadge>
+                      )}
+                      {status === 'completed' && <InterestBadge>종료된 매칭</InterestBadge>}
+                      {status === 'cancel' && <InterestBadge>취소된 매칭</InterestBadge>}
                     </div>
                     <div className="text-sm text-babgray-500">{matchingData.timeAgo}</div>
                   </div>
@@ -584,9 +602,6 @@ const MatchingDetailPage = () => {
                   {/* 제목 */}
                   <div className="text-[24px] sm:text-[32px] font-bold flex items-center gap-3">
                     {matchingData.title}
-                    {headCount === matchingData.desired_members && <TagBadge>모집완료</TagBadge>}
-                    {status === 'completed' && <TagBadge>종료된 매칭</TagBadge>}
-                    {status === 'cancel' && <TagBadge>취소된 매칭</TagBadge>}
                   </div>
                 </div>
 
@@ -734,7 +749,7 @@ const MatchingDetailPage = () => {
               <div className="w-full p-6 bg-white rounded-2xl shadow-[0_4px_4px_rgba(0,0,0,0.02)]">
                 <section className="w-full space-y-3">
                   {/* 조건별 버튼 */}
-                  {status !== 'waiting' && status !== 'full'  ? (
+                  {status !== 'waiting' && status !== 'full' ? (
                     <button
                       className="inline-flex w-full h-[50px] px-[15px] justify-center items-center rounded-lg 
              bg-gray-300 text-white text-[16px] font-medium 
@@ -758,7 +773,11 @@ const MatchingDetailPage = () => {
                     </ButtonFillLG>
                   )}
 
-                  {user?.id === userData?.id ? (
+                  {status !== 'waiting' && status !== 'full' ? (
+                    <button className="hidden" disabled>
+                      종료된매칭
+                    </button>
+                  ) : user?.id === userData?.id ? (
                     <ButtonLineLg
                       className="w-full"
                       onClick={() => navigate(`/member/matching/edit/${id}`)}
@@ -778,7 +797,11 @@ const MatchingDetailPage = () => {
                     </ButtonLineLg>
                   )}
 
-                  {user?.id === userData?.id ? (
+                  {status !== 'waiting' && status !== 'full' ? (
+                    <button className=" hidden" disabled>
+                      종료된매칭
+                    </button>
+                  ) : user?.id === userData?.id ? (
                     <ButtonLineLg className="w-full" onClick={handleDeleteMatching}>
                       <div className="flex gap-1 items-center justify-center">
                         취소하기 <RiCloseFill className="w-4 h-4" />

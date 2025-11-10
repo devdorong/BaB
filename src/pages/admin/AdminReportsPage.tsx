@@ -1,143 +1,39 @@
 import { useAdminHeader } from '@/contexts/AdminLayoutContext';
-import { useAuth } from '@/contexts/AuthContext';
-import { getProfile } from '@/lib/propile';
-import type { Profile } from '@/types/bobType';
+import { GetAllReports, type ReprotsWithNickname } from '@/services/reportService';
+import AdminReportsModal from '@/ui/dorong/AdminReportsModal';
+import dayjs from 'dayjs';
 import { useEffect, useState } from 'react';
-import {
-  RiAlignRight,
-  RiArrowRightCircleLine,
-  RiArrowRightDoubleFill,
-  RiSearchLine,
-} from 'react-icons/ri';
-
-export const mockReports = [
-  {
-    id: 1,
-    report_type: '채팅',
-    report_id: null,
-    report_int: 101,
-    reporter_id: '9d1f85d2-5c02-44a1-b731-5b5f781c9b11',
-    accused_profile_id: 'e5b1a832-3b8c-4a47-94fa-0b891b40a1a1',
-    reason: '매칭 중 무단으로 나갔습니다.',
-    status: '대기',
-    penalty: '없음',
-    created_at: '2025-03-03T14:22:00+09:00',
-    reporter: {
-      id: '9d1f85d2-5c02-44a1-b731-5b5f781c9b11',
-      nickname: '박지현',
-      avatar_url: 'https://randomuser.me/api/portraits/women/44.jpg',
-      role: 'member',
-    },
-    accused: {
-      id: 'e5b1a832-3b8c-4a47-94fa-0b891b40a1a1',
-      nickname: '이민수',
-      avatar_url: 'https://randomuser.me/api/portraits/men/45.jpg',
-      role: 'member',
-    },
-  },
-  {
-    id: 2,
-    report_type: '댓글',
-    report_id: '2ec3f97e-80c4-43b2-93e5-03aa829fc9a0',
-    report_int: null,
-    reporter_id: 'a22b741d-1f88-4eac-9c71-8b9c9d2d93a7',
-    accused_profile_id: 'fc2a6f20-0a4a-4e91-9f22-bfe9a1a6a50e',
-    reason: '부적절한 댓글을 작성했습니다.',
-    status: '처리중',
-    penalty: '경고',
-    created_at: '2025-03-03T14:25:00+09:00',
-    reporter: {
-      id: 'a22b741d-1f88-4eac-9c71-8b9c9d2d93a7',
-      nickname: '김태훈',
-      avatar_url: 'https://randomuser.me/api/portraits/men/48.jpg',
-      role: 'partner',
-    },
-    accused: {
-      id: 'fc2a6f20-0a4a-4e91-9f22-bfe9a1a6a50e',
-      nickname: '송지아',
-      avatar_url: 'https://randomuser.me/api/portraits/women/46.jpg',
-      role: 'member',
-    },
-  },
-  {
-    id: 3,
-    report_type: '리뷰',
-    report_id: '7b241f1a-3f42-4e7c-8cf3-3fd0a801c44f',
-    report_int: null,
-    reporter_id: '9d1f85d2-5c02-44a1-b731-5b5f781c9b11',
-    accused_profile_id: 'fc2a6f20-0a4a-4e91-9f22-bfe9a1a6a50e',
-    reason: '리뷰 내용에 욕설이 포함되어 있습니다.',
-    status: '완료',
-    penalty: '정지',
-    created_at: '2025-03-02T18:10:00+09:00',
-    reporter: {
-      id: '9d1f85d2-5c02-44a1-b731-5b5f781c9b11',
-      nickname: '박지현',
-      avatar_url: 'https://randomuser.me/api/portraits/women/44.jpg',
-      role: 'member',
-    },
-    accused: {
-      id: 'fc2a6f20-0a4a-4e91-9f22-bfe9a1a6a50e',
-      nickname: '송지아',
-      avatar_url: 'https://randomuser.me/api/portraits/women/46.jpg',
-      role: 'member',
-    },
-  },
-  {
-    id: 4,
-    report_type: '리뷰',
-    report_id: 'bda1a1c2-7629-4f77-b6d4-05c5c5e7dc1b',
-    report_int: null,
-    reporter_id: 'a22b741d-1f88-4eac-9c71-8b9c9d2d93a7',
-    accused_profile_id: 'e5b1a832-3b8c-4a47-94fa-0b891b40a1a1',
-    reason: '허위 리뷰로 의심되는 내용입니다.',
-    status: '처리중',
-    penalty: '경고',
-    created_at: '2025-03-01T11:00:00+09:00',
-    reporter: {
-      id: 'a22b741d-1f88-4eac-9c71-8b9c9d2d93a7',
-      nickname: '김태훈',
-      avatar_url: 'https://randomuser.me/api/portraits/men/48.jpg',
-      role: 'partner',
-    },
-    accused: {
-      id: 'e5b1a832-3b8c-4a47-94fa-0b891b40a1a1',
-      nickname: '이민수',
-      avatar_url: 'https://randomuser.me/api/portraits/men/45.jpg',
-      role: 'member',
-    },
-  },
-  {
-    id: 5,
-    report_type: '댓글',
-    report_id: 'cb971f4b-f58a-40b3-a6e9-bc197f5b7cc3',
-    report_int: null,
-    reporter_id: '9d1f85d2-5c02-44a1-b731-5b5f781c9b11',
-    accused_profile_id: 'fc2a6f20-0a4a-4e91-9f22-bfe9a1a6a50e',
-    reason: '상대방을 비하하는 댓글입니다.',
-    status: '대기',
-    penalty: '없음',
-    created_at: '2025-02-28T20:40:00+09:00',
-    reporter: {
-      id: '9d1f85d2-5c02-44a1-b731-5b5f781c9b11',
-      nickname: '박지현',
-      avatar_url: 'https://randomuser.me/api/portraits/women/44.jpg',
-      role: 'member',
-    },
-    accused: {
-      id: 'fc2a6f20-0a4a-4e91-9f22-bfe9a1a6a50e',
-      nickname: '송지아',
-      avatar_url: 'https://randomuser.me/api/portraits/women/46.jpg',
-      role: 'member',
-    },
-  },
-];
+import { RiArrowRightDoubleFill } from 'react-icons/ri';
+import type { ReportsType } from '../member/communitys/CommunityDetailPage';
 
 function AdminReportsPage() {
-  // 사용자 닉네임
-  const [nickName, setNickName] = useState<string>('');
   const { setHeader } = useAdminHeader();
+  const [reports, setReports] = useState<ReprotsWithNickname[]>([]);
+  const [isReportOpen, setReportOpen] = useState(false);
+  const [targetNickname, setTargetNickname] = useState('');
+  const [reporterNickname, setReporterNickname] = useState('');
+  const [reportType, setReportType] = useState<ReportsType>('댓글');
+  const [content, setContent] = useState('');
+  const [title, setTitle] = useState('');
 
+  const handleReport = async (type: ReportsType, title: string, reason: string) => {
+    console.log('신고 접수:', { type, title, reason });
+  };
+
+  const openReportModal = (
+    nickname: string,
+    targetNickname: string,
+    type: ReportsType,
+    title: string,
+    content: string,
+  ) => {
+    setReporterNickname(nickname);
+    setTargetNickname(targetNickname);
+    setReportType(type);
+    setReportOpen(true);
+    setTitle(title);
+    setContent(content);
+  };
   const statusBadge = (status: string) => {
     switch (status) {
       case '게시글':
@@ -163,7 +59,24 @@ function AdminReportsPage() {
   };
   useEffect(() => {
     setHeader('신고 내역', '신고된 채팅과 후기를 관리합니다.');
+    const loadReports = async () => {
+      try {
+        const data = await GetAllReports();
+        setReports(data);
+      } catch (err) {
+        console.error('신고내역 불러오기 실패:', err);
+      }
+    };
+
+    loadReports();
   }, []);
+  const parseReason = (reason: string) => {
+    const [title, content] = reason.split(' - ');
+    return {
+      title: title?.trim() ?? '',
+      content: content?.trim() ?? '',
+    };
+  };
 
   return (
     <div className="w-full min-h-screen bg-bg-bg p-8">
@@ -174,27 +87,44 @@ function AdminReportsPage() {
       <div className="flex flex-col gap-6 items-start justify-start mb-6 bg-white p-[25px] rounded-[16px] shadow">
         <h3 className="font-bold">신고된 콘텐츠</h3>
         {/* 리스트 */}
-        {mockReports.map((user, idx) => (
-          <div key={idx} className="flex flex-col p-6 border w-full rounded-2xl">
-            <div className="flex items-center gap-3">
-              <div>{statusBadge(user.report_type)}</div>
-              <p className="text-[11px] text-babgray-800">{user.created_at.toLocaleString()}</p>
+        {reports.map((r, idx) => {
+          const { title, content } = parseReason(r.reason);
+          return (
+            <div
+              key={idx}
+              className="flex flex-col p-6 border w-full rounded-2xl cursor-pointer hover:border-bab"
+              onClick={() =>
+                openReportModal(
+                  `${r.reporter_nickname}`,
+                  `${r.accused_nickname}`,
+                  `${r.report_type}`,
+                  title,
+                  content,
+                )
+              }
+            >
+              <div className="flex items-center gap-3 justify-between">
+                <div>{statusBadge(r.report_type)}</div>
+                <p className="text-md text-babgray-800">
+                  {dayjs(r.created_at).format('YYYY-MM-DD HH:mm')}
+                </p>
+              </div>
+              <div className="flex items-center text-[14px] gap-2 text-babgray-800 pt-3 pb-2">
+                <p>신고자:{r.reporter_nickname}</p>
+                <RiArrowRightDoubleFill />
+                <p>피신고자:{r.accused_nickname}</p>
+              </div>
+              <div>
+                <p className="text-[12px] text-babgray-600 line-clamp-2">{r.reason}</p>
+              </div>
             </div>
-            <div className="flex items-center text-[14px] gap-2 text-babgray-800 pt-3 pb-2">
-              <p>신고자:{user.reporter.nickname}</p>
-              <RiArrowRightDoubleFill />
-              <p>피신고자:{user.accused.nickname}</p>
-            </div>
-            <div>
-              <p className="text-[12px] text-babgray-600">{user.reason}</p>
-            </div>
-          </div>
-        ))}
+          );
+        })}
       </div>
 
       {/* 하단 페이지네이션 */}
       <div className="flex justify-between items-center mt-4 text-sm text-gray-600">
-        <p>총 1,247명의 사용자</p>
+        <p>총 {reports.length}개의 신고</p>
         <div className="flex items-center space-x-2">
           {Array.from({ length: 10 }, (_, i) => i + 1).map(num => (
             <button
@@ -209,6 +139,17 @@ function AdminReportsPage() {
           <span className="text-gray-400">›</span>
         </div>
       </div>
+      {isReportOpen && (
+        <AdminReportsModal
+          reporterNickname={reporterNickname}
+          setReports={setReportOpen}
+          targetNickname={targetNickname}
+          reportType={reportType}
+          handleReport={handleReport}
+          titleText={title}
+          contentText={content}
+        />
+      )}
     </div>
   );
 }
