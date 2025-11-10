@@ -221,12 +221,18 @@ export const DirectChatProider: React.FC<DirectChatProiderProps> = ({ children }
    * - 검색 기능만 담당하도록 단순화
    * - 로딩 상태는 컴포넌트에서 로컬로 관리
    */
+  const lastSearchId = useRef(0);
+
   const searchUsers = useCallback(
     async (searchTerm: string) => {
+      const currentId = ++lastSearchId.current;
       try {
         setUserSearchLoading(true); // 사용자 검색 전용 로딩 상태 사용
         // Supabase를 통해 사용자 검색 API 호출
         const response = await searchUsersService(searchTerm);
+
+        if (currentId !== lastSearchId.current) return;
+
         if (response.success && response.data) {
           // 검색 성공 시 사용자 목록 상태 업데이트
           setUsers(response.data);
@@ -235,6 +241,7 @@ export const DirectChatProider: React.FC<DirectChatProiderProps> = ({ children }
           handleError(response.error || '사용자 검색에 실패했습니다.');
         }
       } catch (err) {
+        if (currentId !== lastSearchId.current) return;
         // 예외 발생 시 에러 메시지 설정
         handleError('사용자 검색 중 오류가 발생했습니다.');
       } finally {

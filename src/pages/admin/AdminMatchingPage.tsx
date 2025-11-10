@@ -121,7 +121,7 @@ function AdminMatchingPage() {
           </div>
         </div>
         <div className="flex flex-col w-full h-full gap-6 bg-white p-[25px] rounded-[16px] shadow">
-          <h3 className="font-bold">진행중인 모임</h3>
+          <h3 className="font-bold">최근 생성된 모임</h3>
           <div className="grid grid-cols-3 gap-4">
             {matchings.slice(0, 6).map(i => {
               const isoString = i.met_at;
