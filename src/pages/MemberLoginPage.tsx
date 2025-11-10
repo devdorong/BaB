@@ -106,7 +106,7 @@ function MemberLoginPage() {
               <span className="text-white text-base font-semibold">로그인</span>
             </button>
 
-            {/* {msg && (
+            {msg && (
               <p
                 className={`mt-4 p-3 rounded-lg text-center border ${
                   msg.includes('성공')
@@ -116,7 +116,7 @@ function MemberLoginPage() {
               >
                 {msg}
               </p>
-            )} */}
+            )}
           </div>
         </form>
 
@@ -145,7 +145,7 @@ function MemberLoginPage() {
         <div className="flex flex-col items-center gap-4">
           <GoogleLoginButton
             onError={error => setMsg(`구글 로그인 오류 : ${error}`)}
-            onSuccess={message => setMsg(message)}
+            // onSuccess={message => setMsg(message)}
           />
           <KakaoLoginButton onError={error => setMsg(`카카오 로그인 오류 : ${error}`)} />
         </div>
