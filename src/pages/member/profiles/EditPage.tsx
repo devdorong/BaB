@@ -94,6 +94,12 @@ function EditPage() {
       return;
     }
 
+    if (nickName?.trim() === profileData?.nickname?.trim()) {
+      setMsg('');
+      setIsNickAvailable(null);
+      return;
+    }
+
     setIsCheckingNick(true);
     setIsNickAvailable(null);
 
@@ -165,24 +171,33 @@ function EditPage() {
     setIsUpdating(true);
 
     try {
-      // 닉네임 유효성 검사
-      if (!nickName.trim()) {
-        setMsg('닉네임을 입력하세요.');
-        toast.warning('닉네임을 입력하세요.', { position: 'top-center' });
-        return;
-      }
+      // 기존 닉네임과 동일하면 updateProfile을 생략
+      const isNickChanged = nickName.trim() !== profileData?.nickname?.trim();
+      const currentIntro = profileData?.comment?.trim() ?? '';
+      const isIntroChanged = intro.trim() !== currentIntro;
+      let isImgChanged = false;
 
-      if (isNickAvailable === false) {
-        setMsg('이미 사용 중인 닉네임입니다.');
-        toast.error('닉네임을 입력하세요.', { position: 'top-center' });
-        return;
-      }
+      if (isNickChanged) {
+        // 닉네임 유효성 검사
 
-      // 중복체크를 안 했을 때도 막기
-      if (isNickAvailable === null) {
-        setMsg('닉네임 중복 확인을 먼저 해주세요.');
-        toast.info('닉네임 중복 확인을 먼저 해주세요.', { position: 'top-center' });
-        return;
+        if (!nickName.trim()) {
+          setMsg('닉네임을 입력하세요.');
+          toast.warning('닉네임을 입력하세요.', { position: 'top-center' });
+          return;
+        }
+
+        if (isNickAvailable === false) {
+          setMsg('이미 사용 중인 닉네임입니다.');
+          toast.error('이미 사용 중인 닉네임입니다.', { position: 'top-center' });
+          return;
+        }
+
+        // 중복체크를 안 했을 때도 막기
+        if (isNickAvailable === null) {
+          setMsg('닉네임 중복 확인을 먼저 해주세요.');
+          toast.info('닉네임 중복 확인을 먼저 해주세요.', { position: 'top-center' });
+          return;
+        }
       }
 
       // 비밀번호 변경 요청이 있는지 체크
@@ -218,6 +233,7 @@ function EditPage() {
         const imgsuccess = await removeAvatar(user.id);
         if (imgsuccess) {
           imgUrl = null;
+          isImgChanged = true;
         }
       } else if (selectedFile) {
         setUploading(true);
@@ -228,8 +244,20 @@ function EditPage() {
           // 실제로 업로드 완료 후 전달받은 URL 문자열 저장
           // profiles 테이블에 avatar_url에 넣어줄 문자열
           imgUrl = uploadedImageUrl;
+          isImgChanged = true;
         }
       }
+
+      // 변경 여부 판단
+      const hasChanges = isNickChanged || isIntroChanged || isImgChanged || wantChangePw;
+
+      // 변경이 하나도 없을 경우 → 단순 이동
+      if (!hasChanges) {
+        navigate('/member/profile');
+        setIsUpdating(false);
+        return;
+      }
+
       const payload: ProfileUpdate = {
         nickname: nickName,
         comment: intro,
