@@ -377,7 +377,7 @@ function PartnerSignupPage() {
                   />
                 </div>
 
-                <div className="flex flex-col w-[50%] gap-2">
+                {/* <div className="flex flex-col w-[50%] gap-2">
                   <div className="flex gap-7">
                     <InputField
                       label="가격대"
@@ -388,7 +388,7 @@ function PartnerSignupPage() {
                       required
                     />
                   </div>
-                </div>
+                </div> */}
               </div>
 
               <OperatingHours
@@ -398,6 +398,7 @@ function PartnerSignupPage() {
                 setOpenTime={v => setFormData({ openTime: v })}
                 setCloseTime={v => setFormData({ closeTime: v })}
                 setClosedDays={v => setFormData({ closedDays: v })}
+                openModal={openModal}
               />
 
               {/* 매장 소개 */}

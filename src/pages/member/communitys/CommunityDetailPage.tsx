@@ -14,6 +14,7 @@ import styles from './CommunityDetailPage.module.css';
 import { useDirectChat } from '@/contexts/DirectChatContext';
 import type { ChatListItem } from '@/types/chatType';
 import { findOrCreateDirectChat } from '@/services/directChatService';
+import LoadingDiv from '@/components/LoadingDiv';
 
 type PostWithProfile = Posts & {
   profiles: { id: string; nickname: string; avatar_url: string } | null;
@@ -278,7 +279,7 @@ function CommunityDetailPage() {
   }, [post]);
 
   // 로딩중 반응넣기(로딩 스피너)
-  if (loading) return <div>로딩 중 ...</div>;
+  if (loading) return <LoadingDiv />;
   if (!post) return <p>게시글을 찾을 수 없습니다.</p>;
 
   return (
