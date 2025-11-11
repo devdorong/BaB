@@ -16,6 +16,13 @@ interface OperatingHoursProps {
   setOpenTime: (v: Dayjs | null) => void;
   setCloseTime: (v: Dayjs | null) => void;
   setClosedDays: (v: string[]) => void;
+  openModal: (
+    title: string,
+    content: string,
+    closeText?: string,
+    submitText?: string,
+    onSubmit?: () => void,
+  ) => void;
 }
 
 export default function OperatingHours({
@@ -25,11 +32,17 @@ export default function OperatingHours({
   setOpenTime,
   setCloseTime,
   setClosedDays,
+  openModal,
 }: OperatingHoursProps) {
   const toggleDay = (day: string) => {
     if (closedDays.includes(day)) {
       setClosedDays(closedDays.filter(d => d !== day));
     } else {
+      if (closedDays.length === days.length - 1) {
+        // alert('최소 하루는 영업일이어야 합니다.');
+        openModal('파트너 신청', '최소 하루는 영업일이어야 합니다.', '닫기', '');
+        return;
+      }
       setClosedDays([...closedDays, day]);
     }
   };

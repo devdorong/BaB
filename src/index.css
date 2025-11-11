@@ -779,3 +779,7 @@ button.ant-picker-today-btn:hover {
 .ant-picker .ant-picker-outlined .css-dev-only-do-not-override-1odpy5d .bab-date-picker {
   width: 100% !important;
 }
+
+.ant-picker-outlined:hover {
+  border-color: #ff5722 !important;
+}

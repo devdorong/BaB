@@ -3,6 +3,7 @@ import { useEffect, useState } from 'react';
 import { useAuth } from '../contexts/AuthContext';
 import type { Profile } from '../types/bobType';
 import { getProfile } from '../lib/propile';
+import LoadingDiv from './LoadingDiv';
 
 interface ProtectedRouteProps {
   children: React.ReactNode;
@@ -25,7 +26,7 @@ const ProtectedRoute = ({ children, allowedRoles }: ProtectedRouteProps) => {
     fetchProfile();
   }, [user]);
 
-  if (loading) return <div>로딩중...</div>;
+  if (loading) return <LoadingDiv />;
 
   // 로그인 안 되어있으면 로그인 페이지로
   if (!user) {

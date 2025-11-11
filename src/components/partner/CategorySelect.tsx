@@ -44,6 +44,7 @@ export default function CategorySelect({
       <Select
         value={value || undefined}
         onChange={onChange}
+        suffixIcon={null}
         placeholder="카테고리"
         className="bab-select w-[530px] h-[50px]"
         classNames={{
