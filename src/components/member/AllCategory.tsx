@@ -28,18 +28,22 @@ export default function AllCategory({ value, onChange }: AllCategoryProps) {
       suffixIcon={null}
       placeholder="카테고리"
       className="bab-select text-center justify-center items-center w-[121px] h-[50px]"
-      getPopupContainer={trigger => trigger.parentElement || document.body}
+      // dropdown을 현재 부모 엘리먼트 안에 렌더링하도록 설정 (떨림 방지 핵심)
+      getPopupContainer={trigger => trigger.parentElement!}
+      // popup 스타일 지정 (터치 스크롤 안정화)
       styles={{
         popup: {
           root: {
-            touchAction: 'pan-y',
             overscrollBehavior: 'contain',
+            WebkitOverflowScrolling: 'touch',
+            touchAction: 'pan-y',
           },
         },
       }}
+      // Tailwind 클래스도 그대로 유지 가능
       classNames={{
         popup: {
-          root: 'bab-select-dropdown', // ✅ 객체 안에 root 키로 전달해야 함
+          root: 'bab-select-dropdown',
         },
       }}
       listHeight={256}
