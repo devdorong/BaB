@@ -1,102 +1,79 @@
-import { lazy, Suspense } from 'react';
 import { Outlet, Route, BrowserRouter as Router, Routes } from 'react-router-dom';
+import ProtectedRoute from './components/ProtectedRoute';
 import { AuthProvider } from './contexts/AuthContext';
 import { PointProvider } from './contexts/PointContext';
-import { DirectChatProider } from './contexts/DirectChatContext';
-import { MatchingProvider } from './contexts/MatchingContext';
-import { ChatNotificationProvider } from './contexts/ChatNotificationContext';
-import { MenusProvider } from './contexts/MenuContext';
-import { NotificationRealTimeProvider } from './contexts/NotificationContext';
-import { PartnerRestaurantProvider } from './contexts/PartnerRestaurantContext';
-import { PartnerSignupProvider } from './contexts/PartnerSignupContext';
-import { useGoogleAnalytics } from './hooks/useGoogleAnalytics';
-import { Toaster } from './components/ui/sonner';
 import './index.css';
-import './components/member/chat/chat.css';
-
-import ProtectedRoute from './components/ProtectedRoute';
-import { ProtectedMemberRoute } from './components/ProtectedMemberRoute';
-
 import AdminLayout from './layout/AdminLayout';
 import BareLayout from './layout/BareLayout';
 import MemberLayout from './layout/MemberLayout';
 import PartnerLayout from './layout/PartnerLayout';
-import LoadingDiv from './components/LoadingDiv';
+import AdminMatchingPage from './pages/admin/AdminMatchingPage';
+import AdminMembersPage from './pages/admin/AdminMembersPage';
+import AdminPartnersPage from './pages/admin/AdminPartnersPage';
+import AdminReportsPage from './pages/admin/AdminReportsPage';
+import AdminSettingsPage from './pages/admin/AdminSettingsPage';
+import IndexPage from './pages/IndexPage';
+import InsratgramPage from './pages/InsratgramPage';
+import KaKaoPage from './pages/KaKaoPage';
+import CommunityDetailPage from './pages/member/communitys/CommunityDetailPage';
+import CommunityPage from './pages/member/communitys/CommunityPage';
+import CommunityWritePage from './pages/member/communitys/CommunityWritePage';
+import EventPage from './pages/member/EventPage';
+import MatchingDetailPage from './pages/member/matchings/MatchingDetailPage';
+import MatchingListPage from './pages/member/matchings/MatchingListPage';
+import MatchingWritePage from './pages/member/matchings/MatchingWritePage';
+import MemberPage from './pages/member/MemberPage';
+import BlockPage from './pages/member/profiles/BlockPage';
+import ChatPage from './pages/member/profiles/ChatPage';
+import EditPage from './pages/member/profiles/EditPage';
+import FavoritePage from './pages/member/profiles/FavoritePage';
+import InterestPage from './pages/member/profiles/InterestPage';
+import PointPage from './pages/member/profiles/PointPage';
+import ProfilePage from './pages/member/profiles/ProfilePage';
+import RecentMatchingPage from './pages/member/profiles/RecentMatchingPage';
+import ReviewDetailPage from './pages/member/reviews/ReviewDetailPage';
+import ReviewsPage from './pages/member/reviews/ReviewsPage';
+import SupportPage from './pages/member/SupportPage';
+import MemberLoginPage from './pages/MemberLoginPage';
+import MemberSignupPage from './pages/MemberSignupPage';
+import NotFound from './pages/NotFoundPage';
+import DashboardPage from './pages/partner/DashboardPage';
+import MenusPage from './pages/partner/MenusPage';
+import NotificationPage from './pages/partner/NotificationPage';
+import OrdersPage from './pages/partner/OrdersPage';
+import RestaurantPage from './pages/partner/RestaurantPage';
+import ReviewPage from './pages/partner/ReviewPage';
+import SalesPage from './pages/partner/SalesPage';
+import SettingsPage from './pages/partner/SettingsPage';
+import PartnerLoginPage from './pages/PartnerLoginPage';
+import PartnerSignupPage from './pages/PartnerSignupPage';
+import PersonalPolicyPage from './pages/PersonalPolicyPage';
+import TermsofServicePage from './pages/TermsofServicePage';
 
-const IndexPage = lazy(() => import('./pages/IndexPage'));
-const NotFound = lazy(() => import('./pages/NotFoundPage'));
-const ConfirmPage = lazy(() => import('./pages/auth/ConfirmPage'));
+import { PartnerSignupProvider } from './contexts/PartnerSignupContext';
 
-// Auth Pages
-const MemberLoginPage = lazy(() => import('./pages/MemberLoginPage'));
-const MemberSignupPage = lazy(() => import('./pages/MemberSignupPage'));
-const PartnerLoginPage = lazy(() => import('./pages/PartnerLoginPage'));
-const PartnerSignupPage = lazy(() => import('./pages/PartnerSignupPage'));
+import './components/member/chat/chat.css';
+import { DirectChatProider } from './contexts/DirectChatContext';
+import { MatchingProvider } from './contexts/MatchingContext';
+import CommunityEditPage from './pages/member/communitys/CommunityEditPage';
+import MatchingEditPage from './pages/member/matchings/MatchingEditPage';
+import MyReviewPage from './pages/member/profiles/MyReviewPage';
 
-// Policy Pages
-const TermsofServicePage = lazy(() => import('./pages/TermsofServicePage'));
-const PersonalPolicyPage = lazy(() => import('./pages/PersonalPolicyPage'));
+import MyWritePage from './pages/member/profiles/MyWritePage';
 
-// Social Pages
-const InsratgramPage = lazy(() => import('./pages/InsratgramPage'));
-const KaKaoPage = lazy(() => import('./pages/KaKaoPage'));
-
-// Member Pages
-const MemberPage = lazy(() => import('./pages/member/MemberPage'));
-const EventPage = lazy(() => import('./pages/member/EventPage'));
-const SupportPage = lazy(() => import('./pages/member/SupportPage'));
-
-// Member - Matching
-const MatchingListPage = lazy(() => import('./pages/member/matchings/MatchingListPage'));
-const MatchingWritePage = lazy(() => import('./pages/member/matchings/MatchingWritePage'));
-const MatchingDetailPage = lazy(() => import('./pages/member/matchings/MatchingDetailPage'));
-const MatchingEditPage = lazy(() => import('./pages/member/matchings/MatchingEditPage'));
-
-// Member - Community
-const CommunityPage = lazy(() => import('./pages/member/communitys/CommunityPage'));
-const CommunityWritePage = lazy(() => import('./pages/member/communitys/CommunityWritePage'));
-const CommunityDetailPage = lazy(() => import('./pages/member/communitys/CommunityDetailPage'));
-const CommunityEditPage = lazy(() => import('./pages/member/communitys/CommunityEditPage'));
-
-// Member - Reviews
-const ReviewsPage = lazy(() => import('./pages/member/reviews/ReviewsPage'));
-const ReviewDetailPage = lazy(() => import('./pages/member/reviews/ReviewDetailPage'));
-
-// Member - Profile
-const ProfilePage = lazy(() => import('./pages/member/profiles/ProfilePage'));
-const EditPage = lazy(() => import('./pages/member/profiles/EditPage'));
-const InterestPage = lazy(() => import('./pages/member/profiles/InterestPage'));
-const ChatPage = lazy(() => import('./pages/member/profiles/ChatPage'));
-const PointPage = lazy(() => import('./pages/member/profiles/PointPage'));
-const MyReviewPage = lazy(() => import('./pages/member/profiles/MyReviewPage'));
-const MyWritePage = lazy(() => import('./pages/member/profiles/MyWritePage'));
-const FavoritePage = lazy(() => import('./pages/member/profiles/FavoritePage'));
-const RecentMatchingPage = lazy(() => import('./pages/member/profiles/RecentMatchingPage'));
-const HelpPage = lazy(() => import('./pages/member/profiles/HelpPage'));
-const BlockPage = lazy(() => import('./pages/member/profiles/BlockPage'));
-
-// Partner Pages
-const DashboardPage = lazy(() => import('./pages/partner/DashboardPage'));
-const RestaurantPage = lazy(() => import('./pages/partner/RestaurantPage'));
-const MenusPage = lazy(() => import('./pages/partner/MenusPage'));
-const OrdersPage = lazy(() => import('./pages/partner/OrdersPage'));
-const SalesPage = lazy(() => import('./pages/partner/SalesPage'));
-const ReviewPage = lazy(() => import('./pages/partner/ReviewPage'));
-const NotificationPage = lazy(() => import('./pages/partner/NotificationPage'));
-const SettingsPage = lazy(() => import('./pages/partner/SettingsPage'));
-
-// Admin Pages
-const AdminMembersPage = lazy(() => import('./pages/admin/AdminMembersPage'));
-const AdminPartnersPage = lazy(() => import('./pages/admin/AdminPartnersPage'));
-const AdminPartnerSignupDetailPage = lazy(
-  () => import('./pages/admin/AdminPartnerSignupDetailPage'),
-);
-const AdminMatchingPage = lazy(() => import('./pages/admin/AdminMatchingPage'));
-const AdminReportsPage = lazy(() => import('./pages/admin/AdminReportsPage'));
-const AdminSettingsPage = lazy(() => import('./pages/admin/AdminSettingsPage'));
+import { ProtectedMemberRoute } from './components/ProtectedMemberRoute';
+import { Toaster } from './components/ui/sonner';
+import { ChatNotificationProvider } from './contexts/ChatNotificationContext';
+import { MenusProvider } from './contexts/MenuContext';
+import { NotificationRealTimeProvider } from './contexts/NotificationContext';
+import { PartnerRestaurantProvider } from './contexts/PartnerRestaurantContext';
+import { useGoogleAnalytics } from './hooks/useGoogleAnalytics';
+import ConfirmPage from './pages/auth/ConfirmPage';
+import HelpPage from './pages/member/profiles/HelpPage';
+import AdminPartnerSignupDetailPage from './pages/admin/AdminPartnerSignupDetailPage';
 
 const LayoutWithAnalytics = ({ children }: { children: React.ReactNode }) => {
-  useGoogleAnalytics();
+  useGoogleAnalytics(); // Router 컨텍스트 내부에서 사용
   return <>{children}</>;
 };
 
@@ -116,141 +93,137 @@ function App() {
                         v7_startTransition: true,
                       }}
                     >
-                      <Suspense fallback={<LoadingDiv />}>
-                        <Routes>
-                          <Route path="/" element={<IndexPage />} />
-
-                          {/* Member */}
+                      <Routes>
+                        <Route path="/" element={<IndexPage />} />
+                        {/* Member */}
+                        <Route
+                          path="/member"
+                          element={
+                            <LayoutWithAnalytics>
+                              <MemberLayout />
+                            </LayoutWithAnalytics>
+                          }
+                        >
+                          <Route index element={<MemberPage />} />
+                          <Route path="matching">
+                            <Route index element={<MatchingListPage />} />
+                            <Route path="write" element={<MatchingWritePage />} />
+                            <Route path=":id" element={<MatchingDetailPage />} />
+                            <Route path="edit/:id" element={<MatchingEditPage />} />
+                          </Route>
+                          <Route path="community">
+                            <Route index element={<CommunityPage />} />
+                            <Route path="write" element={<CommunityWritePage />} />
+                            <Route path="detail/:id" element={<CommunityDetailPage />} />
+                            <Route path="edit/:id" element={<CommunityEditPage />} />
+                          </Route>
+                          <Route path="reviews">
+                            <Route index element={<ReviewsPage />} />
+                            <Route path=":id" element={<ReviewDetailPage />} />
+                          </Route>
+                          <Route path="events" element={<EventPage />} />
+                          <Route path="support" element={<SupportPage />} />
                           <Route
-                            path="/member"
+                            path="profile/*"
                             element={
-                              <LayoutWithAnalytics>
-                                <MemberLayout />
-                              </LayoutWithAnalytics>
+                              <ProtectedMemberRoute>
+                                <Outlet />
+                              </ProtectedMemberRoute>
                             }
                           >
-                            <Route index element={<MemberPage />} />
-                            <Route path="matching">
-                              <Route index element={<MatchingListPage />} />
-                              <Route path="write" element={<MatchingWritePage />} />
-                              <Route path=":id" element={<MatchingDetailPage />} />
-                              <Route path="edit/:id" element={<MatchingEditPage />} />
-                            </Route>
-                            <Route path="community">
-                              <Route index element={<CommunityPage />} />
-                              <Route path="write" element={<CommunityWritePage />} />
-                              <Route path="detail/:id" element={<CommunityDetailPage />} />
-                              <Route path="edit/:id" element={<CommunityEditPage />} />
-                            </Route>
-                            <Route path="reviews">
-                              <Route index element={<ReviewsPage />} />
-                              <Route path=":id" element={<ReviewDetailPage />} />
-                            </Route>
-                            <Route path="events" element={<EventPage />} />
-                            <Route path="support" element={<SupportPage />} />
-                            <Route
-                              path="profile/*"
-                              element={
-                                <ProtectedMemberRoute>
-                                  <Outlet />
-                                </ProtectedMemberRoute>
-                              }
-                            >
-                              <Route index element={<ProfilePage />} />
-                              <Route path="edit" element={<EditPage />} />
-                              <Route path="interest" element={<InterestPage />} />
-                              <Route path="chat" element={<ChatPage />} />
-                              <Route path="point" element={<PointPage />} />
-                              <Route path="myreviews" element={<MyReviewPage />} />
-                              <Route path="mywrite" element={<MyWritePage />} />
-                              <Route path="favorite" element={<FavoritePage />} />
-                              <Route path="recentmatching" element={<RecentMatchingPage />} />
-                              <Route path="helps" element={<HelpPage />} />
-                              <Route path="block" element={<BlockPage />} />
-                            </Route>
+                            <Route index element={<ProfilePage />} />
+                            <Route path="edit" element={<EditPage />} />
+                            <Route path="interest" element={<InterestPage />} />
+                            <Route path="chat" element={<ChatPage />} />
+                            <Route path="point" element={<PointPage />} />
+                            <Route path="myreviews" element={<MyReviewPage />} />
+                            <Route path="mywrite" element={<MyWritePage />} />
+                            <Route path="favorite" element={<FavoritePage />} />
+                            <Route path="recentmatching" element={<RecentMatchingPage />} />
+                            <Route path="helps" element={<HelpPage />} />
+                            <Route path="block" element={<BlockPage />} />
                           </Route>
+                        </Route>
 
-                          {/* 이용약관/개인정보처리방침 */}
+                        {/* 이용약관/개인정보처리방침 */}
+                        <Route
+                          path="/"
+                          element={
+                            <LayoutWithAnalytics>
+                              <MemberLayout />
+                            </LayoutWithAnalytics>
+                          }
+                        >
+                          <Route path="privacy" element={<TermsofServicePage />} />
+                          <Route path="perpolicy" element={<PersonalPolicyPage />} />
+                        </Route>
+
+                        {/* 소셜 */}
+                        <Route path="/instar" element={<InsratgramPage />} />
+                        <Route path="/kakao" element={<KaKaoPage />} />
+
+                        {/* 헤더없는 화면 */}
+                        <Route
+                          element={
+                            <LayoutWithAnalytics>
+                              <BareLayout />
+                            </LayoutWithAnalytics>
+                          }
+                        >
+                          <Route path="member/login" element={<MemberLoginPage />} />
+                          <Route path="member/signup" element={<MemberSignupPage />} />
+                          <Route path="partner/login" element={<PartnerLoginPage />} />
                           <Route
-                            path="/"
+                            path="partner/signup"
                             element={
-                              <LayoutWithAnalytics>
-                                <MemberLayout />
-                              </LayoutWithAnalytics>
+                              <PartnerSignupProvider>
+                                <PartnerSignupPage />
+                              </PartnerSignupProvider>
                             }
-                          >
-                            <Route path="privacy" element={<TermsofServicePage />} />
-                            <Route path="perpolicy" element={<PersonalPolicyPage />} />
-                          </Route>
+                          />
+                        </Route>
 
-                          {/* 소셜 */}
-                          <Route path="/instar" element={<InsratgramPage />} />
-                          <Route path="/kakao" element={<KaKaoPage />} />
+                        {/* Partner */}
+                        <Route
+                          path="/partner"
+                          element={
+                            <ProtectedRoute allowedRoles={['partner', 'admin']}>
+                              {' '}
+                              <PartnerLayout />
+                            </ProtectedRoute>
+                          }
+                        >
+                          <Route index element={<DashboardPage />} />
+                          <Route path="restaurant" element={<RestaurantPage />} />
+                          <Route path="menus" element={<MenusPage />} />
+                          <Route path="orders" element={<OrdersPage />} />
+                          <Route path="sale" element={<SalesPage />} />
+                          <Route path="review" element={<ReviewPage />} />
+                          <Route path="notification" element={<NotificationPage />} />
+                          <Route path="settings" element={<SettingsPage />} />
+                        </Route>
 
-                          {/* 헤더없는 화면 */}
-                          <Route
-                            element={
-                              <LayoutWithAnalytics>
-                                <BareLayout />
-                              </LayoutWithAnalytics>
-                            }
-                          >
-                            <Route path="member/login" element={<MemberLoginPage />} />
-                            <Route path="member/signup" element={<MemberSignupPage />} />
-                            <Route path="partner/login" element={<PartnerLoginPage />} />
-                            <Route
-                              path="partner/signup"
-                              element={
-                                <PartnerSignupProvider>
-                                  <PartnerSignupPage />
-                                </PartnerSignupProvider>
-                              }
-                            />
-                          </Route>
-
-                          {/* Partner */}
-                          <Route
-                            path="/partner"
-                            element={
-                              <ProtectedRoute allowedRoles={['partner', 'admin']}>
-                                <PartnerLayout />
-                              </ProtectedRoute>
-                            }
-                          >
-                            <Route index element={<DashboardPage />} />
-                            <Route path="restaurant" element={<RestaurantPage />} />
-                            <Route path="menus" element={<MenusPage />} />
-                            <Route path="orders" element={<OrdersPage />} />
-                            <Route path="sale" element={<SalesPage />} />
-                            <Route path="review" element={<ReviewPage />} />
-                            <Route path="notification" element={<NotificationPage />} />
-                            <Route path="settings" element={<SettingsPage />} />
-                          </Route>
-
-                          {/* Admin */}
-                          <Route
-                            path="/admin"
-                            element={
-                              <ProtectedRoute allowedRoles={['admin']}>
-                                <AdminLayout />
-                              </ProtectedRoute>
-                            }
-                          >
-                            <Route index element={<AdminMembersPage />} />
-                            <Route path="partners" element={<AdminPartnersPage />} />
-                            <Route path="partners/:id" element={<AdminPartnerSignupDetailPage />} />
-                            <Route path="matching" element={<AdminMatchingPage />} />
-                            <Route path="reports" element={<AdminReportsPage />} />
-                            <Route path="settings" element={<AdminSettingsPage />} />
-                          </Route>
-
-                          {/* confirm */}
-                          <Route path="/auth/confirm" element={<ConfirmPage />} />
-
-                          {/* Not Found */}
-                          <Route path="*" element={<NotFound />} />
-                        </Routes>
-                      </Suspense>
+                        {/* Admin */}
+                        <Route
+                          path="/admin"
+                          element={
+                            <ProtectedRoute allowedRoles={['admin']}>
+                              <AdminLayout />
+                            </ProtectedRoute>
+                          }
+                        >
+                          <Route index element={<AdminMembersPage />} />
+                          <Route path="partners" element={<AdminPartnersPage />} />
+                          <Route path="partners/:id" element={<AdminPartnerSignupDetailPage />} />
+                          <Route path="matching" element={<AdminMatchingPage />} />
+                          <Route path="reports" element={<AdminReportsPage />} />
+                          <Route path="settings" element={<AdminSettingsPage />} />
+                        </Route>
+                        {/* confirm */}
+                        <Route path="/auth/confirm" element={<ConfirmPage />} />
+                        {/* Not Found */}
+                        <Route path="*" element={<NotFound />} />
+                      </Routes>
                     </Router>
                     <Toaster />
                   </ChatNotificationProvider>
