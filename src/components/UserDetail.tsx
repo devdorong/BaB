@@ -1,15 +1,16 @@
 import { supabase } from '@/lib/supabase';
+import Modal from '@/ui/sdj/Modal';
 import { useModal } from '@/ui/sdj/ModalState';
 import { useNavigate, useParams } from 'react-router-dom';
 
 const UserDetail = () => {
-  const { id } = useParams();
+  const { id, user } = useParams();
   const navigate = useNavigate();
   const { closeModal, modal, openModal } = useModal();
 
   const handleBlock = () => {
     openModal('차단', '해당 사용자를 차단하시겠습니까?', '취소', '차단', async () => {
-      const { error } = await supabase.from('profile_blocks').insert({})
+      const { error } = await supabase.from('profile_blocks').insert({});
       if (error) {
         console.log(error);
       }
@@ -33,6 +34,17 @@ const UserDetail = () => {
       >
         차단하기
       </button>
+      {modal.isOpen && (
+        <Modal
+          isOpen={modal.isOpen}
+          onClose={closeModal}
+          titleText={modal.title}
+          contentText={modal.content}
+          closeButtonText={modal.closeText}
+          submitButtonText={modal.submitText}
+          onSubmit={modal.onSubmit}
+        />
+      )}
     </div>
   );
 };
