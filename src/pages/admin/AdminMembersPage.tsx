@@ -165,11 +165,10 @@ export default function UserManagementPage() {
           <table className="w-full text-sm">
             <thead className="bg-gray-100 text-gray-700">
               <tr>
-                <th className="py-3 px-8 w-[450px] text-left">이름</th>
-                <th className="py-3 px-8 w-[450px] text-left">이메일</th>
-                <th className="py-3 px-8 w-[150px] text-left">가입일</th>
-                <th className="py-3 px-8 w-[150px] text-left">상태</th>
-                <th className="py-3 px-8 w-[150px] text-left">활동내역</th>
+                <th className="py-3 px-8 w-[500px] text-left">이름</th>
+                <th className="py-3 px-8 w-[500px] text-left">이메일</th>
+                <th className="py-3 px-8 w-[300px] text-left">가입일</th>
+                <th className="py-3 px-8 w-[300px] text-left">활동내역</th>
                 <th className="py-3 px-8 text-left">상태</th>
               </tr>
             </thead>
@@ -206,7 +205,6 @@ export default function UserManagementPage() {
                       </td>
                       <td className="py-3 px-8">{user.email}</td>
                       <td className="py-3 px-8">{dayjs(user.created_at).format('YYYY-MM-DD')}</td>
-                      <td className="py-3 px-8">{user.status}</td>
                       <td
                         onClick={() => setSelectedUser(user)}
                         className="py-3 px-8 text-bab-500 hover:underline cursor-pointer"
