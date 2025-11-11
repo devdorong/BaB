@@ -6,11 +6,13 @@ import Modal from '@/ui/sdj/Modal';
 import { useModal } from '@/ui/sdj/ModalState';
 import dayjs from 'dayjs';
 import { useEffect, useState } from 'react';
-import { RiCheckboxCircleLine } from 'react-icons/ri';
+import { RiArrowLeftSLine, RiArrowRightSLine, RiCheckboxCircleLine } from 'react-icons/ri';
 
 export type AdminReportsPageProps = Help & {
   profiles?: { id: string; nickname: string } | null;
 };
+
+const ITEMS_PER_PAGE = 10;
 
 function AdminReportsPage() {
   const { setHeader } = useAdminHeader();
@@ -20,6 +22,8 @@ function AdminReportsPage() {
   const [helpList, setHelpList] = useState<AdminReportsPageProps[]>([]);
   const [helpDetail, setHelpDetail] = useState<AdminReportsPageProps | null>(null);
   const [helpModal, setHelpModal] = useState(false);
+
+  const [currentPage, setCurrentPage] = useState(1);
 
   const handleHelpModal = (help: AdminReportsPageProps) => {
     if (help.status === true) {
@@ -44,6 +48,11 @@ function AdminReportsPage() {
     }
   };
 
+  // 페이지네이션
+  const totalPages = Math.ceil(helpList.length / ITEMS_PER_PAGE);
+  const startIdx = (currentPage - 1) * ITEMS_PER_PAGE;
+  const paginatedList = helpList.slice(startIdx, startIdx + ITEMS_PER_PAGE);
+
   useEffect(() => {
     fetchData();
   }, [modal, helpModal]);
@@ -61,7 +70,7 @@ function AdminReportsPage() {
       <div className="flex flex-col w-full gap-6 items-start justify-start mb-6 bg-white p-[25px] rounded-[16px] shadow">
         <h3 className="font-bold">1:1 문의 리스트</h3>
         {/* 리스트 */}
-        {helpList.map((help, idx) => (
+        {paginatedList.map((help, idx) => (
           <div
             key={idx}
             onClick={() => handleHelpModal(help)}
@@ -105,7 +114,7 @@ function AdminReportsPage() {
       {/* 하단 페이지네이션 */}
       <div className="flex justify-between items-center mt-4 text-sm text-babgray-600">
         <p>총 {helpList.length}개의 문의내역</p>
-        <div className="flex items-center space-x-2">
+        {/* <div className="flex items-center space-x-2">
           {Array.from({ length: 10 }, (_, i) => i + 1).map(num => (
             <button
               key={num}
@@ -117,7 +126,39 @@ function AdminReportsPage() {
             </button>
           ))}
           <span className="text-babgray-400">›</span>
-        </div>
+        </div> */}
+        {/* 페이지네이션 */}
+        {paginatedList.length > 0 && (
+          <div className="flex justify-center gap-2 mt-4 sm:mt-6 flex-wrap">
+            <button
+              disabled={currentPage === 1}
+              onClick={() => setCurrentPage(p => Math.max(p - 1, 1))}
+              className="p-2 bg-bg-bg rounded hover:bg-bab hover:text-white disabled:opacity-50 transition"
+            >
+              <RiArrowLeftSLine size={16} />
+            </button>
+
+            {Array.from({ length: totalPages }).map((_, idx) => (
+              <button
+                key={idx + 1}
+                onClick={() => setCurrentPage(idx + 1)}
+                className={`p-2 py-0 rounded hover:bg-bab hover:text-white ${
+                  currentPage === idx + 1 ? 'text-bab' : 'bg-bg-bg'
+                }`}
+              >
+                {idx + 1}
+              </button>
+            ))}
+
+            <button
+              disabled={currentPage === totalPages}
+              onClick={() => setCurrentPage(p => Math.min(p + 1, totalPages))}
+              className="p-2 bg-white rounded hover:bg-bab hover:text-white disabled:opacity-50 transition"
+            >
+              <RiArrowRightSLine size={16} />
+            </button>
+          </div>
+        )}
       </div>
     </div>
   );
