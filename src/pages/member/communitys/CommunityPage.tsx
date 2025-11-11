@@ -1,3 +1,4 @@
+import TagBadge from '@/ui/TagBadge';
 import dayjs from 'dayjs';
 import 'dayjs/locale/ko';
 import relativeTime from 'dayjs/plugin/relativeTime';
@@ -16,9 +17,7 @@ import type { Database, Posts } from '../../../types/bobType';
 import { ButtonFillMd } from '../../../ui/button';
 import CommunityCardSkeleton from '../../../ui/sdj/CommunityCardSkeleton';
 import Modal from '../../../ui/sdj/Modal';
-import { BlueTag, GreenTag, PurpleTag } from '../../../ui/tag';
 import styles from './CommunityPage.module.css';
-import TagBadge from '@/ui/TagBadge';
 
 type CategoriesType = Database['public']['Tables']['posts']['Row']['post_category'];
 type CategoryTagType = Database['public']['Tables']['posts']['Row']['tag'];
