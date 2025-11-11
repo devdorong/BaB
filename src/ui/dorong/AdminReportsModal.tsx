@@ -133,7 +133,7 @@ const AdminReportsModal = ({
               <span className="flex items-center gap-1">
                 제목<p className="text-bab">*</p>
               </span>
-              <div className="w-full h-12 px-2.5 py-3 bg-white border-b items-center">
+              <div className="w-[400px] px-2.5 py-3 bg-white border-b items-center">
                 <div className="font-semibold"> {titleText}</div>
               </div>
             </div>
@@ -141,7 +141,7 @@ const AdminReportsModal = ({
               <span className="flex items-center gap-1">
                 문의 내용<p className="text-bab">*</p>
               </span>
-              <div className="w-[400px] h-12 px-2.5 py-3 bg-white border-b items-center">
+              <div className="w-[400px] px-2.5 py-3 bg-white border-b items-center">
                 <div className="font-semibold"> {contentText}</div>
               </div>
             </div>
