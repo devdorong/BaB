@@ -149,12 +149,11 @@ export default function AdminPartnersPage() {
           <table className="w-full text-sm">
             <thead className="bg-gray-100 text-gray-700">
               <tr>
-                <th className="py-3 px-8 text-left">이름</th>
-                <th className="py-3 px-8 text-left">이메일</th>
-                <th className="py-3 px-8 text-left">가입일</th>
-                <th className="py-3 px-8 text-left">매장정보</th>
-                {/* <th className="py-3 px-8 text-left">정산내역</th> */}
-                <th className="py-3 px-8 text-left">상태</th>
+                <th className="py-3 px-8 w-[400px] text-left">이름</th>
+                <th className="py-3 px-8 w-[350px] text-left">이메일</th>
+                <th className="py-3 px-8 w-[150px] text-left">가입일</th>
+                <th className="py-3 px-8 w-[250px] text-left">매장정보</th>
+                <th className="py-3 px-8 w-[150px] text-left">상태</th>
               </tr>
             </thead>
             <tbody>

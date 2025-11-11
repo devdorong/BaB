@@ -165,11 +165,11 @@ export default function UserManagementPage() {
           <table className="w-full text-sm">
             <thead className="bg-gray-100 text-gray-700">
               <tr>
-                <th className="py-3 px-8 text-left">이름</th>
-                <th className="py-3 px-8 text-left">이메일</th>
-                <th className="py-3 px-8 text-left">가입일</th>
-                <th className="py-3 px-8 text-left">상태</th>
-                <th className="py-3 px-8 text-left">활동내역</th>
+                <th className="py-3 px-8 w-[450px] text-left">이름</th>
+                <th className="py-3 px-8 w-[450px] text-left">이메일</th>
+                <th className="py-3 px-8 w-[150px] text-left">가입일</th>
+                <th className="py-3 px-8 w-[150px] text-left">상태</th>
+                <th className="py-3 px-8 w-[150px] text-left">활동내역</th>
                 <th className="py-3 px-8 text-left">상태</th>
               </tr>
             </thead>
