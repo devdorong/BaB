@@ -48,6 +48,7 @@ type MatchingWithRestaurantImage = Matchings & {
       name: string;
     } | null;
   } | null;
+  participantCount: number;
 };
 
 function AdminMatchingPage() {
@@ -69,6 +70,12 @@ function AdminMatchingPage() {
         // console.log(alls);
         setMatchings(alls);
 
+        const counts = await Promise.all(alls.map(m => getParticipantCount(m.id)));
+        const matchingsWithCounts = alls.map((m, idx) => ({
+          ...m,
+          participantCount: counts[idx],
+        }));
+        setMatchings(matchingsWithCounts);
         // console.log(all);
       } catch (err) {
         console.error('매칭 불러오기 실패:', err);
@@ -166,7 +173,9 @@ function AdminMatchingPage() {
                         </div>
                         <div className="flex items-center gap-3">
                           <RiGroupLine className="text-gray-600" />
-                          <span className="font-medium text-gray-600">{}</span>
+                          <span className="font-medium text-gray-600">
+                            {i.participantCount}/{i.desired_members}
+                          </span>
                         </div>
                       </div>
                     </div>
