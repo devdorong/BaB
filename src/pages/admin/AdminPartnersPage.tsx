@@ -102,7 +102,7 @@ export default function AdminPartnersPage() {
         </p> */}
 
         {/* 검색 및 필터 */}
-        <div className="flex items-center justify-between mb-6 bg-white p-[25px] rounded-[16px] shadow">
+        <div className="flex w-full items-center justify-between bg-white p-[25px] rounded-[16px] shadow">
           <div className="flex items-center space-x-2">
             <div className="relative">
               <RiSearchLine className="absolute left-3 top-2.5 text-gray-400" />
@@ -144,86 +144,88 @@ export default function AdminPartnersPage() {
       </div>
 
       {/* 테이블 */}
-      <div className="w-full border border-gray-100 overflow-hidden">
-        <table className="w-full text-sm">
-          <thead className="bg-gray-100 text-gray-700">
-            <tr>
-              <th className="py-3 px-8 text-left">이름</th>
-              <th className="py-3 px-8 text-left">이메일</th>
-              <th className="py-3 px-8 text-left">가입일</th>
-              <th className="py-3 px-8 text-left">매장정보</th>
-              {/* <th className="py-3 px-8 text-left">정산내역</th> */}
-              <th className="py-3 px-8 text-left">상태</th>
-            </tr>
-          </thead>
-          <tbody>
-            {loading ? (
+      <div className="px-8">
+        <div className="w-full bg-white p-[25px] border border-gray-100 overflow-hidden rounded-[16px] shadow">
+          <table className="w-full text-sm">
+            <thead className="bg-gray-100 text-gray-700">
               <tr>
-                <td colSpan={6} className="py-10 text-center text-gray-400">
-                  파트너 목록을 불러오는 중입니다...
-                </td>
+                <th className="py-3 px-8 text-left">이름</th>
+                <th className="py-3 px-8 text-left">이메일</th>
+                <th className="py-3 px-8 text-left">가입일</th>
+                <th className="py-3 px-8 text-left">매장정보</th>
+                {/* <th className="py-3 px-8 text-left">정산내역</th> */}
+                <th className="py-3 px-8 text-left">상태</th>
               </tr>
-            ) : paginatedList.length === 0 ? (
-              <tr>
-                <td colSpan={6} className="py-10 text-center text-gray-400">
-                  표시할 파트너가 없습니다.
-                </td>
-              </tr>
-            ) : (
-              <>
-                {paginatedList.map((user, idx) => (
-                  <tr key={idx} className="border-b last:border-b-0 hover:bg-gray-50">
-                    <td className="py-3 px-8 flex items-center space-x-3">
-                      <img
-                        src={
-                          user.restaurant_thumbnail_url
-                            ? user.restaurant_thumbnail_url === 'guest_image'
-                              ? `https://www.gravatar.com/avatar/?d=mp&s=200`
-                              : user.restaurant_thumbnail_url
-                            : 'https://www.gravatar.com/avatar/?d=mp&s=200'
-                        }
-                        alt="avatar"
-                        className="w-8 h-8 rounded-full object-cover"
-                      />
-                      <span>{user.owner_name}</span>
-                    </td>
-                    <td className="py-3 px-8">{user.owner_email}</td>
-                    <td className="py-3 px-8">{dayjs(user.created_at).format('YYYY-MM-DD')}</td>
-                    <td className="py-3 px-8">{user.owner_nickname}</td>
-                    {/* <td
+            </thead>
+            <tbody>
+              {loading ? (
+                <tr>
+                  <td colSpan={6} className="py-10 text-center text-gray-400">
+                    파트너 목록을 불러오는 중입니다...
+                  </td>
+                </tr>
+              ) : paginatedList.length === 0 ? (
+                <tr>
+                  <td colSpan={6} className="py-10 text-center text-gray-400">
+                    표시할 파트너가 없습니다.
+                  </td>
+                </tr>
+              ) : (
+                <>
+                  {paginatedList.map((user, idx) => (
+                    <tr key={idx} className="border-b last:border-b-0 hover:bg-gray-50">
+                      <td className="py-3 px-8 flex items-center space-x-3">
+                        <img
+                          src={
+                            user.restaurant_thumbnail_url
+                              ? user.restaurant_thumbnail_url === 'guest_image'
+                                ? `https://www.gravatar.com/avatar/?d=mp&s=200`
+                                : user.restaurant_thumbnail_url
+                              : 'https://www.gravatar.com/avatar/?d=mp&s=200'
+                          }
+                          alt="avatar"
+                          className="w-8 h-8 rounded-full object-cover"
+                        />
+                        <span>{user.owner_name}</span>
+                      </td>
+                      <td className="py-3 px-8">{user.owner_email}</td>
+                      <td className="py-3 px-8">{dayjs(user.created_at).format('YYYY-MM-DD')}</td>
+                      <td className="py-3 px-8">{user.owner_nickname}</td>
+                      {/* <td
                       onClick={handleMemberDetail}
                       className="py-3 px-8 text-bab hover:underline cursor-pointer"
                     >
                       상세보기
                     </td> */}
-                    {memberDetail && (
-                      <MemberActivityDetailModal onClose={() => setMemberDetail(false)} />
-                    )}
-                    <td className="py-3 px-2">
-                      {user.restaurant_status === 'rejected' && (
-                        <div className="text-gray-600 text-xs px-3 py-1 ">파트너 거절</div>
+                      {memberDetail && (
+                        <MemberActivityDetailModal onClose={() => setMemberDetail(false)} />
                       )}
-                      {user.restaurant_status === 'draft' && (
-                        <div className="text-gray-600 text-xs px-3 py-1 ">임시 저장중</div>
-                      )}
-                      {user.restaurant_status === 'pending' && (
-                        <div
-                          onClick={() => handleDetail(user)}
-                          className="text-bab text-xs px-3 py-1 cursor-pointer"
-                        >
-                          파트너 대기
-                        </div>
-                      )}
-                      {user.restaurant_status === 'approved' && (
-                        <div className="text-green-600 text-xs px-3 py-1 ">파트너 승인</div>
-                      )}
-                    </td>
-                  </tr>
-                ))}
-              </>
-            )}
-          </tbody>
-        </table>
+                      <td className="py-3 px-2">
+                        {user.restaurant_status === 'rejected' && (
+                          <div className="text-gray-600 text-xs px-3 py-1 ">파트너 거절</div>
+                        )}
+                        {user.restaurant_status === 'draft' && (
+                          <div className="text-gray-600 text-xs px-3 py-1 ">임시 저장중</div>
+                        )}
+                        {user.restaurant_status === 'pending' && (
+                          <div
+                            onClick={() => handleDetail(user)}
+                            className="text-bab text-xs px-3 py-1 cursor-pointer"
+                          >
+                            파트너 대기
+                          </div>
+                        )}
+                        {user.restaurant_status === 'approved' && (
+                          <div className="text-green-600 text-xs px-3 py-1 ">파트너 승인</div>
+                        )}
+                      </td>
+                    </tr>
+                  ))}
+                </>
+              )}
+            </tbody>
+          </table>
+        </div>
       </div>
 
       {/* 하단 페이지네이션 */}
