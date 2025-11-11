@@ -8,9 +8,15 @@ import {
 
 interface WriteReviewCommentProps {
   reviewId: number;
+  onCommentAdded: () => void;
+  onCommentDeleted: () => void;
 }
 
-function WriteReviewComment({ reviewId }: WriteReviewCommentProps) {
+function WriteReviewComment({
+  reviewId,
+  onCommentAdded,
+  onCommentDeleted,
+}: WriteReviewCommentProps) {
   const { user } = useAuth();
   const [comments, setComments] = useState<any[]>([]);
   const [newComment, setNewComment] = useState('');
@@ -24,21 +30,51 @@ function WriteReviewComment({ reviewId }: WriteReviewCommentProps) {
     load();
   }, [reviewId]);
 
+  // const handleSubmit = async (e?: React.FormEvent) => {
+  //   if (e) e.preventDefault();
+  //   if (!newComment.trim()) return;
+  //   try {
+  //     const comment = await insertReviewComment(reviewId, newComment);
+  //     setComments(prev => [...prev, comment]);
+  //     setNewComment('');
+  //   } catch (error) {
+  //     console.log(error);
+  //   }
+  // };
+
+  // const handleDelete = async (id: number) => {
+  //   await deleteReviewComment(id);
+  //   setComments(prev => prev.filter(comment => comment.id !== id));
+  // };
+
+  // 댓글 등록
   const handleSubmit = async (e?: React.FormEvent) => {
     if (e) e.preventDefault();
     if (!newComment.trim()) return;
+
     try {
       const comment = await insertReviewComment(reviewId, newComment);
       setComments(prev => [...prev, comment]);
       setNewComment('');
+
+      // 부모에게 알림 → noneComments -1
+      if (onCommentAdded) onCommentAdded();
     } catch (error) {
-      console.log(error);
+      console.error('댓글 등록 실패:', error);
     }
   };
 
+  // 댓글 삭제
   const handleDelete = async (id: number) => {
-    await deleteReviewComment(id);
-    setComments(prev => prev.filter(comment => comment.id !== id));
+    try {
+      await deleteReviewComment(id);
+      setComments(prev => prev.filter(comment => comment.id !== id));
+
+      // 부모에게 알림 → noneComments +1
+      if (onCommentDeleted) onCommentDeleted();
+    } catch (error) {
+      console.error('댓글 삭제 실패:', error);
+    }
   };
 
   const keyEventEnter = (e: React.KeyboardEvent) => {

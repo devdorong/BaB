@@ -193,7 +193,8 @@ export const DirectChatProider: React.FC<DirectChatProiderProps> = ({ children }
         const response = await sendMessageService(messageData);
         if (response.success && response.data) {
           // 메시지 전송 성공 후 즉시 로컬 상태에 메시지 추가 (자연스러운 UX)
-          setMessages(prev => [...prev, response.data!]);
+          // =========== 11/11 채팅 이중 수정
+          // setMessages(prev => [...prev, response.data!]);
 
           // 채팅방 목록만 업데이트 (메시지는 Realtime)
           await loadChats();
