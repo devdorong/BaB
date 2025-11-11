@@ -218,7 +218,7 @@ function CommunityPage() {
         <div>
           {/* 카테고리 */}
           <div
-            className={`${styles.category} flex text-[12px] md:text-base gap-10 border-b-[1px] border-babgray-150`}
+            className={`${styles.category} flex text-[12px] md:text-base gap-0  sm:gap-10 border-b-[1px] border-babgray-150`}
           >
             {UiCategories.map(item => (
               <div

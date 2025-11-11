@@ -71,6 +71,8 @@ import { useGoogleAnalytics } from './hooks/useGoogleAnalytics';
 import ConfirmPage from './pages/auth/ConfirmPage';
 import HelpPage from './pages/member/profiles/HelpPage';
 import AdminPartnerSignupDetailPage from './pages/admin/AdminPartnerSignupDetailPage';
+import MemberForgetPasswordPage from './pages/MemberForgetPasswordPage';
+import MemberResetPasswordPage from './pages/MemberResetPasswordPage';
 
 const LayoutWithAnalytics = ({ children }: { children: React.ReactNode }) => {
   useGoogleAnalytics(); // Router 컨텍스트 내부에서 사용
@@ -172,6 +174,11 @@ function App() {
                         >
                           <Route path="member/login" element={<MemberLoginPage />} />
                           <Route path="member/signup" element={<MemberSignupPage />} />
+                          <Route
+                            path="member/forget-password"
+                            element={<MemberForgetPasswordPage />}
+                          />
+                          <Route path="reset-password" element={<MemberResetPasswordPage />} />
                           <Route path="partner/login" element={<PartnerLoginPage />} />
                           <Route
                             path="partner/signup"

@@ -7,10 +7,13 @@ import { LogoLg } from '../ui/Ui';
 import { GoogleIconSvg } from '../ui/jy/IconSvg';
 import { supabase } from '../lib/supabase';
 import GoogleLoginButton from '../components/GoogleLoginButton';
+import Modal from '@/ui/sdj/Modal';
+import { useModal } from '@/ui/sdj/ModalState';
 
 function MemberLoginPage() {
+  const { closeModal, modal, openModal } = useModal();
   const navigate = useNavigate();
-  const {  signIn, signOut } = useAuth();
+  const { signIn, signOut } = useAuth();
   const [email, setEmail] = useState('');
   const [pw, setPw] = useState('');
   const [msg, setMsg] = useState('');
@@ -47,6 +50,14 @@ function MemberLoginPage() {
     } catch {
       setMsg('로그인 오류 : 잠시 후 다시 시도해주세요.');
     }
+  };
+  const handleFindId = () => {
+    openModal('아이디 찾기', '현재 개발중이기에, 카카오로 문의 부탁드립니다.', '', '확인', () =>
+      window.open('https://open.kakao.com/o/sf561R0h', '_blank'),
+    );
+  };
+  const handleFindPw = () => {
+    navigate('/member/forget-password');
   };
 
   return (
@@ -122,9 +133,13 @@ function MemberLoginPage() {
 
         {/* 아이디/비밀번호 찾기/회원가입 */}
         <div className="flex flex-wrap justify-center gap-2 text-sm sm:text-base text-babgray-500 font-medium">
-          <span>아이디 찾기</span>
+          <span className="cursor-pointer hover:text-bab-500" onClick={handleFindId}>
+            아이디 찾기
+          </span>
           <span>|</span>
-          <span>비밀번호 찾기</span>
+          <span className="cursor-pointer hover:text-bab-500" onClick={handleFindPw}>
+            비밀번호 찾기
+          </span>
           <span>|</span>
           <span
             onClick={() => navigate('/member/signup')}
@@ -150,6 +165,17 @@ function MemberLoginPage() {
           <KakaoLoginButton onError={error => setMsg(`카카오 로그인 오류 : ${error}`)} />
         </div>
       </div>
+      {modal.isOpen && (
+        <Modal
+          isOpen={modal.isOpen}
+          onClose={closeModal}
+          closeButtonText={modal.closeText}
+          contentText={modal.content}
+          submitButtonText={modal.submitText}
+          titleText={modal.title}
+          onSubmit={modal.onSubmit}
+        />
+      )}
     </div>
   );
 }
