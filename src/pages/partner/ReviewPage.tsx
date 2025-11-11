@@ -224,7 +224,7 @@ function ReviewPage() {
               </div>
             </div>
             <div className=" text-babgray-600 text-base font-medium ">
-              총 {localReviews.length}개의 리뷰
+              총 {filteredReviews.length}개의 리뷰
             </div>
           </div>
         </div>
@@ -312,7 +312,11 @@ function ReviewPage() {
                         </div>
                       )}
                     </div>
-                    <WriteReviewComment reviewId={review.review_id} />
+                    <WriteReviewComment
+                      reviewId={review.review_id}
+                      onCommentAdded={() => setNoneComments(prev => Math.max(prev - 1, 0))}
+                      onCommentDeleted={() => setNoneComments(prev => prev + 1)}
+                    />
                     {/* <div className="self-stretch px-5 py-4 bg-bab-100 border-l-4 border-bab-500 flex flex-col justify-start items-start gap-2.5">
                       <div className="self-stretch inline-flex justify-start items-center gap-2 text-bab">
                         <div className="w-full inline-flex flex-col justify-center items-center gap-1.5">
