@@ -5,6 +5,7 @@ import ReviewContent from './ReviewContent';
 import WriteReviewComment from '../partner/WriteReviewComment';
 import { useRestaurant } from '../../contexts/PartnerRestaurantContext';
 import WriteReviewDetailComment from './WriteReviewDetailComment';
+import WriteReviewPageComment from './WriteReviewPageComment';
 
 interface ReviewItemProps {
   restaurantId: number;
@@ -97,7 +98,7 @@ function ReviewItem({ restaurantId, reviews }: ReviewItemProps) {
               ))}
             </div>
           )}
-          <WriteReviewDetailComment reviewId={review.review_id} />
+          <WriteReviewPageComment reviewId={review.review_id} />
         </div>
       ))}
     </>

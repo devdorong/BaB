@@ -19,15 +19,32 @@ import {
 } from '../../lib/restaurants';
 import { useEffect, useState } from 'react';
 import WriteReviewComment from '../../components/partner/WriteReviewComment';
+import type { ReportsType } from '../member/communitys/CommunityDetailPage';
+import { useModal } from '@/ui/sdj/ModalState';
+import { supabase } from '@/lib/supabase';
+import { useAuth } from '@/contexts/AuthContext';
+import ReportsModal from '@/ui/sdj/ReportsModal';
 
 function ReviewPage() {
   const { restaurant } = useRestaurant();
+  const { modal, closeModal, openModal } = useModal();
+  const { user } = useAuth();
   const [reviews, setReviews] = useState<ReviewWithPhotos[]>([]);
   const [localReviews, setLocalReviews] = useState<ReviewWithPhotos[]>([]);
   const [noneComments, setNoneComments] = useState(0);
   const [comments, setComments] = useState<any[]>([]);
   const [selectedRating, setSelectedRating] = useState<number | '전체'>('전체');
   const [isOpen, setIsOpen] = useState(false);
+  const [reports, setReports] = useState(false);
+  const [reportInfo, setReportInfo] = useState<{
+    type: ReportsType;
+    nickname: string | null;
+    targetProfileId?: string;
+  }>({
+    type: '리뷰',
+    nickname: null,
+    targetProfileId: undefined,
+  });
 
   useEffect(() => {
     if (!restaurant?.id) return;
@@ -76,6 +93,39 @@ function ReviewPage() {
       : [...filteredReviews].sort(
           (a, b) => Number(b.rating_food ?? 0) - Number(a.rating_food ?? 0),
         ); // 평점 선택 시 별점순
+
+  const handleReport = async (
+    type: ReportsType,
+    title: string,
+    reason: string,
+    targetProfileId: string | undefined,
+  ) => {
+    if (!user) {
+      openModal('로그인 확인', '로그인이 필요합니다.', '닫기');
+      return;
+    }
+
+    if (!targetProfileId) {
+      openModal('사용자 정보', '사용자 정보를 불러오는데 실패했습니다.', '닫기');
+      return;
+    }
+
+    const { error } = await supabase.from('reports').insert([
+      {
+        reporter_id: user.id,
+        accused_profile_id: targetProfileId,
+        reason: `${title.trim()} - ${reason.trim()}`,
+        report_type: type,
+      },
+    ]);
+
+    if (error) {
+      console.error('신고 실패:', error);
+      openModal('오류', '신고 중 오류가 발생했습니다.', '닫기');
+    } else {
+      openModal('신고완료', '신고가 접수되었습니다.', '닫기');
+    }
+  };
 
   return (
     <>
@@ -206,7 +256,17 @@ function ReviewPage() {
                             <div className="text-[14px] text-babgray-600">
                               {review.profiles?.nickname}
                             </div>
-                            <div className="text-xs justify-right text-babgray-400 cursor-pointer hover:text-red-500">
+                            <div
+                              onClick={() => {
+                                setReportInfo({
+                                  type: '리뷰',
+                                  nickname: review.profiles?.nickname ?? null,
+                                  targetProfileId: review.profiles?.id,
+                                });
+                                setReports(true);
+                              }}
+                              className="text-xs justify-right text-babgray-400 cursor-pointer hover:text-red-500"
+                            >
                               신고하기
                             </div>
                           </div>
@@ -294,6 +354,16 @@ function ReviewPage() {
             </div>
           ))}
         </div>
+        {reports && (
+          <ReportsModal
+            setReports={setReports}
+            targetNickname={reportInfo.nickname ?? ''}
+            handleReport={(type, title, reason) =>
+              handleReport(type, title, reason, reportInfo.targetProfileId)
+            }
+            reportType={reportInfo.type}
+          />
+        )}
       </div>
     </>
   );
