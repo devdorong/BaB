@@ -108,6 +108,39 @@ function AdminPartnerSignupDetailPage() {
     );
   };
 
+  const handleRejected = () => {
+    openModal(
+      '파트너 거절',
+      '해당 파트너 신청서를 거절하시겠습니까?',
+      '취소',
+      '거절',
+      async () => {
+        // 거절 버튼 클릭 시
+        const { error } = await supabase
+          .from('restaurants')
+          .update({ status: 'rejected' })
+          .eq('id', restaurant?.restaurant_id);
+
+        if (error) {
+          closeModal(); // 현재 모달 닫고
+          setTimeout(() => {
+            openModal('오류', `거절중 오류 발생 : ${error.message}`, '닫기');
+          }, 100);
+          return;
+        }
+
+        closeModal(); // 현재 모달 닫고
+        setTimeout(() => {
+          openModal('파트너 거절', '파트너 거절 완료', '', '확인', () => {
+            closeModal();
+            navigate(`/admin/partners`);
+          });
+        }, 100);
+      },
+      undefined, // 취소 버튼은 기본 동작(closeModal)만 수행
+    );
+  };
+
   // state가 없을 경우 대비
   if (!restaurant) {
     return <div>데이터를 불러오는 중입니다...</div>;
@@ -319,12 +352,12 @@ function AdminPartnerSignupDetailPage() {
 
           {/* 버튼 */}
           <div className="flex gap-4">
-            <button
-              type="button"
-              className="flex-1 h-14 border border-babgray-300 rounded-lg font-bold text-babgray-600 disabled:opacity-60 hover:bg-babgray-400 hover:text-white cursor-pointer"
+            <div
+              onClick={handleRejected}
+              className="flex-1 flex h-14 border border-babgray-300 rounded-lg font-bold text-babgray-600 disabled:opacity-60 hover:bg-babgray-400 justify-center items-center hover:text-white cursor-pointer"
             >
               거절
-            </button>
+            </div>
             <div
               onClick={handleApproved}
               className="flex-1 flex h-14 bg-bab text-white rounded-lg font-bold disabled:opacity-60 hover:bg-bab-600 cursor-pointer justify-center items-center"
