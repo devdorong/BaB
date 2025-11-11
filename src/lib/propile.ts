@@ -33,7 +33,7 @@ const createProfile = async (newUserProfile: ProfileInsert): Promise<boolean> =>
 
     if (error) throw error;
 
-    console.log('프로필 생성 또는 업데이트 성공');
+    // console.log('프로필 생성 또는 업데이트 성공');
     await new Promise(res => setTimeout(res, 400));
 
     return true;

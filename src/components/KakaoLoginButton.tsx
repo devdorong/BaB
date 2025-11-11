@@ -14,11 +14,11 @@ const KakaoLoginButton = ({ onError }: KakaoLoginButtonProps) => {
     try {
       const { error } = await signInWithKakao();
       if (error && onError) {
-        console.log('카카오 로그인 에러 메시지 : ', error);
+        // console.log('카카오 로그인 에러 메시지 : ', error);
         onError(error);
       }
     } catch (err) {
-      console.log('카카오 로그인 오류 : ', err);
+      // console.log('카카오 로그인 오류 : ', err);
     }
   };
 

@@ -87,7 +87,7 @@ export const GetOrCreatePoint = async (): Promise<Profile_Points | null> => {
     }
 
     // 포인트 신규 생성
-    console.log('포인트가 없어서 새로 생성합니다.');
+    // console.log('포인트가 없어서 새로 생성합니다.');
     const { data: newPoint, error: insertError } = await supabase
       .from('profile_points')
       .insert({
@@ -100,7 +100,7 @@ export const GetOrCreatePoint = async (): Promise<Profile_Points | null> => {
     if (insertError) {
       // 동시성 예외 (중복 insert)
       if (insertError.code === '23505') {
-        console.log('동시 생성 감지, 기존 데이터 재조회');
+        // console.log('동시 생성 감지, 기존 데이터 재조회');
         const { data: retryData } = await supabase
           .from('profile_points')
           .select('*')
@@ -111,7 +111,7 @@ export const GetOrCreatePoint = async (): Promise<Profile_Points | null> => {
       throw insertError;
     }
 
-    console.log('새 포인트 생성 완료:', newPoint.point);
+    // console.log('새 포인트 생성 완료:', newPoint.point);
     return newPoint;
   } catch (error) {
     console.error('❌ GetOrCreatePoint 에러:', error);
@@ -135,7 +135,7 @@ export const changePoint = async (couponId: number, requiredPoint: number) => {
       .eq('profile_id', user.id)
       .maybeSingle();
 
-    console.log(user.id);
+    // console.log(user.id);
     if (error) throw error;
     if (!data || data.point < requiredPoint) {
       throw new Error('포인트 부족');
@@ -359,7 +359,7 @@ export const givePoint = async (): Promise<boolean> => {
       throw updateError;
     }
 
-    console.log('출석체크 완료: 10포인트 적립');
+    // console.log('출석체크 완료: 10포인트 적립');
     toast.success('출석체크 완료! 10포인트가 적립되었습니다 🎉', { position: 'top-center' });
     return true;
   } catch (err) {

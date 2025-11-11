@@ -16,7 +16,7 @@ export default function MemberActivityDetailModal({ onClose, user }: MemberActiv
   const fetch = async () => {
     const data = await getUserMatchings(user.id);
     setMatcings(data);
-    console.log(data);
+    // console.log(data);
   };
   useEffect(() => {
     fetch();

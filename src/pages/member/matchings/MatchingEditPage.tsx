@@ -47,7 +47,7 @@ const MatchingEditPage = () => {
     const fetchMatching = async () => {
       try {
         const matching = await getMatchingById(matchingId);
-        console.log('매칭 데이터:', matching);
+        // console.log('매칭 데이터:', matching);
 
         // 기본값 설정
         setTitle(matching.title || '');
@@ -144,7 +144,7 @@ const MatchingEditPage = () => {
         met_at: metAt,
         restaurant_id: restaurant?.id,
       };
-      console.log(parseInt(selectedPlace.id));
+      // console.log(parseInt(selectedPlace.id));
 
       await updateMatching(matchingId, updateData);
       navigate(`/member/matching/${matchingId}`);

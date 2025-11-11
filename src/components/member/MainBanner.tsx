@@ -145,11 +145,11 @@ const MainBanner = () => {
       '닫기',
       '참가하기',
       async () => {
-        console.log('매칭정보', preview);
+        // console.log('매칭정보', preview);
         if (!preview) return;
         try {
           const res = await joinMatchingById(preview.id, user.id);
-          console.log('레스정보', res);
+          // console.log('레스정보', res);
           if (res.message) {
             closeModal();
             openModal('빠른매칭', res.message, '닫기', '');

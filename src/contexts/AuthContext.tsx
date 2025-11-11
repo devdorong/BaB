@@ -265,7 +265,7 @@ export const AuthProvider = ({ children }: AuthProviderProps) => {
       return { error: error.message };
     }
 
-    console.log(`카카오 로그인 성공 : `, data);
+    // console.log(`카카오 로그인 성공 : `, data);
     return {};
   };
 
@@ -312,7 +312,7 @@ export const AuthProvider = ({ children }: AuthProviderProps) => {
     if (error) {
       return { error: error.message };
     }
-    console.log('구글 로그인 성공 : ', data);
+    // console.log('구글 로그인 성공 : ', data);
     return {};
   };
 

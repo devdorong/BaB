@@ -20,7 +20,7 @@ function AdminReportsPage() {
   const [currentPage, setCurrentPage] = useState(1);
 
   const handleReport = async (type: ReportsType, title: string, reason: string) => {
-    console.log('신고 접수:', { type, title, reason });
+    // console.log('신고 접수:', { type, title, reason });
   };
 
   const openReportModal = (

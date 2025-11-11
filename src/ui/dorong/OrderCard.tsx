@@ -74,7 +74,7 @@ const OrderCard = ({ id, type, time, customerName, customerPhone, status }: Orde
           open={isModalOpen}
           onClose={() => setIsModalOpen(false)}
           onSubmit={data => {
-            console.log('새 메뉴 추가 제출', data);
+            // console.log('새 메뉴 추가 제출', data);
           }}
         />
       </div>

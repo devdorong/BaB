@@ -436,10 +436,10 @@ export const DirectChatProider: React.FC<DirectChatProiderProps> = ({ children }
           table: 'direct_chats',
         },
         payload => {
-          console.log('채팅방 삭제됨:', payload.old);
+          // console.log('채팅방 삭제됨:', payload.old);
           // 현재 사용자가 참여자였는지 확인
           if (payload.old.user1_id === currentUserId || payload.old.user2_id === currentUserId) {
-            console.log('현재 사용자 관련 채팅방 삭제, 목록 새로고침');
+            // console.log('현재 사용자 관련 채팅방 삭제, 목록 새로고침');
             loadChats();
             // 현재 채팅방이 삭제된 채팅방이면 초기화
             if (currentChatId.current === payload.old.id) {

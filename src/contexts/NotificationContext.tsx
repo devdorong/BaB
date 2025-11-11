@@ -109,7 +109,7 @@ export const NotificationRealTimeProvider = ({ children }: { children: React.Rea
             },
           )
           .subscribe(status => {
-            console.log('구독상태:', status);
+            // console.log('구독상태:', status);
           });
       } finally {
         setupInProgressRef.current = false;

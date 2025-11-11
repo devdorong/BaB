@@ -241,7 +241,7 @@ export default function Notification({ isOpen, onClose, onRead }: NotificationPr
           }
 
           const { success, data } = await findOrCreateDirectChat(senderId);
-          console.log(data);
+          // console.log(data);
           if (success && data?.id) {
             const {
               data: { user },
