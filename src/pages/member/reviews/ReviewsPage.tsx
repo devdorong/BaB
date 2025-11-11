@@ -248,46 +248,48 @@ function ReviewsPage() {
           </div>
 
           <div className="grid grid-cols-1 lg:grid-cols-2 gap-[14px]">
-            {loading ? (
-              Array.from({ length: 6 }).map((_, i) => <ReviewCardSkeleton key={i} />)
-            ) : currentItems.length > 0 ? (
-              currentItems.map(r => {
-                const category = r.interests?.name ?? '';
-                const color = categoryColors[category] || defaultCategoryColor;
-                const avgRating = getAvgRating(r);
-                const distanceNum =
-                  userPos && r.latitude && r.longitude
-                    ? getDistance(
-                        userPos.lat,
-                        userPos.lng,
-                        parseFloat(r.latitude),
-                        parseFloat(r.longitude),
-                      )
-                    : 0;
-                const distance = distanceNum > 0 ? formatDistance(distanceNum) : '';
+            {loading
+              ? Array.from({ length: 6 }).map((_, i) => <ReviewCardSkeleton key={i} />)
+              : currentItems.length > 0 &&
+                currentItems.map(r => {
+                  const category = r.interests?.name ?? '';
+                  const color = categoryColors[category] || defaultCategoryColor;
+                  const avgRating = getAvgRating(r);
+                  const distanceNum =
+                    userPos && r.latitude && r.longitude
+                      ? getDistance(
+                          userPos.lat,
+                          userPos.lng,
+                          parseFloat(r.latitude),
+                          parseFloat(r.longitude),
+                        )
+                      : 0;
+                  const distance = distanceNum > 0 ? formatDistance(distanceNum) : '';
 
-                return (
-                  <div key={r.id} onClick={() => navigate(`/member/reviews/${r.id}`)}>
-                    <ReviewCard
-                      key={r.id}
-                      restaurantId={r.id}
-                      name={r.name}
-                      category={category}
-                      img={r.thumbnail_url}
-                      review={`리뷰 ${r.reviews.length}개`}
-                      storeintro={r.storeintro ?? ''}
-                      rating={avgRating ?? 0}
-                      distance={distance}
-                      tagBg={color.bg}
-                      tagText={color.text}
-                    />
-                  </div>
-                );
-              })
-            ) : (
-              <p className="text-center text-babgray-500 py-10">검색 결과가 없습니다.</p>
-            )}
+                  return (
+                    <div key={r.id} onClick={() => navigate(`/member/reviews/${r.id}`)}>
+                      <ReviewCard
+                        key={r.id}
+                        restaurantId={r.id}
+                        name={r.name}
+                        category={category}
+                        img={r.thumbnail_url}
+                        review={`리뷰 ${r.reviews.length}개`}
+                        storeintro={r.storeintro ?? ''}
+                        rating={avgRating ?? 0}
+                        distance={distance}
+                        tagBg={color.bg}
+                        tagText={color.text}
+                      />
+                    </div>
+                  );
+                })}
           </div>
+          {currentItems.length <= 0 && (
+            <div>
+              <p className=" text-center text-babgray-500 py-10">검색 결과가 없습니다.</p>
+            </div>
+          )}
           <div className="flex justify-center gap-2 mt-6">
             <button
               disabled={currentPage === 1}

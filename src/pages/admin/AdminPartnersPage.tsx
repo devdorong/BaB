@@ -85,9 +85,19 @@ export default function AdminPartnersPage() {
   }, [filteredUsers, sortType]);
 
   // 페이지네이션
-  const totalPages = Math.ceil(sortedUsers.length / ITEMS_PER_PAGE);
+  // const totalPages = Math.ceil(sortedUsers.length / ITEMS_PER_PAGE);
+  // const startIdx = (currentPage - 1) * ITEMS_PER_PAGE;
+  // const paginatedLiss = sortedUsers.filter(
+  //   item => item.profile_id !== '9a6b3286-408c-49d3-8224-450792a1a624',
+  // );
+  // const paginatedList = paginatedLiss.slice(startIdx, startIdx + ITEMS_PER_PAGE);
+  const filteredNonAdmin = sortedUsers.filter(
+    item => item.profile_id !== '9a6b3286-408c-49d3-8224-450792a1a624',
+  );
+
+  const totalPages = Math.ceil(filteredNonAdmin.length / ITEMS_PER_PAGE);
   const startIdx = (currentPage - 1) * ITEMS_PER_PAGE;
-  const paginatedList = sortedUsers.slice(startIdx, startIdx + ITEMS_PER_PAGE);
+  const paginatedList = filteredNonAdmin.slice(startIdx, startIdx + ITEMS_PER_PAGE);
 
   useEffect(() => {
     setHeader('파트너 관리', '플랫폼 파트너 계정을 관리하고 모니터링합니다.');

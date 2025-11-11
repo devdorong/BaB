@@ -7,7 +7,10 @@ export type ReprotsWithNickname = Reports & {
 };
 
 export const GetAllReports = async (): Promise<ReprotsWithNickname[]> => {
-  const { data: reports, error } = await supabase.from('reports').select('*');
+  const { data: reports, error } = await supabase
+    .from('reports')
+    .select('*')
+    .order('created_at', { ascending: false });
   if (error) throw new Error(error.message);
   if (!reports.length) return [];
 

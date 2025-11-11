@@ -3,8 +3,10 @@ import { GetAllReports, type ReprotsWithNickname } from '@/services/reportServic
 import AdminReportsModal from '@/ui/dorong/AdminReportsModal';
 import dayjs from 'dayjs';
 import { useEffect, useState } from 'react';
-import { RiArrowRightDoubleFill } from 'react-icons/ri';
+import { RiArrowLeftSLine, RiArrowRightDoubleFill, RiArrowRightSLine } from 'react-icons/ri';
 import type { ReportsType } from '../member/communitys/CommunityDetailPage';
+
+const ITEMS_PER_PAGE = 10;
 
 function AdminReportsPage() {
   const { setHeader } = useAdminHeader();
@@ -15,6 +17,7 @@ function AdminReportsPage() {
   const [reportType, setReportType] = useState<ReportsType>('댓글');
   const [content, setContent] = useState('');
   const [title, setTitle] = useState('');
+  const [currentPage, setCurrentPage] = useState(1);
 
   const handleReport = async (type: ReportsType, title: string, reason: string) => {
     console.log('신고 접수:', { type, title, reason });
@@ -52,11 +55,21 @@ function AdminReportsPage() {
         return (
           <span className="px-2 py-1 text-xs rounded-full bg-yellow-100 text-yellow-700">채팅</span>
         );
+      case '매칭':
+        return (
+          <span className="px-2 py-1 text-xs rounded-full bg-blue-100 text-blue-700">매칭</span>
+        );
 
       default:
         return null;
     }
   };
+
+  // 페이지네이션
+  const totalPages = Math.ceil(reports.length / ITEMS_PER_PAGE);
+  const startIdx = (currentPage - 1) * ITEMS_PER_PAGE;
+  const paginatedList = reports.slice(startIdx, startIdx + ITEMS_PER_PAGE);
+
   useEffect(() => {
     setHeader('신고 내역', '신고된 채팅과 후기를 관리합니다.');
     const loadReports = async () => {
@@ -87,7 +100,7 @@ function AdminReportsPage() {
       <div className="flex flex-col gap-6 items-start justify-start mb-6 bg-white p-[25px] rounded-[16px] shadow">
         <h3 className="font-bold">신고된 콘텐츠</h3>
         {/* 리스트 */}
-        {reports.map((r, idx) => {
+        {paginatedList.map((r, idx) => {
           const { title, content } = parseReason(r.reason);
           return (
             <div
@@ -125,7 +138,39 @@ function AdminReportsPage() {
       {/* 하단 페이지네이션 */}
       <div className="flex justify-between items-center mt-4 text-sm text-gray-600">
         <p>총 {reports.length}개의 신고</p>
-        <div className="flex items-center space-x-2">
+        {paginatedList.length > 0 && (
+          <div className="flex justify-center gap-2 mt-4 sm:mt-6 flex-wrap">
+            <button
+              disabled={currentPage === 1}
+              onClick={() => setCurrentPage(p => Math.max(p - 1, 1))}
+              className="p-2 bg-bg-bg rounded hover:bg-bab hover:text-white disabled:opacity-50 transition"
+            >
+              <RiArrowLeftSLine size={16} />
+            </button>
+
+            {Array.from({ length: totalPages }).map((_, idx) => (
+              <button
+                key={idx + 1}
+                onClick={() => setCurrentPage(idx + 1)}
+                className={`p-2 py-0 rounded hover:bg-bab hover:text-white ${
+                  currentPage === idx + 1 ? 'text-bab' : 'bg-bg-bg'
+                }`}
+              >
+                {idx + 1}
+              </button>
+            ))}
+
+            <button
+              disabled={currentPage === totalPages}
+              onClick={() => setCurrentPage(p => Math.min(p + 1, totalPages))}
+              className="p-2 bg-white rounded hover:bg-bab hover:text-white disabled:opacity-50 transition"
+            >
+              <RiArrowRightSLine size={16} />
+            </button>
+          </div>
+        )}
+
+        {/* <div className="flex items-center space-x-2">
           {Array.from({ length: 10 }, (_, i) => i + 1).map(num => (
             <button
               key={num}
@@ -137,7 +182,7 @@ function AdminReportsPage() {
             </button>
           ))}
           <span className="text-gray-400">›</span>
-        </div>
+        </div> */}
       </div>
       {isReportOpen && (
         <AdminReportsModal

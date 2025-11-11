@@ -20,7 +20,9 @@ export default function AdminHeader() {
   return (
     <div className="fixed left-0 top-0 w-[260px] min-h-full bg-black text-white border-r border-neutral-800">
       <div className="p-6 border-b border-white text-2xl font-bold justify-between flex">
-        <span>관리자 패널</span>
+        <span onClick={() => navigate('/admin')} className="cursor-pointer">
+          관리자 패널
+        </span>
       </div>
 
       <nav className="flex flex-col w-[260px] mt-6 space-y-4 pl-6">
