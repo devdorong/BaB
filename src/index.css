@@ -579,6 +579,11 @@ html {
 }
 
 /* dropdown */
+.bab-select-dropdown {
+  font-size: 16px !important;
+  touch-action: manipulation !important;
+}
+
 .bab-select-dropdown .ant-select-item {
   font-size: 14px !important;
   padding: 8px 16px !important;

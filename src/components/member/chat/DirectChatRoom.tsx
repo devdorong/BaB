@@ -224,7 +224,7 @@ function DirectChatRoom({ chatId, onExit }: DirectChatRoomProps) {
   if (loading && messages.length === 0) {
     return (
       <div className="chat-room">
-        <div className="loading justify-center mt-10 items-center text-babgray-600">
+        <div className="loading justify-center flex h-[calc(100dvh-26px)] items-center text-babgray-600">
           메시지를 불러오는 중...
         </div>
       </div>
