@@ -206,6 +206,8 @@
 
 [![시연 영상 썸네일](https://img.youtube.com/vi/pH9UPvGKlSY/0.jpg)](https://youtu.be/pH9UPvGKlSY?si=--_cknYES_AEhLbm)
 
+<video src="https://drive.google.com/file/d/1koy3itM3OLZB7j07X5ckEkuzNtTRpGgC/preview" width="640" controls></video>
+
 <img width="1901" height="915" alt="Image" src="https://github.com/user-attachments/assets/3626a9b1-f8ca-44b3-b5ef-107d938db45b" />
 
 <img width="1918" height="914" alt="Image" src="https://github.com/user-attachments/assets/ea54a64c-dfb4-48a3-865f-a0926a169e21" />
