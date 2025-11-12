@@ -14,12 +14,13 @@
 .header {
   display: flex;
   flex-direction: column;
-  gap: 0.5rem;
+  gap: 4px;
 }
 
 .headerTitle {
-  font-size: 32px;
+  font-size: 30px;
   font-weight: 700;
+  line-height: 2.25rem;
 }
 
 .headerDesc {

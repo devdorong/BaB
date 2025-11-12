@@ -368,7 +368,7 @@ function EventPage() {
     <div className={`${styles.pageContainer}`}>
       {/* 상단 제목 */}
       <div className={styles.header}>
-        <h2 className={styles.headerTitle}>이벤트</h2>
+        <h2 className={`${styles.headerTitle}`}>이벤트</h2>
         <p className={styles.headerDesc}>다양한 이벤트에 참여하고 특별한 혜택을 받아보세요</p>
       </div>
 
