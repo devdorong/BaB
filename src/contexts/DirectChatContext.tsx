@@ -499,26 +499,66 @@ export const DirectChatProider: React.FC<DirectChatProiderProps> = ({ children }
           schema: 'public',
           table: 'direct_messages',
         },
-        payload => {
-          // 현재 채팅방의 메시지라면 즉시 추가 (중복 방지)
-          if (currentChatId.current === payload.new.chat_id) {
-            // console.log('현재 채팅방에 메시지 추가:', payload.new);
+        async payload => {
+          const newMsg = payload.new as DirectMessage;
+          const isCurrentChatOpen = currentChatId.current === newMsg.chat_id;
+
+          // === 현재 채팅방이 열려 있다면 즉시 읽음 처리 ===
+          if (isCurrentChatOpen) {
+            // 상대방이 보낸 메시지일 경우에만 읽음 처리
+            if (newMsg.sender_id !== currentUserId) {
+              await supabase
+                .from('direct_messages')
+                .update({
+                  is_read: true,
+                  read_at: new Date().toISOString(),
+                })
+                .eq('id', newMsg.id);
+            }
+
+            // sender 정보 보강 (기존 코드 그대로)
+            let senderInfo = null;
+            try {
+              const { data: profile } = await supabase
+                .from('profiles')
+                .select('id, nickname, avatar_url')
+                .eq('id', newMsg.sender_id)
+                .single();
+              senderInfo = {
+                id: profile?.id || newMsg.sender_id,
+                email: `user-${newMsg.sender_id}@example.com`,
+                nickname:
+                  newMsg.sender_id === currentUserId ? '나' : profile?.nickname || '알 수 없음',
+                avatar_url: profile?.avatar_url || null,
+              };
+            } catch {
+              senderInfo = {
+                id: newMsg.sender_id,
+                email: `user-${newMsg.sender_id}@example.com`,
+                nickname: newMsg.sender_id === currentUserId ? '나' : '알 수 없음',
+                avatar_url: null,
+              };
+            }
+
+            const enrichedMessage: DirectMessage = {
+              ...newMsg,
+              sender: senderInfo,
+            };
+
+            // 중복 메시지 방지 후 추가
             setMessages(prev => {
-              // 중복 메시지 방지: 같은 ID의 메시지가 이미 있는지 확인
-              const messageExists = prev.some(msg => msg.id === payload.new.id);
-              if (messageExists) {
-                // console.log('중복 메시지 감지, 추가하지 않음:', payload.new.id);
-                return prev;
-              }
-              return [...prev, payload.new as DirectMessage];
+              if (prev.some(msg => msg.id === newMsg.id)) return prev;
+              return [...prev, enrichedMessage];
             });
-          } else {
-            // console.log('다른 채팅방의 메시지이므로 추가하지 않음');
           }
-          // 채팅방 목록도 업데이트 (마지막 메시지 시간 변경)
-          loadChats();
+
+          // 채팅방 목록 업데이트 (단, 현재 열린 채팅방은 unread_count 갱신 생략)
+          if (!isCurrentChatOpen) {
+            await loadChats();
+          }
         },
       )
+
       .subscribe();
 
     return () => {
