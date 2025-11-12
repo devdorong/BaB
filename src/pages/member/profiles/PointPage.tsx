@@ -12,6 +12,9 @@ import CouponPage from '../../../components/point/CouponSave';
 type TabType = 'reward' | 'coupon' | 'rule';
 
 function PointSkeleton() {
+  useEffect(() => {
+    window.scrollTo(0, 0);
+  }, []);
   return (
     <div id="root" className="flex flex-col min-h-screen bg-bg-bg animate-pulse">
       {/* 전체 중앙정렬 */}

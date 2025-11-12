@@ -101,6 +101,9 @@ function CommunityEditPage() {
     };
     fetchPost();
   }, [id]);
+  useEffect(() => {
+    window.scrollTo(0, 0);
+  }, []);
 
   return (
     <div className={`${styles.pageContainer} flex flex-col gap-4 w-[750px] mx-auto py-8`}>

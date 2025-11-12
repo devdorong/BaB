@@ -1,4 +1,10 @@
+import { useEffect } from "react";
+
 function TermsofServicePage() {
+
+  useEffect(() => {
+      window.scrollTo(0, 0);
+    }, []);
   return (
     <div className="w-full font-normal text-base sm:text-lg bg-bg-bg">
       <div className="w-full max-w-[1280px] mx-auto py-10 sm:py-16 px-5 sm:px-10 flex flex-col gap-8">

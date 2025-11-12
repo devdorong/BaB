@@ -1,4 +1,4 @@
-import { useState } from 'react';
+import { useEffect, useState } from 'react';
 import { RiErrorWarningLine } from 'react-icons/ri';
 import { useNavigate } from 'react-router-dom';
 import { supabase } from '../../../lib/supabase';
@@ -103,6 +103,10 @@ function CommunityWritePage() {
       openModal('오류확인', '예상치 못한 오류 발생.', '닫기');
     }
   };
+
+  useEffect(() => {
+    window.scrollTo(0, 0);
+  }, []);
 
   return (
     <div className={`${styles.pageContainer} flex flex-col gap-4 w-[750px] mx-auto py-8`}>

@@ -228,6 +228,9 @@ function ProfilePage() {
       },
     );
   };
+  useEffect(() => {
+    window.scrollTo(0, 0);
+  }, []);
 
   return (
     <div className="flex bg-bg-bg min-h-screen justify-center">

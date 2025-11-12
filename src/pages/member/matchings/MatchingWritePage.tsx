@@ -76,6 +76,7 @@ const MatchingWritePage = () => {
 
   useEffect(() => {
     resetForm();
+    window.scrollTo(0, 0);
   }, []);
 
   return (
@@ -157,6 +158,7 @@ const MatchingWritePage = () => {
                   placeholder="시간 선택"
                   value={formData.time}
                   onChange={setTime}
+                  needConfirm={false}
                   classNames={{
                     popup: { root: 'bab-time-picker-panel' } as any,
                   }}

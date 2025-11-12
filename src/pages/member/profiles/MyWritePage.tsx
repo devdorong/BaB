@@ -107,6 +107,10 @@ function MyWritePage() {
     }
   }, []);
 
+    useEffect(() => {
+    window.scrollTo(0, 0);
+  }, []);
+
   return (
     <div className="w-full min-h-screen bg-bg-bg">
       {/* 상단 경로 표시 */}

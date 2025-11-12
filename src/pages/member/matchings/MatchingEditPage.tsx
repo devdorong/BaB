@@ -165,6 +165,10 @@ const MatchingEditPage = () => {
   };
   const selectedHeadCounts = memberMap[desiredMembers] || '';
 
+  useEffect(() => {
+    window.scrollTo(0, 0);
+  }, []);
+
   return (
     <ConfigProvider locale={locale}>
       <div className="w-full max-w-[750px] mx-auto px-4 sm:px-6 py-8 flex flex-col gap-10">

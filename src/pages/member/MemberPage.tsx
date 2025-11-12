@@ -4,9 +4,14 @@ import MachingIndex from '../../components/member/MachingIndex';
 import MainBanner from '../../components/member/MainBanner';
 import MainReview from '../../components/member/MainReview';
 import { useKakaoLoader } from '../../hooks/useKakaoLoader';
+import { useEffect } from 'react';
 
 function MemberPage() {
   const isMapLoaded = useKakaoLoader();
+
+  useEffect(() => {
+    window.scrollTo(0, 0);
+  }, []);
 
   return (
     <>

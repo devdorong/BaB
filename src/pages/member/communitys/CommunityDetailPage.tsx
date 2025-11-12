@@ -278,6 +278,10 @@ function CommunityDetailPage() {
     fetchComments();
   }, [post]);
 
+  useEffect(() => {
+    window.scrollTo(0, 0);
+  }, []);
+
   // 로딩중 반응넣기(로딩 스피너)
   if (loading) return <LoadingDiv />;
   if (!post) return <p>게시글을 찾을 수 없습니다.</p>;

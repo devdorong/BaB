@@ -74,6 +74,10 @@ function BlockPage() {
     });
   };
 
+  useEffect(() => {
+    window.scrollTo(0, 0);
+  }, []);
+
   return (
     <div id="root" className="min-h-screen bg-bg-bg">
       {/* 컨테이너 */}
