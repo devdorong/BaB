@@ -52,6 +52,9 @@ function ChatPage() {
   const handleBack = () => {
     setSelectedChatId(null);
   };
+    useEffect(() => {
+    window.scrollTo(0, 0);
+  }, []);
 
   return (
     <div className="max-w-[1280px] text-center m-auto py-1 px-4 sm:px-6 lg:px-8 xl:px-0">

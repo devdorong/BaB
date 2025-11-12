@@ -611,7 +611,11 @@ const MatchingDetailPage = () => {
     }
   };
 
-  useEffect(() => {}, [matchingData, matchingId]);
+  // useEffect(() => {}, [matchingData, matchingId]);
+
+  useEffect(() => {
+    window.scrollTo(0, 0);
+  }, []);
 
   if (loading || !matchingData || !restaurant) {
     return <div className="flex items-center justify-center min-h-screen">불러오는 중...</div>;

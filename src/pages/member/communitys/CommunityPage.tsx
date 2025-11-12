@@ -163,6 +163,7 @@ function CommunityPage() {
       setCurrentPage(pageNum);
       setItemOffset(pageNum * itemsPerPage);
     }
+    window.scrollTo(0, 0);
   }, []);
 
   return (

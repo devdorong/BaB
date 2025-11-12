@@ -76,6 +76,10 @@ function MyReviewPage() {
     return () => window.removeEventListener('resize', updateItemsPerPage);
   }, []);
 
+  useEffect(() => {
+    window.scrollTo(0, 0);
+  }, []);
+
   return (
     <div id="root" className="flex flex-col min-h-screen bg-bg-bg">
       {/* 메인 컨테이너 */}

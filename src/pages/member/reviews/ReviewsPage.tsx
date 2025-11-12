@@ -151,6 +151,11 @@ function ReviewsPage() {
   if (loading || restaurants.length === 0 || Object.keys(interests).length === 0) {
     <ReviewsPageSkeleton />;
   }
+  
+
+    useEffect(() => {
+    window.scrollTo(0, 0);
+  }, []);
 
   return (
     <div id="root" className="flex flex-col min-h-screen bg-bg-bg">

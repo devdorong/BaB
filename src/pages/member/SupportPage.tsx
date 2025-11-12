@@ -3,7 +3,7 @@ import { ButtonFillMd } from '../../ui/button';
 import { Chat3Line, MailLine, PhoneLine } from '../../ui/Icon';
 import { TagButton } from '../../ui/tag';
 import TagBadge from '../../ui/TagBadge';
-import { useState } from 'react';
+import { useEffect, useState } from 'react';
 import SupportModal from '../../ui/dorong/SupportModal';
 import styles from './SupportPage.module.css';
 import { useModal } from '@/ui/sdj/ModalState';
@@ -101,6 +101,9 @@ function SupportPage() {
   const filteredFaqs =
     activeTag === '전체' ? samplesupport : samplesupport.filter(faq => faq.tagLabel === activeTag);
 
+  useEffect(() => {
+    window.scrollTo(0, 0);
+  }, []);
   return (
     <div className={styles.pageContainer}>
       {/* 상단 */}
@@ -159,7 +162,7 @@ function SupportPage() {
           </div>
 
           {/* 태그 필터 */}
-          
+
           <div className="flex gap-[8px] justify-start flex-wrap">
             {categories.map(cat => (
               <TagButton

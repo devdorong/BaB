@@ -113,7 +113,8 @@ function EditPage() {
 
     if (error) {
       console.error('닉네임 중복체크 오류:', error.message);
-      setMsg('닉네임 확인 중 오류가 발생했습니다.');
+      setMsg('이미 사용 중인 닉네임입니다.');
+      setMsgColor('text-red-500');
       return;
     }
 
@@ -344,6 +345,10 @@ function EditPage() {
       fileInputRef.current.value = '';
     }
   };
+
+  useEffect(() => {
+    window.scrollTo(0, 0);
+  }, []);
 
   return (
     <div className="flex bg-bg-bg min-h-screen justify-center">

@@ -66,7 +66,7 @@ function RecentMatchingPage() {
     };
 
     fetchUserMatchings();
-  }, [user]);
+  }, []);
   const total = matchings.length;
   const completed = endMatchings.filter(item => item.status === 'completed').length;
 
@@ -77,6 +77,8 @@ function RecentMatchingPage() {
   const active = 'text-bab-500';
   const inactive = 'text-babgray-600 hover:text-bab-500 focus-visible:text-bab-500';
 
+
+
   const underlineClass = (isActive: boolean) =>
     [
       'pointer-events-none absolute left-1/2 -translate-x-1/2 bottom-0',
@@ -85,6 +87,13 @@ function RecentMatchingPage() {
       // 포커스일 때만 나타남 (호버는 아님)
       'group-focus-visible:opacity-100 group-focus-visible:bg-bab-500',
     ].join(' ');
+
+
+
+
+  useEffect(() => {
+    window.scrollTo(0, 0);
+  }, []);
 
   return (
     <div id="root" className="flex flex-col min-h-screen bg-bg-bg">
