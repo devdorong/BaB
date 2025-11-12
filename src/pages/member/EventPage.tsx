@@ -15,7 +15,7 @@ import { useModal } from '../../ui/sdj/ModalState';
 import TagBadge from '../../ui/TagBadge';
 import styles from './EventPage.module.css';
 import { AnimatePresence, motion } from 'framer-motion';
-import { updatedEventStatus } from '@/services/eventService';
+import { existingUser, updatedEventStatus } from '@/services/eventService';
 
 export type EventState = Database['public']['Tables']['events']['Row']['status'];
 type EventFilterState = EventState | '전체';
@@ -29,6 +29,7 @@ function EventPage() {
   const [filterCategories, setFilterCategories] = useState<Events[]>([]);
   const [selectCategories, setSelectCategories] = useState<EventFilterState>('전체');
   const [loading, setLoading] = useState(true);
+  const [eventUser, setEventUser] = useState<any[]>([]);
 
   const [eventModal, setEventModal] = useState(false);
 
@@ -97,6 +98,9 @@ function EventPage() {
       return;
     }
 
+    const updated = await existingUser(user.id);
+    setEventUser(updated);
+
     openModal('이벤트 참여', '이벤트에 성공적으로 참여했습니다', '닫기');
   };
 
@@ -104,8 +108,7 @@ function EventPage() {
     setLoading(true);
     const { error, data: participants } = await supabase
       .from('event_participants')
-      .select('*,events(id,start_date),profiles(id)');
-    console.log(participants);
+      .select(`*,events(id,start_date),profiles(id)`);
 
     if (error) {
       console.error('참여자 데이터 불러오기 실패:', error.message);
@@ -351,6 +354,16 @@ function EventPage() {
     );
   };
 
+  useEffect(() => {
+    const fetch = async () => {
+      if (!user) return;
+      const data = await existingUser(user?.id);
+      // console.log(data);
+      setEventUser(data);
+    };
+    fetch();
+  }, [user]);
+
   return (
     <div className={`${styles.pageContainer}`}>
       {/* 상단 제목 */}
@@ -443,6 +456,7 @@ function EventPage() {
                     <button
                       disabled={event.status === '종료'}
                       onClick={() => {
+                        if (eventUser.some(i => i.event_id === event.id)) return;
                         if (event.status === '진행중') {
                           handleViewModal(event.id);
                         } else if (event.status === '예정') {
@@ -453,12 +467,15 @@ function EventPage() {
                     ${
                       event.status === '종료'
                         ? 'bg-babgray-150 text-babgray-600 opacity-50 cursor-not-allowed'
-                        : event.status === '예정'
-                          ? 'bg-babbutton-blue text-white'
-                          : 'bg-bab-500 text-white'
+                        : eventUser.some(i => i.event_id === event.id)
+                          ? 'bg-babbutton-green_back text-babbutton-green cursor-not-allowed'
+                          : event.status === '예정'
+                            ? 'bg-babbutton-blue text-white hover:bg-babbutton-blue_hover'
+                            : 'bg-bab-500 text-white hover:bg-bab-600'
                     }`}
                     >
-                      {event.status === '진행중' && `참여하기`}
+                      {event.status === '진행중' &&
+                        (eventUser.some(i => i.event_id === event.id) ? '참여중' : '참가하기')}
                       {event.status === '예정' &&
                         dayjs(event.start_date).format('YYYY-MM-DD (ddd)')}
                       {event.status === '종료' && `종료된 이벤트`}

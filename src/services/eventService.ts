@@ -15,3 +15,14 @@ export const updatedEventStatus = async ({
     throw new Error(error.message);
   }
 };
+
+export const existingUser = async (userId: string) => {
+  const { data, error } = await supabase
+    .from('event_participants')
+    .select('*')
+    .eq('profile_id', userId);
+
+  if (error) throw error;
+
+  return data;
+};
