@@ -104,7 +104,8 @@ function EventPage() {
     setLoading(true);
     const { error, data: participants } = await supabase
       .from('event_participants')
-      .select('*,events(id,start_date)');
+      .select('*,events(id,start_date),profiles(id)');
+    console.log(participants);
 
     if (error) {
       console.error('참여자 데이터 불러오기 실패:', error.message);
