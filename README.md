@@ -204,6 +204,14 @@
 
 ## 📸 주요 기능 화면
 
+---
+### 회원가입
+<video src="https://github.com/user-attachments/assets/46c055c4-1581-45f5-9483-87922519f32a" width="640" controls></video>
+
+---
+### 매칭
+<video src="https://github.com/user-attachments/assets/c75948d5-99db-4f43-b6ce-08f6853dc98e" width="640" controls></video>
+
 <img width="1901" height="915" alt="Image" src="https://github.com/user-attachments/assets/3626a9b1-f8ca-44b3-b5ef-107d938db45b" />
 
 <img width="1918" height="914" alt="Image" src="https://github.com/user-attachments/assets/ea54a64c-dfb4-48a3-865f-a0926a169e21" />
