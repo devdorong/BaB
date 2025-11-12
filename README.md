@@ -204,13 +204,20 @@
 
 ## 📸 주요 기능 화면
 
----
-### 회원가입
-<video src="https://github.com/user-attachments/assets/46c055c4-1581-45f5-9483-87922519f32a" width="640" controls></video>
+<video src="https://github.com/user-attachments/assets/c5cc4c50-f496-4639-ba61-3f0905b20d96" width="640" controls></video>
 
----
-### 매칭
-<video src="https://github.com/user-attachments/assets/c75948d5-99db-4f43-b6ce-08f6853dc98e" width="640" controls></video>
+<video src="https://github.com/user-attachments/assets/278ac0a5-8c2d-41b3-8cb0-6485f52c5e32" width="640" controls></video>
+
+<video src="https://github.com/user-attachments/assets/12418fdd-f15b-44ba-9440-bd638e34badd" width="640" controls></video>
+
+<video src="https://github.com/user-attachments/assets/97c36703-5b69-42a4-992d-8c8b221dc8b6" width="640" controls></video>
+
+<video src="https://github.com/user-attachments/assets/48c37a73-9cc1-435c-a096-5d75b9d3704c" width="640" controls></video>
+
+<video src="https://github.com/user-attachments/assets/f66335aa-413e-4c76-a10c-4364a840d36d" width="640" controls></video>
+<video src="https://github.com/user-attachments/assets/79b34617-342a-40b0-bbec-bcc2d3e95343" width="640" controls></video>
+
+<video src="https://github.com/user-attachments/assets/d730968d-da71-405f-935e-85b72e583ec2" width="640" controls></video>
 
 <img width="1901" height="915" alt="Image" src="https://github.com/user-attachments/assets/3626a9b1-f8ca-44b3-b5ef-107d938db45b" />
 
