@@ -340,7 +340,7 @@ export async function sendMessage(
 
     // 상대방이 나간 상태에서 메시지를 받으면 알림 설정
     if (!chat[otherUserActiveField]) {
-      console.log('상대방의 채팅방 참여 상태를 활성화하고 알림을 설정합니다.');
+      // console.log('상대방의 채팅방 참여 상태를 활성화하고 알림을 설정합니다.');
       const updateData = {
         [otherUserActiveField]: true,
         [otherUserNotifiedField]: true, // 새 메시지 알림 설정
@@ -456,7 +456,7 @@ export async function getMessages(chatId: string): Promise<ChatApiResponse<Direc
     // 사용자가 나간 시점이 있으면 그 이후의 메시지만 조회
     if (userLeftAt) {
       query = query.gte('created_at', userLeftAt);
-      console.log('사용자가 나간 시점 이후의 메시지만 조회:', userLeftAt);
+      // console.log('사용자가 나간 시점 이후의 메시지만 조회:', userLeftAt);
     }
 
     const { data: messages, error: messagesError } = await query;
@@ -950,7 +950,7 @@ export async function exitDirectChat(chatId: string): Promise<ChatApiResponse<bo
     if (!checkError && updatedChat) {
       // 두 사용자가 모두 나간 경우 (user1_active = false AND user2_active = false)
       if (!updatedChat.user1_active && !updatedChat.user2_active) {
-        console.log('두 사용자가 모두 나감. 채팅방 완전 삭제.');
+        // console.log('두 사용자가 모두 나감. 채팅방 완전 삭제.');
 
         // 채팅방과 관련된 모든 메시지도 함께 삭제
         const { error: deleteMessagesError } = await supabase
@@ -961,7 +961,7 @@ export async function exitDirectChat(chatId: string): Promise<ChatApiResponse<bo
         if (deleteMessagesError) {
           console.error('메시지 삭제 오류:', deleteMessagesError);
         } else {
-          console.log('채팅방의 모든 메시지 삭제 완료');
+          // console.log('채팅방의 모든 메시지 삭제 완료');
         }
 
         // 채팅방 삭제
@@ -973,7 +973,7 @@ export async function exitDirectChat(chatId: string): Promise<ChatApiResponse<bo
         if (deleteChatError) {
           console.error('채팅방 삭제 오류:', deleteChatError);
         } else {
-          console.log('채팅방 완전 삭제 완료');
+          // console.log('채팅방 완전 삭제 완료');
         }
       }
     }

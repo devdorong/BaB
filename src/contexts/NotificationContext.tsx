@@ -117,7 +117,7 @@ export const NotificationRealTimeProvider = ({ children }: { children: React.Rea
 
                         if (isMessageFromCurrentChat) {
                           // 현재 채팅 중인 상대방의 메시지이므로 알림 추가하지 않음
-                          console.log('현재 채팅 중인 상대방의 메시지 - 알림 추가 안함');
+                          // console.log('현재 채팅 중인 상대방의 메시지 - 알림 추가 안함');
 
                           // 알림을 즉시 읽음 처리 (DB에서 삭제하거나 읽음 처리)
                           await supabase
@@ -155,7 +155,7 @@ export const NotificationRealTimeProvider = ({ children }: { children: React.Rea
           )
           .subscribe(status => {
             if (status === 'SUBSCRIBED') {
-              console.log('알림 Realtime 구독 성공');
+              // console.log('알림 Realtime 구독 성공');
             }
           });
       } finally {

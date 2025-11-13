@@ -375,7 +375,7 @@ function EventPage() {
       <div className={styles.filterBar}>
         <div className={styles.filterButtons}>
           {statusTags.map(tag => (
-            <button
+            <div
               key={tag}
               onClick={() => setSelectCategories(tag)}
               className="rounded-2xl cursor-pointer"
@@ -385,7 +385,7 @@ function EventPage() {
               >
                 {tag}
               </button>
-            </button>
+            </div>
           ))}
         </div>
         {admin && <ButtonFillMd onClick={() => setEventModal(true)}>작성하기</ButtonFillMd>}

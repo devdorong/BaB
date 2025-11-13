@@ -7,10 +7,13 @@ import { getProfile, removeAvatar, updateProfile, uploadAvatar } from '../../../
 import type { Profile, ProfileUpdate } from '../../../types/bobType';
 import { supabase } from '@/lib/supabase';
 import { toast } from 'sonner';
+import { useModal } from '@/ui/sdj/ModalState';
+import Modal from '@/ui/sdj/Modal';
 
 function EditPage() {
   const navigate = useNavigate();
   const { user, changePassword } = useAuth();
+  const { modal, closeModal, openModal } = useModal();
 
   // 로딩
   const [loading, setLoading] = useState<boolean>(true);
@@ -332,18 +335,33 @@ function EditPage() {
 
   // 이미지 제거 처리
   const handleRemoveImage = () => {
-    const ok = confirm('프로필 이미지 제거?');
-    if (!ok) {
+    if (!originalAvatarUrl || originalAvatarUrl === 'guest_image') {
       return;
     }
+
+    openModal(
+      '이미지 제거',
+      '현재 적용중인 프로필 이미지를 제거하시겠습니까?',
+      '취소',
+      '확인',
+      () => {
+        setImageRemovalRequest(true);
+        setPreviewImg(null);
+        setSelectedFile(null);
+        if (fileInputRef.current) {
+          fileInputRef.current.value = '';
+        }
+        closeModal();
+      },
+    );
+
+    // const ok = confirm('프로필 이미지 제거?');
+
+    // if (!ok) {
+    //   return;
+    // }
     // 즉시 제거하지 않음
     // 제거하려는 상태만 별도록 관리
-    setImageRemovalRequest(true);
-    setPreviewImg(null);
-    setSelectedFile(null);
-    if (fileInputRef.current) {
-      fileInputRef.current.value = '';
-    }
   };
 
   useEffect(() => {
@@ -375,7 +393,7 @@ function EditPage() {
                 <div className="gap-[15px] flex flex-col justify-center items-center">
                   <div
                     onClick={handleRemoveImage}
-                    className="w-[94px] h-[94px] overflow-hidden rounded-full"
+                    className="w-[94px] h-[94px] overflow-hidden rounded-full cursor-pointer"
                   >
                     <img
                       src={
@@ -443,7 +461,7 @@ function EditPage() {
                           onChange={(e: React.ChangeEvent<HTMLInputElement>) =>
                             setNickName(e.target.value.slice(0, nickMax))
                           }
-                          className="flex text-babgray-700 outline-none text-[16px] placeholder:text-babgray-400"
+                          className="flex text-babgray-700 outline-none text-[16px] placeholder:text-babgray-400 w-full"
                           placeholder="닉네임을 입력하세요"
                         />
                       </div>
@@ -594,6 +612,17 @@ function EditPage() {
           </div>
         </div>
       </div>
+      {modal.isOpen && (
+        <Modal
+          isOpen={modal.isOpen}
+          onClose={closeModal}
+          titleText={modal.title}
+          contentText={modal.content}
+          closeButtonText={modal.closeText}
+          submitButtonText={modal.submitText}
+          onSubmit={modal.onSubmit}
+        />
+      )}
     </div>
   );
 }

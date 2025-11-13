@@ -77,7 +77,7 @@ const EditMenuModal = ({
   const handleSubmit = async () => {
     try {
       if (!title.trim() || price <= 0) {
-        console.log('제목', title, '가격', price, '파일', file);
+        // console.log('제목', title, '가격', price, '파일', file);
         openModal('메뉴 수정', '데이터를 모두 채워주세요!', '', '확인', () => closeModal());
         return;
       }

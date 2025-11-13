@@ -28,7 +28,7 @@ const UserDetail = ({ targetId, nickname }: UserDetailProps) => {
           console.error('차단 오류:', error.message);
         }
       } else {
-        console.log(`${nickname} 차단 완료`);
+        // console.log(`${nickname} 차단 완료`);
       }
 
       closeModal();
