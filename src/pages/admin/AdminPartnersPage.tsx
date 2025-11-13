@@ -159,10 +159,10 @@ export default function AdminPartnersPage() {
           <table className="w-full text-sm">
             <thead className="bg-gray-100 text-gray-700">
               <tr>
-                <th className="py-3 px-8 w-[400px] text-left">이름</th>
+                <th className="py-3 px-8 w-[400px] text-left">매장명</th>
                 <th className="py-3 px-8 w-[350px] text-left">이메일</th>
                 <th className="py-3 px-8 w-[150px] text-left">가입일</th>
-                <th className="py-3 px-8 w-[250px] text-left">매장정보</th>
+                <th className="py-3 px-8 w-[250px] text-left">이름</th>
                 <th className="py-3 px-8 w-[150px] text-left">상태</th>
               </tr>
             </thead>
@@ -195,11 +195,11 @@ export default function AdminPartnersPage() {
                           alt="avatar"
                           className="w-8 h-8 rounded-full object-cover"
                         />
-                        <span>{user.owner_name}</span>
+                        <span>{user.restaurant_name}</span>
                       </td>
                       <td className="py-3 px-8">{user.owner_email}</td>
                       <td className="py-3 px-8">{dayjs(user.created_at).format('YYYY-MM-DD')}</td>
-                      <td className="py-3 px-8">{user.owner_nickname}</td>
+                      <td className="py-3 px-8">{user.owner_name}</td>
                       {/* <td
                       onClick={handleMemberDetail}
                       className="py-3 px-8 text-bab hover:underline cursor-pointer"
