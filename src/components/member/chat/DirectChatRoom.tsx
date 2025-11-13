@@ -20,7 +20,7 @@ interface DirectChatRoomProps {
 
 function DirectChatRoom({ chatId, onExit }: DirectChatRoomProps) {
   // DirectChatContext에서 필요한 상태와 함수를 가져오기
-  const { messages, loading, error, loadMessages, currentChat, exitDirectChat } = useDirectChat();
+  const { messages, loading, error, loadMessages, currentChat, handleChatExit } = useDirectChat();
   // 현재 선택된 채팅방의 ID 상태 관리
   const [selectedChatId, setSelectedChatId] = useState<string | null>(null);
 
@@ -85,30 +85,6 @@ function DirectChatRoom({ chatId, onExit }: DirectChatRoomProps) {
     }
   }, [loading, messages]);
 
-  // Supabase Realtime으로 메시지 실시간 동기화
-  // useEffect(() => {
-  //   if (!chatId) return;
-  //   const subscription = supabase
-  //     .channel(`direct_messages_${chatId}`)
-  //     .on(
-  //       'postgres_changes',
-  //       {
-  //         event: '*',
-  //         schema: 'public',
-  //         table: 'direct_messages',
-  //         filter: `chat_id=eq.${chatId}`,
-  //       },
-  //       payload => {
-  //         loadMessages(chatId); // 2025-10-21 수정: 실시간 업데이트는 로딩 상태 표시 안함
-  //       },
-  //     )
-  //     .subscribe();
-
-  //   return () => {
-  //     subscription.unsubscribe();
-  //   };
-  // }, [chatId, loadMessages, messages]);
-
   // 채팅방 ID가 변경이 되면 메시지를 다시 로드 (초기 로딩)
   // 2025-10-21 수정: 초기 로딩 시에만 로딩 상태 표시하도록 isInitialLoad: true 전달
   useEffect(() => {
@@ -116,6 +92,14 @@ function DirectChatRoom({ chatId, onExit }: DirectChatRoomProps) {
       loadMessages(chatId, true); // 초기 로딩으로 표시
     }
   }, [chatId, loadMessages]);
+
+  // 컴포넌트 언마운트 시 채팅방 이탈 처리
+  useEffect(() => {
+    return () => {
+      // 컴포넌트가 언마운트될 때 (다른 화면으로 이동할 때) 채팅방 이탈 처리
+      handleChatExit();
+    };
+  }, [handleChatExit]);
 
   // 메시지 시간 포맷팅 함수 : HH:MM:DD 형식 반환
   const formatTime = (dateString: string) => {
@@ -187,26 +171,6 @@ function DirectChatRoom({ chatId, onExit }: DirectChatRoomProps) {
     getCurrentUserId();
   }, []);
 
-  // 채팅방 나가기 처리 함수
-  // const handleExitChat = async () => {
-  //   if (window.confirm('채팅방을 나가시겠습니까?')) {
-  //     try {
-  //       const success = await exitDirectChat(chatId);
-  //       if (success) {
-  //         // alert('채팅방을 나갔습니다.');
-  //         toast.info('채팅방을 나갔습니다.', { position: 'top-center' });
-  //         // 페이지 새로고침 또는 채팅방 목록으로 이동
-  //         window.location.reload();
-  //       } else {
-  //         alert('채팅방 나가기에 실패했습니다.');
-  //       }
-  //     } catch (error) {
-  //       console.error('채팅방 나가기 오류:', error);
-  //       alert('채팅방 나가기 중 오류가 발생했습니다.');
-  //     }
-  //   }
-  // };
-
   // 에러 상태일 때
   if (error) {
     return (
@@ -242,24 +206,26 @@ function DirectChatRoom({ chatId, onExit }: DirectChatRoomProps) {
         <div className="chat-room-info">
           <h3>{currentChat?.other_user.nickname || '로딩중...'}</h3>
         </div>
-        {/* 채팅방 액션 버튼들 */}
-        <div className="chat-room-actions">
-          {/* 채팅 나가기 */}
-          {/* <button className="exit-chat-btn" onClick={handleExitChat}>
-            나가기
-          </button> */}
+      </div>
+
+      {/* 모바일 뒤로가기 버튼 - onExit prop이 있을 때만 표시 */}
+      {onExit && (
+        <div
+          className="flex lg:hidden h-[80px] items-center gap-2 p-4
+                  bg-white/80"
+        >
+          <button
+            onClick={() => {
+              handleChatExit(); // Context의 채팅방 이탈 처리
+              onExit(); // 부모 컴포넌트의 UI 처리 (화면 전환 등)
+            }}
+            className="text-babgray-600"
+          >
+            <RiArrowLeftSLine size={20} />
+          </button>
+          <h2 className="font-semibold text-babgray-800">{currentChat?.other_user.nickname}</h2>
         </div>
-      </div>
-      {/* 모바일 뒤로가기 버튼 */}
-      <div
-        className="flex lg:hidden h-[80px] items-center gap-2 p-4
-                bg-white/80"
-      >
-        <button onClick={onExit} className="text-babgray-600">
-          <RiArrowLeftSLine size={20} />
-        </button>
-        <h2 className="font-semibold text-babgray-800">{currentChat?.other_user.nickname}</h2>
-      </div>
+      )}
 
       {/* 메시지 목록 영역 */}
       <div className="chat-room-message">

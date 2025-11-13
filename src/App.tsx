@@ -82,12 +82,12 @@ const LayoutWithAnalytics = ({ children }: { children: React.ReactNode }) => {
 function App() {
   return (
     <AuthProvider>
-      <DirectChatProider>
-        <PointProvider>
-          <MatchingProvider>
-            <PartnerRestaurantProvider>
-              <MenusProvider>
-                <NotificationRealTimeProvider>
+      <NotificationRealTimeProvider>
+        <DirectChatProider>
+          <PointProvider>
+            <MatchingProvider>
+              <PartnerRestaurantProvider>
+                <MenusProvider>
                   <ChatNotificationProvider>
                     <Router
                       future={{
@@ -234,12 +234,12 @@ function App() {
                     </Router>
                     <Toaster />
                   </ChatNotificationProvider>
-                </NotificationRealTimeProvider>
-              </MenusProvider>
-            </PartnerRestaurantProvider>
-          </MatchingProvider>
-        </PointProvider>
-      </DirectChatProider>
+                </MenusProvider>
+              </PartnerRestaurantProvider>
+            </MatchingProvider>
+          </PointProvider>
+        </DirectChatProider>
+      </NotificationRealTimeProvider>
     </AuthProvider>
   );
 }
