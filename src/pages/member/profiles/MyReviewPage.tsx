@@ -27,7 +27,7 @@ function MyReviewPage() {
       setLoading(true);
       try {
         const data = await fetchMyReviewData();
-        console.log(data);
+        // console.log(data);
         setReview(data);
       } catch (error) {
         console.log(error);
