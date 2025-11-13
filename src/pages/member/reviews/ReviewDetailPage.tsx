@@ -30,6 +30,7 @@ import WriteReviewDetailComment from '../../../components/member/WriteReviewDeta
 import { useAuth } from '@/contexts/AuthContext';
 import Modal from '@/ui/sdj/Modal';
 import { useModal } from '@/ui/sdj/ModalState';
+import { getPhoneByPlaceId } from '@/services/reviewService';
 
 type TabKey = 'review' | 'info' | 'menus';
 const FOOD = '음식 종류';
@@ -50,6 +51,7 @@ function ReviewDetailPage() {
   const [favoriteCount, setFavoriteCount] = useState(0);
   const [reviews, setReviews] = useState<ReviewWithPhotos[]>([]);
   const [loginModalOpen, setLoginModalOpen] = useState(false);
+  const [restaurantNumber, setRestaurantNumber] = useState<0 | null>(0);
 
   const goBack = () => {
     if (window.history && window.history.length > 1) navigate(-1);
@@ -111,6 +113,14 @@ function ReviewDetailPage() {
       },
       { enableHighAccuracy: true },
     );
+
+    const fetch = async () => {
+      if (restaurant?.kakao_place_id) {
+        const data = await getPhoneByPlaceId(restaurant.kakao_place_id);
+        setRestaurantNumber(data);
+      }
+    };
+    fetch();
   }, []);
 
   // 현재 위치 기준으로 거리 계산
@@ -401,12 +411,12 @@ function ReviewDetailPage() {
               </ButtonFillLG>
 
               <ButtonLineLg
-                onClick={() =>
-                  window.open(`https://place.map.kakao.com/${restaurant!.kakao_place_id}`, '_blank')
-                }
+                // onClick={() =>
+                //   window.open(`https://place.map.kakao.com/${restaurant!.kakao_place_id}`, '_blank')
+                // }
                 style={{ fontWeight: 500, borderRadius: '24px' }}
               >
-                전화하기
+                <a href={`tel:${restaurantNumber}`}>전화하기</a>
               </ButtonLineLg>
               <ButtonLineLg
                 onClick={() =>
