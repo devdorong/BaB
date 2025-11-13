@@ -6,6 +6,8 @@ interface RealTimeNotificationContextType {
   notifications: NotificationsProps[];
   setNotifications: React.Dispatch<React.SetStateAction<NotificationsProps[]>>;
   isLoading: boolean;
+  currentChatId: string | null;
+  setCurrentChatId: (chatId: string | null) => void;
 }
 
 const NotificationRealTimeContext = createContext<RealTimeNotificationContextType | undefined>(
@@ -15,18 +17,22 @@ const NotificationRealTimeContext = createContext<RealTimeNotificationContextTyp
 export const NotificationRealTimeProvider = ({ children }: { children: React.ReactNode }) => {
   const [notifications, setNotifications] = useState<NotificationsProps[]>([]);
   const [isLoading, setIsLoading] = useState(true);
+  const [currentChatId, setCurrentChatId] = useState<string | null>(null);
   const channelRef = useRef<ReturnType<typeof supabase.channel> | null>(null);
   const authSubscriptionRef = useRef<ReturnType<typeof supabase.auth.onAuthStateChange> | null>(
     null,
   );
-  // 선택된 유저인가?
   const currentUserIdRef = useRef<string | null>(null);
   const setupInProgressRef = useRef(false);
+  const currentChatIdRef = useRef<string | null>(null); // currentChatId의 최신값을 추적
+
+  // currentChatId가 변경될 때마다 ref 업데이트
+  useEffect(() => {
+    currentChatIdRef.current = currentChatId;
+  }, [currentChatId]);
 
   useEffect(() => {
-    //2025-10-30 로그인/로그아웃 시에도 알림 초기화 및 구독 재설정
     const setupRealTime = async () => {
-      // 이미 설정중이면 중단
       if (setupInProgressRef.current) return;
 
       setupInProgressRef.current = true;
@@ -37,7 +43,6 @@ export const NotificationRealTimeProvider = ({ children }: { children: React.Rea
         } = await supabase.auth.getUser();
 
         if (!user) {
-          // 로그아웃 상태: 채널 제거 및 알림 초기화
           if (channelRef.current) {
             await supabase.removeChannel(channelRef.current);
             channelRef.current = null;
@@ -45,18 +50,15 @@ export const NotificationRealTimeProvider = ({ children }: { children: React.Rea
           currentUserIdRef.current = null;
           setNotifications([]);
           setIsLoading(false);
-
           return;
         }
 
-        // 같은 유저면 다시 설정하지 않음
         if (currentUserIdRef.current === user.id && channelRef.current) {
           setIsLoading(false);
           return;
         }
         currentUserIdRef.current = user.id;
 
-        // 초기 알림 목록 로드 (초기 진입시 배지 숫자 표시용)
         try {
           setIsLoading(true);
           const { data, error } = await supabase
@@ -69,18 +71,16 @@ export const NotificationRealTimeProvider = ({ children }: { children: React.Rea
             setNotifications(data as NotificationsProps[]);
           }
         } catch (error) {
-          // 초기 로드 실패는 무시 (실시간으로 따라잡힘)
+          // 초기 로드 실패는 무시
         } finally {
           setIsLoading(false);
         }
 
-        // 기존 패널 제거
         if (channelRef.current) {
           await supabase.removeChannel(channelRef.current);
           channelRef.current = null;
         }
 
-        // 실시간 구독 시작
         channelRef.current = supabase
           .channel(`notifications-${user.id}`)
           .on(
@@ -91,12 +91,57 @@ export const NotificationRealTimeProvider = ({ children }: { children: React.Rea
               table: 'notifications',
               filter: `receiver_id=eq.${user.id}`,
             },
-            payload => {
+            async payload => {
               if (payload.eventType === 'INSERT') {
                 const newNotification = payload.new as NotificationsProps;
-                setNotifications(prev =>
-                  prev.some(n => n.id === newNotification.id) ? prev : [newNotification, ...prev],
-                );
+
+                // 채팅 알림이고 현재 채팅방에서 온 메시지인 경우 알림 추가하지 않음
+                if (newNotification.type === '채팅') {
+                  const senderId = newNotification.profile_id;
+                  const activeChatId = currentChatIdRef.current; // ref에서 최신값 가져오기
+
+                  // 현재 채팅방이 열려있는 경우
+                  if (activeChatId && senderId) {
+                    try {
+                      // 채팅방 정보 확인
+                      const { data: chatData } = await supabase
+                        .from('direct_chats')
+                        .select('user1_id, user2_id')
+                        .eq('id', activeChatId)
+                        .single();
+
+                      if (chatData) {
+                        // 현재 채팅방의 상대방이 보낸 메시지인지 확인
+                        const isMessageFromCurrentChat =
+                          chatData.user1_id === senderId || chatData.user2_id === senderId;
+
+                        if (isMessageFromCurrentChat) {
+                          // 현재 채팅 중인 상대방의 메시지이므로 알림 추가하지 않음
+                          console.log('현재 채팅 중인 상대방의 메시지 - 알림 추가 안함');
+
+                          // 알림을 즉시 읽음 처리 (DB에서 삭제하거나 읽음 처리)
+                          await supabase
+                            .from('notifications')
+                            .update({ is_read: true })
+                            .eq('id', newNotification.id);
+
+                          return; // 알림 추가하지 않고 종료
+                        }
+                      }
+                    } catch (error) {
+                      console.error('채팅방 확인 오류:', error);
+                    }
+                  }
+                }
+
+                // 채팅 알림이 아니거나 다른 채팅방의 메시지인 경우 알림 추가
+                setNotifications(prev => {
+                  // 중복 확인
+                  if (prev.some(n => n.id === newNotification.id)) {
+                    return prev;
+                  }
+                  return [newNotification, ...prev];
+                });
               } else if (payload.eventType === 'UPDATE') {
                 setNotifications(prev =>
                   prev.map(n =>
@@ -109,7 +154,9 @@ export const NotificationRealTimeProvider = ({ children }: { children: React.Rea
             },
           )
           .subscribe(status => {
-            // console.log('구독상태:', status);
+            if (status === 'SUBSCRIBED') {
+              console.log('알림 Realtime 구독 성공');
+            }
           });
       } finally {
         setupInProgressRef.current = false;
@@ -117,12 +164,8 @@ export const NotificationRealTimeProvider = ({ children }: { children: React.Rea
     };
     setupRealTime();
 
-    // Auth 상태 변경 감지
     authSubscriptionRef.current = supabase.auth.onAuthStateChange(async (event, session) => {
-      // console.log('Auth 상태 변경:', event);
-
       if (event === 'SIGNED_OUT') {
-        // 로그아웃 시 정리
         if (channelRef.current) {
           await supabase.removeChannel(channelRef.current);
           channelRef.current = null;
@@ -131,39 +174,17 @@ export const NotificationRealTimeProvider = ({ children }: { children: React.Rea
         setNotifications([]);
         setIsLoading(false);
       } else if (event === 'SIGNED_IN' && session?.user) {
-        // 다른 유저로 로그인한 경우에만 재설정
         if (currentUserIdRef.current && currentUserIdRef.current !== session.user.id) {
-          // console.log('다른 유저로 로그인, 재설정 필요');
           currentUserIdRef.current = null;
           await setupRealTime();
         } else if (!currentUserIdRef.current) {
-          // currentUserIdRef가 null인 경우 (로그아웃 후 첫 로그인)
-          // console.log('로그아웃 후 첫 로그인, 설정 시작');
           await setupRealTime();
-        } else {
-          // console.log('같은 유저의 SIGNED_IN 이벤트, 스킵');
         }
       }
     });
-    // 2025-10-30 로그인 직후(SESSION/SIGNED_IN)에도 즉시 알림 개수 표시되도록 구독 재설정
-    // if (!authSubscriptionRef.current) {
-    //   authSubscriptionRef.current = supabase.auth.onAuthStateChange(async event => {
-    //     if (event === 'SIGNED_IN' || event === 'TOKEN_REFRESHED' || event === 'USER_UPDATED') {
-    //       await setupRealTime();
-    //     }
-    //     if (event === 'SIGNED_OUT') {
-    //       if (channelRef.current) {
-    //         await supabase.removeChannel(channelRef.current);
-    //         channelRef.current = null;
-    //       }
-    //       setNotifications([]);
-    //     }
-    //   });
-    // }
 
     return () => {
       if (channelRef.current) {
-        // console.log('Realtime 채널 정리');
         supabase.removeChannel(channelRef.current);
       }
       if (authSubscriptionRef.current) {
@@ -171,10 +192,12 @@ export const NotificationRealTimeProvider = ({ children }: { children: React.Rea
         authSubscriptionRef.current = null;
       }
     };
-  }, []);
+  }, []); // currentChatId 의존성 제거 - ref로 관리
 
   return (
-    <NotificationRealTimeContext.Provider value={{ notifications, setNotifications, isLoading }}>
+    <NotificationRealTimeContext.Provider
+      value={{ notifications, setNotifications, isLoading, currentChatId, setCurrentChatId }}
+    >
       {children}
     </NotificationRealTimeContext.Provider>
   );
