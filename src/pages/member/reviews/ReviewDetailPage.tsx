@@ -113,14 +113,6 @@ function ReviewDetailPage() {
       },
       { enableHighAccuracy: true },
     );
-
-    const fetch = async () => {
-      if (restaurant?.kakao_place_id) {
-        const data = await getPhoneByPlaceId(restaurant.kakao_place_id);
-        setRestaurantNumber(data);
-      }
-    };
-    fetch();
   }, []);
 
   // 현재 위치 기준으로 거리 계산
@@ -416,7 +408,7 @@ function ReviewDetailPage() {
                 // }
                 style={{ fontWeight: 500, borderRadius: '24px' }}
               >
-                <a href={`tel:${restaurantNumber}`}>전화하기</a>
+                <a href={`tel:${restaurant?.phone ? restaurant?.phone : 0}`}>전화하기</a>
               </ButtonLineLg>
               <ButtonLineLg
                 onClick={() =>
