@@ -10,6 +10,7 @@
 - [Notion](https://www.notion.so/BaB-Bond-and-Bite-25a9fbf813128005b175d85700a6efbe?source=copy_link)
 - [Figma](https://www.figma.com/design/qTCTAbUeuW745ZyUkUgzy3/%ED%94%84%EB%A1%9C%EC%A0%9D%ED%8A%B8--BaB-?node-id=2437-15260&t=YYJ5j0Vi7IGXkQTR-1) -->
 
+
 <div style="text-align: left;">
   <!-- Vercel -->
   <a href="https://bab-mu.vercel.app/">
@@ -43,6 +44,11 @@
     />
   </a>
 </div>
+
+
+
+[![Watch the video](https://img.youtube.com/vi/M-k-79YBX94/maxresdefault.jpg)](https://www.youtube.com/live/M-k-79YBX94?si=bmUv4M6ZdkgzOFya&t=3703)
+
 
 ---
 
