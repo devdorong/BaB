@@ -64,3 +64,4 @@
 npm install styled-components
 npm install --save-dev @types/styled-components  # TS 쓰는 경우
 ```
+.
