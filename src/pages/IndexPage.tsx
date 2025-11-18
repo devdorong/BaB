@@ -4,11 +4,16 @@ import { useEffect, useState } from 'react';
 import type { Profile } from '../types/bobType';
 import { getProfile } from '../lib/propile';
 import { Swiper, SwiperSlide } from 'swiper/react';
-import { Pagination } from 'swiper/modules';
-
+import { Navigation } from 'swiper/modules';
+import 'swiper/css';
+import 'swiper/css/navigation';
+import { RiArrowLeftWideLine, RiArrowRightWideLine } from 'react-icons/ri';
 function IndexPage() {
   const navigate = useNavigate();
   const { user } = useAuth();
+
+  const [currentIndex, setCurrentIndex] = useState(0);
+  const totalSlides = 3;
   // 로딩
   const [loading, setLoading] = useState<boolean>(true);
   // 사용자 프로필
@@ -104,8 +109,41 @@ function IndexPage() {
         </div>
       </div>
       {/* 모바일용 화면 */}
-      <div className="flex lg:hidden w-full h-full">
-        <Swiper className="w-full h-full">
+      <div className="flex lg:hidden relative  w-full h-full">
+        {/* 커스텀 네비 버튼 */}
+        <button
+          className={`
+    custom-prev absolute left-4 top-1/2 -translate-y-1/2
+    w-10 h-10 rounded-full bg-white/20 backdrop-blur-md
+    flex items-center justify-center text-white text-xl font-bold
+    hover:bg-white/40 transition z-50
+    ${currentIndex === 0 ? 'hidden' : 'block'}
+  `}
+        >
+          <RiArrowLeftWideLine />
+        </button>
+
+        <button
+          className={`
+    custom-next absolute right-4 top-1/2 -translate-y-1/2
+    w-10 h-10 rounded-full bg-white/20 backdrop-blur-md
+    flex items-center justify-center text-white text-xl font-bold
+    hover:bg-white/40 transition z-50
+    ${currentIndex === totalSlides - 1 ? 'hidden' : 'block'}
+  `}
+        >
+          <RiArrowRightWideLine />
+        </button>
+        <Swiper
+          className="w-full h-full"
+          navigation={{
+            prevEl: '.custom-prev',
+            nextEl: '.custom-next',
+          }}
+          onSlideChange={swiper => setCurrentIndex(swiper.activeIndex)}
+          onSwiper={swiper => setCurrentIndex(swiper.activeIndex)}
+          modules={[Navigation]}
+        >
           {/* STEP 1~2 */}
           <SwiperSlide>
             <div className="relative w-full h-full">
