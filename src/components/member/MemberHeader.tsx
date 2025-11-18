@@ -150,7 +150,7 @@ const MemberHeader = () => {
   }, [location.pathname]);
 
   return (
-    <header className="flex items-center w-full justify-between bg-white z-20 border border-babgray-150">
+    <header className="flex fixed z-50 items-center w-full justify-between bg-white z-20 border border-babgray-150">
       <div className="flex justify-between w-[1280px] h-[70px] items-center mx-auto pl-4 sm:pl-6 lg:pl-8 xl:pl-0">
         {/* 로고 */}
         <Link to={'/member'}>
@@ -240,7 +240,7 @@ const MemberHeader = () => {
                     />
                   </div>
                   <div className="flex relative items-center">
-                    {isAdmin && (
+                    {/* {isAdmin && (
                       <GrayButtonFillSm
                         style={{
                           position: 'absolute',
@@ -250,7 +250,7 @@ const MemberHeader = () => {
                       >
                         <Link to={'/admin'}>관리자</Link>
                       </GrayButtonFillSm>
-                    )}
+                    )} */}
 
                     {isPartner && (
                       <ButtonFillSm

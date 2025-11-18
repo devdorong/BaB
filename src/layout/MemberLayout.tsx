@@ -8,7 +8,7 @@ function MemberLayout() {
     <PaymentProvider>
       <div className="bg-bg-bg">
         <MemberHeader />
-        <main className="lg:min-h-[calc(100vh/0.9-298px)] min-h-[calc(100vh/0.9)]">
+        <main className="lg:min-h-[calc(100vh/0.9-298px)] min-h-[calc(100vh/0.9)] pt-[70px]">
           <Outlet />
         </main>
         <MemberFooter />

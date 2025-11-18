@@ -16,6 +16,7 @@
     "@nivo/bar": "^0.99.0",
     "@nivo/core": "^0.99.0",
     "@nivo/line": "^0.99.0",
+    "@radix-ui/react-dropdown-menu": "^2.1.16",
     "@radix-ui/react-slot": "^1.2.3",
     "@supabase/supabase-js": "^2.57.2",
     "@tailwindcss/line-clamp": "^0.4.4",
