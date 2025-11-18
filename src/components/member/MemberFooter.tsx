@@ -6,49 +6,77 @@ const MemberFooter = () => {
   const navigate = useNavigate();
 
   return (
-    <footer className="hidden lg:flex w-full bg-white border-t-2 text-gray-600">
-      <div className="flex flex-col w-full max-w-[1280px] mx-auto px-4 sm:px-6 lg:px-8 py-8">
+    <footer className="w-full bg-white border-t-2 text-gray-600">
+      <div className="flex flex-col w-full max-w-[1280px] mx-auto px-4 sm:px-6 lg:px-8 py-8 gap-6">
         {/* 상단 영역 */}
-        <div className="flex justify-between">
+        <div className="flex flex-col sm:flex-row sm:justify-between gap-6 sm:items-start">
           {/* 로고 */}
-          <div>
-            <img src={logo} alt="logo" onClick={() => navigate('/')} className="cursor-pointer" />
+          <div className="flex justify-center sm:justify-start">
+            <img
+              src={logo}
+              alt="logo"
+              onClick={() => navigate('/')}
+              className="cursor-pointer w-[90px] sm:w-[110px]"
+            />
           </div>
+
           {/* 링크 */}
-          <div className="justify-center flex gap-4 mx-auto">
-            <Link to={`/privacy`}>이용약관</Link>
-            <Link to={`/perpolicy`}>
-              <strong>개인정보처리방침</strong>
+          <div
+            className="
+                flex flex-wrap justify-center gap-x-4 gap-y-2 text-sm 
+                sm:text-base
+              "
+          >
+            <Link to={`/privacy`} className="hover:text-gray-900 whitespace-nowrap">
+              이용약관
+            </Link>
+            <Link to={`/perpolicy`} className="font-bold hover:text-gray-900 whitespace-nowrap">
+              개인정보처리방침
+            </Link>
+            <Link to={`/member/support`} className="hover:text-gray-900 whitespace-nowrap">
+              고객센터
+            </Link>
+            <Link to={`/location-service`} className="hover:text-gray-900 whitespace-nowrap">
+              위치기반서비스 이용약관
+            </Link>
+            <Link to={`/youth-policy`} className="hover:text-gray-900 whitespace-nowrap">
+              청소년 보호 정책
             </Link>
           </div>
-          <div className="flex gap-4">
+
+          {/* SNS 아이콘 */}
+          <div className="flex justify-center sm:justify-end gap-4">
             <a
               href="https://www.instagram.com/"
-              target="_blank" // 새 창에서 열기
-              rel="noopener noreferrer" // 보안 및 성능상 권장
-              title="인스타그램" // 마우스 오버 시 표시되는 툴팁
+              target="_blank"
+              rel="noopener noreferrer"
+              title="인스타그램"
             >
               <Instagram color="black" bgColor="#E5E7EB" size={25} padding={8} />
             </a>
 
             <a
               href="https://open.kakao.com/o/sf561R0h"
-              target="_blank" // 새 창에서 열기
-              rel="noopener noreferrer" // 보안 및 성능상 권장
-              title="카카오톡 오픈링크" // 마우스 오버 시 표시되는 툴팁
+              target="_blank"
+              rel="noopener noreferrer"
+              title="카카오톡 오픈링크"
             >
               <KakaoTalk color="black" bgColor="#E5E7EB" size={25} padding={8} />
             </a>
           </div>
         </div>
-        <div className="text-babgray-500">
-          <p className="">Bond and Bite</p>
+
+        {/* 중간 텍스트 */}
+        <div className="text-babgray-500 text-center">
+          <p>Bond and Bite</p>
         </div>
-        <div className="flex justify-center font-bold">
-          <p>© 2025 BaB.All rights reserved.</p>
-        </div>
-        <div className="flex justify-center text-sm mt-1 text-babgray-500">
-          <p>dev.dorong@gmail.com | dev.gsheep@gmail.com | dev.seastj@gmail.com</p>
+
+        {/* 하단 영역 */}
+        <div className="flex flex-col items-center gap-1 text-center">
+          <p className="font-bold text-sm sm:text-base">© 2025 BaB. All rights reserved.</p>
+          <p className="text-sm text-babgray-500">
+            dev.dorong@gmail.com | dev.gsheep@gmail.com | dev.seastj@gmail.com
+          </p>
         </div>
       </div>
     </footer>

@@ -73,6 +73,8 @@ import HelpPage from './pages/member/profiles/HelpPage';
 import AdminPartnerSignupDetailPage from './pages/admin/AdminPartnerSignupDetailPage';
 import MemberForgetPasswordPage from './pages/MemberForgetPasswordPage';
 import MemberResetPasswordPage from './pages/MemberResetPasswordPage';
+import LocationTermsPage from './pages/LocationTermsPage';
+import YouthPolicyPage from './pages/YouthPolicyPage';
 
 const LayoutWithAnalytics = ({ children }: { children: React.ReactNode }) => {
   useGoogleAnalytics(); // Router 컨텍스트 내부에서 사용
@@ -158,6 +160,8 @@ function App() {
                         >
                           <Route path="privacy" element={<TermsofServicePage />} />
                           <Route path="perpolicy" element={<PersonalPolicyPage />} />
+                          <Route path="location-service" element={<LocationTermsPage />} />
+                          <Route path="youth-policy" element={<YouthPolicyPage />} />
                         </Route>
 
                         {/* 소셜 */}

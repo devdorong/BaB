@@ -17,6 +17,8 @@ import dayjs from 'dayjs';
 import { categoryColors } from '../../ui/jy/categoryColors';
 import { getMatchingParticipants } from '../../services/matchingService';
 import { RecentMatchingRecordSkeleton } from '../../ui/dorong/RecentMatchingRecordSkeleton';
+import { DropdownMenu, DropdownMenuContent, DropdownMenuTrigger } from '../ui/dropdown-menu';
+import { UserQuickProfileContent } from '@/ui/dorong/UserQuickProfile';
 
 interface RecentMatchingRecordItemProps {
   endMatching: Matchings;
@@ -31,7 +33,7 @@ const RecentMatchingRecordItem = ({ endMatching }: RecentMatchingRecordItemProps
   const [loading, setLoading] = useState(true);
 
   const [participants, setParticipants] = useState<
-    { id: number; nickname: string; avatar_url: string }[]
+    { id: number; profile_id: string; nickname: string; avatar_url: string }[]
   >([]);
 
   const isoString = endMatching.met_at;
@@ -101,7 +103,7 @@ const RecentMatchingRecordItem = ({ endMatching }: RecentMatchingRecordItemProps
           peoples.map(async (p: any) => {
             const { data, error } = await supabase
               .from('profiles')
-              .select('nickname,avatar_url')
+              .select('id,nickname,avatar_url')
               .eq('id', p.profile_id)
               .single();
 
@@ -109,12 +111,14 @@ const RecentMatchingRecordItem = ({ endMatching }: RecentMatchingRecordItemProps
               console.error('참가자 프로필 오류:', error.message);
               return {
                 id: p.id,
+                profile_id: '프로필 uuid',
                 nickname: '알 수 없음',
                 avatar_url: 'https://www.gravatar.com/avatar/?d=mp&s=200',
               };
             }
             return {
               id: p.id,
+              profile_id: p.profile_id ?? '알 수 없음',
               nickname: data?.nickname ?? '알 수 없음',
               avatar_url: data.avatar_url,
             };
@@ -228,7 +232,7 @@ const RecentMatchingRecordItem = ({ endMatching }: RecentMatchingRecordItemProps
             <div className="bg-gray-50 rounded-xl p-4 mt-2 flex flex-col gap-3">
               <p className="text-gray-700 font-medium">참가자 정보</p>
 
-              <div className="flex flex-wrap gap-4">
+              {/* <div className="flex flex-wrap gap-4">
                 {participants.map(p => (
                   <div
                     key={p.id}
@@ -245,6 +249,36 @@ const RecentMatchingRecordItem = ({ endMatching }: RecentMatchingRecordItemProps
                     />
                     <span className="text-gray-800 font-medium text-sm">{p.nickname}</span>
                   </div>
+                ))}
+              </div> */}
+              <div className="flex flex-wrap gap-4">
+                {participants.map(p => (
+                  <DropdownMenu key={p.id}>
+                    <DropdownMenuTrigger asChild>
+                      <div className="flex items-center gap-2 px-3 py-2 bg-white rounded-xl shadow-sm border border-gray-100 hover:shadow-md transition-all cursor-pointer">
+                        <img
+                          src={
+                            p.avatar_url !== 'guest_image'
+                              ? p.avatar_url
+                              : 'https://www.gravatar.com/avatar/?d=mp&s=100'
+                          }
+                          alt={p.nickname}
+                          className="w-8 h-8 rounded-full object-cover"
+                        />
+                        <span className="text-gray-800 font-medium text-sm">{p.nickname}</span>
+                      </div>
+                    </DropdownMenuTrigger>
+
+                    <DropdownMenuContent
+                      side="right"
+                      align="start"
+                      sideOffset={10}
+                      collisionPadding={10}
+                      className="p-4 rounded-xl shadow-xl data-[side=bottom]:animate-slide-up-fade"
+                    >
+                      <UserQuickProfileContent profileId={p.profile_id} />
+                    </DropdownMenuContent>
+                  </DropdownMenu>
                 ))}
               </div>
             </div>
