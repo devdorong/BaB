@@ -236,11 +236,12 @@ function ProfilePage() {
     <div className="flex bg-bg-bg min-h-screen justify-center">
       <div className="flex flex-col w-full max-w-[1280px] mx-auto px-4 sm:px-6 lg:px-8 xl:px-0">
         {/* 헤더 */}
-        <div className="hidden lg:flex py-[15px]">
-          <div className="text-babgray-600 text-[17px]">프로필</div>
+        <div className="hidden lg:flex py-8 flex-col gap-1 text-left">
+          <p className="text-[24px] lg:text-3xl font-bold">프로필</p>
+          <p className="text-babgray-600 text-[16px]">프로필을 수정하고, 관리해보세요</p>
         </div>
 
-        <div className="mt-[20px] mb-[60px]">
+        <div className="mb-[60px]">
           <div className="flex flex-col lg:flex-row gap-[40px] items-start">
             {/* 왼쪽 프로필 카드 */}
             <div className="flex flex-col gap-[20px] items-center justify-center w-full lg:w-[300px]">

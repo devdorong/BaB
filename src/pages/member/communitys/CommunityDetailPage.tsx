@@ -1,6 +1,12 @@
 import dayjs from 'dayjs';
 import { useEffect, useState } from 'react';
-import { RiAlarmWarningLine, RiChat3Line, RiCloseFill, RiEyeLine } from 'react-icons/ri';
+import {
+  RiAlarmWarningLine,
+  RiArrowLeftLine,
+  RiChat3Line,
+  RiCloseFill,
+  RiEyeLine,
+} from 'react-icons/ri';
 import { useNavigate, useParams } from 'react-router-dom';
 import { useAuth } from '../../../contexts/AuthContext';
 import { supabase } from '../../../lib/supabase';
@@ -16,6 +22,12 @@ import type { ChatListItem } from '@/types/chatType';
 import { findOrCreateDirectChat } from '@/services/directChatService';
 import LoadingDiv from '@/components/LoadingDiv';
 import Skeleton from '@/ui/dorong/Skeleton';
+import {
+  DropdownMenu,
+  DropdownMenuContent,
+  DropdownMenuTrigger,
+} from '@/components/ui/dropdown-menu';
+import { UserQuickProfileContent } from '@/ui/dorong/UserQuickProfile';
 
 type PostWithProfile = Posts & {
   profiles: { id: string; nickname: string; avatar_url: string } | null;
@@ -305,7 +317,14 @@ function CommunityDetailPage() {
         ) : (
           <>
             <div className="flex flex-col p-7 gap-6 bg-white rounded-2xl shadow-[0px_4px_4px_rgba(0,0,0,0.02)]">
-              <div className="flex items-center justify-between">
+              <div className="flex items-center justify-start gap-2">
+                <button
+                  onClick={() => navigate(-1)}
+                  aria-label="뒤로 가기"
+                  className="w-10 h-10 rounded-full bg-white/95 backdrop-blur border border-black/10 shadow-[0_4px_4px_rgba(0,0,0,0.02)] inline-flex items-center justify-center"
+                >
+                  <RiArrowLeftLine className="text-[18px]" />
+                </button>
                 <div>
                   {post?.post_category === '팁과노하우' && (
                     <TagBadge
@@ -334,7 +353,25 @@ function CommunityDetailPage() {
                 <p className="font-bold text-2xl">{post?.title}</p>
                 <div className="flex items-center justify-between text-babgray-700 text-sm">
                   <div className="flex items-center gap-4">
-                    <p className="font-bold text-lg">{post?.profiles?.nickname || '익명'}</p>
+                    <DropdownMenu modal={false}>
+                      <DropdownMenuTrigger asChild>
+                        <div className="cursor-pointer">
+                          {/* 기존 프로필 이미지 및 닉네임 코드 */}
+                          <p className="font-bold text-lg">{post?.profiles?.nickname || '익명'}</p>
+                        </div>
+                      </DropdownMenuTrigger>
+                      <DropdownMenuContent
+                        side="right"
+                        align="start"
+                        sideOffset={10}
+                        collisionPadding={10}
+                        avoidCollisions
+                        className="p-4 rounded-xl shadow-xl data-[side=bottom]:animate-slide-up-fade"
+                      >
+                        <UserQuickProfileContent profileId={post!.profile_id} />
+                      </DropdownMenuContent>
+                    </DropdownMenu>
+
                     <span className="flex items-center gap-1 text-babgray-600">
                       <RiEyeLine /> <p>{post?.view_count}</p>
                     </span>
@@ -410,9 +447,26 @@ function CommunityDetailPage() {
                       className="flex flex-col gap-4 border-y border-y-babgray py-5 text-babgray-700"
                     >
                       <div className="flex justify-between items-start">
-                        <span className="text-babgray-800 font-bold">
-                          {comment.profiles?.nickname}
-                        </span>
+                        <DropdownMenu modal={false}>
+                          <DropdownMenuTrigger asChild>
+                            <div className="cursor-pointer">
+                              {/* 기존 프로필 이미지 및 닉네임 코드 */}
+                              <span className="text-babgray-800 font-bold">
+                                {comment.profiles?.nickname}
+                              </span>
+                            </div>
+                          </DropdownMenuTrigger>
+                          <DropdownMenuContent
+                            side="right"
+                            align="start"
+                            sideOffset={10}
+                            collisionPadding={10}
+                            avoidCollisions
+                            className="p-4 rounded-xl shadow-xl data-[side=bottom]:animate-slide-up-fade"
+                          >
+                            <UserQuickProfileContent profileId={comment.profile_id} />
+                          </DropdownMenuContent>
+                        </DropdownMenu>
                         <span className="text-babgray-700 text-[12px]">
                           {dayjs(comment.created_at).fromNow()}
                         </span>

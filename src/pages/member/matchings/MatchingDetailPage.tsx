@@ -1,6 +1,7 @@
 import { useEffect, useState } from 'react';
 import {
   RiAlarmWarningLine,
+  RiArrowLeftLine,
   RiCalendarLine,
   RiChat3Line,
   RiCloseFill,
@@ -58,6 +59,12 @@ import ReportsModal from '../../../ui/sdj/ReportsModal';
 import type { ChatListItem } from '@/types/chatType';
 import { findOrCreateDirectChat } from '@/services/directChatService';
 import { useDirectChat } from '@/contexts/DirectChatContext';
+import {
+  DropdownMenu,
+  DropdownMenuContent,
+  DropdownMenuTrigger,
+} from '@/components/ui/dropdown-menu';
+import { UserQuickProfileContent } from '@/ui/dorong/UserQuickProfile';
 
 type ProcessedMatching = Matchings & {
   tags: Badge[];
@@ -634,6 +641,17 @@ const MatchingDetailPage = () => {
                   {/* 태그 + 시간 */}
                   <div className="flex justify-between flex-wrap gap-2">
                     <div className="flex gap-2">
+                      <button
+                        onClick={() => navigate(-1)}
+                        aria-label="뒤로 가기"
+                        className="w-10 h-10 rounded-full
+ bg-white/95 backdrop-blur border border-black/10
+ shadow-[0_4px_4px_rgba(0,0,0,0.02)]
+ inline-flex items-center justify-center
+ "
+                      >
+                        <RiArrowLeftLine className="text-[18px]" />
+                      </button>
                       <InterestBadge
                         bgColor={matchingData.tags[0].bgClass}
                         textColor={matchingData.tags[0].textClass}
@@ -656,19 +674,35 @@ const MatchingDetailPage = () => {
                 </div>
 
                 {/* 작성자 프로필 */}
-                <div className="flex items-center gap-4 my-6">
-                  <div className="w-[60px] h-[60px] rounded-full overflow-hidden flex-shrink-0">
-                    <img
-                      src={
-                        userData?.avatar_url === 'guest_image' || !userData?.avatar_url
-                          ? DEFAULT_AVATAR
-                          : userData.avatar_url
-                      }
-                      alt={userData?.nickname}
-                    />
-                  </div>
-                  <div className="text-lg font-semibold text-babgray-800">{userData?.nickname}</div>
-                </div>
+                <DropdownMenu modal={false}>
+                  <DropdownMenuTrigger asChild>
+                    <div className="flex items-center gap-4 my-6 cursor-pointer w-max">
+                      <div className="w-[60px] h-[60px] rounded-full overflow-hidden flex-shrink-0">
+                        <img
+                          src={
+                            userData?.avatar_url === 'guest_image' || !userData?.avatar_url
+                              ? DEFAULT_AVATAR
+                              : userData.avatar_url
+                          }
+                          alt={userData?.nickname}
+                        />
+                      </div>
+                      <div className="text-lg font-semibold text-babgray-800">
+                        {userData?.nickname}
+                      </div>
+                    </div>
+                  </DropdownMenuTrigger>
+                  <DropdownMenuContent
+                    side="right"
+                    align="start"
+                    sideOffset={10}
+                    collisionPadding={10}
+                    avoidCollisions
+                    className="p-4 rounded-xl shadow-xl data-[side=bottom]:animate-slide-up-fade"
+                  >
+                    <UserQuickProfileContent profileId={userData!.id} />
+                  </DropdownMenuContent>
+                </DropdownMenu>
 
                 {/* 모임일시 + 인원 */}
                 <div className="bg-bg-bg rounded-2xl p-5 sm:p-6">
@@ -760,28 +794,42 @@ const MatchingDetailPage = () => {
                     .slice()
                     .sort((a, b) => (a.role === 'host' ? -1 : b.role === 'host' ? 1 : 0))
                     .map(p => (
-                      <li key={p.id} className="flex items-center gap-3">
-                        <div className="w-[50px] h-[50px] rounded-full overflow-hidden">
-                          <img
-                            src={
-                              p.profile.avatar_url === 'guest_image' || !p.profile.avatar_url
-                                ? DEFAULT_AVATAR
-                                : p.profile.avatar_url
-                            }
-                            alt={p.profile.nickname}
-                          />
-                        </div>
-                        <div>
-                          <div className="flex items-center gap-1">
-                            <div className="text-sm sm:text-base font-semibold text-babgray-800">
-                              {p.profile.nickname}
+                      <DropdownMenu key={p.id} modal={false}>
+                        <DropdownMenuTrigger asChild>
+                          <li className="flex items-center gap-3 cursor-pointer w-max">
+                            <div className="w-[50px] h-[50px] rounded-full overflow-hidden">
+                              <img
+                                src={
+                                  p.profile.avatar_url === 'guest_image' || !p.profile.avatar_url
+                                    ? DEFAULT_AVATAR
+                                    : p.profile.avatar_url
+                                }
+                                alt={p.profile.nickname}
+                              />
                             </div>
-                          </div>
-                          <p className="text-xs text-gray-500">
-                            {p.role === 'host' ? '모집자' : '참여자'}
-                          </p>
-                        </div>
-                      </li>
+                            <div>
+                              <div className="flex items-center gap-1">
+                                <div className="text-sm sm:text-base font-semibold text-babgray-800">
+                                  {p.profile.nickname}
+                                </div>
+                              </div>
+                              <p className="text-xs text-gray-500">
+                                {p.role === 'host' ? '모집자' : '참여자'}
+                              </p>
+                            </div>
+                          </li>
+                        </DropdownMenuTrigger>{' '}
+                        <DropdownMenuContent
+                          side="right"
+                          align="start"
+                          sideOffset={10}
+                          collisionPadding={10}
+                          avoidCollisions
+                          className="p-4 rounded-xl shadow-xl data-[side=bottom]:animate-slide-up-fade"
+                        >
+                          <UserQuickProfileContent profileId={p.profile_id} />
+                        </DropdownMenuContent>
+                      </DropdownMenu>
                     ))}
                 </ul>
                 <div className="mt-5 rounded-xl bg-gray-50 text-gray-600 text-sm text-center py-4">

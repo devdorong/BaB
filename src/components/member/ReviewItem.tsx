@@ -6,6 +6,8 @@ import WriteReviewComment from '../partner/WriteReviewComment';
 import { useRestaurant } from '../../contexts/PartnerRestaurantContext';
 import WriteReviewDetailComment from './WriteReviewDetailComment';
 import WriteReviewPageComment from './WriteReviewPageComment';
+import { DropdownMenu, DropdownMenuContent, DropdownMenuTrigger } from '../ui/dropdown-menu';
+import { UserQuickProfileContent } from '@/ui/dorong/UserQuickProfile';
 
 interface ReviewItemProps {
   restaurantId: number;
@@ -42,36 +44,51 @@ function ReviewItem({ restaurantId, reviews }: ReviewItemProps) {
         >
           {/* 상단 헤더 */}
           <div className="flex items-start justify-between">
-            <div className="flex items-center gap-3">
-              <div className="w-12 h-12 rounded-full bg-gray-100 overflow-hidden">
-                {review.profiles?.avatar_url && (
-                  <img
-                    src={
-                      review.profiles?.avatar_url !== 'guest_image'
-                        ? review.profiles?.avatar_url
-                        : 'https://www.gravatar.com/avatar/?d=mp&s=200'
-                    }
-                    alt="프로필 이미지"
-                    className="w-full h-full object-cover object-center"
-                  />
-                )}
-              </div>
-              <div>
-                <div className="text-[14px] font-semibold">{review.profiles?.nickname}</div>
-                <div className="text-[12px] text-babgray-600">
-                  {review.created_at && new Date(review.created_at).toLocaleDateString()}
+            <DropdownMenu modal={false}>
+              <DropdownMenuTrigger asChild>
+                <div className="cursor-pointer">
+                  {/* 기존 프로필 이미지 및 닉네임 코드 */}
+                  <div className="flex items-center gap-3">
+                    <div className="w-12 h-12 rounded-full bg-gray-100 overflow-hidden">
+                      {review.profiles?.avatar_url && (
+                        <img
+                          src={
+                            review.profiles?.avatar_url !== 'guest_image'
+                              ? review.profiles?.avatar_url
+                              : 'https://www.gravatar.com/avatar/?d=mp&s=200'
+                          }
+                          alt="프로필 이미지"
+                          className="w-full h-full object-cover object-center"
+                        />
+                      )}
+                    </div>
+                    <div>
+                      <div className="text-[14px] font-semibold">{review.profiles?.nickname}</div>
+                      <div className="text-[12px] text-babgray-600">
+                        {review.created_at && new Date(review.created_at).toLocaleDateString()}
+                      </div>
+                    </div>
+                  </div>
+
                 </div>
-              </div>
-            </div>
+              </DropdownMenuTrigger>
+              <DropdownMenuContent side="right"
+                align="start" sideOffset={10}
+                collisionPadding={10}
+                avoidCollisions
+                className="p-4 rounded-xl shadow-xl data-[side=bottom]:animate-slide-up-fade">
+                <UserQuickProfileContent profileId={review.profile_id} />
+              </DropdownMenuContent>
+            </DropdownMenu>
+
             <div className="flex items-center gap-1 pt-2 px-2">
               {Array.from({ length: 5 }).map((_, i) => (
                 <RiStarFill
                   key={i}
-                  className={`text-[16px] ${
-                    i < (review.rating_food ?? 0)
-                      ? 'text-yellow-400' // 채워진 별 (노란색)
-                      : 'text-gray-300' // 채워지지않은 별 (회색)
-                  }`}
+                  className={`text-[16px] ${i < (review.rating_food ?? 0)
+                    ? 'text-yellow-400' // 채워진 별 (노란색)
+                    : 'text-gray-300' // 채워지지않은 별 (회색)
+                    }`}
                 />
               ))}
             </div>

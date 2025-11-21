@@ -26,6 +26,7 @@ import { notification } from 'antd/lib';
 import { supabase } from '../../lib/supabase';
 import { RiCloseLine, RiMenuLine } from 'react-icons/ri';
 import { useRealTimeNotification } from '@/contexts/NotificationContext';
+import ProfileButton from '@/ui/dorong/ProfileButton';
 
 const MemberHeader = () => {
   const navigate = useNavigate();
@@ -215,9 +216,10 @@ const MemberHeader = () => {
             {user ? (
               <>
                 <div className="flex items-center justify-center gap-2 text-babgray-800">
-                  <Link to={'/member/profile'}>
+                  <ProfileButton profileData={profileData} />
+                  {/* <Link to={'/member/profile'}>
                     <span>{profileData?.nickname}님</span>
-                  </Link>
+                  </Link> */}
                   <div
                     onClick={() => setIsOpen(!isOpen)}
                     className="flex relative items-center cursor-pointer"
