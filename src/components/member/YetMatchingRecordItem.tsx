@@ -125,21 +125,12 @@ const YetMatchingRecordItem = ({ matching }: YetMatchingRecordItemProps) => {
   }
 
   return (
-    <section
-      onClick={() => navigate(`/member/matching/${matching.id}`)}
-      className="w-full p-6 bg-white rounded-2xl shadow-[0_4px_8px_rgba(0,0,0,0.03)] transition-all hover:shadow-[0_6px_12px_rgba(0,0,0,0.05)] cursor-pointer"
-    >
+    <section className="w-full p-6 bg-white rounded-2xl shadow-[0_4px_8px_rgba(0,0,0,0.03)] transition-all hover:shadow-[0_6px_12px_rgba(0,0,0,0.05)]">
       <div className="flex gap-5 items-start">
         {/* 프로필 이미지 */}
         <div className="lg:flex hidden relative shrink-0">
           <img
-            src={
-              profileData?.avatar_url
-                ? profileData.avatar_url === 'guest_image'
-                  ? `https://www.gravatar.com/avatar/?d=mp&s=200`
-                  : profileData.avatar_url
-                : 'https://www.gravatar.com/avatar/?d=mp&s=200'
-            }
+            src={place?.thumbnail_url}
             alt="호스트"
             className="w-14 h-14 rounded-full object-cover border border-gray-200"
           />
@@ -147,60 +138,65 @@ const YetMatchingRecordItem = ({ matching }: YetMatchingRecordItemProps) => {
 
         {/* 오른쪽 내용 */}
         <div className="flex flex-col flex-1 gap-3">
-          {/* 상단: 이름 + 상태 */}
-          <div className="flex justify-between items-center">
-            <div className="flex items-center gap-3">
-              <p className="text-gray-900 font-semibold text-lg">{hostNickname}</p>
+          <div
+            onClick={() => navigate(`/member/matching/${matching.id}`)}
+            className="flex flex-col flex-1 gap-3 cursor-pointer"
+          >
+            {/* 상단: 이름 + 상태 */}
+            <div className="flex justify-between items-center">
+              <div className="flex items-center gap-3">
+                <p className="text-gray-900 font-semibold text-lg">{matching.title}</p>
 
-              {/* 상태 */}
-              {matching.status === 'waiting' ? (
-                <TagBadge bgColor="bg-blue-100" textColor="text-blue-700">
-                  예정
-                </TagBadge>
-              ) : (
-                <TagBadge bgColor="bg-green-100" textColor="text-green-700">
-                  대기
-                </TagBadge>
-              )}
+                {/* 상태 */}
+                {matching.status === 'waiting' ? (
+                  <TagBadge bgColor="bg-blue-100" textColor="text-blue-700">
+                    예정
+                  </TagBadge>
+                ) : (
+                  <TagBadge bgColor="bg-green-100" textColor="text-green-700">
+                    대기
+                  </TagBadge>
+                )}
+              </div>
+              <RiMoreFill className="text-gray-400 cursor-pointer hover:text-gray-600" />
             </div>
-            <RiMoreFill className="text-gray-400 cursor-pointer hover:text-gray-600" />
-          </div>
 
-          {/* 장소 + 시간 */}
-          <div className="flex flex-col text-sm text-gray-600 leading-relaxed">
-            <div className="lg:flex items-center gap-2 hidden">
-              <RiStoreLine className="text-gray-500" />
-              <span className="font-medium text-gray-800">{place?.name}</span>
-              <span className="text-gray-400">·</span>
-              <span className="truncate">{place?.address}</span>
-            </div>
-            <div className="flex flex-col lg:hidden">
-              <div className="flex items-center gap-2">
+            {/* 장소 + 시간 */}
+            <div className="flex flex-col text-sm text-gray-600 leading-relaxed">
+              <div className="lg:flex items-center gap-2 hidden">
                 <RiStoreLine className="text-gray-500" />
-                <span className="text-gray-800 font-medium">{place?.name}</span>
+                <span className="font-medium text-gray-800">{place?.name}</span>
+                <span className="text-gray-400">·</span>
+                <span className="truncate">{place?.address}</span>
+              </div>
+              <div className="flex flex-col lg:hidden">
+                <div className="flex items-center gap-2">
+                  <RiStoreLine className="text-gray-500" />
+                  <span className="text-gray-800 font-medium">{place?.name}</span>
+                </div>
+                <div className="flex items-center gap-2">
+                  <RiMapPinLine />
+                  <span>{place?.address}</span>
+                </div>
               </div>
               <div className="flex items-center gap-2">
-                <RiMapPinLine />
-                <span>{place?.address}</span>
+                <RiCalendarLine className="text-gray-500" />
+                <span>{formatted}</span>
               </div>
             </div>
-            <div className="flex items-center gap-2">
-              <RiCalendarLine className="text-gray-500" />
-              <span>{formatted}</span>
-            </div>
-          </div>
 
-          {/* 관심사 */}
-          {interst && (
-            <div className="mt-1">
-              <TagBadge
-                bgColor={categoryColors[interst]?.bg ?? 'bg-gray-100'}
-                textColor={categoryColors[interst]?.text ?? 'text-gray-700'}
-              >
-                {interst}
-              </TagBadge>
-            </div>
-          )}
+            {/* 관심사 */}
+            {interst && (
+              <div className="mt-1">
+                <TagBadge
+                  bgColor={categoryColors[interst]?.bg ?? 'bg-gray-100'}
+                  textColor={categoryColors[interst]?.text ?? 'text-gray-700'}
+                >
+                  {interst}
+                </TagBadge>
+              </div>
+            )}
+          </div>
 
           {/* 참가자 정보 */}
           <div className="bg-gray-50 rounded-xl p-4 mt-2 flex flex-col gap-3">
