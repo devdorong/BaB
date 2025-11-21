@@ -38,6 +38,8 @@ function CommunityPage() {
   const [posts, setPosts] = useState<PostWithProfile[]>([]);
   const [search, setSearch] = useState('');
 
+  const [loading, setLoading] = useState(true);
+
   // 페이지네이션
   const [currentItems, setCurrentItems] = useState<PostWithProfile[]>([]);
   const [pageCount, setPageCount] = useState(0);
@@ -96,6 +98,8 @@ function CommunityPage() {
     });
 
   const fetchPosts = async () => {
+    setLoading(true);
+
     let postData = supabase.from('posts').select(
       `id, title, content, created_at, post_category, profile_id, tag, view_count,
     profiles (
@@ -118,6 +122,7 @@ function CommunityPage() {
     } else {
       setPosts(data as unknown as PostWithProfile[]);
     }
+    setLoading(false);
   };
 
   const handleWriteClick = async () => {
@@ -233,51 +238,61 @@ function CommunityPage() {
           </div>
           {/* 게시글 목록 */}
           <div className="flex flex-col gap-6">
-            <div className="flex flex-col gap-6 py-8">
-              {currentItems.length > 0 ? (
-                currentItems.map(item => (
-                  <div
-                    key={item.id}
-                    onClick={() => handlePostClick(item.id)}
-                    className="w-full h-auto flex flex-col gap-4 bg-white shadow rounded-xl2 py-6 px-8 cursor-pointer"
-                  >
-                    <div className="flex justify-between">
-                      <div>{tagComponents[item.tag as FilteredTag] ?? item.tag}</div>
-                      <span className="text-[12px] text-gray-500">
-                        {dayjs(item.created_at).fromNow()}
-                      </span>
-                    </div>
-                    <div className="flex flex-col gap-2">
-                      <p className="text-[18px] leading-6 font-bold text-gray-900 truncate">
-                        {item.title}
-                      </p>
-                      <p className="text-[15px] leading-6 font-medium text-gray-500 truncate">
-                        {item.content}
-                      </p>
-                    </div>
-                    <div className="flex justify-between text-babgray-600">
-                      <p className="font-semibold truncate">
-                        {item.profiles?.nickname ?? '알수없음'}
-                      </p>
-                      <div>
-                        <span className="flex items-center gap-1">
-                          <RiChat3Line />
-                          {item.comments?.length}
-                        </span>
+            {loading ? (
+              <div className="flex flex-col gap-6 py-8">
+                {[...Array(10)].map((_, i) => (
+                  <CommunityCardSkeleton key={i} />
+                ))}
+              </div>
+            ) : (
+              <>
+                <div className="flex flex-col gap-6 py-8">
+                  {currentItems.length > 0 ? (
+                    currentItems.map(item => (
+                      <div
+                        key={item.id}
+                        onClick={() => handlePostClick(item.id)}
+                        className="w-full h-auto flex flex-col gap-4 bg-white shadow rounded-xl2 py-6 px-8 cursor-pointer"
+                      >
+                        <div className="flex justify-between">
+                          <div>{tagComponents[item.tag as FilteredTag] ?? item.tag}</div>
+                          <span className="text-[12px] text-gray-500">
+                            {dayjs(item.created_at).fromNow()}
+                          </span>
+                        </div>
+                        <div className="flex flex-col gap-2">
+                          <p className="text-[18px] leading-6 font-bold text-gray-900 truncate">
+                            {item.title}
+                          </p>
+                          <p className="text-[15px] leading-6 font-medium text-gray-500 truncate">
+                            {item.content}
+                          </p>
+                        </div>
+                        <div className="flex justify-between text-babgray-600">
+                          <p className="font-semibold truncate">
+                            {item.profiles?.nickname ?? '알수없음'}
+                          </p>
+                          <div>
+                            <span className="flex items-center gap-1">
+                              <RiChat3Line />
+                              {item.comments?.length}
+                            </span>
+                          </div>
+                        </div>
                       </div>
-                    </div>
-                  </div>
-                ))
-              ) : currentItems.length === 0 ? (
-                <p className="text-gray-600 text-center py-5">검색된 게시물이 없습니다.</p>
-              ) : (
-                <>
-                  {[...Array(10)].map((_, i) => (
-                    <CommunityCardSkeleton key={i} />
-                  ))}
-                </>
-              )}
-            </div>
+                    ))
+                  ) : currentItems.length === 0 ? (
+                    <p className="text-gray-600 text-center py-5">검색된 게시물이 없습니다.</p>
+                  ) : (
+                    <>
+                      {[...Array(10)].map((_, i) => (
+                        <CommunityCardSkeleton key={i} />
+                      ))}
+                    </>
+                  )}
+                </div>
+              </>
+            )}
           </div>
         </div>
         {/* 페이지네이션 */}

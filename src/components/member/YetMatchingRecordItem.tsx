@@ -9,6 +9,8 @@ import TagBadge from '../../ui/TagBadge';
 import { RecentMatchingRecordSkeleton } from '../../ui/dorong/RecentMatchingRecordSkeleton';
 import { categoryColors } from '../../ui/jy/categoryColors';
 import { useNavigate } from 'react-router-dom';
+import { DropdownMenu, DropdownMenuContent, DropdownMenuTrigger } from '../ui/dropdown-menu';
+import { UserQuickProfileContent } from '@/ui/dorong/UserQuickProfile';
 
 interface YetMatchingRecordItemProps {
   matching: Matchings;
@@ -22,7 +24,7 @@ const YetMatchingRecordItem = ({ matching }: YetMatchingRecordItemProps) => {
   const [interst, setInterst] = useState<string | null>(null);
   const [loading, setLoading] = useState(true);
   const [participants, setParticipants] = useState<
-    { id: number; nickname: string; avatar_url: string }[]
+    { id: number; profile_id: string; nickname: string; avatar_url: string }[]
   >([]);
   const isoString = matching.met_at;
   const formatted = dayjs(isoString).format('YYYY-MM-DD HH:mm');
@@ -84,12 +86,14 @@ const YetMatchingRecordItem = ({ matching }: YetMatchingRecordItemProps) => {
               console.error('참가자 프로필 오류:', error.message);
               return {
                 id: p.id,
+                profile_id: '프로필 uuid',
                 nickname: '알 수 없음',
                 avatar_url: 'https://www.gravatar.com/avatar/?d=mp&s=200',
               };
             }
             return {
               id: p.id,
+              profile_id: p.profile_id ?? '알 수 없음',
               nickname: data?.nickname ?? '알 수 없음',
               avatar_url: data.avatar_url,
             };
@@ -121,7 +125,10 @@ const YetMatchingRecordItem = ({ matching }: YetMatchingRecordItemProps) => {
   }
 
   return (
-    <section className="w-full p-6 bg-white rounded-2xl shadow-[0_4px_8px_rgba(0,0,0,0.03)] transition-all hover:shadow-[0_6px_12px_rgba(0,0,0,0.05)]">
+    <section
+      onClick={() => navigate(`/member/matching/${matching.id}`)}
+      className="w-full p-6 bg-white rounded-2xl shadow-[0_4px_8px_rgba(0,0,0,0.03)] transition-all hover:shadow-[0_6px_12px_rgba(0,0,0,0.05)] cursor-pointer"
+    >
       <div className="flex gap-5 items-start">
         {/* 프로필 이미지 */}
         <div className="lg:flex hidden relative shrink-0">
@@ -156,10 +163,7 @@ const YetMatchingRecordItem = ({ matching }: YetMatchingRecordItemProps) => {
                 </TagBadge>
               )}
             </div>
-            <RiMoreFill
-              className="text-gray-400 cursor-pointer hover:text-gray-600"
-              onClick={() => navigate(`/member/matching/${matching.id}`)}
-            />
+            <RiMoreFill className="text-gray-400 cursor-pointer hover:text-gray-600" />
           </div>
 
           {/* 장소 + 시간 */}
@@ -203,7 +207,7 @@ const YetMatchingRecordItem = ({ matching }: YetMatchingRecordItemProps) => {
             <p className="text-gray-700 font-medium">참가자 정보</p>
 
             <div className="flex flex-wrap gap-4">
-              {participants.map(p => (
+              {/* {participants.map(p => (
                 <div
                   key={p.id}
                   className="flex items-center gap-2 px-3 py-2 bg-white rounded-xl shadow-sm border border-gray-100 hover:shadow-md transition-all cursor-pointer"
@@ -219,6 +223,35 @@ const YetMatchingRecordItem = ({ matching }: YetMatchingRecordItemProps) => {
                   />
                   <span className="text-gray-800 font-medium text-sm">{p.nickname}</span>
                 </div>
+              ))} */}
+              {participants.map(p => (
+                <DropdownMenu key={p.id}>
+                  <DropdownMenuTrigger asChild>
+                    <div className="flex items-center gap-2 px-3 py-2 bg-white rounded-xl shadow-sm border border-gray-100 hover:shadow-md transition-all cursor-pointer">
+                      <img
+                        src={
+                          p.avatar_url !== 'guest_image'
+                            ? p.avatar_url
+                            : 'https://www.gravatar.com/avatar/?d=mp&s=100'
+                        }
+                        alt={p.nickname}
+                        className="w-8 h-8 rounded-full object-cover"
+                      />
+                      <span className="text-gray-800 font-medium text-sm">{p.nickname}</span>
+                    </div>
+                  </DropdownMenuTrigger>
+
+                  <DropdownMenuContent
+                    side="right"
+                    align="start"
+                    sideOffset={10}
+                    collisionPadding={10}
+                    avoidCollisions
+                    className="p-4 rounded-xl shadow-xl data-[side=bottom]:animate-slide-up-fade"
+                  >
+                    <UserQuickProfileContent profileId={p.profile_id} />
+                  </DropdownMenuContent>
+                </DropdownMenu>
               ))}
             </div>
           </div>

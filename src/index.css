@@ -37,6 +37,7 @@ body,
 #root {
   height: 100%;
   font-family: 'Noto Sans KR', sans-serif;
+  scrollbar-gutter: stable;
 }
 html {
   zoom: 0.9;

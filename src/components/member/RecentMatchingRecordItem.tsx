@@ -19,6 +19,7 @@ import { getMatchingParticipants } from '../../services/matchingService';
 import { RecentMatchingRecordSkeleton } from '../../ui/dorong/RecentMatchingRecordSkeleton';
 import { DropdownMenu, DropdownMenuContent, DropdownMenuTrigger } from '../ui/dropdown-menu';
 import { UserQuickProfileContent } from '@/ui/dorong/UserQuickProfile';
+import { useNavigate } from 'react-router-dom';
 
 interface RecentMatchingRecordItemProps {
   endMatching: Matchings;
@@ -26,6 +27,7 @@ interface RecentMatchingRecordItemProps {
 
 const RecentMatchingRecordItem = ({ endMatching }: RecentMatchingRecordItemProps) => {
   // console.log('여긴 완료된 매칭', endMatching);
+  const navigate = useNavigate();
   const [hostNickname, setHostNickname] = useState<string | null>(null);
   const [place, setPlace] = useState<RestaurantsDetailType | null>(null);
   const [interst, setInterst] = useState<string | null>(null);
@@ -156,7 +158,10 @@ const RecentMatchingRecordItem = ({ endMatching }: RecentMatchingRecordItemProps
 
   return (
     <>
-      <section className="w-full p-6 bg-white rounded-2xl shadow-[0_4px_8px_rgba(0,0,0,0.03)] transition-all hover:shadow-[0_6px_12px_rgba(0,0,0,0.05)]">
+      <section
+        className="w-full p-6 bg-white rounded-2xl shadow-[0_4px_8px_rgba(0,0,0,0.03)] transition-all hover:shadow-[0_6px_12px_rgba(0,0,0,0.05)] cursor-pointer"
+        onClick={() => navigate(`/member/matching/${endMatching.id}`)}
+      >
         <div className="flex gap-5 items-start">
           {/* 호스트 프로필 */}
           <div className="hidden lg:flex relative shrink-0">
@@ -274,6 +279,7 @@ const RecentMatchingRecordItem = ({ endMatching }: RecentMatchingRecordItemProps
                       align="start"
                       sideOffset={10}
                       collisionPadding={10}
+                      avoidCollisions
                       className="p-4 rounded-xl shadow-xl data-[side=bottom]:animate-slide-up-fade"
                     >
                       <UserQuickProfileContent profileId={p.profile_id} />
