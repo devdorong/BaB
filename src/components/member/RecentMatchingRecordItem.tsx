@@ -258,7 +258,7 @@ const RecentMatchingRecordItem = ({ endMatching }: RecentMatchingRecordItemProps
               </div> */}
               <div className="flex flex-wrap gap-4">
                 {participants.map(p => (
-                  <DropdownMenu key={p.id}>
+                  <DropdownMenu key={p.id} modal={false}>
                     <DropdownMenuTrigger asChild>
                       <div className="flex items-center gap-2 px-3 py-2 bg-white rounded-xl shadow-sm border border-gray-100 hover:shadow-md transition-all cursor-pointer">
                         <img
