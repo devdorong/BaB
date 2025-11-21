@@ -19,7 +19,7 @@ export default function ProfileButton({ profileData }: { profileData: Profile | 
           side="bottom"
           align="start"
           sideOffset={4}
-          className="w-40 flex flex-col p-0 absolute top-[20px] left-[105px]"
+          className="w-40 flex flex-col p-0 absolute top-[10px] left-[120px]"
         >
           <PopoverClose asChild>
             <Link to="/member/profile">
