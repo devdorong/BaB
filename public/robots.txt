@@ -12,6 +12,7 @@ Disallow: /api/
 Allow: /images/
 Allow: /fonts/
 Allow: /favicon.ico
+Allow: /BaB.svg
 
 # 사이트맵 위치
 Sitemap: https://bab-mu.vercel.app/sitemap.xml
